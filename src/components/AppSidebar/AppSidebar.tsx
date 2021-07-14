@@ -1,6 +1,5 @@
 import { Fragment } from "react";
 import { connect } from "react-redux";
-import cx from "classnames";
 
 import Nav from "../AppNav/VerticalNavWrapper";
 
