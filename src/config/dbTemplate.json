@@ -1,0 +1,172 @@
+{
+  "private": {
+    "bom": {
+      "seasons": ["2021/2022"]
+    },
+    "departments": {
+      "dc": {
+        "acronym": "dc",
+        "color": "#0052d1",
+        "description": "Design and Composites",
+        "gradientColor": "bg-arielle-smile",
+        "icon": "fa-anchor",
+        "positions": ["Junior", "CNC"]
+      },
+      "es": {
+        "acronym": "es",
+        "color": "gold",
+        "description": "Electrical Systems",
+        "gradientColor": "bg-sunny-morning",
+        "icon": "fa-lightbulb",
+        "positions": ["Junior", "BMS"]
+      },
+      "hp": {
+        "acronym": "hp",
+        "color": "#c471f5",
+        "description": "Hydrogen Fuel Cell",
+        "gradientColor": "bg-mixed-hopes",
+        "icon": "fa-atom",
+        "positions": ["Junior", "Fuel Cell"]
+      },
+      "mm": {
+        "acronym": "mm",
+        "color": "#0ba360",
+        "description": "Management and Marketing",
+        "gradientColor": "bg-tempting-azure",
+        "icon": "fa-chart-line",
+        "positions": ["Junior", "Designer"]
+      },
+      "ms": {
+        "acronym": "ms",
+        "color": "#00D1BB",
+        "description": "Mechanical Systems",
+        "gradientColor": "bg-happy-itmeo",
+        "icon": "fa-cogs",
+        "positions": ["Junior", "Hydrofoils"]
+      }
+    },
+    "tasksDC": {
+      "b": {
+        "General": {
+          "0Todo": {
+            "classNames": "kanban-board-header card text-center bg-danger text-white",
+            "name": "To do"
+          },
+          "1InProgress": {
+            "classNames": "kanban-board-header card text-center bg-warning text-white",
+            "items": [
+              {
+                "assignedBy": "s93FIAbnJoNqs01jQNlK4xxW3vm2",
+                "assignedTo": [
+                  {
+                    "label": "Test User, Management and Marketing",
+                    "value": "s93FIAbnJoNqs01jQNlK4xxW3vm2"
+                  }
+                ],
+                "columnId": "1InProgress",
+                "completedObj": 0,
+                "currBoard": "General",
+                "date": "14/07/2021",
+                "departmentBoard": "tasksDC",
+                "id": "afadb264-e949-4c0a-8f7a-c95f176e22ad",
+                "numComments": 0,
+                "priority": "High",
+                "status": "In Progress",
+                "title": "Record video gif for repo",
+                "totalObj": 0
+              }
+            ],
+            "name": "In Progress"
+          },
+          "2Completed": {
+            "classNames": "kanban-board-header card text-center bg-success text-white",
+            "name": "Completed"
+          }
+        }
+      },
+      "list": ["General"]
+    },
+    "tasksES": {
+      "b": {
+        "General": {
+          "0Todo": {
+            "classNames": "kanban-board-header card text-center bg-danger text-white",
+            "name": "To do"
+          },
+          "1InProgress": {
+            "classNames": "kanban-board-header card text-center bg-warning text-white",
+            "name": "In Progress"
+          },
+          "2Completed": {
+            "classNames": "kanban-board-header card text-center bg-success text-white",
+            "name": "Completed"
+          }
+        }
+      },
+      "list": ["General"]
+    },
+    "tasksHP": {
+      "b": {
+        "General": {
+          "0Todo": {
+            "classNames": "kanban-board-header card text-center bg-danger text-white",
+            "name": "To do"
+          },
+          "1InProgress": {
+            "classNames": "kanban-board-header card text-center bg-warning text-white",
+            "name": "In Progress"
+          },
+          "2Completed": {
+            "classNames": "kanban-board-header card text-center bg-success text-white",
+            "name": "Completed"
+          }
+        }
+      },
+      "list": ["General"]
+    },
+    "tasksMM": {
+      "b": {
+        "General": {
+          "0Todo": {
+            "classNames": "kanban-board-header card text-center bg-danger text-white",
+            "name": "To do"
+          },
+          "1InProgress": {
+            "classNames": "kanban-board-header card text-center bg-warning text-white",
+            "name": "In Progress"
+          },
+          "2Completed": {
+            "classNames": "kanban-board-header card text-center bg-success text-white",
+            "name": "Completed"
+          }
+        }
+      },
+      "list": ["General"]
+    },
+    "tasksMS": {
+      "b": {
+        "General": {
+          "0Todo": {
+            "classNames": "kanban-board-header card text-center bg-danger text-white",
+            "name": "To do"
+          },
+          "1InProgress": {
+            "classNames": "kanban-board-header card text-center bg-warning text-white",
+            "name": "In Progress"
+          },
+          "2Completed": {
+            "classNames": "kanban-board-header card text-center bg-success text-white",
+            "name": "Completed"
+          }
+        }
+      },
+      "list": ["General"]
+    }
+  },
+  "public": {
+    "applicationSettings": {
+      "maintenanceIsOpen": false,
+      "registrationIsOpen": true
+    }
+  }
+}
