@@ -46,7 +46,10 @@ const SearchBox = () => {
             placeholder="Search user..."
           />
           <button
-            onClick={() => setActiveSearch(!activeSearch)}
+            onClick={() => {
+              setActiveSearch(!activeSearch);
+              setDropdownOpen(!activeSearch);
+            }}
             className="search-icon"
           >
             <span />
@@ -58,7 +61,10 @@ const SearchBox = () => {
           />
         </div>
         <button
-          onClick={() => setActiveSearch(!activeSearch)}
+          onClick={() => {
+            setActiveSearch(!activeSearch);
+            setDropdownOpen(!activeSearch);
+          }}
           className="close"
         />
       </div>
