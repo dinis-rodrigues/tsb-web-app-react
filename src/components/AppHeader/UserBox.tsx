@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import { Link } from "react-router-dom";
+import { v4 as uuid } from "uuid";
 
 import {
   DropdownToggle,
@@ -18,6 +19,7 @@ import { connect } from "react-redux";
 import { setUserProfilePicture } from "../../reducers/ThemeOptions";
 import { useHistory } from "react-router-dom";
 import UserNotifications from "./UserNotifications";
+import ImageContainer from "../AppImage/ImageContainer";
 
 type Props = {
   userProfilePicture: string;
@@ -34,7 +36,6 @@ const UserBox = ({ userProfilePicture }: Props) => {
         // console.log("error", error);
       });
   };
-
   return (
     <Fragment>
       {applicationSettings.maintenanceIsOpen && (
@@ -63,12 +64,17 @@ const UserBox = ({ userProfilePicture }: Props) => {
               {/* User Info */}
               <UncontrolledButtonDropdown>
                 <DropdownToggle color="btn" className="p-0">
-                  <img
+                  {/* <img
                     width={42}
                     className="rounded-circle"
                     src={userProfilePicture} //{dinisAvatar}
                     onError={(el: any) => (el.src = dinisAvatar)}
                     alt=""
+                  /> */}
+                  <ImageContainer
+                    width={42}
+                    classNames={"rounded-circle"}
+                    imageSrc={USER!.usrImgComp}
                   />
                   <FontAwesomeIcon
                     className="ml-2 opacity-8"

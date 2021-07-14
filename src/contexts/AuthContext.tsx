@@ -8,7 +8,10 @@ import {
   userContext,
   UserMetadata,
 } from "../interfaces";
-import { userHasAdminPermissions } from "../utils/generalFunctions";
+import {
+  getUserImgUrl,
+  userHasAdminPermissions,
+} from "../utils/generalFunctions";
 import {
   registerUser,
   loginUser,
@@ -33,6 +36,7 @@ interface ContextAuth {
   loginUser: Function;
   logoutUser: Function;
   setCurrentUser: Function;
+  setUSER: Function;
 }
 const AuthContext = React.createContext<ContextAuth>({
   currentUser: null,
@@ -52,6 +56,7 @@ const AuthContext = React.createContext<ContextAuth>({
   loginUser: () => {},
   logoutUser: () => {},
   setCurrentUser: () => {},
+  setUSER: () => {},
 });
 
 export const useAuth = () => {
@@ -63,12 +68,14 @@ type Props = {
 
 export function AuthProvider({ children }: Props) {
   const [currentUser, setCurrentUser] = useState<any>();
-  const [USER, setUSER] = useState({
+  const [USER, setUSER] = useState<userContext | null>({
     id: "",
     name: "",
     department: "",
     position: "",
     joinedIn: "",
+    usrImg: "",
+    usrImgComp: "",
   });
   const [loading, setLoading] = useState(true);
   const [usersMetadata, setUsersMetadata] = useState<UserMetadata>({});
@@ -96,12 +103,17 @@ export function AuthProvider({ children }: Props) {
           var userInfo: userContext | null = snapshot.val();
           if (!userInfo) return;
           // console.log("AUTH User id: ", userId);
+          let usrImgUrlComp = getUserImgUrl(userId, null, true);
+          let usrImgUrl = getUserImgUrl(userId, null, false);
+          console.log(usrImgUrlComp);
           setUSER({
             id: userId,
             name: userInfo.name,
             department: userInfo.department,
             position: userInfo.position,
             joinedIn: userInfo.joinedIn,
+            usrImg: usrImgUrl,
+            usrImgComp: usrImgUrlComp,
           });
           // Checks if the user is admin or not
           let userAdmin = userHasAdminPermissions(userInfo);
@@ -180,6 +192,7 @@ export function AuthProvider({ children }: Props) {
     displayMaintenance,
     departmentsWDesc,
     setCurrentUser,
+    setUSER,
   };
 
   return (

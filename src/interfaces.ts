@@ -469,4 +469,6 @@ export interface userContext {
   department: string;
   position: string;
   joinedIn: string;
+  usrImg: string;
+  usrImgComp: string;
 }

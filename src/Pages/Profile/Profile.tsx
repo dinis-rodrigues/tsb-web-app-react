@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { setUserProfilePicture } from "../../reducers/ThemeOptions";
 import { connect } from "react-redux";
+import { v4 as uuid } from "uuid";
 import cx from "classnames";
 import {
   defaultInfo,
@@ -20,13 +21,14 @@ import Croppie from "croppie";
 import { useAuth } from "../../contexts/AuthContext";
 import { db } from "../../config/firebase";
 import UserAttendance from "./UserAttendance";
+import ImageContainer from "../../components/AppImage/ImageContainer";
 
 type Props = {
   setUserProfilePicture: Function;
 };
 
 const Profile = ({ setUserProfilePicture }: Props) => {
-  const { USER } = useAuth();
+  const { USER, setUSER } = useAuth();
   const [info, setInfo] = useState<PersonalInformation>(defaultInfo); // current info
   const [prevInfo, setPrevInfo] = useState<PersonalInformation>(defaultInfo); // save info on edit (restore on discard)
   const [disabledInput, setDisabledInput] = useState(true); // enalbe/disable on edit
@@ -91,14 +93,11 @@ const Profile = ({ setUserProfilePicture }: Props) => {
                           "avatar-icon": disabledInput,
                         })}
                       >
-                        <img
-                          id="croppie-img"
-                          className="croppie-img avatar-h avatar-w"
-                          src={"/assets/images/alt.png"}
-                          onError={(e: any) =>
-                            (e.src = "/assets/images/alt.png")
-                          }
-                          alt=""
+                        <ImageContainer
+                          classNames={"croppie-img avatar-h avatar-w"}
+                          id={"croppie-img"}
+                          imageSrc={USER!.usrImg}
+                          compressed={false}
                         />
                       </div>
                     </div>
@@ -142,7 +141,7 @@ const Profile = ({ setUserProfilePicture }: Props) => {
                                   croppie!,
                                   setCroppie,
                                   setShowSaveImg,
-                                  setUserProfilePicture
+                                  setUSER
                                 )
                               }
                               className="btn btn-dark"
@@ -162,8 +161,6 @@ const Profile = ({ setUserProfilePicture }: Props) => {
                   </div>
                 </div>
               </div>
-              {/* Statistics */}
-
               {/* Statistics */}
               {USER && <UserAttendance userId={USER.id} />}
 

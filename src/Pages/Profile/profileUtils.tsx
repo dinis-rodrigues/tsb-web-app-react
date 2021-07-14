@@ -840,7 +840,7 @@ const resizeImage = (
   croppie: Croppie | undefined,
   setCroppie: Function,
   setShowSaveImg: Function,
-  setUserProfilePicture: Function
+  setUSER: Function
 ) => {
   // Read the input image using FileReader.
   if (!user) {
@@ -882,11 +882,20 @@ const resizeImage = (
           // When all works out well, kill croppie and save button
           killCroppie(setCroppie, croppie, setShowSaveImg);
           // update/refresh the profile image
-          setUserProfilePicture(
-            `/db/users/${user.id}/img/${
-              user.id
-            }comp.png?${new Date().getTime()}`
-          );
+
+          setUSER((USER: userContext) => {
+            return {
+              ...USER,
+              usrImgComp: `/db/users/${user.id}/img/${
+                user.id
+              }comp.png?${new Date().getTime()}`,
+              userImg: `/db/users/${user.id}/img/${
+                user.id
+              }.png?${new Date().getTime()}`,
+            };
+          });
+          // Refresh page to reload profile image
+          window.location.reload();
         })
         .catch((error) => {
           // console.log("Error making the call to server: ", error);
@@ -909,7 +918,7 @@ const sendImgToServer = async (
   croppie: Croppie,
   setCroppie: Function,
   setShowSaveImg: Function,
-  setUserProfilePicture: Function
+  setUSER: Function
 ) => {
   if (!user) {
     return;
@@ -944,14 +953,7 @@ const sendImgToServer = async (
     });
   await st.ref(`users/${user.id}/${user.id}`).put(blob);
   // console.log("resizing");
-  resizeImage(
-    user,
-    blob,
-    croppie,
-    setCroppie,
-    setShowSaveImg,
-    setUserProfilePicture
-  );
+  resizeImage(user, blob, croppie, setCroppie, setShowSaveImg, setUSER);
 };
 
 const getUserIdFromUrl = () => {
