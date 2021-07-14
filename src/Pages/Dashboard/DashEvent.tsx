@@ -31,10 +31,10 @@ const DashEvent = ({
     };
   }, [USER, event, meetingType]);
   return event ? (
-    <div className="col event-parent">
+    <div className="col-md event-parent">
       <div
         className={cx(
-          "card widget-chart widget-chart2 text-left event-widget",
+          "card widget-chart widget-chart2 text-left event-widget mb-3",
           bgColor
         )}
       >

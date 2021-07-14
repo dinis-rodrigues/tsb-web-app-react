@@ -33,9 +33,9 @@ const Dashboard = () => {
               </Fragment>
             )}
           </div>
-          <div className="mt-4">
-            <DashForumThread />
-          </div>
+
+          <DashForumThread />
+
           <div className="row">
             <DashToDo user={USER} />
             <DashBoardDegreeCount />

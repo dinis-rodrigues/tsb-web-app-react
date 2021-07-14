@@ -13,7 +13,7 @@ const DashBoardDegreeCount = () => {
     setTeamCount(totalCount);
   }, [usersMetadata]);
   return (
-    <div className="col">
+    <div className="col-md">
       <div className="card-hover-shadow-2x mb-3 card">
         <div className="card-header">
           Degree Spread

@@ -5,7 +5,7 @@ import cx from "classnames";
 import Nav from "../AppNav/VerticalNavWrapper";
 
 import PerfectScrollbar from "react-perfect-scrollbar";
-import HeaderLogo from "../AppLogo/AppLogo";
+// import AppLogo from "../AppLogo/AppLogo";
 
 import { setEnableMobileMenu } from "../../reducers/ThemeOptions";
 type Props = {
@@ -14,13 +14,8 @@ type Props = {
 const AppSidebar = ({ enableMobileMenu }: Props) => {
   return (
     <Fragment>
+      <div className="sidebar-mobile-overlay"></div>
       <div className="app-sidebar sidebar-shadow">
-        <HeaderLogo />
-        <div
-          className={cx("app-header__content", {
-            "header-mobile-open": enableMobileMenu,
-          })}
-        />
         <PerfectScrollbar>
           <div className="app-sidebar__inner">
             <Nav />

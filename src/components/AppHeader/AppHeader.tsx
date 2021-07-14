@@ -5,24 +5,33 @@ import { connect } from "react-redux";
 
 // import { TransitionGroup, CSSTransition } from "react-transition-group";
 
-import HeaderLogo from "../AppLogo/AppLogo";
+import AppLogo from "../AppLogo/AppLogo";
 
 import SearchBox from "./SearchBox";
 import UserBox from "./UserBox";
 
 type Props = {
   enableMobileMenuSmall: boolean;
+  displayMobileSearch: boolean;
+  setDisplayMobileSearch: Function;
 };
 
-const Header = ({ enableMobileMenuSmall }: Props) => {
+const Header = ({
+  enableMobileMenuSmall,
+  displayMobileSearch,
+  setDisplayMobileSearch,
+}: Props) => {
   return (
     <div className="app-header header-shadow">
       <Fragment>
-        <HeaderLogo />
+        <AppLogo
+          displayMobileSearch={displayMobileSearch}
+          setDisplayMobileSearch={setDisplayMobileSearch}
+        />
 
         <div
           className={cx("app-header__content", {
-            "header-mobile-open": enableMobileMenuSmall,
+            "header-mobile-open": displayMobileSearch,
           })}
         >
           <div className="app-header-left">

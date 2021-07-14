@@ -138,7 +138,7 @@ export default function reducer(
   state: object = {
     backgroundColor: "bg-royal sidebar-text-light",
     headerBackgroundColor: "bg-strong-bliss header-text-light",
-    enableMobileMenuSmall: "",
+    enableMobileMenuSmall: false,
     enableLoginPage: false,
     userProfilePicture: "/assets/images/altcomp.png",
     enableMobileMenu: false,

@@ -17,7 +17,7 @@ const DashToDo = ({ user }: Props) => {
     // };
   }, [user]);
   return (
-    <div className="col">
+    <div className="col-md">
       <div className="card-hover-shadow-2x mb-3 card">
         <div className="card-header">Your work</div>
         <div className="scroll-area-sm">

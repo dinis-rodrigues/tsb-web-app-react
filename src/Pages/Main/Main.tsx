@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 // import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
@@ -31,6 +31,7 @@ const Main = ({
   enableMobileMenu,
 }: Props) => {
   const { displayContent } = useAuth();
+  const [displayMobileSearch, setDisplayMobileSearch] = useState(false);
   return (
     <ResizeDetector
       handleWidth
@@ -50,7 +51,12 @@ const Main = ({
             )}
           >
             {/* Header of the application */}
-            {displayContent ? <AppHeader /> : null}
+            {displayContent ? (
+              <AppHeader
+                setDisplayMobileSearch={setDisplayMobileSearch}
+                displayMobileSearch={displayMobileSearch}
+              />
+            ) : null}
             {/* Main container of the application */}
             <div className={cx({ "app-main": displayContent })}>
               {displayContent ? <AppSidebar /> : null}

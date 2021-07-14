@@ -25,12 +25,16 @@ type Props = {
   enableMobileMenu: boolean;
   enableMobileMenuSmall: boolean;
   setEnableMobileMenu: Function;
+  displayMobileSearch: boolean;
+  setDisplayMobileSearch: Function;
 };
 
 const AppMobileMenu = ({
   enableMobileMenu,
   enableMobileMenuSmall,
   setEnableMobileMenu,
+  displayMobileSearch,
+  setDisplayMobileSearch,
 }: Props) => {
   const [mobileState, setMobileState] = useState<MobileState>({
     active: false,
@@ -42,7 +46,11 @@ const AppMobileMenu = ({
   };
 
   const toggleMobileSmall = () => {
-    setEnableMobileMenuSmall(!enableMobileMenuSmall);
+    setDisplayMobileSearch(!displayMobileSearch);
+    setMobileState({
+      ...mobileState,
+      activeSecondaryMenuMobile: !mobileState.activeSecondaryMenuMobile,
+    });
   };
   return (
     <Fragment>
@@ -61,19 +69,14 @@ const AppMobileMenu = ({
         </div>
       </div>
       <div className="app-header__menu">
-        <span onClick={toggleMobileSmall}>
+        <span>
           <Button
             size="sm"
             className={cx("btn-icon btn-icon-only", {
               active: mobileState.activeSecondaryMenuMobile,
             })}
             color="primary"
-            onClick={() =>
-              setMobileState({
-                ...mobileState,
-                activeSecondaryMenuMobile: !mobileState.activeSecondaryMenuMobile,
-              })
-            }
+            onClick={() => toggleMobileSmall()}
           >
             <div className="btn-icon-wrapper">
               <FontAwesomeIcon icon={faEllipsisV} />

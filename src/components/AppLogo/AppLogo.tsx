@@ -13,9 +13,16 @@ import {
 
 type Props = {
   enableClosedSidebar: boolean;
+  displayMobileSearch: boolean;
   setEnableClosedSidebar: Function;
+  setDisplayMobileSearch: Function;
 };
-const HeaderLogo = ({ enableClosedSidebar, setEnableClosedSidebar }: Props) => {
+const AppLogo = ({
+  enableClosedSidebar,
+  setEnableClosedSidebar,
+  displayMobileSearch,
+  setDisplayMobileSearch,
+}: Props) => {
   const [active, setActive] = useState(false);
 
   const hamburgerClick = () => {
@@ -50,7 +57,10 @@ const HeaderLogo = ({ enableClosedSidebar, setEnableClosedSidebar }: Props) => {
           </div>
         </div>
       </div>
-      <AppMobileMenu />
+      <AppMobileMenu
+        displayMobileSearch={displayMobileSearch}
+        setDisplayMobileSearch={setDisplayMobileSearch}
+      />
     </Fragment>
   );
 };
@@ -70,4 +80,4 @@ const mapDispatchToProps = (dispatch: Function) => ({
     dispatch(setEnableMobileMenuSmall(enable)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(HeaderLogo);
+export default connect(mapStateToProps, mapDispatchToProps)(AppLogo);
