@@ -7,7 +7,7 @@ import emailValidate from "./emailValidate";
 import { useForm } from "react-hook-form";
 
 import { useAuth } from "../../contexts/AuthContext";
-import { withRouter, Redirect } from "react-router-dom";
+import { withRouter, Redirect, Link } from "react-router-dom";
 import { signUpUser } from "./registerUtils";
 type Props = {
   setEnableLoginPage: Function;
@@ -69,7 +69,7 @@ const Register = ({ setEnableLoginPage }: Props) => {
                             "is-valid":
                               !errors.fullName && getValues().fullName,
                           })}
-                          placeholder="Dinis Lourenço Tavares Rodrigues"
+                          placeholder="John The Greatest Doe"
                           {...register("fullName", {
                             validate: (value) => {
                               return (
@@ -225,9 +225,9 @@ const Register = ({ setEnableLoginPage }: Props) => {
                     <div className="mt-4 d-flex align-items-center text-white">
                       <h5 className="mb-0">
                         Already have an account?{" "}
-                        <a href="/login" className="text-info">
+                        <Link to="/login" className="text-info">
                           Sign in
-                        </a>
+                        </Link>
                       </h5>
                       <div className="ml-auto">
                         <button

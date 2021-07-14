@@ -6,7 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 // import firebase from "firebase/app";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { withRouter, Redirect } from "react-router-dom";
+import { withRouter, Redirect, Link } from "react-router-dom";
 
 type Props = {
   setEnableLoginPage: Function;
@@ -121,9 +121,9 @@ const Login = ({ setEnableLoginPage }: Props) => {
                           htmlFor="exampleCheck"
                           className="form-check-label"
                         >
-                          <a href="/#" className="text-white">
+                          <Link to="/resetPassword" className="text-white">
                             Recover Password
-                          </a>
+                          </Link>
                         </label>
                       </div>
                     </div>
@@ -133,9 +133,9 @@ const Login = ({ setEnableLoginPage }: Props) => {
                     <div className="col">
                       <h6 className="mb-0 text-white">
                         No account?{" "}
-                        <a href="/register" className="text-info">
+                        <Link to="/register" className="text-info">
                           Sign up now
-                        </a>
+                        </Link>
                       </h6>
                     </div>
                     <div className="col">
