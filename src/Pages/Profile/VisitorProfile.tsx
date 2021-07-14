@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { getUserImgUrl } from "../../utils/generalFunctions";
-import dinisAvatarLarge from "../../assets/images/alt.png";
+import altUserImgLarge from "../../assets/images/altUserImg.png";
 import { getUserIdFromUrl } from "./profileUtils";
 import CoursesTable from "./CoursesTable";
 import UserAttendance from "./UserAttendance";
 
 const VisitorProfile = () => {
   const { usersMetadata } = useAuth();
-  const [userImage, setUserImage] = useState(dinisAvatarLarge);
+  const [userImage, setUserImage] = useState(altUserImgLarge);
 
   const userId = getUserIdFromUrl();
   const userInfo = usersMetadata[userId].pinfo;
@@ -36,7 +36,7 @@ const VisitorProfile = () => {
                           id="croppie-img"
                           className="croppie-img avatar-h avatar-w"
                           src={userImage}
-                          onError={(e: any) => setUserImage(dinisAvatarLarge)}
+                          onError={(e: any) => setUserImage(altUserImgLarge)}
                           alt=""
                         />
                       </div>

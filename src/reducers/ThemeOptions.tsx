@@ -140,7 +140,7 @@ export default function reducer(
     headerBackgroundColor: "bg-strong-bliss header-text-light",
     enableMobileMenuSmall: false,
     enableLoginPage: false,
-    userProfilePicture: "/assets/images/altcomp.png",
+    userProfilePicture: "/assets/images/altUserImgComp.png",
     enableMobileMenu: false,
     enableBackgroundImage: true,
     enableClosedSidebar: false,

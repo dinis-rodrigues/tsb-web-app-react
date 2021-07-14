@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { setUserProfilePicture } from "../../reducers/ThemeOptions";
 import { connect } from "react-redux";
-import { v4 as uuid } from "uuid";
 import cx from "classnames";
 import {
   defaultInfo,

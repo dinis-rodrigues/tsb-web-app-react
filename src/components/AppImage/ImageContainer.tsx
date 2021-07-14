@@ -1,6 +1,6 @@
 import { useState } from "react";
-import dinisAvatar from "../../assets/images/altcomp.png";
-import dinisFullAvatar from "../../assets/images/alt.png";
+import altUserImg from "../../assets/images/altUserImgComp.png";
+import dinisFullAvatar from "../../assets/images/altUserImg.png";
 
 type Props = {
   imageSrc: string;
@@ -30,7 +30,7 @@ const ImageContainer = ({
       src={image}
       onError={() => {
         // console.log("On Error");
-        compressed ? setImage(dinisAvatar) : setImage(dinisFullAvatar);
+        compressed ? setImage(altUserImg) : setImage(dinisFullAvatar);
       }}
     ></img>
   );

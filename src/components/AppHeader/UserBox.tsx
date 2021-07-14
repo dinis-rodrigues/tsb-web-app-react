@@ -1,6 +1,5 @@
 import { Fragment } from "react";
 import { Link } from "react-router-dom";
-import { v4 as uuid } from "uuid";
 
 import {
   DropdownToggle,
@@ -11,8 +10,6 @@ import {
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import dinisAvatar from "../../assets/images/altcomp.png";
 
 import { useAuth } from "../../contexts/AuthContext";
 import { connect } from "react-redux";
@@ -67,8 +64,8 @@ const UserBox = ({ userProfilePicture }: Props) => {
                   {/* <img
                     width={42}
                     className="rounded-circle"
-                    src={userProfilePicture} //{dinisAvatar}
-                    onError={(el: any) => (el.src = dinisAvatar)}
+                    src={userProfilePicture} //{altUserImg}
+                    onError={(el: any) => (el.src = altUserImg)}
                     alt=""
                   /> */}
                   <ImageContainer

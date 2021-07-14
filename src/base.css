@@ -11164,7 +11164,7 @@ button,
   background: url(assets/images/logo-inverse.png); */
   height: 15px;
   width: 184px;
-  background: url(assets/images/tsb_text_black.png);
+  background: url(assets/images/logo.png);
   background-size: 184px 15px;
 }
 
@@ -22096,7 +22096,7 @@ legend {
 .app-logo {
   height: 15px;
   width: 185px;
-  background: url(assets/images/tsb_text_black.png);
+  background: url(assets/images/logo.png);
   background-size: 184px 15px;
 }
 
@@ -22112,7 +22112,7 @@ legend {
 .app-logo-w {
   height: 15px;
   width: 184px;
-  background: url(assets/images/tsb_text_white.png);
+  background: url(assets/images/logo-inverse.png);
   background-size: 184px 15px;
 }
 
@@ -45092,7 +45092,7 @@ outline-style: none !important;
 } */
 .tsb-background {
   background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
-    url("assets/images/drone_boat.jpg") center center no-repeat;
+    url("assets/images/loginBackground.jpg") center center no-repeat;
   background-size: cover;
 }
 
@@ -45381,7 +45381,7 @@ input:-webkit-autofill:active
 /*********************/
 .maintenance {
   background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
-    url("assets/images/drone_boat.jpg") center center no-repeat;
+    url("assets/images/loginBackground.jpg") center center no-repeat;
   background-size: cover;
 }
 
