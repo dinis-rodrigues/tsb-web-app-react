@@ -52,7 +52,6 @@ const registerUser = (email: string, password: string): Promise<any> => {
  * @returns
  */
 const loginUser = (email: string, password: string, rememberMe: boolean) => {
-  console.log("remember ", rememberMe);
   firebase
     .auth()
     .setPersistence(
@@ -93,9 +92,9 @@ const setDisplayApplication = (
     const displayLogin = !user && !maintenanceIsOpen;
     const displayMaintenance = maintenanceIsOpen && !isAdminUser;
 
-    console.log("Display content", displayContent);
-    console.log("Display login", displayLogin);
-    console.log("Display maintenance", displayMaintenance);
+    // console.log("Display content", displayContent);
+    // console.log("Display login", displayLogin);
+    // console.log("Display maintenance", displayMaintenance);
 
     setDisplayContent(displayContent);
     setDisplayMaintenance(displayMaintenance);

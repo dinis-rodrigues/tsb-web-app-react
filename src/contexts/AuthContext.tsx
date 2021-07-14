@@ -105,7 +105,7 @@ export function AuthProvider({ children }: Props) {
           });
           // Checks if the user is admin or not
           let userAdmin = userHasAdminPermissions(userInfo);
-          console.log("Admin user", userAdmin);
+          // console.log("Admin user", userAdmin);
           setIsAdminUser(userAdmin);
           setDisplayApplication(
             userInfo,

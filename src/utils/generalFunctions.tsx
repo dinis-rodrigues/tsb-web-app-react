@@ -655,7 +655,7 @@ const objectExists = (obj: {}) => {
  * @returns
  */
 const userHasPermission = (user: userContext | null, matchUserId?: string) => {
-  console.log("Checking user", user);
+  // console.log("Checking user", user);
   if (!user) return false;
   if (matchUserId && user.id === matchUserId) return true;
   if (
