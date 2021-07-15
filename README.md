@@ -26,14 +26,14 @@
   <p align="center">
     An open-source project management application built with ReactJS and Firebase
     <br />
-    <a href="https://github.com/dinis-rodrigues/tsb-web-app-react"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/dinis-rodrigues/tsb-web-app-react" target="_blank"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://web.ist.utl.pt/~ist179089/projects/tsbAppDemo/">View Demo</a>
+    <a href="https://web.ist.utl.pt/~ist179089/projects/tsbAppDemo/" target="_blank">View Demo</a>
     ·
-    <a href="https://github.com/dinis-rodrigues/tsb-web-app-react/issues">Report Bug</a>
+    <a href="https://github.com/dinis-rodrigues/tsb-web-app-react/issues" target="_blank">Report Bug</a>
     ·
-    <a href="https://github.com/dinis-rodrigues/tsb-web-app-react/issues">Request Feature</a>
+    <a href="https://github.com/dinis-rodrigues/tsb-web-app-react/issues" target="_blank">Request Feature</a>
   </p>
 </p>
 
