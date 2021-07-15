@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { db } from "../../../config/firebase";
-import { User, UsersDB } from "../../../interfaces";
+import { User, UserMetadata, UsersDB } from "../../../interfaces";
 import cx from "classnames";
 import { v4 as uuid } from "uuid";
 import { sortUsersDb } from "../attendanceUtils";
 import OverallAttendanceRow from "./OverallAttendanceRow";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const getRows = (sortedUsers: [string, User][], usersDb: UsersDB) => {
   return sortedUsers.map(([userId, user], idx) => (
@@ -18,31 +19,23 @@ const getRows = (sortedUsers: [string, User][], usersDb: UsersDB) => {
 };
 
 const OverallAttendance = () => {
-  const [usersDb, setUsersDb] = useState<UsersDB>({});
+  const { usersMetadata } = useAuth();
+  const [usersDb, setUsersDb] = useState<UserMetadata>({});
   const [sortedUsers, setSortedUsers] = useState<[string, User][]>([]);
 
   useEffect(() => {
-    // Retrieve current events
-    // console.log("rendering tab");
-
     // Retrieve users metadata with statistics
-    db.ref(`private/users`)
-      .once("value")
-      .then((snapshot) => {
-        let retrievedUsers: UsersDB = snapshot.val();
-        if (retrievedUsers) {
-          setUsersDb(retrievedUsers);
-          // build list of users whose department match the meeting type
-          const usersToSort: [string, User][] = [];
-          Object.entries(retrievedUsers).forEach(([userId, user]) => {
-            if (user.pinfo && user.pinfo.department && user.pinfo.inTeam) {
-              usersToSort.push([userId, user]);
-            }
-          });
-          let usersSorted = sortUsersDb(usersToSort);
-          setSortedUsers(usersSorted);
-        }
-      });
+    setUsersDb(usersMetadata);
+    // build list of users whose department match the meeting type
+    const usersToSort: [string, User][] = [];
+    Object.entries(usersMetadata).forEach(([userId, user]) => {
+      if (user.pinfo && user.pinfo.department && user.pinfo.inTeam) {
+        usersToSort.push([userId, user]);
+      }
+    });
+    let usersSorted = sortUsersDb(usersToSort);
+    setSortedUsers(usersSorted);
+
     return () => {
       db.ref(`private/users`).off("value");
     };

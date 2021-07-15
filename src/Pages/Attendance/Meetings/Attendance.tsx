@@ -5,9 +5,11 @@ import { db } from "../../../config/firebase";
 import { remainingHours } from "../../../utils/generalFunctions";
 import { allowedMeetingType, isCorrectType } from "../attendanceUtils";
 import AttendanceSection from "./AttendanceSection";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const Attendance = () => {
-  // const [activeTab, setActiveTab] = useState("1");
+  const { usersMetadata } = useAuth();
+
   const hourThreshold = 1;
   const [ongoingEvents, setOngoingEvents] = useState<
     [string, EventInformation][]
@@ -38,15 +40,9 @@ const Attendance = () => {
       if (eventsToStore) setOngoingEvents(eventsToStore);
     });
     // Retrieve Users metadata
-    db.ref(`private/users`)
-      .once("value")
-      .then((snapshot) => {
-        let retrievedUsers = snapshot.val();
-        if (retrievedUsers) setUsersDb(retrievedUsers);
-      });
+    setUsersDb(usersMetadata);
     return () => {
       db.ref("private/events/current").off("value");
-      db.ref(`private/users`).off("value");
       // console.log("unmounting");
     };
   }, []);
