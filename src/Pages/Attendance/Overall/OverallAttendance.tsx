@@ -39,7 +39,7 @@ const OverallAttendance = () => {
     return () => {
       db.ref(`private/users`).off("value");
     };
-  }, []);
+  }, [usersMetadata]);
   return (
     <div className="app-main__outer">
       <div className="app-main__inner">

@@ -45,7 +45,7 @@ const Attendance = () => {
       db.ref("private/events/current").off("value");
       // console.log("unmounting");
     };
-  }, []);
+  }, [usersMetadata]);
   return (
     <div className="app-main__outer">
       <div className="app-main__inner">
