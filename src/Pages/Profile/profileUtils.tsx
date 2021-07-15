@@ -613,7 +613,7 @@ const setDepartmentPositions = (
  */
 const getAdditionalAdminPositions = (user: userContext | null) => {
   if (!user || !userHasPermission(user)) return [];
-  if (user.position === "Team Leader") {
+  if (user.position === "Team Leader" || user.position === "God") {
     return [
       { value: "Team Leader", label: "Team Leader" },
       { value: "Head of Department", label: "Head of Department" },
