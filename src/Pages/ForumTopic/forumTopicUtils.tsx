@@ -7,10 +7,12 @@ import {
   ThreadCreation,
   ThreadMetadata,
   userContext,
+  UserMetadata,
 } from "../../interfaces";
 import {
   getDecodedString,
   getEncodedString,
+  sendNotification,
   toastrMessage,
   userHasPermission,
 } from "../../utils/generalFunctions";
@@ -167,6 +169,7 @@ const createNewThread = (
   encodedTopicName: string,
   user: userContext | null,
   forumTopicMetadata: [string, ThreadMetadata][],
+  usersMetadata: UserMetadata,
   setNewThreadInfo: Function,
   setIsCreateThreadModalOpen: Function
 ) => {
@@ -246,9 +249,24 @@ const createNewThread = (
         user
       );
       successCreatingThreadMessage("You created a new thread!");
+
       // clear modal
       setNewThreadInfo({ title: "", label: {}, description: "" });
       setIsCreateThreadModalOpen(false);
+      // Send notifications to all users in application
+      let threadUrl = `forum/s/${encodedSectionName}/topic/${encodedTopicName}/thread/${encodedThreadName}`;
+      Object.entries(usersMetadata).forEach(([userId, userInfo]) => {
+        sendNotification(
+          userId,
+          user.id,
+          newThreadInfo.title,
+          "A new thread was created, check it out",
+          threadUrl,
+          null,
+          "generalThread",
+          "info"
+        );
+      });
     });
 };
 

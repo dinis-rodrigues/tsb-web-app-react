@@ -9,6 +9,7 @@ import {
   newThreadTitleHandler,
   createNewThread,
 } from "./forumTopicUtils";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   isCreateThreadModalOpen: boolean;
@@ -31,6 +32,7 @@ const ForumCreateThreadModal = ({
   encodedTopicName,
   user,
 }: Props) => {
+  const { usersMetadata } = useAuth();
   const quillModules = {
     // syntax: true,
     toolbar: [
@@ -75,6 +77,7 @@ const ForumCreateThreadModal = ({
                   encodedTopicName,
                   user,
                   forumTopicMetadata,
+                  usersMetadata,
                   setNewThreadInfo,
                   setIsCreateThreadModalOpen
                 )
