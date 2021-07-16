@@ -295,7 +295,7 @@ const checkEventPeriodicity = () => {
             let newEvent = { ...event, date: newDate };
             // Create new event in current events
             db.ref("private/events/current/").push(newEvent);
-          } else if (!event.weeks) {
+          } else if (today.getTime() > toChange.getTime() && !event.weeks) {
             // move event if it's not periodic
             db.ref("private/events/current").child(eventId).remove();
             db.ref("private/events/history").child(eventId).set(event);
@@ -712,18 +712,68 @@ const saveEvent = (
   if (!user) return;
   // update the event in the database
   if (currEventKey) {
-    db.ref("private/events/current").child(currEventKey).update(currEventInfo);
+    if (isEventInPast(currEventInfo)) {
+      let historyEvent: EventInformation = {
+        ...currEventInfo,
+        isHistory: true,
+      };
+      db.ref("private/events/history").child(currEventKey).update(historyEvent);
+    } else {
+      db.ref("private/events/current")
+        .child(currEventKey)
+        .update(currEventInfo);
+    }
+
     toastrMessage("Ok!", "You successfully updated the event", "info");
   } else {
     // If we are creating a new event
     currEventInfo.createdBy = user.id;
-    db.ref(`private/events/current`).push(currEventInfo);
+    if (isEventInPast(currEventInfo)) {
+      let historyEvent: EventInformation = {
+        ...currEventInfo,
+        isHistory: true,
+      };
+      db.ref(`private/events/history`).push(historyEvent);
+    } else {
+      db.ref(`private/events/current`).push(currEventInfo);
+    }
+
     toastrMessage("Nice!", "You created a brand new event", "success");
   }
 
   setIsModalOpen(false);
   setCurrEventInfo(defaultEventInfo);
   setCurrEventKey("");
+};
+
+/**
+ * Check if the event is currently in the past
+ * @param event
+ * @returns
+ */
+const isEventInPast = (event: EventInformation) => {
+  let hoursOffset = 2;
+  // Current Event Date
+  var toChange = inputToDate(event.date);
+  toChange.setHours(parseInt(event.hours));
+  toChange.setMinutes(parseInt(event.minutes));
+
+  // Only change event if it passes 2 hours from start, allows for late
+  // arrivals at meetings
+  var today = new Date();
+  var todaysHours = today.getHours();
+  today.setHours(todaysHours - hoursOffset);
+
+  // // console.log(today);
+  try {
+    if (event.weeks && today.getTime() > toChange.getTime()) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch {
+    return false;
+  }
 };
 
 /**
