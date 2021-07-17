@@ -57,7 +57,7 @@ function App() {
       >
         <Switch>
           <Route exact path="/login" component={Login} />
-          <Route path="/resetPassword" component={ResetPassword} />
+          {/* <Route path="/resetPassword" component={ResetPassword} /> */}
           <Route
             exact
             path="/resetPasswordEmail"
