@@ -370,7 +370,7 @@ const UserManagementModal = ({
             value={info.iban || ""}
             onValueChange={(e) => handleInputMask(e, "iban", setInfo)}
             className="form-control text-center"
-            format="PT50 #### #### #### #### ##"
+            format="PT50 #### #### ########### ##"
             mask="_"
             allowEmptyFormatting
           />
