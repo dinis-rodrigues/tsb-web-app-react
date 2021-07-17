@@ -635,7 +635,8 @@ const submitThreadReply = (
   encodedTopicName: string,
   encodedThreadName: string,
   threadInfo: Thread,
-  setIsForumThreadReplyModalOpen: Function
+  setIsForumThreadReplyModalOpen: Function,
+  setReplyText: Function
 ) => {
   if (!user) return;
   let reply: ThreadReplyInfo = {
@@ -677,6 +678,7 @@ const submitThreadReply = (
     null
   );
   setIsForumThreadReplyModalOpen(false);
+  setReplyText("");
 
   // send notification to watchlist of the thread
   Object.entries(threadInfo.watchList).forEach(([sendTo, userName]) => {

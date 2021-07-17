@@ -62,7 +62,8 @@ const ForumThreadReplyModal = ({
                   encodedTopicName,
                   encodedThreadName,
                   threadInfo,
-                  setIsForumThreadReplyModalOpen
+                  setIsForumThreadReplyModalOpen,
+                  setReplyText
                 )
               }
             />
