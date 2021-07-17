@@ -6,6 +6,8 @@ import {
   userContext,
 } from "../interfaces";
 import firebase from "firebase/app";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
 
 /**
  * Get and set application settings state
@@ -44,7 +46,7 @@ const registerUser = (email: string, password: string): Promise<any> => {
 
   return auth.createUserWithEmailAndPassword(email, password);
 };
-
+const swalAlert = withReactContent(Swal);
 /**
  * Logins the user with email and password to the application
  * @param email
@@ -61,6 +63,14 @@ const loginUser = (email: string, password: string, rememberMe: boolean) => {
     )
     .then(() => {
       return auth.signInWithEmailAndPassword(email, password);
+    })
+    .catch((error) => {
+      // Display alert with the login error
+      swalAlert.fire({
+        title: "Ooops!",
+        icon: "error",
+        html: `<p>${error.message}</p>`, // prettier message
+      });
     });
 };
 
