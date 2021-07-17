@@ -11,6 +11,7 @@ import {
   extendDate,
   getHoursInStringFromTimestamp,
   getMinutesInStringFromTimestamp,
+  getUserProfileLink,
 } from "../../utils/generalFunctions";
 import {
   toggleThreadLikedBy,
@@ -117,13 +118,13 @@ const DashForumThread = () => {
                 />
 
                 <div className="media-body ml-3">
-                  <Link to="userProfile">
-                    {threadInformation.createdByName}
+                  <Link to={getUserProfileLink(threadInformation.createdBy)}>
+                    {usersMetadata[threadInformation.createdBy].pinfo.name}
                   </Link>
                   {" · "}
                   {USER &&
                     usersMetadata &&
-                    usersMetadata[USER.id].pinfo.position}
+                    usersMetadata[threadInformation.createdBy].pinfo.position}
                   <div className="text-muted small no-text-transform">
                     {/* Created at information */}
                     {extendDate(threadInformation.createdAt)} &nbsp;·&nbsp;

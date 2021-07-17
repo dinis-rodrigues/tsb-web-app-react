@@ -7,6 +7,7 @@ import {
   extendDate,
   getHoursInStringFromTimestamp,
   getMinutesInStringFromTimestamp,
+  getUserProfileLink,
   userHasPermission,
 } from "../../utils/generalFunctions";
 import {
@@ -56,7 +57,7 @@ const ThreadReply = ({
               {getHoursInStringFromTimestamp(threadReply.replyTimestamp)}:
               {getMinutesInStringFromTimestamp(threadReply.replyTimestamp)}
             </div>
-            <Link to="/userProfile">
+            <Link to={getUserProfileLink(threadReply.replyBy)}>
               {usersMetadata[threadReply.replyBy].pinfo.name}
             </Link>
             {" · "}

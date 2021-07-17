@@ -1,6 +1,11 @@
 import { TopicInformation } from "../../interfaces";
-import { dateDifference, getDecodedString } from "../../utils/generalFunctions";
+import {
+  dateDifference,
+  getDecodedString,
+  getUserProfileLink,
+} from "../../utils/generalFunctions";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   encodedTopicName: string;
@@ -13,6 +18,7 @@ const ForumTopicRow = ({
   encodedTopicName,
   topicInformation,
 }: Props) => {
+  const { usersMetadata } = useAuth();
   return (
     <div className="card-body py-3">
       <div className="row no-gutters align-items-center">
@@ -39,8 +45,14 @@ const ForumTopicRow = ({
                 <div className="text-muted small text-truncate">
                   {dateDifference(topicInformation.latestUpdateTimestamp)}{" "}
                   &nbsp;·&nbsp;
-                  <Link to="/userProfile" className="text-muted">
-                    {topicInformation.latestUserNameUpdate}
+                  <Link
+                    to={getUserProfileLink(topicInformation.latestUserUpdate)}
+                    className="text-muted"
+                  >
+                    {
+                      usersMetadata[topicInformation.latestUserUpdate].pinfo
+                        .name
+                    }
                   </Link>
                 </div>
               </div>

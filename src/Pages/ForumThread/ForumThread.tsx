@@ -10,6 +10,7 @@ import {
   getAndSetAllUsersMetadata,
   getHoursInStringFromTimestamp,
   getMinutesInStringFromTimestamp,
+  getUserProfileLink,
   userHasPermission,
 } from "../../utils/generalFunctions";
 import {
@@ -232,13 +233,13 @@ const ForumThread = (props: any) => {
                   />
 
                   <div className="media-body ml-3">
-                    <Link to="userProfile">
-                      {threadInformation.createdByName}
+                    <Link to={getUserProfileLink(threadInformation.createdBy)}>
+                      {usersMetadata[threadInformation.createdBy].pinfo.name}
                     </Link>
                     {" · "}
                     {USER &&
                       usersMetadata &&
-                      usersMetadata[USER.id].pinfo.position}
+                      usersMetadata[threadInformation.createdBy].pinfo.position}
                     <div className="text-muted small no-text-transform">
                       {/* Created at information */}
                       {extendDate(threadInformation.createdAt)} &nbsp;·&nbsp;
@@ -338,7 +339,7 @@ const ForumThread = (props: any) => {
                   </span>
                   <UncontrolledTooltip target="numWatches" placement="top">
                     {usersWhoLikedOrWatchedTooltipList(
-                      threadInformation.watchList
+                      threadInformation.viewedBy
                     )}
                   </UncontrolledTooltip>
                 </div>
