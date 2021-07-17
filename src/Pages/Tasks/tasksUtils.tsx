@@ -329,7 +329,7 @@ const submitComment = (
   };
 
   // Push the comment to DB
-  let commentRef = `${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}`;
+  let commentRef = `private/${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}`;
   db.ref(commentRef).child("comments").push(comment);
   // Increment comment count on task db, and in state
   db.ref(commentRef)
@@ -689,11 +689,12 @@ const goToBoard = (
   setColumns: Function
 ) => {
   if (!option || typeof option !== "string") return;
-  let boardString = option;
+  let encodedBoardString = getEncodedString(option); // this is the decoded string
+  if (currBoard === encodedBoardString) return;
   // Remove current board listener
   db.ref(`private/${departmentBoard}/b/${currBoard}`).off("value");
   setColumns([]);
-  setRedirectToBoard(getDecodedString(boardString));
+  setRedirectToBoard(encodedBoardString);
 };
 
 /** Deletes the current board, can't be general

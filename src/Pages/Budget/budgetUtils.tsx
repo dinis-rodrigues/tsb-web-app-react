@@ -429,7 +429,7 @@ const submitComment = (
     createdByName: user.name,
   };
   // Push the comment to DB
-  let commentRef = `bom/${season}/${materialInfo.id}`;
+  let commentRef = `private/bom/${season}/${materialInfo.id}`;
   db.ref(commentRef).child("comments").push(comment);
   // Increment comment count on task db, and in state
   db.ref(commentRef)
