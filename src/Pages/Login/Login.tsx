@@ -13,7 +13,6 @@ type Props = {
 };
 
 const Login = ({ setEnableLoginPage }: Props) => {
-  const swalAlert = withReactContent(Swal);
   const { loginUser, displayContent, displayMaintenance } = useAuth();
 
   // State of input listener
@@ -33,16 +32,7 @@ const Login = ({ setEnableLoginPage }: Props) => {
 
   async function onLogin(e: any) {
     e.preventDefault();
-    try {
-      await loginUser(inputVal.email, inputVal.password, inputVal.rememberMe);
-    } catch (error) {
-      // console.log(error);
-      swalAlert.fire({
-        title: "Ooops!",
-        icon: "error",
-        html: `<p>${error.message}</p>`, // prettier message
-      });
-    }
+    await loginUser(inputVal.email, inputVal.password, inputVal.rememberMe);
   }
 
   return (
@@ -53,7 +43,9 @@ const Login = ({ setEnableLoginPage }: Props) => {
             <div className="modal-dialog w-100 mx-auto">
               <div className="modal-content glass-morph el-up">
                 <div className="modal-body">
-                  <div className="app-logo-w mx-auto mb-3"></div>
+                  <Link to="/">
+                    <div className="app-logo-w mx-auto mb-3"></div>
+                  </Link>
                   <div className="h5 modal-title text-center text-white">
                     <h4 className="mt-2">
                       <div>Welcome back</div>
@@ -121,7 +113,7 @@ const Login = ({ setEnableLoginPage }: Props) => {
                           htmlFor="exampleCheck"
                           className="form-check-label"
                         >
-                          <Link to="/resetPassword" className="text-white">
+                          <Link to="/resetPasswordEmail" className="text-white">
                             Recover Password
                           </Link>
                         </label>
@@ -129,24 +121,20 @@ const Login = ({ setEnableLoginPage }: Props) => {
                     </div>
                   </div>
                   <div className="divider"></div>
-                  <div className="row">
-                    <div className="col">
-                      <h6 className="mb-0 text-white">
-                        No account?{" "}
-                        <Link to="/register" className="text-info">
-                          Sign up now
-                        </Link>
-                      </h6>
-                    </div>
-                    <div className="col">
-                      <div className="float-right">
-                        <button
-                          className="btn btn-info btn-shadow btn-hover-shine btn-lg cursor-pointer"
-                          onClick={onLogin}
-                        >
-                          Login
-                        </button>
-                      </div>
+                  <div className="mt-4 d-flex align-items-center text-white">
+                    <h5 className="mb-0">
+                      No account?{" "}
+                      <Link to="/register" className="text-info">
+                        Sign up now
+                      </Link>
+                    </h5>
+                    <div className="ml-auto">
+                      <button
+                        onClick={onLogin}
+                        className="btn-wide btn-pill btn-shadow btn-hover-shine btn btn-info btn-lg"
+                      >
+                        Login
+                      </button>
                     </div>
                   </div>
                 </div>

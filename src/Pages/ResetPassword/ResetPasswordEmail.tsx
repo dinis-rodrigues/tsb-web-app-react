@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import emailValidate from "../Register/emailValidate";
 
 import { useAuth } from "../../contexts/AuthContext";
-import { withRouter, Redirect } from "react-router-dom";
+import { withRouter, Redirect, Link } from "react-router-dom";
 import { sendResetLink } from "./resetPasswordUtils";
 type Props = {
   setEnableLoginPage: Function;
@@ -33,7 +33,9 @@ const ResetPasswordEmail = ({ setEnableLoginPage }: Props) => {
             <div className="modal-dialog modal-lg w-100 mx-auto">
               <div className="modal-content glass-morph el-up">
                 <div className="modal-body">
-                  <div className="app-logo-w mx-auto mb-3"></div>
+                  <Link to="/">
+                    <div className="app-logo-w mx-auto mb-3"></div>
+                  </Link>
                   <div className="h5 modal-title text-center text-white">
                     <h4>
                       <div>Reset Password</div>
