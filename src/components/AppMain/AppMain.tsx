@@ -18,9 +18,9 @@ const Forum = lazy(() => import("../../Pages/Forum/Forum"));
 const ForumTopic = lazy(() => import("../../Pages/ForumTopic/ForumTopic"));
 const ForumThread = lazy(() => import("../../Pages/ForumThread/ForumThread"));
 const Login = lazy(() => import("../../Pages/Login/Login"));
-const ResetPassword = lazy(
-  () => import("../../Pages/ResetPassword/ResetPassword")
-);
+// const ResetPassword = lazy(
+//   () => import("../../Pages/ResetPassword/ResetPassword")
+// );
 const ResetPasswordEmail = lazy(
   () => import("../../Pages/ResetPassword/ResetPasswordEmail")
 );

@@ -2,10 +2,6 @@ import { connect } from "react-redux";
 import { useState, Fragment } from "react";
 import { setEnableLoginPage } from "../../reducers/ThemeOptions";
 import { useAuth } from "../../contexts/AuthContext";
-// import { auth } from "../../config/firebase";
-// import firebase from "firebase/app";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 import { withRouter, Redirect, Link } from "react-router-dom";
 
 type Props = {
