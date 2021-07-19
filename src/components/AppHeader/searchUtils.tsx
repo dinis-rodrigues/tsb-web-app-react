@@ -18,6 +18,13 @@ const sortSearchedUsers = (
   });
 };
 
+/**
+ * Filters the ssrach based on name, department and position
+ * @param usersMetadata
+ * @param searchText
+ * @param setSearchText
+ * @param setSearchedUsers
+ */
 const getUsersSearchList = (
   usersMetadata: UserMetadata,
   searchText: string,
@@ -32,6 +39,9 @@ const getUsersSearchList = (
         normalizedString(searchText.toLowerCase())
       ) ||
       normalizedString(user.pinfo.department!.toLowerCase()).includes(
+        normalizedString(searchText.toLowerCase())
+      ) ||
+      normalizedString(user.pinfo.position!.toLowerCase()).includes(
         normalizedString(searchText.toLowerCase())
       )
     );

@@ -26,7 +26,10 @@ const UsersDropdown = ({
     >
       <div className="tab-content">
         <div className={cx("tab-pane", { active: dropdownOpen })}>
-          <ul className={"todo-list-wrapper list-group list-group-flush"}>
+          <ul
+            className={"todo-list-wrapper list-group list-group-flush"}
+            style={{ maxHeight: "500px", overflow: "scroll" }} // scrollable users
+          >
             {searchedUsers.map(([userId, user]) => (
               <li
                 key={userId}
