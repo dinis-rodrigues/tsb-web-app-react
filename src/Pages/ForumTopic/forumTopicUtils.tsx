@@ -254,7 +254,7 @@ const createNewThread = (
       setNewThreadInfo({ title: "", label: {}, description: "" });
       setIsCreateThreadModalOpen(false);
       // Send notifications to all users in application
-      let threadUrl = `forum/s/${encodedSectionName}/topic/${encodedTopicName}/thread/${encodedThreadName}`;
+      let threadUrl = `/forum/s/${encodedSectionName}/topic/${encodedTopicName}/thread/${encodedThreadName}`;
       Object.entries(usersMetadata).forEach(([userId, userInfo]) => {
         sendNotification(
           userId,

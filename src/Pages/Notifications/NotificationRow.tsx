@@ -21,6 +21,9 @@ const NotificationRow = ({ notification }: Props) => {
   // Get the time
   const hours = ("0" + notifDate.getHours()).slice(-2);
   const minutes = ("0" + notifDate.getMinutes()).slice(-2);
+
+  let notifUrl = notification.urlPath;
+  if (notifUrl[0] !== "/") notifUrl = "/" + notifUrl;
   return notification ? (
     <div className="vertical-timeline-item vertical-timeline-element notification-list">
       <div className="vertical-timeline-element-icon bounce-in">
@@ -28,7 +31,7 @@ const NotificationRow = ({ notification }: Props) => {
           <i className={cx("icon-gradient", icon, iconColor)}></i>
         </div>
       </div>
-      <Link to={notification.urlPath} className="notification-link">
+      <Link to={notifUrl} className="notification-link">
         <div className="vertical-timeline-element-content bounce-in">
           <h4 className="timeline-title">{notification.title}</h4>
           <p>{notification.description}</p>
