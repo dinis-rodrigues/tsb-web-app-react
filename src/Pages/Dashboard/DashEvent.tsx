@@ -40,7 +40,9 @@ const DashEvent = ({
       >
         <div className="widget-chart-content text-white">
           <div className="widget-chart-flex">
-            <div className="widget-title">{event && event.type}</div>
+            <div className="widget-title">
+              {event && event.type === "Competition" ? event.title : event.type}
+            </div>
           </div>
           <div className="text-muted">
             {extendDate(event.date)}, at {event.hours}:{event.minutes}
