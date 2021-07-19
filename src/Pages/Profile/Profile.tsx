@@ -10,6 +10,8 @@ import {
   discardInformation,
   handleUpload,
   sendImgToServer,
+  getCoverBgColor,
+  getCoverBorderColor,
 } from "./profileUtils";
 import PersonalInformationOptions from "./PersonalInformationOptions";
 import CoursesTable from "./CoursesTable";
@@ -27,7 +29,7 @@ type Props = {
 };
 
 const Profile = ({ setUserProfilePicture }: Props) => {
-  const { USER, setUSER } = useAuth();
+  const { USER, setUSER, departmentsWDesc } = useAuth();
   const [info, setInfo] = useState<PersonalInformation>(defaultInfo); // current info
   const [prevInfo, setPrevInfo] = useState<PersonalInformation>(defaultInfo); // save info on edit (restore on discard)
   const [disabledInput, setDisabledInput] = useState(true); // enalbe/disable on edit
@@ -37,6 +39,9 @@ const Profile = ({ setUserProfilePicture }: Props) => {
   // ------------
   const [showSaveImg, setShowSaveImg] = useState(false);
   const [croppie, setCroppie] = useState<Croppie>();
+
+  const coverBgColor = getCoverBgColor(USER, departmentsWDesc);
+  const coverBorderColor = getCoverBorderColor(USER, departmentsWDesc);
 
   useEffect(() => {
     // Update the info state on first render
@@ -76,16 +81,15 @@ const Profile = ({ setUserProfilePicture }: Props) => {
       <div className="app-main__inner">
         <div className="no-gutters row">
           <div className="col">
-            <div className="card-hover-shadow profile-responsive card-border border-success mb-3 card">
+            <div
+              className="card-hover-shadow profile-responsive card-border mb-3 card"
+              style={{ borderColor: coverBorderColor }}
+            >
               {/* Avatar and brief  description */}
               <div className="dropdown-menu-header">
-                <div className="dropdown-menu-header-inner bg-vicious-stance">
+                <div className={`dropdown-menu-header-inner ${coverBgColor}`}>
                   <div className="menu-header-content">
-                    <div
-                      className={cx("avatar-icon-wrapper mb-2", {
-                        "btn-hover-shine": disabledInput,
-                      })}
-                    >
+                    <div className={cx("avatar-icon-wrapper mb-2")}>
                       <div
                         id="PImgContainer"
                         className={cx("rounded w-fit h-fit", {

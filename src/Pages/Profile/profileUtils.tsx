@@ -979,6 +979,46 @@ const getDepartmentOptions = (departments: Departments) => {
   return departmentOptions;
 };
 
+/**
+ * Retrieves the gradient color of the cover
+ * @param user
+ * @param departmentsWDesc
+ * @returns
+ */
+const getCoverBgColor = (
+  user: userContext | PersonalInformation | null,
+  departmentsWDesc: Departments
+) => {
+  if (!user) return;
+  let bgColor = "bg-vicious-stance";
+  try {
+    bgColor = departmentsWDesc[user.department!].gradientColor;
+  } catch (error) {
+    return bgColor;
+  }
+  return bgColor;
+};
+
+/**
+ * Retrieves the profile border color
+ * @param user
+ * @param departmentsWDesc
+ * @returns
+ */
+const getCoverBorderColor = (
+  user: userContext | PersonalInformation | null,
+  departmentsWDesc: Departments
+) => {
+  if (!user) return;
+  let bdColor = "#6c757d";
+  try {
+    bdColor = departmentsWDesc[user.department!].color;
+  } catch (error) {
+    return bdColor;
+  }
+  return bdColor;
+};
+
 export {
   killCroppie,
   handleImage,
@@ -1009,4 +1049,6 @@ export {
   getUserIdFromUrl,
   handleInputMask,
   getDepartmentOptions,
+  getCoverBgColor,
+  getCoverBorderColor,
 };
