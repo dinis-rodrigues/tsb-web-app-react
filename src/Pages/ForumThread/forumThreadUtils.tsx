@@ -1011,11 +1011,12 @@ const usersWhoLikedOrWatchedTooltipList = (
         {userName}
       </p>
     ));
-    return tooltipStr.push(
+    tooltipStr.push(
       <p key={uuid()} className="tooltip-break">
         And {usersLength - 19} more
       </p>
     );
+    return tooltipStr;
   } else {
     return usersList.map(([userId, userName]) => (
       <p key={uuid()} className="tooltip-break">
