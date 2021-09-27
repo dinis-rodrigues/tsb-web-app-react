@@ -1,6 +1,7 @@
 // import { Component } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
+
 import "./base.css";
 import Main from "./Pages/Main/Main";
 

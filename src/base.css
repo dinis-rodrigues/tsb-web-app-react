@@ -2242,9 +2242,8 @@ pre code {
 .form-control:focus {
   color: #495057;
   background-color: #fff;
-  border-color: #a9bcee;
+  border: 2px solid rgba(1, 182, 245, 1);
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 .form-control::placeholder {
@@ -45457,6 +45456,22 @@ input:-webkit-autofill:active
 
 .text-align-left {
   text-align: left;
+}
+
+/* CUSTOM INPUT COLORS */
+.datePicker div div input:focus {
+  background-color: #ffffff !important;
+  color: #495057 !important;
+  border: 2px solid rgba(1, 182, 245, 1);
+}
+.datePicker div div input:disabled {
+  background-color: #e9ecef !important;
+  color: #e9ecef !important;
+}
+.datePicker div div input {
+  background-color: #ffffff !important;
+  color: #495057 !important;
+  border-radius: 0.25rem;
 }
 
 input:-webkit-autofill,

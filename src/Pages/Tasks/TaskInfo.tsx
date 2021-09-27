@@ -205,6 +205,7 @@ const TaskInfo = ({
               onChange={(value) => {
                 dateHandler(value, modalTask, setModalTask);
               }}
+              className={"datePicker"}
             />
           </div>
           <div className="col">

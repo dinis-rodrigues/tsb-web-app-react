@@ -31,4 +31,13 @@ const departmentColors: {
   Other: "bg-premium-dark",
 };
 
-export { meetingIcons, departmentColors };
+const customInputs: { [key: string]: React.CSSProperties } = {
+  datePicker: {
+    backgroundColor: "red",
+  },
+  datePickerDisabled: {
+    backgroundColor: "blue !important",
+  },
+};
+
+export { meetingIcons, departmentColors, customInputs };

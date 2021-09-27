@@ -146,6 +146,7 @@ const CashFlowModal = ({
               value={flowInfo ? inputToDate(flowInfo.date) : today}
               isCentered={true}
               onChange={(value) => dateHandler(value, flowInfo, setFlowInfo)}
+              className={"datePicker"}
             />
           </div>
         </div>

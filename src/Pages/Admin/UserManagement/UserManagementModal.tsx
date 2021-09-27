@@ -157,6 +157,7 @@ const UserManagementModal = ({
             <DatePicker
               value={info ? inputToDate(info.joinedIn!) : today}
               onChange={(value) => handleDate(value, "joinedIn", setInfo)}
+              className={"datePicker"}
             />
           </div>
         </div>
@@ -321,6 +322,7 @@ const UserManagementModal = ({
             <DatePicker
               value={info ? inputToDate(info.birth!) : today}
               onChange={(value) => handleDate(value, "birth", setInfo)}
+              className={"datePicker"}
             />
           </div>
         </div>

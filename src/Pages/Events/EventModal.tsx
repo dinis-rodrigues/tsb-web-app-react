@@ -102,6 +102,7 @@ const EventModal = ({
                 dateHandler(value, "date", currEventInfo, setCurrEventInfo)
               }
               disabled={disabledInput}
+              className={"datePicker"}
             />
           </div>
           <div className="col">

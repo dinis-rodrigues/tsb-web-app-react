@@ -19,6 +19,7 @@ import {
 } from "./profileUtils";
 import { PersonalInformation, userContext } from "../../interfaces";
 import { useAuth } from "../../contexts/AuthContext";
+import { customInputs } from "../../utils/colors";
 
 type Props = {
   info: PersonalInformation;
@@ -130,6 +131,7 @@ const PersonalInformationOptions = ({
               value={info ? inputToDate(info.joinedIn!) : today}
               onChange={(value) => handleDate(value, "joinedIn", setInfo)}
               disabled={disabledInput}
+              className={"datePicker"}
             />
           </div>
         </div>
@@ -305,6 +307,7 @@ const PersonalInformationOptions = ({
               value={info ? inputToDate(info.birth!) : today}
               onChange={(value) => handleDate(value, "birth", setInfo)}
               disabled={disabledInput}
+              className={"datePicker"}
             />
           </div>
         </div>

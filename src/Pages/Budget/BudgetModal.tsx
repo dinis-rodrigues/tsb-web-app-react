@@ -275,6 +275,7 @@ const BudgetModal = ({
             onChange={(value) =>
               dateHandler(value, materialInfo, setMaterialInfo)
             }
+            className={"datePicker"}
           />
         </div>
       </div>
