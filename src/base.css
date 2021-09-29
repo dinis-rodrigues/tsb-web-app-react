@@ -18595,10 +18595,10 @@ a.avatar-icon-wrapper:hover .avatar-icon {
 
 .card-header,
 .card-title {
-  text-transform: uppercase;
-  color: rgba(13, 27, 62, 0.7);
-  font-weight: bold;
-  font-size: 0.88rem;
+  text-transform: uppercase !important;
+  color: rgba(13, 27, 62, 0.7) !important;
+  font-weight: bold !important;
+  font-size: 0.88rem !important;
 }
 
 .card-header {
@@ -18666,7 +18666,7 @@ a.avatar-icon-wrapper:hover .avatar-icon {
   width: 100%;
   position: absolute;
   left: 0;
-  bottom: -2px;
+  bottom: -7%;
   opacity: 0;
 }
 
@@ -19100,7 +19100,6 @@ a.avatar-icon-wrapper:hover .avatar-icon {
 
 .body-tabs-animated .nav-link::before {
   height: 70%;
-  top: 15%;
   z-index: 4;
   bottom: auto;
   box-shadow: 0 16px 26px -10px rgba(63, 106, 216, 0.56),
