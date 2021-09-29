@@ -122,11 +122,17 @@ const numberWithCommas = (x: number) => {
  * @param  {string} d DateObject
  * @return {string} dd/mm/yyyy
  */
-const dateToString = (d: Date) => {
+const dateToString = (d: Date, withHours = false) => {
   let day = ("0" + d.getDate()).slice(-2);
   let month = ("0" + String(d.getMonth() + 1)).slice(-2);
   let year = d.getFullYear().toString();
   let dateString = `${day}/${month}/${year}`;
+  if (withHours) {
+    dateString += " ";
+    dateString += ("0" + d.getHours()).slice(-2);
+    dateString += "h";
+    dateString += ("0" + d.getMinutes()).slice(-2);
+  }
   return dateString;
 };
 
@@ -240,8 +246,29 @@ const setColumnText = (keyId: string) => {
  * @returns  {number} difference
  */
 function dateComparator(date1: string, date2: string) {
-  var date1Number = monthToComparableNumber(date1);
-  var date2Number = monthToComparableNumber(date2);
+  var date1Number = dateStringComparableNumber(date1);
+  var date2Number = dateStringComparableNumber(date2);
+
+  if (date1Number === null && date2Number === null) {
+    return 0;
+  }
+  if (date1Number === null) {
+    return -1;
+  }
+  if (date2Number === null) {
+    return 1;
+  }
+
+  return date1Number - date2Number;
+}
+/** Sorting formatter for Dates
+ * @param  {Date} date1
+ * @param  {Date} date2
+ * @returns  {number} difference
+ */
+function dateWithHoursComparator(date1: string, date2: string) {
+  var date1Number = dateWithHoursComparableNumber(date1);
+  var date2Number = dateWithHoursComparableNumber(date2);
 
   if (date1Number === null && date2Number === null) {
     return 0;
@@ -260,7 +287,7 @@ function dateComparator(date1: string, date2: string) {
  * @param  {string} date
  * @returns  {number}
  */
-function monthToComparableNumber(date: string) {
+function dateStringComparableNumber(date: string) {
   if (date === undefined || date === null || date.length !== 10) {
     return null;
   }
@@ -269,8 +296,28 @@ function monthToComparableNumber(date: string) {
   var monthNumber = parseInt(date.substring(3, 5));
   var dayNumber = parseInt(date.substring(0, 2));
 
-  var result = yearNumber * 10000 + monthNumber * 100 + dayNumber;
-  return result;
+  let newD = new Date(yearNumber, monthNumber - 1, dayNumber);
+  return newD.getTime();
+}
+
+/** eg 29/08/2004 22h00 gets converted to 20040829 (example)
+ * @param  {string} date
+ * @returns  {number}
+ */
+function dateWithHoursComparableNumber(date: string) {
+  if (date === undefined || date === null || date.length !== 10) {
+    return null;
+  }
+
+  var yearNumber = parseInt(date.substring(6, 10));
+  var monthNumber = parseInt(date.substring(3, 5));
+  var dayNumber = parseInt(date.substring(0, 2));
+  var hours = parseInt(date.substring(11, 13));
+  var minutes = parseInt(date.substring(14));
+
+  let newD = new Date(yearNumber, monthNumber - 1, dayNumber, hours, minutes);
+
+  return newD.getTime();
 }
 
 /** Calculates remaining hours between a given date, and now
@@ -718,4 +765,5 @@ export {
   objectExists,
   userHasPermission,
   userHasAdminPermissions,
+  dateWithHoursComparator,
 };
