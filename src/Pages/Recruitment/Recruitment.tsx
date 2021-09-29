@@ -39,11 +39,13 @@ import RecruitmentYearCount from "./RecruitmentYearDepCount";
 import { db } from "../../config/firebase";
 
 import { CheckboxGroup, Input } from "react-rainbow-components";
+import { userHasPermission } from "../../utils/generalFunctions";
 
 // Layout
 
 const Recruitment = () => {
   const { USER } = useAuth();
+  const userAdmin = userHasPermission(USER);
   // Default table options
   const gridOptions = {
     enableCellTextSelection: false,
@@ -102,12 +104,14 @@ const Recruitment = () => {
     <Fragment>
       <div className="app-main__outer">
         <div className="app-main__inner">
-          <RecruitmentSettings
-            tableName={currTableName}
-            tablesList={tablesList}
-            activeRecruitment={activeRecruitment}
-            setActiveRecruitment={setActiveRecruitment}
-          />
+          {userAdmin && (
+            <RecruitmentSettings
+              tableName={currTableName}
+              tablesList={tablesList}
+              activeRecruitment={activeRecruitment}
+              setActiveRecruitment={setActiveRecruitment}
+            />
+          )}
           {currTableData && (
             <div className="row">
               <RecruitmentDegreeCount tableData={currTableData} />
@@ -202,7 +206,6 @@ const Recruitment = () => {
                 <div className="col">
                   <CheckboxGroup
                     id="checkbox-group-2"
-                    label="Filter by Department"
                     options={departmentOptions}
                     value={selectedDepartments}
                     orientation={"horizontal"}

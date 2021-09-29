@@ -8,10 +8,12 @@ import {
 } from "ag-grid-community";
 import { db } from "../../config/firebase";
 import {
+  Departments,
   RecruitmentData,
   RecruitmentTable,
   RecruitmentTables,
   RecruitmentUser,
+  selectOption,
 } from "../../interfaces";
 import {
   dateToString,
@@ -52,6 +54,54 @@ const numberToMonths: { [key: string]: string } = {
   "11": "DEC",
 };
 
+const openDepartmentsHandler = (value: string[], departments: Departments) => {
+  const openedDepartments: Departments = {};
+  value.forEach((acronym) => {
+    acronym = acronym.toLowerCase();
+    let depToOpen = departments[acronym];
+    openedDepartments[acronym] = depToOpen;
+  });
+  db.ref("public/recruitment/openDepartments").set(openedDepartments);
+};
+const getDepartmentOptions = (
+  departments: Departments,
+  setDepartmentOptions: Function
+) => {
+  let depOptions: selectOption[] = [];
+  Object.entries(departments).forEach(([key, dep]) => {
+    depOptions.push({
+      value: dep.acronym.toUpperCase(),
+      label: dep.acronym.toUpperCase(),
+    });
+  });
+  depOptions.sort();
+  setDepartmentOptions(depOptions);
+};
+
+const getOpenedDepartments = (setOpenDepartments: Function) => {
+  db.ref("public/recruitment/openDepartments").on("value", (snapshot) => {
+    const openDepartments: Departments = snapshot.val();
+    if (!openDepartments) {
+      setOpenDepartments([]);
+      return;
+    }
+    let depList = Object.entries(openDepartments).map(([key, dep]) => {
+      return dep.acronym.toUpperCase();
+    });
+    setOpenDepartments(depList);
+  });
+};
+
+/**
+ * Switches chart pane
+ * @param newTab
+ * @param activeTab
+ * @param tableData
+ * @param setSeries
+ * @param setLabels
+ * @param setActiveTab
+ * @returns
+ */
 const switchBarChart = (
   newTab: string,
   activeTab: string,
@@ -486,4 +536,7 @@ export {
   toggleRegistration,
   selectDepartmentHandler,
   switchBarChart,
+  getDepartmentOptions,
+  getOpenedDepartments,
+  openDepartmentsHandler,
 };

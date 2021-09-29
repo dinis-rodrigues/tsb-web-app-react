@@ -1,6 +1,14 @@
 import cx from "classnames";
+import { useEffect, useState } from "react";
+import { CheckboxGroup } from "react-rainbow-components";
+import { db } from "../../config/firebase";
+import { useAuth } from "../../contexts/AuthContext";
+import { selectOption } from "../../interfaces";
 import {
   generateRecruitmentTable,
+  getDepartmentOptions,
+  getOpenedDepartments,
+  openDepartmentsHandler,
   toggleRegistration,
 } from "./recruitmentUtils";
 
@@ -16,18 +24,33 @@ const RecruitmentSettings = ({
   activeRecruitment,
   setActiveRecruitment,
 }: Props) => {
+  const { departments } = useAuth();
   const tableToCreate = generateRecruitmentTable();
-
   let allowToCreate = false;
   tablesList && tableToCreate === tablesList[0]
     ? (allowToCreate = false)
     : (allowToCreate = true);
 
+  const [openDepartments, setOpenDepartments] = useState<string[]>([]);
+  const [departmentOptions, setDepartmentOptions] = useState<selectOption[]>(
+    []
+  );
+  useEffect(() => {
+    getDepartmentOptions(departments, setDepartmentOptions);
+    getOpenedDepartments(setOpenDepartments);
+    return () => {
+      db.ref("public/recruitment/openDepartments").off("value");
+    };
+  }, [departments]);
+
   return (
     <div className="main-card mb-3 card">
       <div className="card-header">
         <i className="header-icon lnr-cog icon-gradient bg-plum-plate"></i>
-        Recruitment Settings
+        Recruitment Settings{" "}
+        <span className={"badge badge-danger ml-2"}>
+          MOCK SETTINGS FOR FUTURE IMPLEMENTATION
+        </span>
         {/* <button onClick={() => replaceUidFromAllTasks()}>
           move everything
         </button> */}
@@ -61,6 +84,37 @@ const RecruitmentSettings = ({
                 >
                   {activeRecruitment ? "Opened" : "Closed"}
                 </button>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li className="list-group-item">
+          <div className="widget-content p-1">
+            <div className="widget-content-wrapper">
+              <div className="widget-content-left">
+                <div className="widget-heading">
+                  Opened Departments
+                  <span className="widget-subheading">
+                    {" "}
+                    - Select which departments users are allowed to apply
+                  </span>
+                </div>
+              </div>
+              <div className="widget-content-right">
+                <span
+                  className="d-inline-block pt-1"
+                  style={{ position: "absolute", top: "-30%", right: "0" }}
+                >
+                  <CheckboxGroup
+                    id="checkbox-group-2"
+                    options={departmentOptions}
+                    value={openDepartments}
+                    orientation={"horizontal"}
+                    onChange={(values) =>
+                      openDepartmentsHandler(values, departments)
+                    }
+                  />
+                </span>
               </div>
             </div>
           </div>

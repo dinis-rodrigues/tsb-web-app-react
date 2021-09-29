@@ -54,6 +54,7 @@ export interface RecruitmentData {
   activeTable: boolean | string;
   tables: RecruitmentTables;
   tablesList: string[];
+  openDepartments: Departments;
 }
 
 export interface RecruitmentTables {
