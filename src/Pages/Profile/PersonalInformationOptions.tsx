@@ -19,7 +19,6 @@ import {
 } from "./profileUtils";
 import { PersonalInformation, userContext } from "../../interfaces";
 import { useAuth } from "../../contexts/AuthContext";
-import { customInputs } from "../../utils/colors";
 
 type Props = {
   info: PersonalInformation;

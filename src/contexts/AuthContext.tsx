@@ -105,7 +105,6 @@ export function AuthProvider({ children }: Props) {
           // console.log("AUTH User id: ", userId);
           let usrImgUrlComp = getUserImgUrl(userId, null, true);
           let usrImgUrl = getUserImgUrl(userId, null, false);
-          console.log(usrImgUrlComp);
           setUSER({
             id: userId,
             name: userInfo.name,
