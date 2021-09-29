@@ -429,7 +429,30 @@ const saveDepartment = (
     }
   }
   db.ref("private/departments").child(acronym).update(departmentInfo);
+  updateRecruitmentDepartments(acronym, departmentInfo);
   closeDepartmentModal(setIsDepartmentModalOpen, setNewPosition);
+};
+
+/**
+ * Updates the information of the department in the recruitment database
+ * @param acronym
+ * @param departmentInfo
+ */
+const updateRecruitmentDepartments = (
+  acronym: string,
+  departmentInfo: Department
+) => {
+  db.ref("public/recruitment/openDepartments")
+    .child(acronym)
+    .once("value")
+    .then((snapshot) => {
+      let recruitmentDepartment = snapshot.val();
+      if (!recruitmentDepartment) return;
+      else
+        db.ref("public/recruitment/openDepartments")
+          .child(acronym)
+          .set(departmentInfo);
+    });
 };
 
 /**
@@ -520,6 +543,7 @@ const swalDeleteAlert = withReactContent(Swal);
 const deleteDepartment = (departmentInfo: Department) => {
   let acronym = departmentInfo.acronym;
   db.ref("private/departments").child(acronym).remove();
+  db.ref("public/recruitment/openDepartments").child(acronym).remove();
   removeAllDepartmentRelatedMetadata(departmentInfo);
 };
 export {
