@@ -159,6 +159,16 @@ const Nav = () => {
               <i className="metismenu-icon pe-7s-users"></i>Members
             </NavLink>
           </li>
+          <li className="metismenu-item">
+            <NavLink
+              className="metismenu-link"
+              to="/recruitment"
+              activeClassName="active"
+              onClick={collapseMenus}
+            >
+              <i className="metismenu-icon pe-7s-users"></i>Recruitment
+            </NavLink>
+          </li>
         </ul>
       </div>
       <h5 className="app-sidebar__heading">Finances</h5>

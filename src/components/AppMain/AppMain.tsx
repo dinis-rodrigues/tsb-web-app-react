@@ -25,6 +25,7 @@ const ResetPasswordEmail = lazy(
   () => import("../../Pages/ResetPassword/ResetPasswordEmail")
 );
 const Team = lazy(() => import("../../Pages/Team/Team"));
+const Recruitment = lazy(() => import("../../Pages/Recruitment/Recruitment"));
 const Profile = lazy(() => import("../../Pages/Profile/Profile"));
 const VisitorProfile = lazy(() => import("../../Pages/Profile/VisitorProfile"));
 const Events = lazy(() => import("../../Pages/Events/Events"));
@@ -67,6 +68,7 @@ function App() {
           <Route path="/maintenance" component={Maintenance} />
           <PrivateRoute path="/dashboard" component={Dashboard} />
           <PrivateRoute path="/team" component={Team} />
+          <PrivateRoute exact path="/recruitment" component={Recruitment} />
           <PrivateRoute path="/profile/u/:userId" component={VisitorProfile} />
           <PrivateRoute path="/profile" exact component={Profile} />
           <PrivateRoute path="/events" component={Events} />

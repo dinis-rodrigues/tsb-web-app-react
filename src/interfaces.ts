@@ -49,6 +49,46 @@ export interface UrlObject {
   colId: string;
 }
 
+// Recruitment
+export interface RecruitmentData {
+  activeTable: boolean | string;
+  tables: RecruitmentTables;
+  tablesList: string[];
+}
+
+export interface RecruitmentTables {
+  [key: string]: RecruitmentTable;
+}
+export interface RecruitmentTable {
+  [key: string]: RecruitmentUser;
+}
+export interface RecruitmentUser {
+  name: string;
+  departments: string[];
+  email: string;
+  phone: string;
+  link: string;
+  degree: string;
+  year: string;
+  message: string;
+  timestamp: number | string | null;
+}
+
+export interface RecruitmentTableSQL {
+  data: RecruitmentSQLUser[];
+}
+export interface RecruitmentSQLUser {
+  Nome: string;
+  Email: string;
+  Areas: string;
+  Curso: string;
+  Ano: number | string | null;
+  Mensagem: string;
+  Telemovel?: string;
+  Facebook?: string;
+  timedata: string | null;
+}
+
 // Forum interfaces
 export interface ForumMetadata {
   // section encoded name
@@ -403,6 +443,8 @@ export interface tableColumns {
   sortable: boolean;
   pinned?: string;
   comparator?: any;
+  suppressSizeToFit?: boolean;
+  filter?: boolean;
 }
 
 // User metadata shaoe
