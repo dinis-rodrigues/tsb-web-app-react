@@ -166,7 +166,7 @@ const Nav = () => {
               activeClassName="active"
               onClick={collapseMenus}
             >
-              <i className="metismenu-icon pe-7s-users"></i>Recruitment
+              <i className="metismenu-icon pe-7s-add-user"></i>Recruitment
             </NavLink>
           </li>
         </ul>
