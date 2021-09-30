@@ -266,9 +266,10 @@ function dateComparator(date1: string, date2: string) {
  * @param  {Date} date2
  * @returns  {number} difference
  */
-function dateWithHoursComparator(date1: string, date2: string) {
+const dateWithHoursComparator = (date1: string, date2: string) => {
   var date1Number = dateWithHoursComparableNumber(date1);
   var date2Number = dateWithHoursComparableNumber(date2);
+  console.log(date2Number);
 
   if (date1Number === null && date2Number === null) {
     return 0;
@@ -281,7 +282,7 @@ function dateWithHoursComparator(date1: string, date2: string) {
   }
 
   return date1Number - date2Number;
-}
+};
 
 /** eg 29/08/2004 gets converted to 20040829
  * @param  {string} date
@@ -305,10 +306,9 @@ function dateStringComparableNumber(date: string) {
  * @returns  {number}
  */
 function dateWithHoursComparableNumber(date: string) {
-  if (date === undefined || date === null || date.length !== 10) {
+  if (date === undefined || date === null || date.length < 10) {
     return null;
   }
-
   var yearNumber = parseInt(date.substring(6, 10));
   var monthNumber = parseInt(date.substring(3, 5));
   var dayNumber = parseInt(date.substring(0, 2));
