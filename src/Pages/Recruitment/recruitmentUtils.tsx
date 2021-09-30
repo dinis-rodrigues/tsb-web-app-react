@@ -156,11 +156,10 @@ const selectDepartmentHandler = (
     selectedDepartments.length <= 0
   )
     return;
-  let tables = recruitmentData.tables;
-  let newTableData = filterTableByDepartments(
-    tables[currTableName],
-    selectedDepartments
+  let auxTable = JSON.parse(
+    JSON.stringify(recruitmentData.tables[currTableName])
   );
+  let newTableData = filterTableByDepartments(auxTable, selectedDepartments);
   setCurrTableData(newTableData);
   buildTableRows(newTableData, setTableRows);
   buildColumns(newTableData, setTableColumns);
@@ -365,6 +364,8 @@ const buildColumns = (
         field: key,
         sortable: true,
         comparator: dateWithHoursComparator,
+        pinned: "left",
+        suppressSizeToFit: true,
       });
     } else {
       columnsDefs.push({
