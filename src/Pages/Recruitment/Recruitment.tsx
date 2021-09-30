@@ -206,6 +206,7 @@ const Recruitment = () => {
                 <div className="col">
                   <CheckboxGroup
                     id="checkbox-group-2"
+                    label={"Filter by Department"}
                     options={departmentOptions}
                     value={selectedDepartments}
                     orientation={"horizontal"}
