@@ -60,8 +60,8 @@
     "redux": "^3.7.2",
     "sweetalert2": "^10.16.4",
     "sweetalert2-react-content": "^3.3.1",
-    "typescript": "^4.2.4",
-    "web-vitals": "^1.1.1"
+    "web-vitals": "^1.1.1",
+    "uuid": "^8.3.2"
   },
   "scripts": {
     "start": "PORT=3005 react-scripts start",
@@ -104,6 +104,6 @@
     "@types/uuid": "^8.3.0",
     "@types/webpack-env": "^1.16.0",
     "jsdoc": "^3.6.6",
-    "uuid": "^8.3.2"
+    "typescript": "^4.2.4"
   }
 }
