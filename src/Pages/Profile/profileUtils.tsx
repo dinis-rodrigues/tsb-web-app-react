@@ -4,7 +4,7 @@ import { db, st } from "../../config/firebase";
 import {
   Departments,
   PersonalInformation,
-  PublicUser,
+  PublicUserInfo,
   selectOption,
   userContext,
   UserMetadata,
@@ -728,8 +728,8 @@ const editInformation = (setDisabledInput: Function) => {
  * @param user
  * @param info
  */
-const savePublicUser = (user: userContext, info: PersonalInformation) => {
-  const publicInfo: PublicUser = {
+const savePublicUser = (userId: string, info: PersonalInformation) => {
+  const publicInfo: PublicUserInfo = {
     name: info.name ? info.name : "",
     position: info.position ? info.position : "",
     degree: info.degree ? info.degree : "",
@@ -739,9 +739,11 @@ const savePublicUser = (user: userContext, info: PersonalInformation) => {
     linkedin: info.linkedin ? info.linkedin : "",
     description: info.description ? info.description : "",
     email: info.email ? info.email : "",
+    inTeam: info.inTeam,
+    leftIn: info.leftIn ? info.leftIn : "",
   };
   db.ref("public/officialWebsite/team")
-    .child(user.id)
+    .child(userId)
     .child("info")
     .set(publicInfo);
 };
@@ -759,7 +761,7 @@ const sendTeamToPublic = () => {
 
       Object.entries(allUsers).forEach(([userKey, user]) => {
         const info = user.pinfo;
-        const publicInfo: PublicUser = {
+        const publicInfo: PublicUserInfo = {
           name: info.name ? info.name : "",
           position: info.position ? info.position : "",
           degree: info.degree ? info.degree : "",
@@ -769,6 +771,8 @@ const sendTeamToPublic = () => {
           linkedin: info.linkedin ? info.linkedin : "",
           description: info.description ? info.description : "",
           email: info.email ? info.email : "",
+          inTeam: info.inTeam,
+          leftIn: info.leftIn ? info.leftIn : "",
         };
         db.ref("public/officialWebsite/team")
           .child(userKey)
@@ -803,7 +807,7 @@ const saveInformation = (
     return;
   }
   db.ref(`private/usersMetadata/${user.id}/pinfo`).update(info);
-  savePublicUser(user, info);
+  savePublicUser(user.id, info);
   setDisabledInput((disabledInput: boolean) => !disabledInput);
   setPrevInfo(info);
   killCroppie(setCroppie, croppie, setShowSaveImg);
@@ -1139,4 +1143,5 @@ export {
   getCoverBgColor,
   getCoverBorderColor,
   sendTeamToPublic,
+  savePublicUser,
 };

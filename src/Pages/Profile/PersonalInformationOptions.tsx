@@ -16,6 +16,7 @@ import {
   handleDate,
   handleInputMask,
   getDepartmentOptions,
+  sendTeamToPublic,
 } from "./profileUtils";
 import { PersonalInformation, userContext } from "../../interfaces";
 import { useAuth } from "../../contexts/AuthContext";
