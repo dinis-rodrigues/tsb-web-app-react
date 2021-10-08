@@ -201,7 +201,7 @@ const saveUserInfo = (info: PersonalInformation, setModalOpen: Function) => {
  * @returns updated leftIn date
  */
 const updateWithLeftInDate = (info: PersonalInformation) => {
-  if (info.inTeam) return info;
+  if (info.inTeam) return { ...info, leftIn: "" };
   const t = new Date();
   const dateString = dateToString(t);
   return { ...info, leftIn: dateString };
