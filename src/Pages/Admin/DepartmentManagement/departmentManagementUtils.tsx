@@ -9,6 +9,7 @@ import {
   DepartmentModalText,
   Departments,
   EntireBom,
+  PublicTeam,
   UserMetadata,
 } from "../../../interfaces";
 
@@ -308,6 +309,30 @@ const changeUserMetadata = (
 };
 
 /**
+ * Replaces all users which had the old department name, to the new one in public DB
+ * @param previousDescription
+ * @param currDescription
+ */
+const changePublicUserMetadata = (
+  previousDescription: string,
+  currDescription: string
+) => {
+  db.ref("public/officialWebsite/team")
+    .once("value")
+    .then((snapshot) => {
+      let usersMetadata: PublicTeam = snapshot.val();
+      if (!usersMetadata) return;
+      Object.entries(usersMetadata).forEach(([userId, userInfo]) => {
+        if (userInfo.info.department === previousDescription) {
+          // change to the new department
+          usersMetadata[userId].info.department = currDescription;
+        }
+      });
+      db.ref("public/officialWebsite/team").update(usersMetadata);
+    });
+};
+
+/**
  * Changes the old department in all materials of the Budget
  * @param previousDescription
  * @param currDescription
@@ -389,11 +414,17 @@ const changeAllEventsMetadata = (
     });
 };
 
+/**
+ * Changes all department related metadata in the database
+ * @param previousDescription
+ * @param currDescription
+ */
 const changeAllDepartmentRelatedMetadata = (
   previousDescription: string,
   currDescription: string
 ) => {
   changeUserMetadata(previousDescription, currDescription);
+  changePublicUserMetadata(previousDescription, currDescription);
   changeBudgetMetadata(previousDescription, currDescription);
   changeAssignedUserMaterials(previousDescription, currDescription);
   changeAllEventsMetadata(previousDescription, currDescription);
