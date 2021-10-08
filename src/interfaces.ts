@@ -1,3 +1,20 @@
+// Public Information
+export interface PublicTeam {
+  [key: string]: PublicUser;
+}
+
+export interface PublicUser {
+  name: string;
+  position: string;
+  degree: string;
+  birth: string;
+  department: string;
+  joinedIn: string;
+  linkedin?: string;
+  description?: string;
+  email?: string;
+}
+
 // Application Settings
 export interface ApplicationSettings {
   registrationIsOpen: boolean;
@@ -411,33 +428,33 @@ export interface EventColors {
 }
 // Profile interfaces
 export interface PersonalInformation {
-  uid: string | undefined;
-  fullName: string | undefined;
-  department: string | undefined;
-  position: string | undefined;
-  joinedIn: string | undefined;
-  name: string | undefined;
-  email: string | undefined;
-  phone: string | undefined;
-  mbway: string | undefined;
-  university: string | undefined;
-  degree: string | undefined;
-  studentId: string | undefined;
-  idCard: string | undefined;
-  nif: string | undefined;
-  country: string | undefined;
-  birth: string | undefined;
-  address: string | undefined;
-  city: string | undefined;
-  zip: string | undefined;
-  iban: string | undefined;
-  linkedin: string | undefined;
-  inTeam: boolean | undefined;
-  departmentStats: Number | undefined;
-  generalStats: Number | undefined;
-  gender: string | undefined;
-  curricularYear: Number | undefined;
-  description?: string | undefined;
+  uid?: string;
+  fullName?: string;
+  department?: string;
+  position?: string;
+  joinedIn?: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  mbway?: string;
+  university?: string;
+  degree?: string;
+  studentId?: string;
+  idCard?: string;
+  nif?: string;
+  country?: string;
+  birth?: string;
+  address?: string;
+  city?: string;
+  zip?: string;
+  iban?: string;
+  linkedin?: string;
+  inTeam?: boolean;
+  departmentStats?: Number;
+  generalStats?: Number;
+  gender?: string;
+  curricularYear?: Number;
+  description?: string;
 }
 
 export interface tableColumns {

@@ -68,7 +68,7 @@ const PersonalInformationOptions = ({
             value={info.fullName || ""}
             onChange={(e) => handleInput(e, "fullName", setInfo)}
             disabled={disabledInput}
-            type="name"
+            type="text"
             className="form-control text-center"
             placeholder="Name"
           />
@@ -370,7 +370,7 @@ const PersonalInformationOptions = ({
           <input
             value={info.linkedin || ""}
             onChange={(e) => handleInput(e, "linkedin", setInfo)}
-            type="name"
+            type="text"
             className="form-control m-0"
             disabled={disabledInput}
             placeholder="https://www.linkedin/in/dinis-rodrigues"

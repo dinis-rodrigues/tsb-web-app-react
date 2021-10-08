@@ -4,8 +4,10 @@ import { db, st } from "../../config/firebase";
 import {
   Departments,
   PersonalInformation,
+  PublicUser,
   selectOption,
   userContext,
+  UserMetadata,
 } from "../../interfaces";
 import { dateToString, userHasPermission } from "../../utils/generalFunctions";
 import Compress from "compress.js";
@@ -721,6 +723,72 @@ const editInformation = (setDisabledInput: Function) => {
   setDisabledInput((disabledInput: boolean) => !disabledInput);
 };
 
+/**
+ * Saves public user information to public DB
+ * @param user
+ * @param info
+ */
+const savePublicUser = (user: userContext, info: PersonalInformation) => {
+  const publicInfo: PublicUser = {
+    name: info.name ? info.name : "",
+    position: info.position ? info.position : "",
+    degree: info.degree ? info.degree : "",
+    birth: info.birth ? info.birth : "",
+    department: info.department ? info.department : "",
+    joinedIn: info.joinedIn ? info.joinedIn : "",
+    linkedin: info.linkedin ? info.linkedin : "",
+    description: info.description ? info.description : "",
+    email: info.email ? info.email : "",
+  };
+  db.ref("public/officialWebsite/team")
+    .child(user.id)
+    .child("info")
+    .set(publicInfo);
+};
+
+/**
+ * Copies all public user data to Public directory DB
+ */
+const sendTeamToPublic = () => {
+  db.ref(`private/usersMetadata`)
+    .once("value")
+    .then((snapshot) => {
+      const allUsers: UserMetadata = snapshot.val();
+
+      if (!allUsers) return;
+
+      Object.entries(allUsers).forEach(([userKey, user]) => {
+        const info = user.pinfo;
+        const publicInfo: PublicUser = {
+          name: info.name ? info.name : "",
+          position: info.position ? info.position : "",
+          degree: info.degree ? info.degree : "",
+          birth: info.birth ? info.birth : "",
+          department: info.department ? info.department : "",
+          joinedIn: info.joinedIn ? info.joinedIn : "",
+          linkedin: info.linkedin ? info.linkedin : "",
+          description: info.description ? info.description : "",
+          email: info.email ? info.email : "",
+        };
+        db.ref("public/officialWebsite/team")
+          .child(userKey)
+          .child("info")
+          .set(publicInfo);
+      });
+    });
+};
+
+/**
+ * Saves user information in DB
+ * @param user
+ * @param info
+ * @param croppie
+ * @param setDisabledInput
+ * @param setPrevInfo
+ * @param setCroppie
+ * @param setShowSaveImg
+ * @returns
+ */
 const saveInformation = (
   user: userContext | undefined,
   info: PersonalInformation,
@@ -735,12 +803,21 @@ const saveInformation = (
     return;
   }
   db.ref(`private/usersMetadata/${user.id}/pinfo`).update(info);
-  db.ref(`private/usersMetadata/${user.id}/pinfo`).update(info);
+  savePublicUser(user, info);
   setDisabledInput((disabledInput: boolean) => !disabledInput);
   setPrevInfo(info);
   killCroppie(setCroppie, croppie, setShowSaveImg);
 };
 
+/**
+ * Restores original user information
+ * @param prevInfo
+ * @param croppie
+ * @param setDisabledInput
+ * @param setInfo
+ * @param setCroppie
+ * @param setShowSaveImg
+ */
 const discardInformation = (
   prevInfo: PersonalInformation,
   croppie: Croppie,
@@ -834,6 +911,16 @@ const handleUpload = (
   }
 };
 
+/**
+ * Resizes image
+ * @param user
+ * @param blob
+ * @param croppie
+ * @param setCroppie
+ * @param setShowSaveImg
+ * @param setUSER
+ * @returns
+ */
 const resizeImage = (
   user: userContext | null,
   blob: Blob,
@@ -1051,4 +1138,5 @@ export {
   getDepartmentOptions,
   getCoverBgColor,
   getCoverBorderColor,
+  sendTeamToPublic,
 };
