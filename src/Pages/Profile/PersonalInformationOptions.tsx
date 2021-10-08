@@ -381,7 +381,7 @@ const PersonalInformationOptions = ({
           <input
             value={info.description || ""}
             onChange={(e) => handleInput(e, "description", setInfo)}
-            type="name"
+            type="text"
             className="form-control m-0"
             disabled={disabledInput}
             placeholder="I joined TSB because... Previously I was Team Member but now I'm Y. I like football..."

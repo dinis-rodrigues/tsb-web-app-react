@@ -240,6 +240,12 @@ const VisitorProfile = () => {
                       {userInfo.linkedin}
                     </span>
                   </div>
+                  <h6>Description / Bio</h6>
+                  <div className="form-group">
+                    <span className="form-control text-center">
+                      {userInfo.description || ""}
+                    </span>
+                  </div>
                 </div>
               </li>
             </div>
