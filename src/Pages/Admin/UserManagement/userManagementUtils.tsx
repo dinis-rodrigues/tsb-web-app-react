@@ -11,8 +11,12 @@ import {
   userContext,
   UsersDB,
 } from "../../../interfaces";
+import { dateToString } from "../../../utils/generalFunctions";
 import printDoc from "../../../utils/pdfExport/printDoc";
-import { setDepartmentPositions } from "../../Profile/profileUtils";
+import {
+  setDepartmentPositions,
+  savePublicUser,
+} from "../../Profile/profileUtils";
 import { buildColumns, buildTableRows } from "../../Team/TeamUtils";
 
 // Default selected columns to display
@@ -185,8 +189,22 @@ const onRowUserClick = (
 const saveUserInfo = (info: PersonalInformation, setModalOpen: Function) => {
   let userId = info.uid;
   if (!userId) return;
-  db.ref("private/usersMetadata").child(userId).child("pinfo").update(info);
+  const newInfo = updateWithLeftInDate(info);
+  db.ref("private/usersMetadata").child(userId).child("pinfo").update(newInfo);
+  savePublicUser(userId, newInfo);
   setModalOpen(false);
+};
+
+/**
+ * Checks if user was removed from team, and updates with date
+ * @param info
+ * @returns updated leftIn date
+ */
+const updateWithLeftInDate = (info: PersonalInformation) => {
+  if (info.inTeam) return info;
+  const t = new Date();
+  const dateString = dateToString(t);
+  return { ...info, leftIn: dateString };
 };
 
 /**
