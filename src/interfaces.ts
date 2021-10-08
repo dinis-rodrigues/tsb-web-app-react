@@ -4,15 +4,21 @@ export interface PublicTeam {
 }
 
 export interface PublicUser {
+  info: PublicUserInfo;
+}
+
+export interface PublicUserInfo {
   name: string;
   position: string;
   degree: string;
   birth: string;
   department: string;
   joinedIn: string;
+  leftIn?: string;
   linkedin?: string;
   description?: string;
   email?: string;
+  inTeam: boolean;
 }
 
 // Application Settings
@@ -433,6 +439,7 @@ export interface PersonalInformation {
   department?: string;
   position?: string;
   joinedIn?: string;
+  leftIn?: string;
   name?: string;
   email?: string;
   phone?: string;
@@ -449,7 +456,7 @@ export interface PersonalInformation {
   zip?: string;
   iban?: string;
   linkedin?: string;
-  inTeam?: boolean;
+  inTeam: boolean;
   departmentStats?: Number;
   generalStats?: Number;
   gender?: string;
