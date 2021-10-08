@@ -437,6 +437,7 @@ export interface PersonalInformation {
   generalStats: Number | undefined;
   gender: string | undefined;
   curricularYear: Number | undefined;
+  description?: string | undefined;
 }
 
 export interface tableColumns {

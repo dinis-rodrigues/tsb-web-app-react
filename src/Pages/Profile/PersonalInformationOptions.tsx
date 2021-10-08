@@ -376,6 +376,17 @@ const PersonalInformationOptions = ({
             placeholder="https://www.linkedin/in/dinis-rodrigues"
           />
         </div>
+        <h6>Description / Bio</h6>
+        <div className="form-group">
+          <input
+            value={info.description || ""}
+            onChange={(e) => handleInput(e, "description", setInfo)}
+            type="name"
+            className="form-control m-0"
+            disabled={disabledInput}
+            placeholder="I joined TSB because... Previously I was Team Member but now I'm Y. I like football..."
+          />
+        </div>
         <hr />
 
         <div className="layers">
