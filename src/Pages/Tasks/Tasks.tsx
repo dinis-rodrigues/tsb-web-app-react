@@ -81,33 +81,29 @@ const Tasks = (props: any) => {
       db.ref(`private/${departmentBoard}/b/${currBoard}`).on(
         "value",
         (snapshot) => {
-          if (snapshot.val()) {
-            setColumns(snapshot.val());
-            if (openTaskId && !openedFromUrl) {
-              // console.log(openedFromUrl);
-              openMatchingTaskId(
-                openTaskId,
-                openColId,
-                snapshot.val(),
-                departmentBoard,
-                currBoard,
-                setOpenedFromUrl,
-                setCurrTaskInfo,
-                setModalTask,
-                setCurrTaskColumn,
-                setCurrTaskNum,
-                setDrawerOpen
-              );
-            }
-            getTaskBoardTitleAndColor(
+          if (!snapshot.val()) setRedirectToBoard(`/dashboard`);
+          setColumns(snapshot.val());
+          if (openTaskId && !openedFromUrl) {
+            // console.log(openedFromUrl);
+            openMatchingTaskId(
+              openTaskId,
+              openColId,
+              snapshot.val(),
               departmentBoard,
-              departments,
-              setDepartment
+              currBoard,
+              setOpenedFromUrl,
+              setCurrTaskInfo,
+              setModalTask,
+              setCurrTaskColumn,
+              setCurrTaskNum,
+              setDrawerOpen
             );
-          } else {
-            // If theres something wrong with the paths, go to general
-            setRedirectToBoard(`/${departmentBoard}/b/General`);
           }
+          getTaskBoardTitleAndColor(
+            departmentBoard,
+            departments,
+            setDepartment
+          );
         }
       );
       // Get users metadata and set the state of user options
