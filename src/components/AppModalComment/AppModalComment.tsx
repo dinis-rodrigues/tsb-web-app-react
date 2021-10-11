@@ -31,7 +31,7 @@ const AppModalComment = ({ comment, USER, usersMetadata }: Props) => {
   const insertImgSection = (
     <div className={cx({ "ml-1": selfComment })}>
       <AvatarOverlap
-        users={[USER.id]}
+        users={[comment.createdBy]}
         usersMetadata={usersMetadata}
         size={"md"}
         rounded={true}
