@@ -72,6 +72,16 @@ const Nav = () => {
           <li className="metismenu-item">
             <NavLink
               className="metismenu-link"
+              to="/gallery"
+              activeClassName="active"
+              onClick={collapseMenus}
+            >
+              <i className="metismenu-icon pe-7s-photo"></i>Gallery
+            </NavLink>
+          </li>
+          <li className="metismenu-item">
+            <NavLink
+              className="metismenu-link"
               to="/forum"
               activeClassName="active"
               onClick={collapseMenus}
