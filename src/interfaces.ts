@@ -1,3 +1,5 @@
+import { ColorPickerValue } from "react-rainbow-components/components/ColorPicker";
+
 // Public Information
 export interface PublicTeam {
   [key: string]: PublicUser;
@@ -539,4 +541,48 @@ export interface userContext {
   joinedIn: string;
   usrImg: string;
   usrImgComp: string;
+}
+
+// Sponsors
+
+export interface SponsorBracketsDB {
+  [key: string]: SponsorBracketDB;
+}
+
+export interface SponsorBracketDB {
+  name: string;
+  bottomMargin: number;
+  topMargin: number;
+  numColumns: number;
+  sponsorsBoardList: string[];
+  bracketSponsors: SponsorsOrder;
+  color?: ColorPickerValue;
+}
+
+export interface SponsorsOrder {
+  [key: string]: Sponsor;
+}
+export interface Sponsor {
+  order?: number;
+  level: string;
+  name: string;
+  svgPath?: string;
+  logoWhite?: string;
+  logoBlack?: string;
+  url: string;
+  value?: number;
+  history?: SponsorHistory;
+}
+
+export interface SponsorHistory {
+  [key: string]: number;
+}
+
+export interface SponsorRetroactives {
+  [index: number]: number;
+}
+
+export interface SponsorChartData {
+  name: string;
+  data: number[];
 }

@@ -194,6 +194,16 @@ const Nav = () => {
               <i className="metismenu-icon pe-7s-graph2"></i>Cash Flow
             </NavLink>
           </li>
+          <li className="metismenu-item">
+            <NavLink
+              className="metismenu-link"
+              to="/sponsors"
+              activeClassName="active"
+              onClick={collapseMenus}
+            >
+              <i className="metismenu-icon pe-7s-note2"></i>Sponsors
+            </NavLink>
+          </li>
         </ul>
       </div>
       {userAdmin && (

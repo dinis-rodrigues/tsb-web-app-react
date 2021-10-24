@@ -4,6 +4,8 @@
   "private": true,
   "homepage": "https://tsb.tecnico.ulisboa.pt/",
   "dependencies": {
+    "@dnd-kit/core": "^4.0.0",
+    "@dnd-kit/sortable": "^5.0.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
@@ -30,6 +32,7 @@
     "firebase": "^8.4.2",
     "html-react-parser": "^1.2.6",
     "iconv-lite": "^0.4.24",
+    "js-file-download": "^0.4.12",
     "nprogress": "^0.2.0",
     "pdfmake": "^0.1.71",
     "react": "^17.0.2",
@@ -60,8 +63,8 @@
     "redux": "^3.7.2",
     "sweetalert2": "^10.16.4",
     "sweetalert2-react-content": "^3.3.1",
-    "web-vitals": "^1.1.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "web-vitals": "^1.1.1"
   },
   "scripts": {
     "start": "PORT=3005 react-scripts start",

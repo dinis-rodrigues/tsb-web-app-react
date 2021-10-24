@@ -43,6 +43,8 @@ const NotificationsPage = lazy(
 
 const Register = lazy(() => import("../../Pages/Register/Register"));
 
+const Sponsors = lazy(() => import("../../Pages/Sponsors/Sponsors"));
+
 function App() {
   return (
     <Fragment>
@@ -93,6 +95,7 @@ function App() {
           />
           <PrivateRoute exact path="/forum" component={Forum} />
           <PrivateRoute path="/notifications" component={NotificationsPage} />
+          <PrivateRoute path="/sponsors" component={Sponsors} />
           <PrivateRoute
             exact
             path="/userManagement"
