@@ -1,8 +1,4 @@
-import {
-  getSvgStringFromPath,
-  replaceLinearGradients,
-  replaceSVGWidthAndHeight,
-} from "./sponsorsUtils";
+import { getSvgStringFromPath } from "./sponsorsUtils";
 import parse from "html-react-parser";
 import { Spinner } from "react-rainbow-components";
 import { useEffect, useState } from "react";

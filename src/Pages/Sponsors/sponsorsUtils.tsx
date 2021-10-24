@@ -7,7 +7,6 @@ import {
   SponsorBracketDB,
   SponsorBracketsDB,
   SponsorHistory,
-  SponsorRetroactives,
   SponsorsOrder,
 } from "../../interfaces";
 import { ApexOptions } from "apexcharts";
@@ -494,8 +493,6 @@ const getAllSponsorBrackets = (setBrackets: Function) => {
 };
 
 const sendSponsorsToInventory = () => {
-  const sponsorBoardList: string[] = [];
-  const lvl = "Institute";
   db.ref("private/sponsors/brackets")
     .once("value")
     .then((snapshot) => {

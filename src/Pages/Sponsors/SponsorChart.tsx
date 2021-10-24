@@ -1,7 +1,7 @@
 import { buildSponsorGraph, sponsorChartOptions } from "./sponsorsUtils";
 import Chart from "react-apexcharts";
 import { useEffect, useState } from "react";
-import { Sponsor, SponsorChartData, SponsorHistory } from "../../interfaces";
+import { Sponsor, SponsorChartData } from "../../interfaces";
 
 type Props = {
   sponsorInfo: Sponsor | null;

@@ -9,7 +9,7 @@ import {
   getRetroActives,
   sponsorSkeleton,
 } from "./sponsorsUtils";
-import { Nav, NavItem, NavLink, UncontrolledTooltip } from "reactstrap";
+import { Nav, NavItem, NavLink } from "reactstrap";
 import cx from "classnames";
 import Inventory from "./Inventory";
 import SponsorModal from "./SponsorModal";

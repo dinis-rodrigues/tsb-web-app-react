@@ -8,7 +8,6 @@ import {
 import {
   DndContext,
   closestCenter,
-  MouseSensor,
   PointerSensor,
   TouchSensor,
   DragOverlay,
@@ -27,15 +26,12 @@ import {
   handleDragCancel,
   handleDragEnd,
   handleDragStart,
-  sendSponsorsToDB,
-  sendSponsorsToInventory,
   updateSponsorDropdown,
 } from "./sponsorsUtils";
 import { Sponsor, SponsorBracketDB, SponsorsOrder } from "../../interfaces";
 import { db } from "../../config/firebase";
 import SponsorModal from "./SponsorModal";
 import BracketModal from "./BracketModal";
-import { normalizedString } from "../../utils/generalFunctions";
 
 type Props = {
   bracket: SponsorBracketDB;

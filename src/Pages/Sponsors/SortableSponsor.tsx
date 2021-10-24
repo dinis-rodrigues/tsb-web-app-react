@@ -1,4 +1,3 @@
-import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
@@ -34,14 +33,7 @@ export const SortableSponsor = ({
   ...props
 }: Props) => {
   const sortable = useSortable({ id: sponsorId });
-  const {
-    attributes,
-    listeners,
-    isDragging,
-    setNodeRef,
-    transform,
-    transition,
-  } = sortable;
+  const { attributes, listeners, setNodeRef, transform, transition } = sortable;
 
   const nstyle = {
     transform: CSS.Transform.toString(transform),

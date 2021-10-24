@@ -1,9 +1,7 @@
-import { Fragment, useEffect, useState } from "react";
-import { db } from "../../config/firebase";
+import { Fragment, useState } from "react";
 import { Sponsor, SponsorBracketsDB } from "../../interfaces";
 import InventorySponsorCard from "./InventorySponsorCard";
 import SponsorModal from "./SponsorModal";
-import { getInventorySponsors } from "./sponsorsUtils";
 
 type Props = {
   retroActives: number[];
