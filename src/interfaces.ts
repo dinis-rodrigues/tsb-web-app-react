@@ -586,3 +586,36 @@ export interface SponsorChartData {
   name: string;
   data: number[];
 }
+
+// Gallery
+export interface PublicGallery {
+  [key: string]: GalleryItem;
+}
+export interface GalleryItem {
+  name: string;
+  description?: string;
+  timestamp: number;
+}
+
+export interface GalleryAlbum {
+  [key: string]: GalleryPhoto;
+}
+
+export interface GalleryPhoto {
+  imagePath: string;
+  rzImgPath: string;
+  description?: string;
+  createdAt: number;
+}
+
+export interface UploadedImgResponse {
+  success: boolean;
+  msg: string;
+  rzImg: string;
+}
+
+export interface UploadingImages {
+  current: number;
+  total: number;
+  isUploading: boolean;
+}

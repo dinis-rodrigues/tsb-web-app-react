@@ -789,7 +789,6 @@ const uploadSponsorSvgToServer = (
   setSponsorInfo: Function
 ) => {
   if (!filesList.length || !sponsorId || !sponsorInfo) return;
-  console.log(filesList);
   let headers = new Headers();
   headers.append("Origin", "http://localhost:3005");
 

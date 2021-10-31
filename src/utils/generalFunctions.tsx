@@ -24,12 +24,13 @@ import {
 const toastrMessage = (
   title: string,
   message: string,
-  type: "error" | "success" | "info" | "warning" | "default"
+  type: "error" | "success" | "info" | "warning" | "default",
+  autoclose: boolean = true
 ) =>
   toast(<ToastrMessage title={title} msg={message} type={type} />, {
     transition: Bounce,
     closeButton: true,
-    autoClose: 5000,
+    autoClose: autoclose ? 5000 : false,
     position: "top-right",
     type: type,
     className: "zIndex-inf",
@@ -122,46 +123,68 @@ const numberWithCommas = (x: number) => {
  * @param  {string} d DateObject
  * @return {string} dd/mm/yyyy
  */
-const dateToString = (d: Date, withHours = false) => {
-  let day = ("0" + d.getDate()).slice(-2);
-  let month = ("0" + String(d.getMonth() + 1)).slice(-2);
-  let year = d.getFullYear().toString();
-  let dateString = `${day}/${month}/${year}`;
-  if (withHours) {
-    dateString += " ";
-    dateString += ("0" + d.getHours()).slice(-2);
-    dateString += "h";
-    dateString += ("0" + d.getMinutes()).slice(-2);
+const dateToString = (d: Date | number, withHours = false) => {
+  if (d instanceof Date) {
+    let day = ("0" + d.getDate()).slice(-2);
+    let month = ("0" + String(d.getMonth() + 1)).slice(-2);
+    let year = d.getFullYear().toString();
+    let dateString = `${day}/${month}/${year}`;
+    if (withHours) {
+      dateString += " ";
+      dateString += ("0" + d.getHours()).slice(-2);
+      dateString += "h";
+      dateString += ("0" + d.getMinutes()).slice(-2);
+    }
+    return dateString;
+  } else {
+    let newD = new Date(d);
+    let day = ("0" + newD.getDate()).slice(-2);
+    let month = ("0" + String(newD.getMonth() + 1)).slice(-2);
+    let year = newD.getFullYear().toString();
+    let dateString = `${day}/${month}/${year}`;
+    if (withHours) {
+      dateString += " ";
+      dateString += ("0" + newD.getHours()).slice(-2);
+      dateString += "h";
+      dateString += ("0" + newD.getMinutes()).slice(-2);
+    }
+    return dateString;
   }
-  return dateString;
 };
 
 /** Transforms the date string into Date Object
  * @param  {string} date dd/mm/yyy or dd-mm-yyyy
  * @return {Date Object}
  */
-const inputToDate = (date: string) => {
+const inputToDate = (date: string | number) => {
   if (!date) {
     return new Date();
   }
-  let splitter = "";
-  if (date.includes("/")) {
-    splitter = "/";
-  } else if (date.includes("-")) {
-    splitter = "-";
+  if (typeof date === "string") {
+    let splitter = "";
+    if (date.includes("/")) {
+      splitter = "/";
+    } else if (date.includes("-")) {
+      splitter = "-";
+    } else {
+      // console.log("Incorrect date format");
+      return new Date();
+    }
+    const arr: Array<string> = date.split(splitter);
+    if (arr.length <= 1) {
+      // when the state is initializing, the date doesn't exist yet
+      return new Date();
+    }
+    const year = parseInt(arr[2]);
+    const month = parseInt(arr[1]) - 1;
+    const day = parseInt(arr[0]);
+    return new Date(year, month, day);
+  } else if (typeof date === "number") {
+    // then it is a timestamp
+    return new Date(date);
   } else {
-    // console.log("Incorrect date format");
     return new Date();
   }
-  const arr: Array<string> = date.split(splitter);
-  if (arr.length <= 1) {
-    // when the state is initializing, the date doesn't exist yet
-    return new Date();
-  }
-  const year = parseInt(arr[2]);
-  const month = parseInt(arr[1]) - 1;
-  const day = parseInt(arr[0]);
-  return new Date(year, month, day);
 };
 
 /** Extends a date input to a string format
