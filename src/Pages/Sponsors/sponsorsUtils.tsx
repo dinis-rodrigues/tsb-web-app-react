@@ -4,8 +4,9 @@ import { db } from "../../config/firebase";
 import { v4 as uuid } from "uuid";
 import {
   Sponsor,
-  SponsorBracketDB,
+  SponsorBracketListItem,
   SponsorBracketsDB,
+  SponsorBracketsListDB,
   SponsorHistory,
   SponsorsOrder,
 } from "../../interfaces";
@@ -21,13 +22,11 @@ const sponsorSkeleton: Sponsor = {
   svgPath: "",
   url: "",
 };
-const bracketSkeleton: SponsorBracketDB = {
+const bracketSkeleton: SponsorBracketListItem = {
   name: "New Bracket",
   bottomMargin: 0,
   topMargin: 0,
   numColumns: 4,
-  sponsorsBoardList: [],
-  bracketSponsors: {},
 };
 
 const sponsorChartOptions: ApexOptions = {
@@ -222,7 +221,7 @@ const deleteBracket = (bracketId: string, sponsorsItems: string[]) => {
 
 const saveBracket = (
   bracketId: string,
-  bracketInfo: SponsorBracketDB | null,
+  bracketInfo: SponsorBracketListItem | null,
   sponsorsItems: string[],
   setBracketModalOpen: Function
 ) => {
@@ -249,7 +248,10 @@ const saveBracket = (
 };
 const bracketInputHandler = (value: string, setBracketInfo: Function) => {
   if (!value) return;
-  setBracketInfo((state: SponsorBracketDB) => ({ ...state, name: value }));
+  setBracketInfo((state: SponsorBracketListItem) => ({
+    ...state,
+    name: value,
+  }));
 };
 const bracketSliderHandler = (value: string, setBracketInfo: Function) => {
   if (!value) return;
@@ -263,7 +265,7 @@ const bracketSliderHandler = (value: string, setBracketInfo: Function) => {
     numVal === 11
   )
     numVal = 12;
-  setBracketInfo((state: SponsorBracketDB) => ({
+  setBracketInfo((state: SponsorBracketListItem) => ({
     ...state,
     numColumns: numVal,
   }));
@@ -477,7 +479,7 @@ const sendSponsorsToDB = () => {
 
 const getAllSponsorBrackets = (setBrackets: Function) => {
   db.ref("private/sponsors/bracketsList").on("value", (snapshot) => {
-    const sponsorBrackets: SponsorBracketsDB = snapshot.val();
+    const sponsorBrackets: SponsorBracketListItem = snapshot.val();
     if (!sponsorBrackets) return;
     setBrackets(
       Object.entries(sponsorBrackets).sort((a, b) => {
@@ -496,7 +498,7 @@ const sendSponsorsToInventory = () => {
   db.ref("private/sponsors/brackets")
     .once("value")
     .then((snapshot) => {
-      const brackets: SponsorBracketsDB = snapshot.val();
+      const brackets: SponsorBracketsListDB = snapshot.val();
       Object.entries(brackets).forEach(([bracketId, bracket]) => {
         const auxBrcket = {
           name: bracket.name,
@@ -520,7 +522,7 @@ const getSponsorsListFromBrackets = (
   db.ref("private/sponsors/brackets")
     .child(bracketId)
     .on("value", (snapshot) => {
-      const sponsorBracket: SponsorBracketDB = snapshot.val();
+      const sponsorBracket: SponsorBracketsDB = snapshot.val();
       if (!sponsorBracket) {
         setSponsorsItems([]);
         return;
@@ -729,7 +731,7 @@ const getInventorySponsors = (
 
 const getMatchingBracketId = (
   sponsorInfo: Sponsor,
-  existingBrackets: SponsorBracketsDB | undefined,
+  existingBrackets: SponsorBracketsListDB | undefined,
   setCurrBracketId: Function
 ) => {
   let bracketidToUpdate = undefined;
@@ -833,6 +835,8 @@ const downloadSponsorFile = (url: string | undefined, name: string) => {
       fileDownload(res.data, filename);
     });
 };
+
+const publishSponsorsToWebsite = () => {};
 
 export {
   handleDragCancel,

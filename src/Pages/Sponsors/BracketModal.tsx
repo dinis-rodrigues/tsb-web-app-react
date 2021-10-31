@@ -1,6 +1,6 @@
 import NumberFormat from "react-number-format";
 import { Button, Modal, Slider, ColorPicker } from "react-rainbow-components";
-import { SponsorBracketDB } from "../../interfaces";
+import { SponsorBracketListItem } from "../../interfaces";
 import {
   bracketColorHandler,
   bracketInputHandler,
@@ -14,7 +14,7 @@ type Props = {
   isModalOpen: boolean;
   setIsModalOpen: Function;
   bracketId: string;
-  bracketInfo: SponsorBracketDB | null;
+  bracketInfo: SponsorBracketListItem | null;
   setBracketInfo: Function;
   sponsorsItems: string[];
 };

@@ -1,6 +1,11 @@
 import { Fragment, useEffect, useState } from "react";
 import { db } from "../../config/firebase";
-import { Sponsor, SponsorBracketDB, SponsorBracketsDB } from "../../interfaces";
+import {
+  Sponsor,
+  SponsorBracketsListDB,
+  SponsorBracketsDB,
+  SponsorBracketListItem,
+} from "../../interfaces";
 import SponsorBracket from "./SponsorBracket";
 import {
   bracketSkeleton,
@@ -16,7 +21,8 @@ import SponsorModal from "./SponsorModal";
 import BracketModal from "./BracketModal";
 
 const Sponsors = () => {
-  const [brackets, setBrackets] = useState<[string, SponsorBracketDB][]>();
+  const [brackets, setBrackets] =
+    useState<[string, SponsorBracketListItem][]>();
   const [retroActives, setRetroActives] = useState([]);
   const [activeTab, setactiveTab] = useState("Sponsors");
 
@@ -26,7 +32,8 @@ const Sponsors = () => {
   const [newBracketInfo, setNewBracketInfo] = useState(bracketSkeleton);
   const [createBracketModalOpen, setCreateBracketModalOpen] = useState(false);
 
-  const [existingBrackets, setExistingBrackets] = useState<SponsorBracketsDB>();
+  const [existingBrackets, setExistingBrackets] =
+    useState<SponsorBracketsListDB>();
   const [sponsors, setSponsors] = useState<[string, Sponsor][]>([]);
 
   useEffect(() => {
@@ -74,17 +81,24 @@ const Sponsors = () => {
               </Nav>
             </div>
             <div className="col d-flex justify-content-right align-items-center">
-              <div className="">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    setCreateModalOpen(true);
-                    setNewSponsorInfo(sponsorSkeleton);
-                  }}
-                >
-                  Create Sponsor
-                </button>
-              </div>
+              <button
+                className="btn btn-primary mr-2"
+                onClick={() => {
+                  setCreateModalOpen(true);
+                  setNewSponsorInfo(sponsorSkeleton);
+                }}
+              >
+                Publish to Website
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  setCreateModalOpen(true);
+                  setNewSponsorInfo(sponsorSkeleton);
+                }}
+              >
+                Create Sponsor
+              </button>
             </div>
           </div>
 

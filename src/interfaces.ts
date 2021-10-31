@@ -545,18 +545,25 @@ export interface userContext {
 
 // Sponsors
 
-export interface SponsorBracketsDB {
-  [key: string]: SponsorBracketDB;
+export interface SponsorBracketsListDB {
+  [key: string]: SponsorBracketListItem;
 }
 
-export interface SponsorBracketDB {
+export interface SponsorBracketsDB {
+  [key: string]: SponsorBracket;
+}
+
+export interface SponsorBracketListItem {
   name: string;
   bottomMargin: number;
   topMargin: number;
   numColumns: number;
+  color?: ColorPickerValue;
+}
+
+export interface SponsorBracket {
   sponsorsBoardList: string[];
   bracketSponsors: SponsorsOrder;
-  color?: ColorPickerValue;
 }
 
 export interface SponsorsOrder {

@@ -1,12 +1,12 @@
 import { Fragment, useState } from "react";
-import { Sponsor, SponsorBracketsDB } from "../../interfaces";
+import { Sponsor, SponsorBracketsListDB } from "../../interfaces";
 import InventorySponsorCard from "./InventorySponsorCard";
 import SponsorModal from "./SponsorModal";
 
 type Props = {
   retroActives: number[];
   sponsors: [string, Sponsor][];
-  existingBrackets: SponsorBracketsDB | undefined;
+  existingBrackets: SponsorBracketsListDB | undefined;
 };
 const Inventory = ({ retroActives, sponsors, existingBrackets }: Props) => {
   const [sponsorInfo, setSponsorInfo] = useState<Sponsor | null>(null);

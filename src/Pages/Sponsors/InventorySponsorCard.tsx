@@ -1,10 +1,10 @@
-import { Sponsor, SponsorBracketsDB } from "../../interfaces";
+import { Sponsor, SponsorBracketsListDB } from "../../interfaces";
 import { getMatchingBracketId } from "./sponsorsUtils";
 
 type Props = {
   sponsor: Sponsor;
   sponsorId: string;
-  existingBrackets: SponsorBracketsDB | undefined;
+  existingBrackets: SponsorBracketsListDB | undefined;
   setCurrBracketId: Function;
   setSponsorInfo: Function;
   setModalOpen: Function;
