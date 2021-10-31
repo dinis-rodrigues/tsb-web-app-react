@@ -21,8 +21,10 @@ import cx from "classnames";
 import { db } from "../../config/firebase";
 import { dateToString } from "../../utils/generalFunctions";
 import EditPhotoModal from "./EditPhotoModal";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Gallery = () => {
+  const { isAdminUser } = useAuth();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [galleryInfo, setGalleryInfo] = useState<GalleryItem>();
   const [galleryList, setGalleryList] = useState<[string, GalleryItem][]>([]);
@@ -92,16 +94,18 @@ const Gallery = () => {
                         ))
                       : "Create an Album"}
                   </ul>
-                  <button
-                    className="btn btn-outline-info w-100 my-2"
-                    onClick={() => {
-                      if (uploadingImgs.isUploading) return;
-                      openCreateGalleryModal(setModalIsOpen, setEditGallery);
-                    }}
-                  >
-                    Create Album
-                  </button>
-                  {activeGallery && (
+                  {isAdminUser && (
+                    <button
+                      className="btn btn-outline-info w-100 my-2"
+                      onClick={() => {
+                        if (uploadingImgs.isUploading) return;
+                        openCreateGalleryModal(setModalIsOpen, setEditGallery);
+                      }}
+                    >
+                      Create Album
+                    </button>
+                  )}
+                  {activeGallery && isAdminUser && (
                     <Fragment>
                       <div className="galleryDrop">
                         <FileSelector
@@ -151,15 +155,17 @@ const Gallery = () => {
                   {galleryInfo ? `${galleryInfo?.name}` : "No Info"}
                   <div className="btn-actions-pane-right">
                     {galleryInfo && `${dateToString(galleryInfo.timestamp)}`}
-                    <button
-                      className="btn btn-outline-info ml-2"
-                      onClick={() => {
-                        if (uploadingImgs.isUploading) return;
-                        openEditGalleryModal(setModalIsOpen, setEditGallery);
-                      }}
-                    >
-                      Edit
-                    </button>
+                    {isAdminUser && (
+                      <button
+                        className="btn btn-outline-info ml-2"
+                        onClick={() => {
+                          if (uploadingImgs.isUploading) return;
+                          openEditGalleryModal(setModalIsOpen, setEditGallery);
+                        }}
+                      >
+                        Edit
+                      </button>
+                    )}
                   </div>
                 </div>
                 <SimpleReactLightbox>
@@ -174,43 +180,47 @@ const Gallery = () => {
                             >
                               <div className="gallery-item">
                                 <div className="gallery-image">
-                                  <button
-                                    style={{
-                                      position: "absolute",
-                                      top: -2,
-                                      left: -2,
-                                    }}
-                                    className="btn border-0 btn-transition btn-outline-info zIndex-inf"
-                                    onClick={() =>
-                                      openEditPhotoModal(
-                                        img,
-                                        imgId,
-                                        setActivePhoto,
-                                        setImgInfo,
-                                        setEditPhotoModalOpen
-                                      )
-                                    }
-                                  >
-                                    <i className="fa fa-edit "></i>
-                                  </button>
-                                  <button
-                                    style={{
-                                      position: "absolute",
-                                      top: -2,
-                                      right: -2,
-                                    }}
-                                    className="btn border-0 btn-transition btn-outline-danger zIndex-inf"
-                                    onClick={() => {
-                                      deletePhoto(
-                                        activeGallery,
-                                        img.imagePath,
-                                        imgId,
-                                        setModalIsOpen
-                                      );
-                                    }}
-                                  >
-                                    <i className="fa fa-times "></i>
-                                  </button>
+                                  {isAdminUser && (
+                                    <Fragment>
+                                      <button
+                                        style={{
+                                          position: "absolute",
+                                          top: -2,
+                                          left: -2,
+                                        }}
+                                        className="btn border-0 btn-transition btn-outline-info zIndex-inf"
+                                        onClick={() =>
+                                          openEditPhotoModal(
+                                            img,
+                                            imgId,
+                                            setActivePhoto,
+                                            setImgInfo,
+                                            setEditPhotoModalOpen
+                                          )
+                                        }
+                                      >
+                                        <i className="fa fa-edit "></i>
+                                      </button>
+                                      <button
+                                        style={{
+                                          position: "absolute",
+                                          top: -2,
+                                          right: -2,
+                                        }}
+                                        className="btn border-0 btn-transition btn-outline-danger zIndex-inf"
+                                        onClick={() => {
+                                          deletePhoto(
+                                            activeGallery,
+                                            img.imagePath,
+                                            imgId,
+                                            setModalIsOpen
+                                          );
+                                        }}
+                                      >
+                                        <i className="fa fa-times "></i>
+                                      </button>
+                                    </Fragment>
+                                  )}
                                   <a href={img.imagePath}>
                                     <img
                                       src={img.rzImgPath}

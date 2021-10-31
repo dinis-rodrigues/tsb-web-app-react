@@ -749,6 +749,7 @@ const userHasAdminPermissions = (user: userContext | null) => {
   if (
     user.position === "Team Leader" ||
     user.position === "Head of Department" ||
+    user.position === "Technical Director" ||
     user.position === "God"
   )
     return true;
