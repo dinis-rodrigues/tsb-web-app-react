@@ -425,7 +425,7 @@ const saveEditedPhoto = (
  */
 const deletePhoto = (
   activeGallery: string,
-  imgFilePath: string,
+  imgFilePath: string | undefined,
   imgId: string,
   setModalIsOpen: Function
 ) => {

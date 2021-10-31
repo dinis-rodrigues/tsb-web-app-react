@@ -1,6 +1,5 @@
 import { GalleryPhoto } from "../../interfaces";
 import { Modal, Button } from "react-rainbow-components";
-import { useState } from "react";
 import {
   deletePhoto,
   photoInputHandler,
@@ -39,7 +38,12 @@ const EditPhotoModal = ({
               variant="destructive"
               label="Delete from Database"
               onClick={() => {
-                deletePhoto(activeGallery, imgId, setIsModalOpen);
+                deletePhoto(
+                  activeGallery,
+                  imgInfo?.imagePath,
+                  imgId,
+                  setIsModalOpen
+                );
               }}
             />
           </div>
