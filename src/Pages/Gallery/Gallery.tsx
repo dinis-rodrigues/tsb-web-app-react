@@ -188,7 +188,7 @@ const Gallery = () => {
                                           top: -2,
                                           left: -2,
                                         }}
-                                        className="btn border-0 btn-transition btn-outline-info zIndex-inf"
+                                        className="btn border-0 btn-transition btn-outline-light zIndex-inf"
                                         onClick={() =>
                                           openEditPhotoModal(
                                             img,
