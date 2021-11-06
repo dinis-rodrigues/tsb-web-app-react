@@ -594,6 +594,26 @@ export interface SponsorChartData {
   data: number[];
 }
 
+export interface SponsorBracketPublic {
+  sponsorsBoardList: string[];
+  bracketSponsors: SponsorsOrderPublic;
+  name: string;
+  bottomMargin: number;
+  topMargin: number;
+  numColumns: number;
+  color?: ColorPickerValue;
+}
+
+export interface SponsorsOrderPublic {
+  [key: string]: SponsorPublic;
+}
+
+export interface SponsorPublic {
+  name: string;
+  svgPath?: string;
+  url: string;
+}
+
 // Gallery
 export interface PublicGallery {
   [key: string]: GalleryItem;
