@@ -11,7 +11,9 @@ import {
   bracketSkeleton,
   getAllSponsorBrackets,
   getInventorySponsors,
+  getLastEditionDate,
   getRetroActives,
+  publishSponsorsToWebsite,
   sponsorSkeleton,
 } from "./sponsorsUtils";
 import { Nav, NavItem, NavLink } from "reactstrap";
@@ -36,10 +38,13 @@ const Sponsors = () => {
     useState<SponsorBracketsListDB>();
   const [sponsors, setSponsors] = useState<[string, Sponsor][]>([]);
 
+  const [lastEditionDate, setLastEditionDate] = useState<string>("");
+
   useEffect(() => {
     getAllSponsorBrackets(setBrackets);
     getRetroActives(setRetroActives);
     getInventorySponsors(setSponsors, setExistingBrackets);
+    getLastEditionDate(setLastEditionDate);
     return () => {
       db.ref("private/sponsors/brackets").off("value");
       db.ref("private/sponsors/retroActives").off("value");
@@ -81,11 +86,13 @@ const Sponsors = () => {
               </Nav>
             </div>
             <div className="col d-flex justify-content-right align-items-center">
+              <span
+                className={"badge"}
+              >{`Last publish: ${lastEditionDate}`}</span>
               <button
                 className="btn btn-primary mr-2"
                 onClick={() => {
-                  setCreateModalOpen(true);
-                  setNewSponsorInfo(sponsorSkeleton);
+                  publishSponsorsToWebsite(existingBrackets);
                 }}
               >
                 Publish to Website

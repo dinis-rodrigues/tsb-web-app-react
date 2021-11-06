@@ -4,17 +4,25 @@ import { db } from "../../config/firebase";
 import { v4 as uuid } from "uuid";
 import {
   Sponsor,
+  SponsorBracket,
   SponsorBracketListItem,
+  SponsorBracketPublic,
   SponsorBracketsDB,
   SponsorBracketsListDB,
   SponsorHistory,
+  SponsorPublic,
   SponsorsOrder,
+  SponsorsOrderPublic,
 } from "../../interfaces";
 import { ApexOptions } from "apexcharts";
 import { ColorPickerValue } from "react-rainbow-components/components/ColorPicker";
 import fileDownload from "js-file-download";
 import axios from "axios";
-import { normalizedString } from "../../utils/generalFunctions";
+import {
+  dateToString,
+  normalizedString,
+  toastrMessage,
+} from "../../utils/generalFunctions";
 
 const sponsorSkeleton: Sponsor = {
   name: "New Sponsor Name",
@@ -81,6 +89,13 @@ const sponsorChartOptions: ApexOptions = {
   },
 };
 
+/**
+ * Updates company list to show on dropdown of bracket. Shows companies without any
+ * sponsor bracket
+ * @param search
+ * @param sponsors
+ * @param setDropdownResults
+ */
 const updateSponsorDropdown = (
   search: string,
   sponsors: [string, Sponsor][],
@@ -97,6 +112,11 @@ const updateSponsorDropdown = (
   setDropdownResults(res);
 };
 
+/**
+ * Removes sponsor from the entire database
+ * @param sponsorId
+ * @param bracketId
+ */
 const deleteSponsor = (sponsorId: string, bracketId: string | undefined) => {
   // retrieve board items from bracket to remove sponsor
   if (bracketId)
@@ -130,6 +150,13 @@ const deleteSponsor = (sponsorId: string, bracketId: string | undefined) => {
   else db.ref("private/sponsors/inventory").child(sponsorId).remove();
 };
 
+/**
+ * Adds sponsor to selected bracket
+ * @param sponsorId
+ * @param sponsor
+ * @param bracketId
+ * @param bracketName
+ */
 const addSponsorToBracket = (
   sponsorId: string,
   sponsor: Sponsor,
@@ -165,6 +192,12 @@ const addSponsorToBracket = (
         .set(bracketName);
     });
 };
+
+/**
+ * Removes sponsor from bracket
+ * @param sponsorId
+ * @param bracketId
+ */
 const removeSponsorFromBracket = (sponsorId: string, bracketId: string) => {
   // retrieve board items from bracket
   db.ref("private/sponsors/brackets")
@@ -198,6 +231,11 @@ const removeSponsorFromBracket = (sponsorId: string, bracketId: string) => {
     });
 };
 
+/**
+ * Deletes entire bracket, and replaces all sponsors with no bracket assigned
+ * @param bracketId
+ * @param sponsorsItems
+ */
 const deleteBracket = (bracketId: string, sponsorsItems: string[]) => {
   // Update name information in each sponsor of bracket to ""
   sponsorsItems.forEach((sponsorId) => {
@@ -219,6 +257,14 @@ const deleteBracket = (bracketId: string, sponsorsItems: string[]) => {
   db.ref("private/sponsors/brackets").child(bracketId).remove();
 };
 
+/**
+ * Save bracket with newly edited information
+ * @param bracketId
+ * @param bracketInfo
+ * @param sponsorsItems
+ * @param setBracketModalOpen
+ * @returns
+ */
 const saveBracket = (
   bracketId: string,
   bracketInfo: SponsorBracketListItem | null,
@@ -246,6 +292,13 @@ const saveBracket = (
   } else db.ref("private/sponsors/bracketsList").push(bracketInfo); // create new
   setBracketModalOpen(false);
 };
+
+/**
+ * Handler for the bracket information input text
+ * @param value
+ * @param setBracketInfo
+ * @returns
+ */
 const bracketInputHandler = (value: string, setBracketInfo: Function) => {
   if (!value) return;
   setBracketInfo((state: SponsorBracketListItem) => ({
@@ -253,6 +306,13 @@ const bracketInputHandler = (value: string, setBracketInfo: Function) => {
     name: value,
   }));
 };
+
+/**
+ * hHandler for the bracket info slider of number of columns
+ * @param value
+ * @param setBracketInfo
+ * @returns
+ */
 const bracketSliderHandler = (value: string, setBracketInfo: Function) => {
   if (!value) return;
   let numVal = parseInt(value);
@@ -271,6 +331,12 @@ const bracketSliderHandler = (value: string, setBracketInfo: Function) => {
   }));
 };
 
+/**
+ * Handler for the bracket info margins
+ * @param value
+ * @param key
+ * @param setBracketInfo
+ */
 const bracketMarginHandler = (
   value: number,
   key: string,
@@ -280,6 +346,11 @@ const bracketMarginHandler = (
   setBracketInfo((state: SponsorBracketsDB) => ({ ...state, [key]: value }));
 };
 
+/**
+ * Handler for the bracket color picker
+ * @param value
+ * @param setBracketInfo
+ */
 const bracketColorHandler = (
   value: ColorPickerValue,
   setBracketInfo: Function
@@ -287,6 +358,12 @@ const bracketColorHandler = (
   setBracketInfo((state: SponsorBracketsDB) => ({ ...state, color: value }));
 };
 
+/**
+ * Delete a season from the sponsor
+ * @param season
+ * @param sponsorInfo
+ * @param setSponsorInfo
+ */
 const deleteSeason = (
   season: string,
   sponsorInfo: Sponsor,
@@ -300,6 +377,12 @@ const deleteSeason = (
   setSponsorInfo(newSponsorInfo);
 };
 
+/**
+ * Adds a new season to the sponsor
+ * @param sponsorInfo
+ * @param setSponsorInfo
+ * @returns
+ */
 const addNewSeason = (
   sponsorInfo: Sponsor | null,
   setSponsorInfo: Function
@@ -326,6 +409,14 @@ const addNewSeason = (
     setSponsorInfo(newSponsorInfo);
   }
 };
+
+/**
+ * Handler for the sponsor season value
+ * @param value
+ * @param seasonToEdit
+ * @param sponsorInfo
+ * @param setSponsorInfo
+ */
 const editSeasonValueHandler = (
   value: number,
   seasonToEdit: string,
@@ -340,6 +431,14 @@ const editSeasonValueHandler = (
   setSponsorInfo(newSponsorInfo);
 };
 
+/**
+ * Handler for the sponsor season date
+ * @param value
+ * @param seasonToEdit
+ * @param sponsorInfo
+ * @param setSponsorInfo
+ * @param setFocusInput
+ */
 const editSeasonHandler = (
   value: string,
   seasonToEdit: string,
@@ -370,6 +469,12 @@ const editSeasonHandler = (
   setFocusInput(value);
 };
 
+/**
+ * Handler for the sponsor input text information
+ * @param value
+ * @param key
+ * @param setSponsorInfo
+ */
 const sponsorInputHandler = (
   value: number | string,
   key: string,
@@ -378,6 +483,14 @@ const sponsorInputHandler = (
   setSponsorInfo((state: Sponsor) => ({ ...state, [key]: value }));
 };
 
+/**
+ * Saves sponsors in the database
+ * @param sponsorInfo
+ * @param sponsorId
+ * @param bracketid
+ * @param setModalIsOpen
+ * @returns
+ */
 const saveSponsor = (
   sponsorInfo: Sponsor | null,
   sponsorId: string,
@@ -400,10 +513,24 @@ const saveSponsor = (
   } else db.ref("private/sponsors/inventory").push(sponsorInfo);
   if (setModalIsOpen) setModalIsOpen(false);
 };
+
+/**
+ * Handler for the on drag start of sponsor
+ * @param event
+ * @param setActiveId
+ */
 const handleDragStart = (event: DragStartEvent, setActiveId: Function) => {
   setActiveId(event.active.id);
 };
 
+/**
+ * Handler for the on sponsor drage end. It updates the database with a new order of
+ * sponsors for the respective bracket
+ * @param event
+ * @param bracketId
+ * @param setItems
+ * @param setActiveId
+ */
 const handleDragEnd = (
   event: DragEndEvent,
   bracketId: string,
@@ -428,55 +555,18 @@ const handleDragEnd = (
   setActiveId(null);
 };
 
+/**
+ * Handler on cancel drag of sponsor
+ * @param setActiveId
+ */
 const handleDragCancel = (setActiveId: Function) => {
   setActiveId(null);
 };
 
-const sponsorsObj = {
-  brackets: {
-    Prime: {
-      name: "Prime",
-      topMargin: 100000,
-      bottomMargin: 10000,
-      numColumns: 2,
-    },
-    Gold: {
-      name: "Gold",
-      topMargin: 10000,
-      bottomMargin: 5000,
-      numColumns: 3,
-    },
-    Silver: {
-      name: "Silver",
-      topMargin: 5000,
-      bottomMargin: 2500,
-      numColumns: 4,
-    },
-    Copper: {
-      name: "Copper",
-      topMargin: 2500,
-      bottomMargin: 1000,
-      numColumns: 4,
-    },
-    Aluminum: {
-      name: "Aluminum",
-      topMargin: 1000,
-      bottomMargin: 500,
-      numColumns: 6,
-    },
-    Institute: {
-      name: "Institute",
-      topMargin: -1,
-      bottomMargin: 0,
-      numColumns: 3,
-    },
-  },
-};
-
-const sendSponsorsToDB = () => {
-  db.ref("private/sponsors").set(sponsorsObj);
-};
-
+/**
+ * Retrieves all existing sponsor brackets
+ * @param setBrackets
+ */
 const getAllSponsorBrackets = (setBrackets: Function) => {
   db.ref("private/sponsors/bracketsList").on("value", (snapshot) => {
     const sponsorBrackets: SponsorBracketListItem = snapshot.val();
@@ -494,26 +584,12 @@ const getAllSponsorBrackets = (setBrackets: Function) => {
   });
 };
 
-const sendSponsorsToInventory = () => {
-  db.ref("private/sponsors/brackets")
-    .once("value")
-    .then((snapshot) => {
-      const brackets: SponsorBracketsListDB = snapshot.val();
-      Object.entries(brackets).forEach(([bracketId, bracket]) => {
-        const auxBrcket = {
-          name: bracket.name,
-          numColumns: bracket.numColumns,
-          topMargin: bracket.topMargin,
-          bottomMargin: bracket.bottomMargin,
-        };
-        db.ref("private/sponsors/")
-          .child("bracketsList")
-          .child(bracket.name)
-          .set(auxBrcket);
-      });
-    });
-};
-
+/**
+ * Retrieves sponsor list order from respective bracket
+ * @param bracketId
+ * @param setSponsorsItems
+ * @param setSponsorsObj
+ */
 const getSponsorsListFromBrackets = (
   bracketId: string,
   setSponsorsItems: Function,
@@ -603,6 +679,14 @@ const replaceLinearGradients = (s: string, toFind: string, expr = "linear") => {
   return s;
 };
 
+/**
+ * Builds sponsor seasons chart to display on modal
+ * @param data
+ * @param retroActives
+ * @param setChartSeries
+ * @param setChartLabels
+ * @returns
+ */
 const buildSponsorGraph = (
   data: SponsorHistory | undefined,
   retroActives: number[],
@@ -625,6 +709,12 @@ const buildSponsorGraph = (
   setChartLabels([...labels]);
 };
 
+/**
+ * Calculates sponsor retroActives based on all seasons data and specified retroActives values
+ * @param data
+ * @param retroActives
+ * @returns
+ */
 const calculateRetroActives = (
   data: SponsorHistory | undefined,
   retroActives: number[]
@@ -647,6 +737,10 @@ const calculateRetroActives = (
   return { simpleValues: simpleValues, retroValues: retroValues };
 };
 
+/**
+ * Retrieves retroActives values from database
+ * @param setRetroValues
+ */
 const getRetroActives = (setRetroValues: Function) => {
   db.ref("private/sponsors/retroActives").on("value", (snapshot) => {
     const retroVals: number[] = snapshot.val();
@@ -655,6 +749,11 @@ const getRetroActives = (setRetroValues: Function) => {
   });
 };
 
+/**
+ * Retrieve all sponsors from existing inventory in database
+ * @param setSponsors
+ * @param setExistingBrackets
+ */
 const getInventorySponsors = (
   setSponsors: Function,
   setExistingBrackets: Function
@@ -681,54 +780,12 @@ const getInventorySponsors = (
   });
 };
 
-// const saveSVGinServer = async () => {
-//   db.ref("private/sponsors/inventory")
-//     .once("value")
-//     .then((snapshot) => {
-//       const allSponsors: SponsorsOrder = snapshot.val();
-
-//       Object.entries(allSponsors).forEach(([sponsorId, sponsor]) => {
-//         let headers = new Headers();
-//         headers.append("Content-Type", "application/json");
-//         headers.append("Accept", "text/html");
-//         headers.append("Origin", "http://localhost:3005");
-
-//         const encodedSvg = JSON.stringify(sponsor.svgString);
-//         var data = new FormData();
-//         data.append("svgString", encodedSvg);
-//         data.append("sponsorId", sponsorId);
-//         data.append("fileName", sponsorId + ".svg");
-
-//         fetch(
-//           "https://tecnicosolarboat.tecnico.ulisboa.pt/public/saveSponsorFile.php",
-//           {
-//             method: "POST",
-//             body: data,
-//           }
-//         )
-//           .then(function (res) {
-//             return res.text();
-//           })
-//           .then((r) => {
-//             if (r) {
-//               sponsor.svgPath = r;
-//               delete sponsor.svgString;
-//               db.ref("private/sponsors/inventory")
-//                 .child(sponsorId)
-//                 .set(sponsor);
-//               db.ref("private/sponsors/brackets")
-//                 .child(sponsor.level)
-//                 .child("bracketSponsors")
-//                 .child(sponsorId)
-//                 .set(sponsor);
-//               console.log("Saved");
-//             }
-//           })
-//           .catch((err) => console.log(err));
-//       });
-//     });
-// };
-
+/**
+ * Retrieves bracketId based on sponsor info bracket name
+ * @param sponsorInfo
+ * @param existingBrackets
+ * @param setCurrBracketId
+ */
 const getMatchingBracketId = (
   sponsorInfo: Sponsor,
   existingBrackets: SponsorBracketsListDB | undefined,
@@ -745,6 +802,12 @@ const getMatchingBracketId = (
   setCurrBracketId(bracketidToUpdate);
 };
 
+/**
+ * Retrieves and builds an svg string from existing svg url on server
+ * @param svgPath
+ * @param setSvgString
+ * @returns
+ */
 const getSvgStringFromPath = async (
   svgPath: string | undefined,
   setSvgString: Function
@@ -780,6 +843,19 @@ type UploadResponse = {
   error: boolean;
   msg: string;
 };
+
+/**
+ * Uploads SVG file to server
+ * @param filesList
+ * @param sponsorInfo
+ * @param sponsorId
+ * @param bracketId
+ * @param fileToDelete
+ * @param logoType
+ * @param setFileValue
+ * @param setSponsorInfo
+ * @returns
+ */
 const uploadSponsorSvgToServer = (
   filesList: FileList,
   sponsorInfo: Sponsor | null,
@@ -822,6 +898,12 @@ const uploadSponsorSvgToServer = (
     });
 };
 
+/**
+ * Downloads respectie sponsor file
+ * @param url
+ * @param name
+ * @returns
+ */
 const downloadSponsorFile = (url: string | undefined, name: string) => {
   if (!url) return;
   let filename = url.split("/").pop();
@@ -836,16 +918,125 @@ const downloadSponsorFile = (url: string | undefined, name: string) => {
     });
 };
 
-const publishSponsorsToWebsite = () => {};
+/**
+ * Publishes a bracket to public database with all respective sponsors order and information
+ * @param bracketId
+ * @param bracketInfo
+ * @param bracket
+ */
+const publishBracketToWebsite = (
+  bracketId: string,
+  bracketInfo: SponsorBracketListItem,
+  bracket: SponsorBracket
+) => {
+  const newSponsorObject: SponsorsOrderPublic = {};
+  Object.entries(bracket.bracketSponsors).forEach(([sponsorId, sponsor]) => {
+    // Build a sponsor with public information (remove values and history)
+    let newSponsorInfo: SponsorPublic = {
+      name: sponsor.name,
+      svgPath: sponsor.svgPath,
+      url: sponsor.url,
+    };
+    newSponsorObject[sponsorId] = newSponsorInfo;
+  });
+  // Publish bracket
+  const publicBracket: SponsorBracketPublic = {
+    ...bracketInfo,
+    sponsorsBoardList: bracket.sponsorsBoardList,
+    bracketSponsors: { ...newSponsorObject },
+  };
+
+  // Publish public bracket to public database
+  db.ref("public/officialWebsite/sponsors/brackets")
+    .child(bracketId)
+    .set(publicBracket)
+    .catch((err) => {
+      if (err)
+        toastrMessage(
+          "Error!",
+          `An error occurred while publishing ${bracketInfo.name}`,
+          "error"
+        );
+    });
+};
+
+/**
+ * Retrieves last publishing date of sponsors to website
+ * @param setLastChangeDate
+ */
+const getLastEditionDate = (setLastChangeDate: Function) => {
+  db.ref("public/officialWebsite/sponsors/lastChange").on(
+    "value",
+    (snapshot) => {
+      const lastChangeTimestamp: number = snapshot.val();
+      if (!lastChangeTimestamp) return;
+      const lastChangeDate = dateToString(lastChangeTimestamp, true);
+      console.log("Last date", lastChangeDate);
+      setLastChangeDate(lastChangeDate);
+    }
+  );
+};
+
+/**
+ * Updates new publish date to website, on the database
+ */
+const publishLastChangeDate = () => {
+  const lastChangeTimeStamp = new Date().getTime();
+  db.ref("public/officialWebsite/sponsors/lastChange").set(lastChangeTimeStamp);
+};
+
+/**
+ * Publishes all sponsor brackets to public website database
+ * @param existingBrackets
+ * @returns
+ */
+const publishSponsorsToWebsite = async (
+  existingBrackets: SponsorBracketsListDB | undefined
+) => {
+  if (!existingBrackets) return;
+  // remove existing from website
+  const res = await db
+    .ref("public/officialWebsite/sponsors")
+    .remove()
+    .catch((err) => {
+      if (err)
+        toastrMessage(
+          "Error!",
+          `An error occurred while replacing sponsors`,
+          "error"
+        );
+    });
+  console.log("Remove result", res);
+
+  // Get all existing brackets with sponsors
+  db.ref("private/sponsors/brackets")
+    .once("value")
+    .then((snapshot) => {
+      const allBrackets: SponsorBracketsDB = snapshot.val();
+      if (!allBrackets) return;
+      Object.entries(allBrackets).forEach(([bracketId, bracket]) => {
+        // For each bracket, publish to public db of sponsors
+        publishBracketToWebsite(
+          bracketId,
+          existingBrackets[bracketId],
+          bracket
+        );
+      });
+      // Publish last edition timestamp
+      publishLastChangeDate();
+      toastrMessage(
+        "Operation Completed",
+        `Publishing sponsors to website complete.`,
+        "success"
+      );
+    });
+};
 
 export {
   handleDragCancel,
   handleDragEnd,
   handleDragStart,
-  sponsorsObj,
-  sendSponsorsToDB,
   getAllSponsorBrackets,
-  sendSponsorsToInventory,
   getSponsorsListFromBrackets,
   replaceLinearGradients,
   getStringMatches,
@@ -867,7 +1058,6 @@ export {
   saveBracket,
   sponsorSkeleton,
   getInventorySponsors,
-  // saveSVGinServer,
   getSvgStringFromPath,
   uploadSponsorSvgToServer,
   downloadSponsorFile,
@@ -878,4 +1068,6 @@ export {
   addSponsorToBracket,
   updateSponsorDropdown,
   deleteSponsor,
+  publishSponsorsToWebsite,
+  getLastEditionDate,
 };

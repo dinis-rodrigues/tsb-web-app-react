@@ -28,13 +28,17 @@ import {
   handleDragStart,
   updateSponsorDropdown,
 } from "./sponsorsUtils";
-import { Sponsor, SponsorBracketDB, SponsorsOrder } from "../../interfaces";
+import {
+  Sponsor,
+  SponsorBracketListItem,
+  SponsorsOrder,
+} from "../../interfaces";
 import { db } from "../../config/firebase";
 import SponsorModal from "./SponsorModal";
 import BracketModal from "./BracketModal";
 
 type Props = {
-  bracket: SponsorBracketDB;
+  bracket: SponsorBracketListItem;
   retroActives: number[];
   bracketId: string;
   sponsors: [string, Sponsor][];
@@ -65,7 +69,8 @@ const SponsorBracket = ({
 
   const [currBracketId, setCurrBracketId] = useState("");
 
-  const [bracketInfo, setBracketInfo] = useState<SponsorBracketDB>(bracket);
+  const [bracketInfo, setBracketInfo] =
+    useState<SponsorBracketListItem>(bracket);
   const [filterSearch, setFilterSearch] = useState("");
 
   const [dropdownResults, setDropdownResults] = useState<[string, Sponsor][]>(
@@ -164,7 +169,6 @@ const SponsorBracket = ({
             </UncontrolledButtonDropdown>
           </div>
         </div>
-        {/* <button onClick={() => sendSponsorsToInventory()}>Send</button> */}
         {sponsorsItems && Object.entries(sponsorsObj).length > 0 && (
           <DndContext
             sensors={sensors}
