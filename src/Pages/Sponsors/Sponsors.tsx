@@ -3,7 +3,6 @@ import { db } from "../../config/firebase";
 import {
   Sponsor,
   SponsorBracketsListDB,
-  SponsorBracketsDB,
   SponsorBracketListItem,
 } from "../../interfaces";
 import SponsorBracket from "./SponsorBracket";
