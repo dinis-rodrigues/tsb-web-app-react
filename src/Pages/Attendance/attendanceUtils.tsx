@@ -234,6 +234,7 @@ const updateUserAttendance = (
   if (!user) return;
   if (!userHasPermission(user)) {
     toastrMessage("Sorry!", "You have insufficient permissions.", "error");
+    return;
   }
   // First check if it is a general meeting or department meeting to update
   let statType = "departmentStats";
