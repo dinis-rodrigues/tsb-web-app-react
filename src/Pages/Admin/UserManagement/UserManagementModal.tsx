@@ -147,7 +147,9 @@ const UserManagementModal = ({
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
               }}
+              menuPortalTarget={document.body}
             />
           </div>
           <div className="col">
