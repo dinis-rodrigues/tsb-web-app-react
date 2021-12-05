@@ -169,6 +169,11 @@ const firebaseConfig = {
 src/config/firebase.tsx
 ```
 
+In development you should use a copy of the original database . In the case something goes
+wrong, your original DB remains intact. So just repeat these steps for the second one.
+In our config file you will find both API keys. Remember to use the development API key,
+and when building for production, use the original one.
+
 ### PHP Setup
 
 As previously mentioned, profile pictures are stored in the server using PHP.
