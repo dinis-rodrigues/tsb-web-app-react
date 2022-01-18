@@ -5,10 +5,8 @@ function emailValidate(email: string) {
       email
     )
   ) {
-    // console.log("valid email");
     return true;
   }
-  // console.log("invalid email");
   return false;
 }
 

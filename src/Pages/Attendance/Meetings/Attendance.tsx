@@ -18,12 +18,10 @@ const Attendance = () => {
 
   useEffect(() => {
     // Retrieve current events
-    // console.log("rendering tab");
 
     db.ref("private/events/current").on("value", (snapshot) => {
       if (!snapshot.val()) return false;
       const events: EventDatabase = snapshot.val();
-      // // console.log("Events to store", events);
       const eventsToStore: [string, EventInformation][] = [];
       // store the current events in state
       Object.entries(events).forEach(([key, event]) => {
@@ -43,7 +41,6 @@ const Attendance = () => {
     setUsersDb(usersMetadata);
     return () => {
       db.ref("private/events/current").off("value");
-      // console.log("unmounting");
     };
   }, [usersMetadata]);
   return (

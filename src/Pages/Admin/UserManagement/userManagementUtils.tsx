@@ -61,7 +61,7 @@ const getAllUserDataForTable = (
   setInfoOptions: Function,
   setColumnText: Function,
   setUsersMetadata: Function,
-  onlyInTeamUsers: boolean = true
+  onlyInTeamUsers: boolean = false
 ) => {
   if (!user) {
     return;
@@ -163,7 +163,6 @@ const onRowUserClick = (
   setModalTitle: Function
 ) => {
   let userId = event.data.userId;
-  // console.log(userId);
 
   // Retrieve user data
   db.ref("private/usersMetadata")
@@ -259,7 +258,6 @@ const moveEverythingInUsers = () => {
           db.ref("private/usersNotifications").child(userId).set(statistics);
         }
       });
-      // console.log("done");
     });
 };
 
@@ -341,4 +339,5 @@ export {
   replaceEventMeetingType,
   replaceUidFromAllNotifications,
   replaceUidFromAllTasks,
+  defaultOptions,
 };

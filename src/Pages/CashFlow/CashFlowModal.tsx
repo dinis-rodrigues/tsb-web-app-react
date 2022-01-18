@@ -35,7 +35,6 @@ const inputHandler = (
   flowInfoMask: Flow | null,
   setFlowInfoMask: Function
 ) => {
-  // console.log(flowInfoMask);
   let value = e.target.value;
   setFlowInfoMask({ ...flowInfoMask, [key]: value });
 };

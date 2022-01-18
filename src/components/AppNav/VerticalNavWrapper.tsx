@@ -30,14 +30,12 @@ const Nav = () => {
 
   const toggleTasks = () => {
     setActiveCollapse({ ...activeCollapse, tasks: !activeCollapse.tasks });
-    // console.log("clicking");
   };
   const toggleAttendance = () => {
     setActiveCollapse({
       ...activeCollapse,
       attendance: !activeCollapse.attendance,
     });
-    // console.log("clicking");
   };
   const { USER } = useAuth();
   const userAdmin = userHasPermission(USER);

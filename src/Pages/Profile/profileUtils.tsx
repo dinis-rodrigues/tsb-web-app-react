@@ -12,6 +12,7 @@ import {
 import { dateToString, userHasPermission } from "../../utils/generalFunctions";
 import Compress from "compress.js";
 import { NumberFormatValues } from "react-number-format";
+import { getNameFromFullName } from "../Register/registerUtils";
 
 // PHP SERVER VARIABLES
 // const developmentPHPTarget =
@@ -556,11 +557,9 @@ const getMatchedUsers = (
     for (let i in keys) {
       var k = keys[i];
       var userPairID = keys[i];
-      // // console.log(n[k].courses.enrolments.length);
       if (users[k].hasOwnProperty("courses")) {
         if (users[k].courses.hasOwnProperty("enrolments")) {
           for (let j = 0; j < users[k].courses.enrolments.length; j++) {
-            // // console.log(course, users[k].courses.enrolments[j].acronym);
             if (
               course === users[k].courses.enrolments[j].acronym &&
               userId !== userPairID
@@ -573,7 +572,6 @@ const getMatchedUsers = (
     }
     return matchedUsers;
   } catch (err) {
-    // console.log(err);
     return [];
   }
 };
@@ -741,6 +739,7 @@ const savePublicUser = (userId: string, info: PersonalInformation) => {
     email: info.email ? info.email : "",
     inTeam: info.inTeam,
     leftIn: info.leftIn ? info.leftIn : "",
+    userName: info.userName ? info.userName : "",
   };
   db.ref("public/officialWebsite/team")
     .child(userId)
@@ -806,10 +805,11 @@ const saveInformation = (
   if (!user) {
     return;
   }
-  db.ref(`private/usersMetadata/${user.id}/pinfo`).update(info);
-  savePublicUser(user.id, info);
+  const userData = { ...info, name: getNameFromFullName(info.fullName!) };
+  db.ref(`private/usersMetadata/${user.id}/pinfo`).update(userData);
+  savePublicUser(user.id, userData);
   setDisabledInput((disabledInput: boolean) => !disabledInput);
-  setPrevInfo(info);
+  setPrevInfo(userData);
   killCroppie(setCroppie, croppie, setShowSaveImg);
 };
 
@@ -904,9 +904,6 @@ const handleUpload = (
   setShowSaveImg: Function,
   setCroppie: Function
 ) => {
-  // // console.log("Files", event.target.files);
-  // // console.log("File", event.target.files[0]);
-
   if (event.target.files && event.target.files[0]) {
     const img = URL.createObjectURL(event.target.files[0]);
     handleImage(img, croppie, setCroppie);
@@ -948,7 +945,6 @@ const resizeImage = (
       resize: true, // defaults to true, set false if you do not want to resize the image width and height
     })
     .then((data) => {
-      // console.log("done compressing", data);
       const img = data[0];
       const base64str = img.data;
       const imgExt = img.ext;
@@ -967,7 +963,6 @@ const resizeImage = (
         })
         .then((response) => {
           // If succesfful, save in firebase storage
-          // console.log(response);
           // Send image to firebase storage
           st.ref(`users/${user.id}/${user.id}comp`).put(fileBlob);
           // When all works out well, kill croppie and save button
@@ -988,9 +983,7 @@ const resizeImage = (
           // Refresh page to reload profile image
           window.location.reload();
         })
-        .catch((error) => {
-          // console.log("Error making the call to server: ", error);
-        });
+        .catch((error) => {});
     });
 };
 
@@ -1036,14 +1029,10 @@ const sendImgToServer = async (
       },
     })
     .then((response) => {
-      // console.log(response);
       // Send image to firebase storage
     })
-    .catch((error) => {
-      // console.log("Error making the call to server: ", error);
-    });
+    .catch((error) => {});
   await st.ref(`users/${user.id}/${user.id}`).put(blob);
-  // console.log("resizing");
   resizeImage(user, blob, croppie, setCroppie, setShowSaveImg, setUSER);
 };
 

@@ -93,7 +93,6 @@ const sendJsonToDb = () => {
       message: sentenceCase(replaceString(userData.Mensagem)),
       timestamp: newDate,
     };
-    // console.log(replaceString(userData.message));
   });
   db.ref("public/recruitment/tables/" + tableName).set(newData);
 };

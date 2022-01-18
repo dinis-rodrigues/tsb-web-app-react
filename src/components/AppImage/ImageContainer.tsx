@@ -29,7 +29,6 @@ const ImageContainer = ({
       width={width && width}
       src={image}
       onError={() => {
-        // console.log("On Error");
         compressed ? setImage(altUserImgComp) : setImage(altUserImg);
       }}
     ></img>

@@ -24,7 +24,6 @@ const CoursesTable = ({ userName, userId }: Props) => {
         try {
           var courses = users[userId].courses.enrolments;
         } catch (error) {
-          // console.log("Not connected to fenix");
           return false;
         }
         // Retrieve the keys of each child of the parent node
@@ -41,7 +40,6 @@ const CoursesTable = ({ userName, userId }: Props) => {
             userMatches: matches,
           });
         }
-        // // console.log(allCoursesArray);
         setAllCourses(allCoursesArray);
       });
     };
@@ -54,7 +52,6 @@ const CoursesTable = ({ userName, userId }: Props) => {
   useEffect(() => {
     getAndSetAllUsersMetadata(setUsersMetadata);
     // const allUsersData: any = getAllUsersMetadata(false);
-    // // console.log("Courses Table", allUsersData);
     // setUsersMetadata(allUsersData);
   }, []);
 

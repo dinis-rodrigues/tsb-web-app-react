@@ -462,7 +462,6 @@ const editSeasonHandler = (
   };
 
   delete newSponsorInfo.history![seasonToEdit];
-  console.log(newSponsorInfo);
 
   setSponsorInfo(newSponsorInfo);
   // since we are deleting the input, we need to auto focus on the new one for typing
@@ -498,7 +497,6 @@ const saveSponsor = (
   setModalIsOpen: Function | null
 ) => {
   if (!sponsorInfo) return;
-  // console.log(sponsorInfo.level, sponsorId,sponsorInfo);
   // save in bracket
   if (bracketid)
     db.ref("private/sponsors/brackets")
@@ -509,7 +507,6 @@ const saveSponsor = (
   // save in inventory
   if (sponsorId !== "createNew") {
     db.ref("private/sponsors/inventory").child(sponsorId).set(sponsorInfo);
-    console.log("saving inventory", bracketid);
   } else db.ref("private/sponsors/inventory").push(sponsorInfo);
   if (setModalIsOpen) setModalIsOpen(false);
 };
@@ -661,7 +658,6 @@ const getStringMatches = (s: string, expr: string) => {
  */
 const replaceLinearGradients = (s: string, toFind: string, expr = "linear") => {
   let matches = getStringMatches(s, expr);
-  // console.log(matches);
   // For each linear gradient, replace the id with a unique identifier
   matches.forEach((_, idx) => {
     // We need to do this for every occurrence, because each time we change the id, the
@@ -863,10 +859,11 @@ const uploadSponsorSvgToServer = (
   bracketId: string | undefined,
   fileToDelete: string | undefined,
   logoType: "svgPath" | "logoWhite" | "logoBlack",
+  userId: string | undefined,
   setFileValue: Function,
   setSponsorInfo: Function
 ) => {
-  if (!filesList.length || !sponsorId || !sponsorInfo) return;
+  if (!filesList.length || !sponsorId || !sponsorInfo || !userId) return;
   let headers = new Headers();
   headers.append("Origin", "http://localhost:3005");
 
@@ -875,9 +872,10 @@ const uploadSponsorSvgToServer = (
   data.append("fileToUpload", filesList[0]);
   data.append("fileToDelete", fileToDelete ? fileToDelete : "");
   data.append("allowedLogoType", logoType);
+  data.append("userId", userId);
 
   fetch(
-    "https://tecnicosolarboat.tecnico.ulisboa.pt/public/receiveAndSaveFile.php",
+    "https://tecnicosolarboat.tecnico.ulisboa.pt/api/receiveAndSaveFile.php",
     {
       method: "POST",
       body: data,
@@ -888,7 +886,6 @@ const uploadSponsorSvgToServer = (
     })
     .then((r: UploadResponse) => {
       if (!r.error) {
-        console.log(r);
         let urlPath = r.msg;
         const newSponsorInfo = { ...sponsorInfo, [logoType]: urlPath };
         setSponsorInfo(newSponsorInfo);
@@ -971,7 +968,6 @@ const getLastEditionDate = (setLastChangeDate: Function) => {
       const lastChangeTimestamp: number = snapshot.val();
       if (!lastChangeTimestamp) return;
       const lastChangeDate = dateToString(lastChangeTimestamp, true);
-      console.log("Last date", lastChangeDate);
       setLastChangeDate(lastChangeDate);
     }
   );
@@ -1006,7 +1002,6 @@ const publishSponsorsToWebsite = async (
           "error"
         );
     });
-  console.log("Remove result", res);
 
   // Get all existing brackets with sponsors
   db.ref("private/sponsors/brackets")

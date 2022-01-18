@@ -84,7 +84,6 @@ const Tasks = (props: any) => {
           if (!snapshot.val()) setRedirectToBoard(`/dashboard`);
           setColumns(snapshot.val());
           if (openTaskId && !openedFromUrl) {
-            // console.log(openedFromUrl);
             openMatchingTaskId(
               openTaskId,
               openColId,

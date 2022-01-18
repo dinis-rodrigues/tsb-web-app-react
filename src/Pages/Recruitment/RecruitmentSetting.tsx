@@ -5,6 +5,7 @@ import { db } from "../../config/firebase";
 import { useAuth } from "../../contexts/AuthContext";
 import { selectOption } from "../../interfaces";
 import {
+  createNewSqlAndDbTable,
   generateRecruitmentTable,
   getDepartmentOptions,
   getOpenedDepartments,
@@ -24,7 +25,7 @@ const RecruitmentSettings = ({
   activeRecruitment,
   setActiveRecruitment,
 }: Props) => {
-  const { departments } = useAuth();
+  const { departments, USER } = useAuth();
   const tableToCreate = generateRecruitmentTable();
   let allowToCreate = false;
   tablesList && tableToCreate === tablesList[0]
@@ -48,12 +49,10 @@ const RecruitmentSettings = ({
       <div className="card-header">
         <i className="header-icon lnr-cog icon-gradient bg-plum-plate"></i>
         Recruitment Settings{" "}
-        <span className={"badge badge-danger ml-2"}>
+        {/* <span className={"badge badge-danger ml-2"}>
           MOCK SETTINGS FOR FUTURE IMPLEMENTATION
-        </span>
-        {/* <button onClick={() => replaceUidFromAllTasks()}>
-          move everything
-        </button> */}
+        </span> */}
+        {/* <button onClick={() => buildUserNames()}>Build usernames</button> */}
       </div>
       <ul className="list-group list-group-flush">
         <li className="list-group-item">
@@ -141,7 +140,7 @@ const RecruitmentSettings = ({
                     "btn-danger": !allowToCreate,
                     "btn-success": allowToCreate,
                   })}
-                  //   onClick={() => toggleMaintenance(true)}
+                  onClick={() => createNewSqlAndDbTable(tablesList, USER?.id)}
                 >
                   {allowToCreate ? "Create" : "Not allowed"}
                 </button>

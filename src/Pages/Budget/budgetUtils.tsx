@@ -169,19 +169,16 @@ const onRowBomClick = (
   setCommentListener: Function
 ) => {
   let materialData: BomMaterial = event.data;
-  // console.log(event);
 
   // Get the season from the data, dynamic parameters here don't work
   let season = materialData.season;
 
   // Add listener for the comments
-  // console.log("season", `bom/${season}/${materialData.id}`);
   setCommentListener(`bom/${season}/${materialData.id}`);
   db.ref(`private/bom/${season}/${materialData.id}`).on("value", (snapshot) => {
     let materialDataDb = snapshot.val();
 
     if (!materialDataDb) return;
-    // console.log("Row clicked", materialDataDb);
     setMaterialInfo({ ...materialDataDb, id: materialData.id });
     setMaterialInfoMask({ ...materialDataDb, id: materialData.id });
   });
@@ -214,7 +211,6 @@ const excelExport = (gridApi: GridApi | null, department: string) => {
  */
 const clipboardExport = (gridApi: GridApi | null) => {
   if (!gridApi) return;
-  // console.log("Copied to clipboard");
   gridApi.selectAll();
   gridApi.copySelectedRowsToClipboard(true);
   gridApi.deselectAll();
@@ -419,7 +415,6 @@ const submitComment = (
   setCommentText: Function
 ) => {
   if (!user || !materialInfo.id) {
-    // console.log("error commenting", materialInfo);
     return;
   }
   let comment = {
@@ -662,7 +657,6 @@ const getSeasonBudgetData = (
     // This will trigger the useEffect again, with the new season
     return;
   }
-  // console.log("Current season", season);
   db.ref("private/bom/seasons").on("value", (snapshot) => {
     let seasonsFromDb: string[] = snapshot.val();
     if (!seasonsFromDb) return;
@@ -691,7 +685,6 @@ const getSeasonBudgetData = (
 
             bomDataHolder["All"].push([materialId, material]);
             if (openMatId === materialId && openedFromRedirect) {
-              // console.log("Corresponding", material);
               onRowBomClick(
                 { data: { ...material, id: materialId } }, // add id
                 setMaterialInfo,

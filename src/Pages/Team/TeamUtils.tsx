@@ -117,7 +117,7 @@ const handleSelectOption = (
   setTableRowsData: Function
 ) => {
   setSelectedOptions(e);
-  buildTableRows(usersInfo, e, setTableRowsData);
+  buildTableRows(usersInfo, e, setTableRowsData, false);
   buildColumns(e, setTableColumns);
 };
 

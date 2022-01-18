@@ -45,7 +45,6 @@ const ForumThread = (props: any) => {
       encodedTopicName,
       encodedThreadName
     );
-  // // console.log(encodedThreadName);
   const [usersMetadata, setUsersMetadata] = useState<UserMetadata>();
   const [threadInformation, setThreadInformation] = useState<Thread>();
   const [isPinned, setIsPinned] = useState(false);

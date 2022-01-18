@@ -23,7 +23,6 @@ const VisitorProfile = () => {
     const userImgUrl = getUserImgUrl(userId, null, false);
     setUserImage(userImgUrl);
   }, [userId]);
-  // console.log();
   return (
     <div className="app-main__outer">
       <div className="app-main__inner">

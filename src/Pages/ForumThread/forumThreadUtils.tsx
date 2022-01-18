@@ -38,7 +38,6 @@ const swalDeleteThreadMessage = (deleteFunction: Function) => {
       if (result.isConfirmed) {
         return;
       } else if (result.isDenied) {
-        // console.log("deleting");
         deleteFunction();
       }
     });
@@ -265,7 +264,6 @@ const deleteThread = (
 ) => {
   if (!threadInformation) return;
   if (!user || user.id !== threadInformation.createdBy) return;
-  // console.log("deletign");
   let totalReplies = 1; // the original post is a reply
   if (threadInformation.replies) {
     let numReplies = Object.entries(threadInformation.replies).length;
@@ -308,17 +306,8 @@ const deleteThread = (
     .child(encodedThreadName)
     .remove()
     .then(
-      function () {
-        // // console.log(
-        //   encodedSectionName,
-        //   encodedTopicName,
-        //   encodedThreadName,
-        //   " deleted successfully! "
-        // );
-      },
-      (err) => {
-        // console.log(err);
-      }
+      function () {},
+      (err) => {}
     );
 };
 
@@ -347,7 +336,6 @@ const toggleCommentLikedBy = (
     // likes
 
     delete likedBy[user.id];
-    // console.log("disliking", likedBy);
   } else if (likedBy && !likedBy[user.id]) {
     // Like Action -> add it to the object
     likedBy[user.id] = user.name;
@@ -394,7 +382,6 @@ const toggleThreadLikedBy = (
     // Dislike action -> remove it from the object and decrement number of
     // likes
     delete likedBy[user.id];
-    // console.log("disliking", likedBy);
   }
   // Update thread
   db.ref("private/forumThreads")
@@ -518,7 +505,6 @@ const saveThread = (
     encodedThreadName,
     false
   );
-  // console.log("checking pinned");
 
   // save thread in pinned thread if exists
   isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then(
@@ -763,10 +749,6 @@ const updateWhoViewedMostRecentUpdate = (
       return true;
     }
   }
-  // console.log("updating", viewedByObject);
-  // console.log(
-  //   `${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/${viewedByKey}`
-  // );
   // Update thread
   db.ref("private/forumThreads")
     .child(encodedSectionName)
@@ -933,7 +915,6 @@ const getAndSetThreadInformation = (
   setThreadInformation: Function,
   setRedirectTo: Function
 ) => {
-  // // console.log(encodedSectionName, encodedTopicName, encodedThreadName);
   db.ref("private/forumThreads")
     .child(encodedSectionName)
     .child(encodedTopicName)

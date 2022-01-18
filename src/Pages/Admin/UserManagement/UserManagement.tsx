@@ -9,7 +9,6 @@ import {
 } from "../../../interfaces";
 import { setColumnText } from "../../../utils/generalFunctions";
 import {
-  defaultOptions,
   handleSelectOption,
   onFirstDataRendered,
   filterTable,
@@ -20,6 +19,7 @@ import {
   getAllUserDataForTable,
   onRowUserClick,
   pdfAllExport,
+  defaultOptions,
 } from "./userManagementUtils";
 import Select from "react-select";
 // Table

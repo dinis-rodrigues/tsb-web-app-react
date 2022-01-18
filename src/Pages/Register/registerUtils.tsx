@@ -4,7 +4,10 @@ import { FieldValues, UseFormGetValues } from "react-hook-form";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { db } from "../../config/firebase";
-import { ApplicationSettings } from "../../interfaces";
+import { ApplicationSettings, UserMetadata } from "../../interfaces";
+import { normalizedString } from "../../utils/generalFunctions";
+
+import { savePublicUser } from "../Profile/profileUtils";
 
 const swalAlert = withReactContent(Swal);
 
@@ -39,20 +42,21 @@ const showAlert = (getValues: UseFormGetValues<FieldValues>) => {
  * @param getValues
  * @param registerUser
  */
-const signUpUser = (
+const signUpUser = async (
   getValues: UseFormGetValues<FieldValues>,
   registerUser: Function,
   applicationSettings: ApplicationSettings
 ) => {
   const { fullName, email, password } = getValues();
   const { registrationIsOpen } = applicationSettings;
-  const name = fullName.replace(/([a-z]+) .* ([a-z]+)/i, "$1 $2");
+  const name = getNameFromFullName(fullName);
   if (registrationIsOpen) {
     // Sign up user to firebase
     registerUser(email, password)
-      .then((data: any) => {
+      .then(async (data: any) => {
         const userId = data.user.uid;
-        // console.log(data.user.uid);
+
+        let userName = await buildUserName(fullName);
         var info = {
           uid: data.user.uid,
           fullName: fullName,
@@ -80,9 +84,11 @@ const signUpUser = (
           generalStats: 1,
           gender: "undefined",
           curricularYear: 1,
+          userName: userName,
         };
         db.ref(`private/usersMetadata/${userId}/pinfo`).set(info);
-        //   showAlert(getValues);
+
+        savePublicUser(userId, info);
       })
       .catch((error: string) => {
         swalAlert.fire({
@@ -100,4 +106,56 @@ const signUpUser = (
   }
 };
 
-export { signUpUser, showAlert };
+const getNameFromFullName = (fullName: string) => {
+  const names = fullName.trim().split(" ");
+  let firstName = names[0];
+  let lastName = names[names.length - 1];
+  return `${firstName} ${lastName}`;
+};
+
+const buildUserNameFromFullName = (fullName: string) => {
+  const names = fullName.trim().split(" ");
+  let firstName = normalizedString(names[0]);
+  let lastName = normalizedString(names[names.length - 1]);
+  return `${firstName}-${lastName}`.toLowerCase();
+};
+
+const buildUserName = (fullName: string) => {
+  return db
+    .ref("private/usersMetadata")
+    .once("value")
+    .then((snapshot) => {
+      const users: UserMetadata = snapshot.val();
+
+      const usersList = Object.entries(users);
+
+      let existingUserNames: string[] = [];
+      let currUserName = buildUserNameFromFullName(fullName);
+
+      // Get existing user names
+      for (let i = 0; i < usersList.length; i++) {
+        const userInfo = usersList[i][1].pinfo;
+
+        existingUserNames.push(userInfo.userName);
+      }
+
+      // check if user name already exists
+      let equalUserNames: string[] = [];
+      for (const userName of existingUserNames) {
+        if (userName.includes(currUserName)) {
+          equalUserNames.push(userName);
+        }
+      }
+
+      // add index to current username
+      if (equalUserNames.length > 0) {
+        // sort equalusernames
+        equalUserNames.sort();
+        currUserName = `${currUserName}-${equalUserNames.length}`;
+      }
+
+      return currUserName;
+    });
+};
+
+export { signUpUser, showAlert, getNameFromFullName };

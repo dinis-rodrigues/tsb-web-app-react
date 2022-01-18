@@ -15,7 +15,6 @@ const DegreeCount = ({ usersMetadata }: Props) => {
   useEffect(() => {
     buildDepartmentPolarSeries(usersMetadata, setDegreeData, setDegreeLabels);
   }, [usersMetadata]);
-  // console.log(degreeLabels);
   apexPolarOptions.labels = degreeLabels;
   return (
     <Fragment>

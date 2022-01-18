@@ -18,6 +18,7 @@ import {
   sponsorInputHandler,
   uploadSponsorSvgToServer,
 } from "./sponsorsUtils";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   isModalOpen: boolean;
@@ -37,6 +38,7 @@ const SponsorModal = ({
   retroActives,
   sponsorId,
 }: Props) => {
+  const { USER } = useAuth();
   const [focusInput, setFocusInput] = useState("");
   let sponsorValue = 0;
   if (sponsorInfo?.history) {
@@ -279,7 +281,7 @@ const SponsorModal = ({
                   placeholder={
                     sponsorId === "createNew"
                       ? "Create sponsor to upload files"
-                      : `Drop or Browse ai / eps / pdf / png / jpg`
+                      : `Drop or Browse svg`
                   }
                   variant="multiline"
                   disabled={sponsorId === "createNew" ? true : false}
@@ -292,6 +294,7 @@ const SponsorModal = ({
                       bracketId,
                       sponsorInfo?.svgPath,
                       "svgPath",
+                      USER?.id,
                       setFileValue,
                       setSponsorInfo
                     );
@@ -364,6 +367,7 @@ const SponsorModal = ({
                       bracketId,
                       sponsorInfo?.logoWhite,
                       "logoWhite",
+                      USER?.id,
                       setFileValue,
                       setSponsorInfo
                     );
@@ -435,6 +439,7 @@ const SponsorModal = ({
                       bracketId,
                       sponsorInfo?.logoBlack,
                       "logoBlack",
+                      USER?.id,
                       setFileValue,
                       setSponsorInfo
                     );

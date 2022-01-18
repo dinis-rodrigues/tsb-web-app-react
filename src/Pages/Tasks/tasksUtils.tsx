@@ -128,7 +128,6 @@ const addTaskToUsers = (
   for (let userOption of usersToUpdate) {
     let userKey = userOption.value;
     // add users
-    // console.log(taskToAdd);
     db.ref(`private/usersTasks/${userKey}/${taskInfo.id}`).update(taskToUpdate);
   }
 };
@@ -317,7 +316,6 @@ const submitComment = (
   user: userContext | null,
   setCommentText: Function
 ) => {
-  // console.log(commentText);
   if (!user) {
     return;
   }
@@ -346,7 +344,6 @@ const submitComment = (
       let userKey = userOption.value;
       let userCommentRef = `usersTasks/${userKey}/${taskInfo.id}`;
       // increment count users
-      // console.log("commenting user");
       db.ref(userCommentRef)
         .child("numComments")
         .transaction((num) => {

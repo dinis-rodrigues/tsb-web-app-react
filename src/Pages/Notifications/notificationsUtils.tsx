@@ -28,16 +28,6 @@ const fetchBatchNotifications = (
     });
 };
 
-// const onScroll = () => {
-//   if (listInnerRef.current) {
-//     const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-//     if (scrollTop + clientHeight === scrollHeight) {
-//       // TO SOMETHING HERE
-//       // console.log("Reached bottom");
-//     }
-//   }
-// };
-
 const notificationsOnScroll = (
   user: userContext | null,
   referenceToOldestKey: string,
@@ -52,7 +42,6 @@ const notificationsOnScroll = (
     const { scrollTop, scrollHeight, clientHeight } = notificationsRef.current;
 
     if (scrollTop + clientHeight === scrollHeight && referenceToOldestKey) {
-      // console.log("Bottom", referenceToOldestKey);
       db.ref(`private/usersNotifications/${user.id}/all`)
         .orderByKey()
         .endAt(referenceToOldestKey)
@@ -74,12 +63,8 @@ const notificationsOnScroll = (
           let lastKey =
             arrayOfNotifications[arrayOfNotifications.length - 1][0];
           setReferenceToOldestKey(lastKey);
-          //   // addAllClearNotifications();
         })
-        .catch((error) => {
-          //   // console.log(error);
-          //   // console.log(noNotificationsInDb);
-        });
+        .catch((error) => {});
     }
   } else {
     return;
@@ -104,7 +89,6 @@ const newNotificationsListener = (
     (snapshot) => {
       let notifications = snapshot.val();
       if (notifications) {
-        // console.log("setting notifications mask");
         setNotificationsMask({ ...notificationsMask, ...notifications });
       }
       if (notifications) {
@@ -187,7 +171,6 @@ const getNotificationIcon = (notification: Notification) => {
     return "fas fa-hammer";
   } else if (type === "attendedEvent") {
     // missed Event icon
-    // console.log("attended");
     return "fas fa-check-circle";
   } else if (type === "missedEvent") {
     // missed Event icon

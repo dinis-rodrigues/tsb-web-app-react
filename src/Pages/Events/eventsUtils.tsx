@@ -279,10 +279,8 @@ const checkEventPeriodicity = () => {
         var todaysHours = today.getHours();
         today.setHours(todaysHours - hoursOffset);
 
-        // // console.log(today);
         try {
           if (event.weeks && today.getTime() > toChange.getTime()) {
-            // console.log("passed due");
             // change the date, add more days if periodic
             toChange.setDate(toChange.getDate() + event.weeks * 7);
             var newDate = dateToString(toChange);
@@ -300,9 +298,7 @@ const checkEventPeriodicity = () => {
             db.ref("private/events/current").child(eventId).remove();
             db.ref("private/events/history").child(eventId).set(event);
           }
-        } catch (error) {
-          // console.log(error);
-        }
+        } catch (error) {}
       });
     });
 };
@@ -340,10 +336,8 @@ const getEventsInFullCalendarType = (
 ) => {
   const calendarEventsArray: calendarEvent[] = [];
   const calendarColors = getCalendarColors(departmentsWDesc);
-  // console.log("Colors", calendarColors);
   sortedEvents.forEach(([eventId, event]) => {
     let currMeeting = event.type.replace(" Meeting", "");
-    // console.log("Meeting", currMeeting);
     // Start date
     let newD = inputToDate(event.date);
     let day = ("0" + newD.getDate()).slice(-2);
@@ -355,7 +349,6 @@ const getEventsInFullCalendarType = (
     let eventInterval = event.weeks;
     if (event.weeks > 0 && !event.isHistory) eventCount = 100; // replicate the event
     if (event.weeks === 0) eventInterval = 1; // replicate the event
-    console.log(currMeeting);
     let calendarColor = calendarColors[currMeeting].color;
 
     // Full calendar Object
@@ -764,7 +757,6 @@ const isEventInPast = (event: EventInformation) => {
   var todaysHours = today.getHours();
   today.setHours(todaysHours - hoursOffset);
 
-  // // console.log(today);
   try {
     if (event.weeks && today.getTime() > toChange.getTime()) {
       return true;

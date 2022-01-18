@@ -46,7 +46,6 @@ const excelExport = (gridApi: GridApi | null, tableTitle: string) => {
  */
 const clipboardExport = (gridApi: GridApi | null) => {
   if (!gridApi) return;
-  // console.log("Copied to clipboard");
   gridApi.selectAll();
   gridApi.copySelectedRowsToClipboard(true);
   gridApi.deselectAll();

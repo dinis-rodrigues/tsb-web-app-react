@@ -21,6 +21,7 @@ export interface PublicUserInfo {
   description?: string;
   email?: string;
   inTeam: boolean;
+  userName?: string;
 }
 
 // Application Settings
@@ -464,6 +465,7 @@ export interface PersonalInformation {
   gender?: string;
   curricularYear?: Number;
   description?: string;
+  userName: string;
 }
 
 export interface tableColumns {

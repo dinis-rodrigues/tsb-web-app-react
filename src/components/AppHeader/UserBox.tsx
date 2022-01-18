@@ -29,9 +29,7 @@ const UserBox = ({ userProfilePicture }: Props) => {
       .then(() => {
         history.push("/login");
       })
-      .catch((error: string) => {
-        // console.log("error", error);
-      });
+      .catch((error: string) => {});
   };
   return (
     <Fragment>

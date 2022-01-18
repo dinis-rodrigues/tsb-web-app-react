@@ -23,20 +23,6 @@ const AvatarOverlap = ({
   rounded = false,
   withLink = true,
 }: Props) => {
-  // const itemsRef = useRef<Array<HTMLDivElement>>([]);
-  // const [ready, setReady] = useState(false);
-  // const [open, setOpen] = useState(false);
-
-  // function toggle() {
-  //   setOpen(!open);
-  // }
-
-  // useEffect(() => {
-  //   // console.log("here");
-  //   if (itemsRef.current[users.length - 1] != null) {
-  //     setReady(true)};
-  // }, [itemsRef.current]);
-
   return (
     <div className="avatar-wrapper avatar-wrapper-overlap">
       {users &&

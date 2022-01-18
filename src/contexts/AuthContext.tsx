@@ -102,9 +102,9 @@ export function AuthProvider({ children }: Props) {
         (snapshot) => {
           var userInfo: userContext | null = snapshot.val();
           if (!userInfo) return;
-          // console.log("AUTH User id: ", userId);
           let usrImgUrlComp = getUserImgUrl(userId, null, true);
           let usrImgUrl = getUserImgUrl(userId, null, false);
+          console.log("Env", process.env);
           setUSER({
             id: userId,
             name: userInfo.name,
@@ -116,7 +116,6 @@ export function AuthProvider({ children }: Props) {
           });
           // Checks if the user is admin or not
           let userAdmin = userHasAdminPermissions(userInfo);
-          // console.log("Admin user", userAdmin);
           setIsAdminUser(userAdmin);
           setDisplayApplication(
             userInfo,
@@ -147,12 +146,10 @@ export function AuthProvider({ children }: Props) {
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        // console.log("user here");
         setCurrentUser(user);
         getUserState(user.uid);
       } else {
         // sets loading to false, for the login/register page
-        // console.log("no user");
         db.ref("public/applicationSettings").on("value", (snapshot) => {
           let appSettings: ApplicationSettings = snapshot.val();
           setApplicationSettings(appSettings);

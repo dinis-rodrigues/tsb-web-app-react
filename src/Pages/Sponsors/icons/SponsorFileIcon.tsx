@@ -13,12 +13,10 @@ const SponsorFileIcon = ({ url }: Props) => {
   let errMsg = <span>Error retrieving file extension</span>;
   let filename = "";
   let fileExt = "";
-  console.log(url);
   // @ts-ignore
   if (url) filename = url.split("/").pop();
   // @ts-ignore
   if (filename) fileExt = filename.split(".").pop();
-  console.log(fileExt);
 
   return (
     <Fragment>

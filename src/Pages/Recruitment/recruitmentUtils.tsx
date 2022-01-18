@@ -14,10 +14,13 @@ import {
   RecruitmentTables,
   RecruitmentUser,
   selectOption,
+  UserMetadata,
 } from "../../interfaces";
 import {
   dateToString,
   dateWithHoursComparator,
+  normalizedString,
+  toastrMessage,
 } from "../../utils/generalFunctions";
 import printDoc from "../../utils/pdfExport/printDoc";
 import {
@@ -215,6 +218,42 @@ const generateRecruitmentTable = () => {
   yearNum = yearNum.substring(2);
 
   return `Recruta${month}${yearNum}`;
+};
+
+const createNewDbTable = (tableName: string, tablesList: string[]) => {
+  const newTableList = [tableName, ...tablesList];
+  db.ref("public/recruitment/activeTable").set(tableName);
+  db.ref("public/recruitment/tablesList").set(newTableList);
+};
+
+const createNewSqlAndDbTable = async (
+  tablesList: string[],
+  userId: string | undefined
+) => {
+  if (!userId) return;
+  let tableName = generateRecruitmentTable();
+  var data = new FormData();
+  data.append("activeTable", tableName);
+  data.append("userId", userId);
+
+  try {
+    const res = await fetch(
+      "https://tecnicosolarboat.tecnico.ulisboa.pt/api/createNewRecruitmentTable.php",
+      {
+        method: "POST",
+        body: data,
+      }
+    );
+    const resData = await res.json();
+    if (resData.success) {
+      // Send data to firebase database
+      createNewDbTable(tableName, tablesList);
+
+      toastrMessage("Success", "Table created successfully", "success", false);
+    }
+  } catch (error) {
+    toastrMessage("Error", error as string, "error", false);
+  }
 };
 /**
  * Get the team export file name
@@ -473,33 +512,34 @@ const getRecruitmentData = (
     if (!currTableName) {
       // if no table is selected or recruitment is not open
       // if (typeof currTableName === "boolean") {
-      let auxTable = JSON.parse(JSON.stringify(tables[tableNames[0]]));
-      let newTableData = filterTableByDepartments(
-        auxTable,
-        selectedDepartments
-      );
+      if (tables.hasOwnProperty(tableNames[0])) {
+        let auxTable = JSON.parse(JSON.stringify(tables[tableNames[0]]));
+        let newTableData = filterTableByDepartments(
+          auxTable,
+          selectedDepartments
+        );
 
-      // console.log(copiedPerson);
-      setCurrTableName(tableNames[0]);
-      setCurrTableData(newTableData);
-      buildTableRows(newTableData, setTableRows);
-      buildColumns(newTableData, setTableColumns);
-      getExistingDepartmentsOptions(
-        newTableData,
-        setDepartmentOptions,
-        setSelectedDepartments
-      );
-      // } else {
-      //   setCurrTableName(activeTableName);
-      //   setCurrTableData(currTableData);
-      //   buildTableRows(currTableData, setTableRows);
-      //   buildColumns(currTableData, setTableColumns);
-      //   getExistingDepartmentsOptions(
-      //     currTableData,
-      //     setDepartmentOptions,
-      //     setSelectedDepartments
-      //   );
-      // }
+        setCurrTableName(tableNames[0]);
+        setCurrTableData(newTableData);
+        buildTableRows(newTableData, setTableRows);
+        buildColumns(newTableData, setTableColumns);
+        getExistingDepartmentsOptions(
+          newTableData,
+          setDepartmentOptions,
+          setSelectedDepartments
+        );
+        // } else {
+        //   setCurrTableName(activeTableName);
+        //   setCurrTableData(currTableData);
+        //   buildTableRows(currTableData, setTableRows);
+        //   buildColumns(currTableData, setTableColumns);
+        //   getExistingDepartmentsOptions(
+        //     currTableData,
+        //     setDepartmentOptions,
+        //     setSelectedDepartments
+        //   );
+        // }
+      }
     } else {
       if (typeof currTableName !== "boolean") {
         let auxTable = JSON.parse(JSON.stringify(tables[currTableName]));
@@ -521,6 +561,60 @@ const getRecruitmentData = (
   });
 };
 
+const buildUserNameFromFullName = (fullName: string) => {
+  const names = fullName.trim().split(" ");
+  let firstName = normalizedString(names[0]);
+  let lastName = normalizedString(names[names.length - 1]);
+  return `${firstName}-${lastName}`.toLowerCase();
+};
+
+const buildUserNames = () => {
+  db.ref("private/usersMetadata")
+    .once("value")
+    .then((snapshot) => {
+      const users: UserMetadata = snapshot.val();
+
+      const usersList = Object.entries(users);
+
+      let existingUserNames: string[] = [];
+
+      for (let i = 0; i < usersList.length; i++) {
+        const userId = usersList[i][0];
+        const userInfo = usersList[i][1].pinfo;
+
+        let currUserName = buildUserNameFromFullName(userInfo.fullName!);
+
+        // check if user name already exists
+        let equalUserNames: string[] = [];
+        for (const userName of existingUserNames) {
+          if (userName.includes(currUserName)) {
+            equalUserNames.push(userName);
+          }
+        }
+
+        // add index to current username
+        if (equalUserNames.length > 0) {
+          // sort equalusernames
+          equalUserNames.sort();
+          currUserName = `${currUserName}-${equalUserNames.length}`;
+        }
+
+        // add to existing usernames
+        existingUserNames.push(currUserName);
+
+        // Add user name to user metadata
+        db.ref(`private/usersMetadata/${userId}/pinfo/userName`).set(
+          currUserName
+        );
+
+        // Add user name public official website team
+        db.ref(`public/officialWebsite/team/${userId}/info/userName`).set(
+          currUserName
+        );
+      }
+    });
+};
+
 export {
   buildColumns,
   buildTableRows,
@@ -540,4 +634,6 @@ export {
   getDepartmentOptions,
   getOpenedDepartments,
   openDepartmentsHandler,
+  createNewSqlAndDbTable,
+  buildUserNames,
 };

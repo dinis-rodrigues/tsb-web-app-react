@@ -96,8 +96,8 @@ function App() {
           />
           <PrivateRoute exact path="/forum" component={Forum} />
           <PrivateRoute path="/notifications" component={NotificationsPage} />
-          {/* <PrivateRoute path="/sponsors" component={Sponsors} /> IN DEVELOPMENT */}
-          {/* <PrivateRoute path="/gallery" component={Gallery} /> IN DEVELOPMENT */}
+          <PrivateRoute path="/sponsors" component={Sponsors} />
+          <PrivateRoute path="/gallery" component={Gallery} />
           <PrivateRoute
             exact
             path="/userManagement"

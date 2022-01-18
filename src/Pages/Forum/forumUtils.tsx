@@ -78,10 +78,7 @@ const createNewForumSection = (
 
   // Push new section into the forumOrder
   if (createNewSection) {
-    // console.log("encoded name", encodedSectionName);
-    // console.log("old order", forumSectionOrder);
     let newForumOrder = [...forumSectionOrder, encodedSectionName];
-    // console.log("New order", newForumOrder);
     db.ref("private/forumOrder").set(newForumOrder);
   }
   // Push
@@ -146,8 +143,6 @@ const deleteSection = (
   let newSectionOrder = sectionOrder.filter(
     (item) => item !== encodedSectionName
   );
-  // console.log("Ecndoded section name", encodedSectionName);
-  // console.log("New section order", newSectionOrder);
 
   // For each topic of the section, check if any of the threads is pinned.
   // Remove it
@@ -209,7 +204,6 @@ const swalDeleteSectionMessage = (deleteFunction: Function) => {
       if (result.isConfirmed) {
         return;
       } else if (result.isDenied) {
-        // console.log("deleting");
         deleteFunction();
       }
     });

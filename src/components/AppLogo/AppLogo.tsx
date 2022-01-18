@@ -27,21 +27,10 @@ const AppLogo = ({
 
   const hamburgerClick = () => {
     setActive(!active);
-    // console.log("ham click", active);
   };
-
-  // const state = {
-  //   openLeft: false,
-  //   openRight: false,
-  //   relativeWidth: false,
-  //   width: 280,
-  //   noTouchOpen: false,
-  //   noTouchClose: false,
-  // };
 
   const toggleEnableClosedSidebar = () => {
     setEnableClosedSidebar(!enableClosedSidebar);
-    // console.log(enableClosedSidebar);
   };
   return (
     <Fragment>

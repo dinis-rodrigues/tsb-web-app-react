@@ -5,7 +5,7 @@ import { db } from "../config/firebase";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 // Toastr Notification
-import { toast, Bounce } from "react-toastify";
+import { toast, Bounce, ToastPosition } from "react-toastify";
 import ToastrMessage from "../components/ToastrMessage/ToastrMessage";
 import {
   Notification,
@@ -26,15 +26,36 @@ const toastrMessage = (
   message: string,
   type: "error" | "success" | "info" | "warning" | "default",
   autoclose: boolean = true
-) =>
-  toast(<ToastrMessage title={title} msg={message} type={type} />, {
-    transition: Bounce,
+) => {
+  const position: ToastPosition = "top-right";
+  const config = {
     closeButton: true,
-    autoClose: autoclose ? 5000 : false,
-    position: "top-right",
-    type: type,
+    autoClose: autoclose ? 5000 : autoclose,
+    position: position,
+    pauseOnHover: true,
+    draggable: true,
     className: "zIndex-inf",
-  });
+    progress: undefined,
+    hideProgressBar: false,
+  };
+  switch (type) {
+    case "error":
+      toast.error(message, config);
+      break;
+    case "success":
+      toast.success(message, config);
+      break;
+    case "warning":
+      toast.warn(message, config);
+      break;
+    case "info":
+      toast.info(message, config);
+      break;
+    default:
+      toast(message, config);
+      break;
+  }
+};
 
 /** Sends a Swal Notification to the User
  * @param  {string} title Notification title
@@ -89,9 +110,7 @@ const getUserImgUrl = (
     const st = firebaseStorage;
     try {
       return st.ref(`users/${id}/${id}comp`).getDownloadURL();
-    } catch (error) {
-      // console.log("Error on download / No profile picture in firebase db");
-    }
+    } catch (error) {}
   } else if (compressed) {
     return `/db/users/${id}/img/${id}comp.png`;
   } else {
@@ -167,7 +186,6 @@ const inputToDate = (date: string | number) => {
     } else if (date.includes("-")) {
       splitter = "-";
     } else {
-      // console.log("Incorrect date format");
       return new Date();
     }
     const arr: Array<string> = date.split(splitter);
@@ -292,7 +310,6 @@ function dateComparator(date1: string, date2: string) {
 const dateWithHoursComparator = (date1: string, date2: string) => {
   var date1Number = dateWithHoursComparableNumber(date1);
   var date2Number = dateWithHoursComparableNumber(date2);
-  console.log(date2Number);
 
   if (date1Number === null && date2Number === null) {
     return 0;
@@ -398,7 +415,6 @@ const isDateInPastWeek = (d: Date) => {
       return "Yesterday";
     } else {
       var currWeekDay = d.getDay();
-      // console.log(d);
       return weekdays[currWeekDay];
     }
   } else {
@@ -725,7 +741,6 @@ const objectExists = (obj: {}) => {
  * @returns
  */
 const userHasPermission = (user: userContext | null, matchUserId?: string) => {
-  // console.log("Checking user", user);
   if (!user) return false;
   if (matchUserId && user.id === matchUserId) return true;
   if (

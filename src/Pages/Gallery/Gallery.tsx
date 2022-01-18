@@ -24,7 +24,7 @@ import EditPhotoModal from "./EditPhotoModal";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Gallery = () => {
-  const { isAdminUser } = useAuth();
+  const { isAdminUser, USER } = useAuth();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [galleryInfo, setGalleryInfo] = useState<GalleryItem>();
   const [galleryList, setGalleryList] = useState<[string, GalleryItem][]>([]);
@@ -120,6 +120,7 @@ const Gallery = () => {
                               e,
                               activeGallery,
                               galleryInfo,
+                              USER?.id,
                               setFileValue,
                               setUploadingImgs
                             );
@@ -213,6 +214,7 @@ const Gallery = () => {
                                             activeGallery,
                                             img.imagePath,
                                             imgId,
+                                            USER?.id,
                                             setModalIsOpen
                                           );
                                         }}

@@ -20,7 +20,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import CreateSeasonModal from "./CreateSeasonModal";
 
 const toggle = (tab: string, activeTab: string, setActiveTab: Function) => {
-  // console.log("Active tab", tab);
   setActiveTab(tab);
 };
 
@@ -69,8 +68,6 @@ const Budget = (props: any) => {
   // if it was clicked from the To Do board in dashboard
   const openMatId = props.location.elId;
   const openSeasonId = props.location.colId;
-
-  // console.log("Redirected", openMatId, openSeasonId);
 
   useEffect(() => {
     setUserAssignmentOptions(setUserOptions, usersMetadata);

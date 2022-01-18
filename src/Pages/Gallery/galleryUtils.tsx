@@ -271,34 +271,32 @@ const uploadLoop = async (
   galleryInfo: GalleryItem,
   activeGallery: string,
   imageFilesToUpload: [string, File][],
+  userId: string,
   setUploadingImgs: Function
 ) => {
   for (var i = 0; i < imageFilesToUpload.length; i++) {
     let headers = new Headers();
-    headers.append("Origin", "http://localhost:3005");
+    // headers.append("Origin", "http://localhost:3005");
 
     var data = new FormData();
     data.append("galleryId", activeGallery);
     data.append("fileToUpload", imageFilesToUpload[i][1]);
-    console.log(imageFilesToUpload[i][1]);
+    data.append("userId", userId);
     try {
       const res = await fetch(
-        "https://tecnicosolarboat.tecnico.ulisboa.pt/public/uploadImageToServer.php",
+        "https://tecnicosolarboat.tecnico.ulisboa.pt/api/uploadImageToServer.php",
         {
           method: "POST",
           body: data,
         }
       );
-      console.log(res);
       const resData = await res.json();
 
       if (resData.success) {
-        console.log(resData);
         let imgPath = resData.msg;
         let rzImgPath = resData.rzImg;
         saveUploadedImg(activeGallery, imgPath, rzImgPath, galleryInfo.name);
       } else {
-        console.log(resData);
         toastrMessage(
           "Error",
           resData.msg + " File: " + imageFilesToUpload[i][1].name,
@@ -343,14 +341,13 @@ const uploadPhotosToServer = async (
   filesList: FileList,
   activeGallery: string,
   galleryInfo: GalleryItem | undefined,
+  userId: string | undefined,
   setFileValue: Function,
   setUploadingImgs: Function
 ) => {
-  if (!galleryInfo || !activeGallery || !filesList) {
-    console.log(galleryInfo, activeGallery, filesList);
+  if (!galleryInfo || !activeGallery || !filesList || !userId) {
     return;
   }
-  console.log("uploading");
   const imageFilesToUpload = Object.entries(filesList);
   setUploadingImgs({
     current: 0,
@@ -363,9 +360,9 @@ const uploadPhotosToServer = async (
     galleryInfo,
     activeGallery,
     imageFilesToUpload,
+    userId,
     setUploadingImgs
   );
-  console.log("uploaded");
   setFileValue(null);
 };
 
@@ -427,8 +424,10 @@ const deletePhoto = (
   activeGallery: string,
   imgFilePath: string | undefined,
   imgId: string,
+  userId: string | undefined,
   setModalIsOpen: Function
 ) => {
+  if (!userId) return;
   if (activeGallery && imgFilePath) {
     // Get the basename of the image
     let baseNameImg = imgFilePath.split(/[\\/]/).pop();
@@ -437,15 +436,16 @@ const deletePhoto = (
     else return;
 
     let headers = new Headers();
-    headers.append("Origin", "http://localhost:3005");
+    // headers.append("Origin", "http://localhost:3005");
 
     var data = new FormData();
     data.append("galleryId", activeGallery);
     data.append("deleteGallery", "FALSE");
     data.append("imgId", baseNameImg);
+    data.append("userId", userId);
 
     fetch(
-      "https://tecnicosolarboat.tecnico.ulisboa.pt/public/deleteFromGallery.php",
+      "https://tecnicosolarboat.tecnico.ulisboa.pt/api/deleteFromGallery.php",
       {
         method: "POST",
         body: data,
@@ -455,9 +455,7 @@ const deletePhoto = (
         return res.json();
       })
       .then((r: UploadedImgResponse) => {
-        console.log(r);
         if (r.success) {
-          console.log(r);
           db.ref("public/officialWebsite/gallery/galleryPhotos")
             .child(activeGallery)
             .child(imgId)
@@ -466,7 +464,6 @@ const deletePhoto = (
           setModalIsOpen(false);
           toastrMessage("Success", r.msg, "success");
         } else {
-          console.log(r);
           toastrMessage("Error", r.msg, "error");
         }
       });
@@ -479,18 +476,23 @@ const deletePhoto = (
  * @param setModalIsOpen
  * @returns
  */
-const deleteAlbum = (galleryId: string, setModalIsOpen: Function) => {
-  if (!galleryId) return;
+const deleteAlbum = (
+  galleryId: string,
+  userId: string | undefined,
+  setModalIsOpen: Function
+) => {
+  if (!galleryId || !userId) return;
   let headers = new Headers();
-  headers.append("Origin", "http://localhost:3005");
+  // headers.append("Origin", "http://localhost:3005");
 
   var data = new FormData();
   data.append("galleryId", galleryId);
   data.append("deleteGallery", "TRUE");
   data.append("imgId", "null");
+  data.append("userId", userId);
 
   fetch(
-    "https://tecnicosolarboat.tecnico.ulisboa.pt/public/deleteFromGallery.php",
+    "https://tecnicosolarboat.tecnico.ulisboa.pt/api/deleteFromGallery.php",
     {
       method: "POST",
       body: data,
@@ -500,7 +502,6 @@ const deleteAlbum = (galleryId: string, setModalIsOpen: Function) => {
       return res.json();
     })
     .then((r: UploadedImgResponse) => {
-      console.log(r);
       if (r.success) {
         db.ref("public/officialWebsite/gallery/galleryPhotos")
           .child(galleryId)
@@ -513,7 +514,6 @@ const deleteAlbum = (galleryId: string, setModalIsOpen: Function) => {
         // Reload page -> Easy way :)
         window.location.reload();
       } else {
-        console.log(r);
       }
     });
 };

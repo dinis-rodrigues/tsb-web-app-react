@@ -37,7 +37,6 @@ function printDoc(gridApi: any, columnApi: any, filename: string) {
     PDF_WITH_COLUMNS_AS_LINKS,
     PDF_SELECTED_ROWS_ONLY,
   };
-  // console.log("Exporting to PDF...");
   const docDefinition: any = getDocDefinition(printParams, gridApi, columnApi);
   pdfMake.createPdf(docDefinition).download(filename);
 }

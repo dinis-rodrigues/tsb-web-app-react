@@ -368,7 +368,6 @@ const getForumTopicMetadata = (
     .on("value", (snapshot) => {
       let topicMetadata: ForumTopicMetadata = snapshot.val();
       if (!topicMetadata) {
-        // console.log("returning");
         return;
       }
 
@@ -438,7 +437,6 @@ const swalDeleteTopicMessage = (deleteFunction: Function) => {
       if (result.isConfirmed) {
         return;
       } else if (result.isDenied) {
-        // console.log("deleting");
         deleteFunction();
       }
     });

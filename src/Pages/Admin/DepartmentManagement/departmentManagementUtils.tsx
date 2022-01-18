@@ -140,7 +140,6 @@ const removePosition = (
   if (index > -1) {
     currPositions.splice(index, 1);
   }
-  // console.log(currPositions);
   setDepartmentInfo({ ...departmentInfo, positions: currPositions });
 };
 
@@ -560,7 +559,6 @@ const swalDeleteDepartmentMessage = (deleteFunction: Function) => {
       if (result.isConfirmed) {
         return;
       } else if (result.isDenied) {
-        // console.log("deleting");
         deleteFunction();
       }
     });

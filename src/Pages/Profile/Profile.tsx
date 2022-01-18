@@ -57,13 +57,11 @@ const Profile = ({ setUserProfilePicture }: Props) => {
           for (var key in data) {
             if (data.hasOwnProperty(key)) {
               dataArr[key] = data[key];
-              // // console.log(key + " -> " + data[key]);
             }
           }
           setDepartmentPositions(dataArr.department, USER, setSelectPositions);
           setInfo(dataArr);
           setPrevInfo(dataArr);
-          // console.log("getting info");
         });
     }
     getPersonalInfo();

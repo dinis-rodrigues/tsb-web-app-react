@@ -61,7 +61,6 @@ const BudgetTable = ({
   allTabs,
   usersMetadata,
 }: Props) => {
-  // console.log("All tabs", allTabs);
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
   const [columnApi, setColumnApi] = useState<ColumnApi | null>(null); // Column API
   const [tableRows, setTableRows] = useState([]);
