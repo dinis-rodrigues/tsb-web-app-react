@@ -38,7 +38,7 @@ const SponsorModal = ({
   retroActives,
   sponsorId,
 }: Props) => {
-  const { USER } = useAuth();
+  const { USER, isMarketingOrAdmin } = useAuth();
   const [focusInput, setFocusInput] = useState("");
   let sponsorValue = 0;
   if (sponsorInfo?.history) {
@@ -61,7 +61,7 @@ const SponsorModal = ({
       footer={
         <div className="row">
           <div className="col">
-            {sponsorId !== "createNew" && (
+            {sponsorId !== "createNew" && isMarketingOrAdmin && (
               <Button
                 className={"m-1"} // margin
                 variant="destructive"
@@ -75,15 +75,22 @@ const SponsorModal = ({
           </div>
           <div className="col">
             <div className="float-right">
-              <Button label="Cancel" onClick={() => setIsModalOpen(false)} />
+              <Button label="Close" onClick={() => setIsModalOpen(false)} />
 
-              <Button
-                variant="brand"
-                label={sponsorId !== "createNew" ? "Save" : "Create"}
-                onClick={() =>
-                  saveSponsor(sponsorInfo, sponsorId, bracketId, setIsModalOpen)
-                }
-              />
+              {isMarketingOrAdmin && (
+                <Button
+                  variant="brand"
+                  label={sponsorId !== "createNew" ? "Save" : "Create"}
+                  onClick={() =>
+                    saveSponsor(
+                      sponsorInfo,
+                      sponsorId,
+                      bracketId,
+                      setIsModalOpen
+                    )
+                  }
+                />
+              )}
             </div>
           </div>
         </div>
@@ -122,6 +129,7 @@ const SponsorModal = ({
 
               <input
                 value={sponsorInfo ? sponsorInfo.name : ""}
+                readOnly={isMarketingOrAdmin ? false : true}
                 onChange={(e) =>
                   sponsorInputHandler(e.target.value, "name", setSponsorInfo)
                 }
@@ -198,6 +206,7 @@ const SponsorModal = ({
                     <div className="col-5">
                       <NumberFormat
                         value={season.replace("-", "/")}
+                        readOnly={isMarketingOrAdmin ? false : true}
                         className="form-control text-center"
                         format={"####/####"}
                         allowEmptyFormatting
@@ -217,6 +226,7 @@ const SponsorModal = ({
                     <div className="col-5">
                       <NumberFormat
                         value={value}
+                        readOnly={isMarketingOrAdmin ? false : true}
                         onValueChange={(value) =>
                           editSeasonValueHandler(
                             value.floatValue ? value.floatValue : 0,
@@ -235,31 +245,35 @@ const SponsorModal = ({
                     </div>
 
                     <div className="col-1 justify-content-center d-flex align-items-center">
-                      <span
-                        className={"float-right cursor-pointer text-danger"}
-                        onClick={() =>
-                          deleteSeason(season, sponsorInfo, setSponsorInfo)
-                        }
-                      >
-                        <i className="fa fa-times"></i>
-                      </span>
+                      {isMarketingOrAdmin && (
+                        <span
+                          className={"float-right cursor-pointer text-danger"}
+                          onClick={() =>
+                            deleteSeason(season, sponsorInfo, setSponsorInfo)
+                          }
+                        >
+                          <i className="fa fa-times"></i>
+                        </span>
+                      )}
                     </div>
                   </Fragment>
                 );
               })}
           </div>
-          <div className="row">
-            <div className="col-4"></div>
-            <div className="col d-flex justify-content-center">
-              <button
-                className="btn btn-outline-success"
-                onClick={() => addNewSeason(sponsorInfo, setSponsorInfo)}
-              >
-                Add Season
-              </button>
+          {isMarketingOrAdmin && (
+            <div className="row">
+              <div className="col-4"></div>
+              <div className="col d-flex justify-content-center">
+                <button
+                  className="btn btn-outline-success"
+                  onClick={() => addNewSeason(sponsorInfo, setSponsorInfo)}
+                >
+                  Add Season
+                </button>
+              </div>
+              <div className="col-4"></div>
             </div>
-            <div className="col-4"></div>
-          </div>
+          )}
         </Fragment>
       )}
 
@@ -267,41 +281,43 @@ const SponsorModal = ({
       {activeTab === "1" && (
         <Fragment>
           <div className="form-group row text-center">
-            <div className="col">
-              <label>
-                <span className="text-dark small text-uppercase">
-                  <i className="fas fa-code"></i>
-                  <strong> SVG File</strong>
-                </span>
-              </label>
-              <div>
-                <FileSelector
-                  accept=".svg"
-                  value={fileValue}
-                  placeholder={
-                    sponsorId === "createNew"
-                      ? "Create sponsor to upload files"
-                      : `Drop or Browse svg`
-                  }
-                  variant="multiline"
-                  disabled={sponsorId === "createNew" ? true : false}
-                  onChange={(e) => {
-                    setFileValue(e);
-                    uploadSponsorSvgToServer(
-                      e,
-                      sponsorInfo,
-                      sponsorId,
-                      bracketId,
-                      sponsorInfo?.svgPath,
-                      "svgPath",
-                      USER?.id,
-                      setFileValue,
-                      setSponsorInfo
-                    );
-                  }}
-                />
+            {isMarketingOrAdmin && (
+              <div className="col">
+                <label>
+                  <span className="text-dark small text-uppercase">
+                    <i className="fas fa-code"></i>
+                    <strong> SVG File</strong>
+                  </span>
+                </label>
+                <div>
+                  <FileSelector
+                    accept=".svg"
+                    value={fileValue}
+                    placeholder={
+                      sponsorId === "createNew"
+                        ? "Create sponsor to upload files"
+                        : `Drop or Browse svg`
+                    }
+                    variant="multiline"
+                    disabled={sponsorId === "createNew" ? true : false}
+                    onChange={(e) => {
+                      setFileValue(e);
+                      uploadSponsorSvgToServer(
+                        e,
+                        sponsorInfo,
+                        sponsorId,
+                        bracketId,
+                        sponsorInfo?.svgPath,
+                        "svgPath",
+                        USER?.id,
+                        setFileValue,
+                        setSponsorInfo
+                      );
+                    }}
+                  />
+                </div>
               </div>
-            </div>
+            )}
             <div className="col">
               <label>
                 <span className="text-dark small text-uppercase">
@@ -340,41 +356,43 @@ const SponsorModal = ({
           <hr className="divider" />
 
           <div className="form-group row text-center">
-            <div className="col">
-              <label>
-                <span className="text-dark small text-uppercase">
-                  <i className="fas fa-code"></i>
-                  <strong> Logo White</strong>
-                </span>
-              </label>
-              <div>
-                <FileSelector
-                  accept=".eps,.pdf,.png,.jpg,.ai"
-                  value={fileValue}
-                  placeholder={
-                    sponsorId === "createNew"
-                      ? "Create sponsor to upload files"
-                      : `Drop or Browse ai / eps / pdf / png / jpg`
-                  }
-                  variant="multiline"
-                  disabled={sponsorId === "createNew" ? true : false}
-                  onChange={(e) => {
-                    setFileValue(e);
-                    uploadSponsorSvgToServer(
-                      e,
-                      sponsorInfo,
-                      sponsorId,
-                      bracketId,
-                      sponsorInfo?.logoWhite,
-                      "logoWhite",
-                      USER?.id,
-                      setFileValue,
-                      setSponsorInfo
-                    );
-                  }}
-                />
+            {isMarketingOrAdmin && (
+              <div className="col">
+                <label>
+                  <span className="text-dark small text-uppercase">
+                    <i className="fas fa-code"></i>
+                    <strong> Logo White</strong>
+                  </span>
+                </label>
+                <div>
+                  <FileSelector
+                    accept=".eps,.pdf,.png,.jpg,.ai"
+                    value={fileValue}
+                    placeholder={
+                      sponsorId === "createNew"
+                        ? "Create sponsor to upload files"
+                        : `Drop or Browse ai / eps / pdf / png / jpg`
+                    }
+                    variant="multiline"
+                    disabled={sponsorId === "createNew" ? true : false}
+                    onChange={(e) => {
+                      setFileValue(e);
+                      uploadSponsorSvgToServer(
+                        e,
+                        sponsorInfo,
+                        sponsorId,
+                        bracketId,
+                        sponsorInfo?.logoWhite,
+                        "logoWhite",
+                        USER?.id,
+                        setFileValue,
+                        setSponsorInfo
+                      );
+                    }}
+                  />
+                </div>
               </div>
-            </div>
+            )}
             <div className="col">
               <label>
                 <span className="text-dark small text-uppercase">
@@ -412,41 +430,43 @@ const SponsorModal = ({
           <hr className="divider" />
 
           <div className="form-group row text-center">
-            <div className="col">
-              <label>
-                <span className="text-dark small text-uppercase">
-                  <i className="fas fa-code"></i>
-                  <strong> Logo Black</strong>
-                </span>
-              </label>
-              <div>
-                <FileSelector
-                  accept=".eps,.pdf,.png,.jpg,.ai"
-                  value={fileValue}
-                  placeholder={
-                    sponsorId === "createNew"
-                      ? "Create sponsor to upload files"
-                      : `Drop or Browse ai / eps / pdf / png / jpg`
-                  }
-                  variant="multiline"
-                  disabled={sponsorId === "createNew" ? true : false}
-                  onChange={(e) => {
-                    setFileValue(e);
-                    uploadSponsorSvgToServer(
-                      e,
-                      sponsorInfo,
-                      sponsorId,
-                      bracketId,
-                      sponsorInfo?.logoBlack,
-                      "logoBlack",
-                      USER?.id,
-                      setFileValue,
-                      setSponsorInfo
-                    );
-                  }}
-                />
+            {isMarketingOrAdmin && (
+              <div className="col">
+                <label>
+                  <span className="text-dark small text-uppercase">
+                    <i className="fas fa-code"></i>
+                    <strong> Logo Black</strong>
+                  </span>
+                </label>
+                <div>
+                  <FileSelector
+                    accept=".eps,.pdf,.png,.jpg,.ai"
+                    value={fileValue}
+                    placeholder={
+                      sponsorId === "createNew"
+                        ? "Create sponsor to upload files"
+                        : `Drop or Browse ai / eps / pdf / png / jpg`
+                    }
+                    variant="multiline"
+                    disabled={sponsorId === "createNew" ? true : false}
+                    onChange={(e) => {
+                      setFileValue(e);
+                      uploadSponsorSvgToServer(
+                        e,
+                        sponsorInfo,
+                        sponsorId,
+                        bracketId,
+                        sponsorInfo?.logoBlack,
+                        "logoBlack",
+                        USER?.id,
+                        setFileValue,
+                        setSponsorInfo
+                      );
+                    }}
+                  />
+                </div>
               </div>
-            </div>
+            )}
             <div className="col">
               <label>
                 <span className="text-dark small text-uppercase">

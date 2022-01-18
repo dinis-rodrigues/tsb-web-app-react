@@ -6,6 +6,7 @@ import {
   calculateRetroActives,
   removeSponsorFromBracket,
 } from "./sponsorsUtils";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   sponsor: Sponsor;
@@ -39,6 +40,7 @@ const SponsorCard = forwardRef<HTMLInputElement, Props>(
     },
     ref
   ) => {
+    const { isMarketingOrAdmin } = useAuth();
     const { simpleValues, retroValues } = calculateRetroActives(
       sponsor?.history,
       retroActives
@@ -72,19 +74,23 @@ const SponsorCard = forwardRef<HTMLInputElement, Props>(
         </button>
 
         <SponsorImage svgPath={sponsor?.svgPath} />
-        <button
-          id={`${sponsorId}-del`}
-          style={{ position: "absolute", top: -2, right: -2 }}
-          className="btn border-0 btn-transition btn-outline-danger"
-          onClick={() => {
-            removeSponsorFromBracket(sponsorId, bracketid);
-          }}
-        >
-          <i className="fa fa-times "></i>
-        </button>
-        <UncontrolledTooltip placement="top" target={`${sponsorId}-del`}>
-          Remove from bracket
-        </UncontrolledTooltip>
+        {isMarketingOrAdmin && (
+          <>
+            <button
+              id={`${sponsorId}-del`}
+              style={{ position: "absolute", top: -2, right: -2 }}
+              className="btn border-0 btn-transition btn-outline-danger"
+              onClick={() => {
+                removeSponsorFromBracket(sponsorId, bracketid);
+              }}
+            >
+              <i className="fa fa-times "></i>
+            </button>
+            <UncontrolledTooltip placement="top" target={`${sponsorId}-del`}>
+              Remove from bracket
+            </UncontrolledTooltip>
+          </>
+        )}
         <span style={{ position: "absolute", bottom: 0 }}>{sponsor?.name}</span>
       </div>
     );

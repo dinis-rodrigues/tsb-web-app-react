@@ -27,6 +27,7 @@ interface ContextAuth {
   departments: Departments;
   departmentsWDesc: DepartmentsWithDesc;
   isAdminUser: boolean;
+  isMarketingOrAdmin: boolean;
   usersMetadata: UserMetadata;
   applicationSettings: ApplicationSettings;
   displayContent: boolean;
@@ -49,6 +50,7 @@ const AuthContext = React.createContext<ContextAuth>({
   departments: {},
   departmentsWDesc: {},
   isAdminUser: false,
+  isMarketingOrAdmin: false,
   displayContent: true,
   displayLogin: false,
   displayMaintenance: false,
@@ -85,6 +87,7 @@ export function AuthProvider({ children }: Props) {
       maintenanceIsOpen: false,
     });
   const [isAdminUser, setIsAdminUser] = useState(false);
+  const [isMarketingOrAdmin, setIsMarketingOrAdmin] = useState(false);
   const [displayContent, setDisplayContent] = useState(false);
   const [displayMaintenance, setDisplayMaintenance] = useState(false);
   const [displayLogin, setDisplayLogin] = useState(true);
@@ -116,7 +119,10 @@ export function AuthProvider({ children }: Props) {
           });
           // Checks if the user is admin or not
           let userAdmin = userHasAdminPermissions(userInfo);
+          let userMarketing =
+            userInfo.position === "Management and Marketing" || userAdmin;
           setIsAdminUser(userAdmin);
+          setIsMarketingOrAdmin(userMarketing);
           setDisplayApplication(
             userInfo,
             appSettings.maintenanceIsOpen,
@@ -183,6 +189,7 @@ export function AuthProvider({ children }: Props) {
     getCurrentUser,
     applicationSettings,
     isAdminUser,
+    isMarketingOrAdmin,
     displayContent,
     displayLogin,
     displayMaintenance,

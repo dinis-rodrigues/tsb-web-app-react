@@ -39,7 +39,7 @@ import EditPhotoModal from "./EditPhotoModal";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Gallery = () => {
-  const { isAdminUser, USER } = useAuth();
+  const { USER, isMarketingOrAdmin } = useAuth();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [galleryInfo, setGalleryInfo] = useState<GalleryItem>();
   const [galleryList, setGalleryList] = useState<[string, GalleryItem][]>([]);
@@ -109,7 +109,7 @@ const Gallery = () => {
                         ))
                       : "Create an Album"}
                   </ul>
-                  {isAdminUser && (
+                  {isMarketingOrAdmin && (
                     <button
                       className="btn btn-outline-info w-100 my-2"
                       onClick={() => {
@@ -120,7 +120,7 @@ const Gallery = () => {
                       Create Album
                     </button>
                   )}
-                  {activeGallery && isAdminUser && (
+                  {activeGallery && isMarketingOrAdmin && (
                     <Fragment>
                       <div className="galleryDrop">
                         <FileSelector
@@ -171,7 +171,7 @@ const Gallery = () => {
                   {galleryInfo ? `${galleryInfo?.name}` : "No Info"}
                   <div className="btn-actions-pane-right">
                     {galleryInfo && `${dateToString(galleryInfo.timestamp)}`}
-                    {isAdminUser && (
+                    {isMarketingOrAdmin && (
                       <button
                         className="btn btn-outline-info ml-2"
                         onClick={() => {
@@ -207,7 +207,7 @@ const Gallery = () => {
                           >
                             <div className="gallery-item">
                               <div className="gallery-image">
-                                {isAdminUser && (
+                                {isMarketingOrAdmin && (
                                   <Fragment>
                                     <button
                                       style={{

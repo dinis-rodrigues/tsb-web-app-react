@@ -5,6 +5,7 @@ import {
   photoInputHandler,
   saveEditedPhoto,
 } from "./galleryUtils";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   imgInfo: GalleryPhoto | undefined;
@@ -23,6 +24,7 @@ const EditPhotoModal = ({
   setIsModalOpen,
   setImgInfo,
 }: Props) => {
+  const { USER, isMarketingOrAdmin } = useAuth();
   return (
     <Modal
       isOpen={isModalOpen}
@@ -33,19 +35,22 @@ const EditPhotoModal = ({
       footer={
         <div className="row">
           <div className="col">
-            <Button
-              className={"m-1"} // margin
-              variant="destructive"
-              label="Delete from Database"
-              onClick={() => {
-                deletePhoto(
-                  activeGallery,
-                  imgInfo?.imagePath,
-                  imgId,
-                  setIsModalOpen
-                );
-              }}
-            />
+            {isMarketingOrAdmin && (
+              <Button
+                className={"m-1"} // margin
+                variant="destructive"
+                label="Delete from Database"
+                onClick={() => {
+                  deletePhoto(
+                    activeGallery,
+                    imgInfo?.imagePath,
+                    imgId,
+                    USER?.id,
+                    setIsModalOpen
+                  );
+                }}
+              />
+            )}
           </div>
           <div className="col">
             <div className="float-right">

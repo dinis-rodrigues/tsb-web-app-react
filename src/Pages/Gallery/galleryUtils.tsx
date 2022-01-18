@@ -432,7 +432,7 @@ const deletePhoto = (
     // Get the basename of the image
     let baseNameImg = imgFilePath.split(/[\\/]/).pop();
     if (baseNameImg)
-      baseNameImg = baseNameImg.substr(0, baseNameImg.lastIndexOf("."));
+      baseNameImg = baseNameImg.substring(0, baseNameImg.lastIndexOf("."));
     else return;
 
     let headers = new Headers();

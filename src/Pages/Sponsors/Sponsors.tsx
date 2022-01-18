@@ -20,8 +20,10 @@ import cx from "classnames";
 import Inventory from "./Inventory";
 import SponsorModal from "./SponsorModal";
 import BracketModal from "./BracketModal";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Sponsors = () => {
+  const { isMarketingOrAdmin } = useAuth();
   const [brackets, setBrackets] =
     useState<[string, SponsorBracketListItem][]>();
   const [retroActives, setRetroActives] = useState([]);
@@ -84,28 +86,30 @@ const Sponsors = () => {
                 </NavItem>
               </Nav>
             </div>
-            <div className="col d-flex justify-content-right align-items-center">
-              <span
-                className={"badge"}
-              >{`Last publish: ${lastEditionDate}`}</span>
-              <button
-                className="btn btn-primary mr-2"
-                onClick={() => {
-                  publishSponsorsToWebsite(existingBrackets);
-                }}
-              >
-                Publish to Website
-              </button>
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  setCreateModalOpen(true);
-                  setNewSponsorInfo(sponsorSkeleton);
-                }}
-              >
-                Create Sponsor
-              </button>
-            </div>
+            {isMarketingOrAdmin && (
+              <div className="col d-flex justify-content-right align-items-center">
+                <span
+                  className={"badge"}
+                >{`Last publish: ${lastEditionDate}`}</span>
+                <button
+                  className="btn btn-primary mr-2"
+                  onClick={() => {
+                    publishSponsorsToWebsite(existingBrackets);
+                  }}
+                >
+                  Publish to Website
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setCreateModalOpen(true);
+                    setNewSponsorInfo(sponsorSkeleton);
+                  }}
+                >
+                  Create Sponsor
+                </button>
+              </div>
+            )}
           </div>
 
           {activeTab === "Sponsors" ? (
@@ -119,19 +123,21 @@ const Sponsors = () => {
                   sponsors={sponsors}
                 />
               ))}
-              <div className="row">
-                <div className="col">
-                  <button
-                    className="btn-icon btn-icon-only btn btn-outline-success w-100"
-                    onClick={() => {
-                      setCreateBracketModalOpen(true);
-                      setNewBracketInfo(bracketSkeleton);
-                    }}
-                  >
-                    Create a new Bracket
-                  </button>
+              {isMarketingOrAdmin && (
+                <div className="row">
+                  <div className="col">
+                    <button
+                      className="btn-icon btn-icon-only btn btn-outline-success w-100"
+                      onClick={() => {
+                        setCreateBracketModalOpen(true);
+                        setNewBracketInfo(bracketSkeleton);
+                      }}
+                    >
+                      Create a new Bracket
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </Fragment>
           ) : (
             <Inventory

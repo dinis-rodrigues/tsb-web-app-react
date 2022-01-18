@@ -39,13 +39,11 @@ import RecruitmentYearCount from "./RecruitmentYearDepCount";
 import { db } from "../../config/firebase";
 
 import { CheckboxGroup, Input } from "react-rainbow-components";
-import { userHasPermission } from "../../utils/generalFunctions";
 
 // Layout
 
 const Recruitment = () => {
-  const { USER } = useAuth();
-  const userAdmin = userHasPermission(USER);
+  const { USER, isMarketingOrAdmin } = useAuth();
   // Default table options
   const gridOptions = {
     enableCellTextSelection: false,
@@ -104,7 +102,7 @@ const Recruitment = () => {
     <Fragment>
       <div className="app-main__outer">
         <div className="app-main__inner">
-          {userAdmin && (
+          {isMarketingOrAdmin && (
             <RecruitmentSettings
               tableName={currTableName}
               tablesList={tablesList}

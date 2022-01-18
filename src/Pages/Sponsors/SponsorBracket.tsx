@@ -36,6 +36,8 @@ import {
 import { db } from "../../config/firebase";
 import SponsorModal from "./SponsorModal";
 import BracketModal from "./BracketModal";
+import { useAuth } from "../../contexts/AuthContext";
+import { toastrMessage } from "../../utils/generalFunctions";
 
 type Props = {
   bracket: SponsorBracketListItem;
@@ -49,16 +51,7 @@ const SponsorBracket = ({
   retroActives,
   sponsors,
 }: Props) => {
-  // const [items, setItems] = useState([
-  //   "https://source.unsplash.com/WLUHO9A_xik/900x900",
-  //   "https://source.unsplash.com/R4K8S77qtwI/900x900",
-  //   "https://source.unsplash.com/jJGc21mEh8Q/900x900",
-  //   "https://source.unsplash.com/omNxg6JP6Fo/900x900",
-  //   "https://source.unsplash.com/-M1gkucIqkQ/900x900",
-  //   "https://source.unsplash.com/czOuPVsfHDw/900x900",
-  //   "https://source.unsplash.com/-vr0gMUM6Fk/900x900",
-  //   "https://source.unsplash.com/TsMuMM_qVec/900x900",
-  // ]);
+  const { isMarketingOrAdmin } = useAuth();
   const [sponsorsItems, setsSponsorsItems] = useState<string[]>([]);
   const [sponsorsObj, setSponsorsObj] = useState<SponsorsOrder>({});
   const [activeId, setActiveId] = useState<string>("");
@@ -116,57 +109,62 @@ const SponsorBracket = ({
                 .toString()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, " ")}
             </span>
-            <button
-              className="btn btn-outline-info"
-              onClick={() => {
-                setBracketModalopen(true);
-                setBracketInfo(bracket);
-              }}
-            >
-              Edit
-            </button>
-            <UncontrolledButtonDropdown>
-              <DropdownToggle color="btn" className="p-0 mr-2">
-                <span className="btn-wide btn-outline-success  btn  dropdown-toggle">
-                  Add
-                </span>
-              </DropdownToggle>
-              <DropdownMenu right className="rm-pointers dropdown-menu">
-                <input
-                  type="text"
-                  className="dropdown-search"
-                  placeholder="search"
-                  value={filterSearch}
-                  onChange={(e) => {
-                    updateSponsorDropdown(
-                      e.target.value,
-                      sponsors,
-                      setDropdownResults
-                    );
-                    setFilterSearch(e.target.value);
+            {isMarketingOrAdmin && (
+              <>
+                <button
+                  className="btn btn-outline-info"
+                  onClick={() => {
+                    setBracketModalopen(true);
+                    setBracketInfo(bracket);
                   }}
-                />
-                {dropdownResults.map(([sponId, sponsorVal]) => {
-                  return (
-                    <button
-                      key={sponId}
-                      type="button"
-                      className="dropdown-item"
-                      onClick={() =>
-                        addSponsorToBracket(
-                          sponId,
-                          sponsorVal,
-                          bracketId,
-                          bracket.name
-                        )
-                      }
-                    >
-                      {sponsorVal.name}
-                    </button>
-                  );
-                })}
-              </DropdownMenu>
-            </UncontrolledButtonDropdown>
+                >
+                  Edit
+                </button>
+
+                <UncontrolledButtonDropdown>
+                  <DropdownToggle color="btn" className="p-0 mr-2">
+                    <span className="btn-wide btn-outline-success  btn  dropdown-toggle">
+                      Add
+                    </span>
+                  </DropdownToggle>
+                  <DropdownMenu right className="rm-pointers dropdown-menu">
+                    <input
+                      type="text"
+                      className="dropdown-search"
+                      placeholder="search"
+                      value={filterSearch}
+                      onChange={(e) => {
+                        updateSponsorDropdown(
+                          e.target.value,
+                          sponsors,
+                          setDropdownResults
+                        );
+                        setFilterSearch(e.target.value);
+                      }}
+                    />
+                    {dropdownResults.map(([sponId, sponsorVal]) => {
+                      return (
+                        <button
+                          key={sponId}
+                          type="button"
+                          className="dropdown-item"
+                          onClick={() =>
+                            addSponsorToBracket(
+                              sponId,
+                              sponsorVal,
+                              bracketId,
+                              bracket.name
+                            )
+                          }
+                        >
+                          {sponsorVal.name}
+                        </button>
+                      );
+                    })}
+                  </DropdownMenu>
+                </UncontrolledButtonDropdown>
+              </>
+            )}
           </div>
         </div>
         {sponsorsItems && Object.entries(sponsorsObj).length > 0 && (
@@ -175,7 +173,12 @@ const SponsorBracket = ({
             collisionDetection={closestCenter}
             onDragStart={(e) => handleDragStart(e, setActiveId)}
             onDragEnd={(e) =>
-              handleDragEnd(e, bracketId, setsSponsorsItems, setActiveId)
+              isMarketingOrAdmin
+                ? handleDragEnd(e, bracketId, setsSponsorsItems, setActiveId)
+                : toastrMessage(
+                    "You don't have permissions to do this",
+                    "error"
+                  )
             }
             onDragCancel={(e) => handleDragCancel(setActiveId)}
           >
