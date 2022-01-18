@@ -315,8 +315,10 @@ const uploadLoop = async (
     }
     setUploadingImgs((uploadingImgs: UploadingImages) => {
       let stillUploading = true;
-      if (uploadingImgs.current === uploadingImgs.total - 1)
+      if (uploadingImgs.current === uploadingImgs.total - 1) {
         stillUploading = false;
+        toastrMessage("", "Upload complete.", "success");
+      }
       let newCurr = uploadingImgs.current + 1;
 
       return {
@@ -502,18 +504,24 @@ const deleteAlbum = (
       return res.json();
     })
     .then((r: UploadedImgResponse) => {
-      if (r.success) {
-        db.ref("public/officialWebsite/gallery/galleryPhotos")
-          .child(galleryId)
-          .remove();
-        db.ref("public/officialWebsite/gallery/galleryList")
-          .child(galleryId)
-          .remove();
+      // Reload page -> Easy way :)
+      db.ref("public/officialWebsite/gallery/galleryPhotos")
+        .child(galleryId)
+        .remove();
+      db.ref("public/officialWebsite/gallery/galleryList")
+        .child(galleryId)
+        .remove();
 
+      if (r.success) {
         setModalIsOpen(false);
-        // Reload page -> Easy way :)
+        toastrMessage("", "Album deleted successfully.", "success");
         window.location.reload();
       } else {
+        toastrMessage(
+          "",
+          "Error deleting album from server. Please contact the admin",
+          "error"
+        );
       }
     });
 };

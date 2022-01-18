@@ -4,7 +4,7 @@ import "firebase/database";
 import "firebase/storage";
 
 // OFICIAL PRODUCTION DATABASE
-const firebaseConfig = {
+const firebaseConfigProduction = {
   apiKey: "AIzaSyAHPrWvVr1El3NkJd3C0gbZbiTl_weCTlE",
   authDomain: "tsb-aplication.firebaseapp.com",
   databaseURL: "https://tsb-aplication.firebaseio.com",
@@ -16,7 +16,7 @@ const firebaseConfig = {
 };
 
 // DEVELOPMENT DATABASE
-// const firebaseConfig = {
+// const firebaseConfigDevelopment = {
 //   apiKey: "AIzaSyBZm2feIZTi5dTGRQuJKoQUEwdh1axiSgs",
 //   authDomain: "tsb-application-dev.firebaseapp.com",
 //   databaseURL:
@@ -28,7 +28,7 @@ const firebaseConfig = {
 // };
 
 // Initialize Firebase
-const app: firebase.app.App = firebase.initializeApp(firebaseConfig);
+const app: firebase.app.App = firebase.initializeApp(firebaseConfigProduction);
 
 export const db = app.database();
 export const st = app.storage();

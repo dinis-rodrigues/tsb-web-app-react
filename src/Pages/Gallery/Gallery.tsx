@@ -1,4 +1,20 @@
 import { Fragment, useEffect, useState } from "react";
+import "lightgallery/css/lightgallery.css";
+import "lightgallery/css/lg-zoom.css";
+import "lightgallery/css/lg-thumbnail.css";
+import "lightgallery/css/lg-autoplay.css";
+import "lightgallery/css/lg-fullscreen.css";
+import "lightgallery/css/lg-rotate.css";
+
+import LightGallery from "lightgallery/react";
+
+// import plugins if you need
+import lgThumbnail from "lightgallery/plugins/thumbnail";
+import lgZoom from "lightgallery/plugins/zoom";
+import lgAutoplay from "lightgallery/plugins/autoplay";
+import lgFullscreen from "lightgallery/plugins/fullscreen";
+import lgRotate from "lightgallery/plugins/rotate";
+
 import {
   GalleryAlbum,
   GalleryItem,
@@ -7,7 +23,6 @@ import {
 } from "../../interfaces";
 import CreateGalleryModal from "./CreateGalleryModal";
 import { FileSelector, ProgressBar } from "react-rainbow-components";
-import SimpleReactLightbox, { SRLWrapper } from "simple-react-lightbox";
 import {
   deletePhoto,
   getGalleryList,
@@ -169,74 +184,83 @@ const Gallery = () => {
                     )}
                   </div>
                 </div>
-                <SimpleReactLightbox>
-                  <SRLWrapper>
-                    <div className="row card-body">
-                      {galleryPhotos &&
-                        Object.entries(galleryPhotos).map(([imgId, img]) => {
-                          return (
-                            <div
-                              className="col-sm-6 col-md-3 col-lg-3"
-                              key={imgId}
-                            >
-                              <div className="gallery-item">
-                                <div className="gallery-image">
-                                  {isAdminUser && (
-                                    <Fragment>
-                                      <button
-                                        style={{
-                                          position: "absolute",
-                                          top: -2,
-                                          left: -2,
-                                        }}
-                                        className="btn border-0 btn-transition btn-outline-light zIndex-inf"
-                                        onClick={() =>
-                                          openEditPhotoModal(
-                                            img,
-                                            imgId,
-                                            setActivePhoto,
-                                            setImgInfo,
-                                            setEditPhotoModalOpen
-                                          )
-                                        }
-                                      >
-                                        <i className="fa fa-edit "></i>
-                                      </button>
-                                      <button
-                                        style={{
-                                          position: "absolute",
-                                          top: -2,
-                                          right: -2,
-                                        }}
-                                        className="btn border-0 btn-transition btn-outline-danger zIndex-inf"
-                                        onClick={() => {
-                                          deletePhoto(
-                                            activeGallery,
-                                            img.imagePath,
-                                            imgId,
-                                            USER?.id,
-                                            setModalIsOpen
-                                          );
-                                        }}
-                                      >
-                                        <i className="fa fa-times "></i>
-                                      </button>
-                                    </Fragment>
-                                  )}
-                                  <a href={img.imagePath}>
-                                    <img
-                                      src={img.rzImgPath}
-                                      alt={img.description}
-                                    />
-                                  </a>
-                                </div>
+                {galleryPhotos && Object.entries(galleryPhotos).length > 0 && (
+                  <LightGallery
+                    mode="lg-fade"
+                    speed={500}
+                    plugins={[
+                      lgThumbnail,
+                      lgZoom,
+                      lgAutoplay,
+                      lgFullscreen,
+                      lgRotate,
+                    ]}
+                    elementClassNames="row card-body"
+                  >
+                    {galleryPhotos &&
+                      Object.entries(galleryPhotos).map(([imgId, img]) => {
+                        return (
+                          <a
+                            href={img.imagePath}
+                            className="col-sm-6 col-md-3 col-lg-3"
+                            key={imgId}
+                          >
+                            <div className="gallery-item">
+                              <div className="gallery-image">
+                                {isAdminUser && (
+                                  <Fragment>
+                                    <button
+                                      style={{
+                                        position: "absolute",
+                                        top: -2,
+                                        left: -2,
+                                      }}
+                                      className="btn border-0 btn-transition btn-outline-light zIndex-inf"
+                                      onClick={() =>
+                                        openEditPhotoModal(
+                                          img,
+                                          imgId,
+                                          setActivePhoto,
+                                          setImgInfo,
+                                          setEditPhotoModalOpen
+                                        )
+                                      }
+                                    >
+                                      <i className="fa fa-edit "></i>
+                                    </button>
+                                    <button
+                                      style={{
+                                        position: "absolute",
+                                        top: -2,
+                                        right: -2,
+                                      }}
+                                      className="btn border-0 btn-transition btn-outline-danger zIndex-inf"
+                                      onClick={() => {
+                                        deletePhoto(
+                                          activeGallery,
+                                          img.imagePath,
+                                          imgId,
+                                          USER?.id,
+                                          setModalIsOpen
+                                        );
+                                      }}
+                                    >
+                                      <i className="fa fa-times "></i>
+                                    </button>
+                                  </Fragment>
+                                )}
+
+                                <img
+                                  src={img.rzImgPath}
+                                  alt={img.description}
+                                />
                               </div>
                             </div>
-                          );
-                        })}
-                    </div>
-                  </SRLWrapper>
-                </SimpleReactLightbox>
+                          </a>
+                        );
+                      })}
+                  </LightGallery>
+                )}
               </div>
             </div>
           </div>

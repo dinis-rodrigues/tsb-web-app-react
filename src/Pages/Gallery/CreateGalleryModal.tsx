@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Modal, Button, DatePicker } from "react-rainbow-components";
+import { useAuth } from "../../contexts/AuthContext";
 import { GalleryItem } from "../../interfaces";
 import { inputToDate } from "../../utils/generalFunctions";
 import {
@@ -26,6 +27,7 @@ const CreateGalleryModal = ({
   isModalOpen,
   setIsModalOpen,
 }: Props) => {
+  const { USER } = useAuth();
   const [modalInfo, setModalInfo] = useState<GalleryItem>();
 
   useEffect(() => {
@@ -56,7 +58,7 @@ const CreateGalleryModal = ({
                 variant="destructive"
                 label="Delete from Database"
                 onClick={() => {
-                  deleteAlbum(activeGallery, setIsModalOpen);
+                  deleteAlbum(activeGallery, USER?.id, setIsModalOpen);
                 }}
               />
             )}

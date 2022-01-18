@@ -148,6 +148,8 @@ const deleteSponsor = (sponsorId: string, bracketId: string | undefined) => {
       });
   // remove sponsor from inventory
   else db.ref("private/sponsors/inventory").child(sponsorId).remove();
+
+  toastrMessage("", "Sponsor Deleted", "success");
 };
 
 /**
@@ -891,6 +893,9 @@ const uploadSponsorSvgToServer = (
         setSponsorInfo(newSponsorInfo);
         saveSponsor(newSponsorInfo, sponsorId, bracketId, null);
         setFileValue(null);
+        toastrMessage("", "File uploaded.", "success");
+      } else {
+        toastrMessage("", "Error sending file to server.", "error");
       }
     });
 };
