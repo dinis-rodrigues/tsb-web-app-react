@@ -200,8 +200,8 @@ const Gallery = () => {
                     {galleryPhotos &&
                       Object.entries(galleryPhotos).map(([imgId, img]) => {
                         return (
-                          <a
-                            href={img.imagePath}
+                          <div
+                            data-src={img.imagePath}
                             className="col-sm-6 col-md-3 col-lg-3"
                             key={imgId}
                           >
@@ -215,18 +215,19 @@ const Gallery = () => {
                                         top: -2,
                                         left: -2,
                                       }}
-                                      className="btn border-0 btn-transition btn-outline-light zIndex-inf"
-                                      onClick={() =>
+                                      className="btn border-0 btn-transition btn-light zIndex-inf"
+                                      onClickCapture={(e) => {
+                                        e.stopPropagation(); // dont open the gallery modal
                                         openEditPhotoModal(
                                           img,
                                           imgId,
                                           setActivePhoto,
                                           setImgInfo,
                                           setEditPhotoModalOpen
-                                        )
-                                      }
+                                        );
+                                      }}
                                     >
-                                      <i className="fa fa-edit "></i>
+                                      <i className="fa fa-edit"></i>
                                     </button>
                                     <button
                                       style={{
@@ -234,8 +235,9 @@ const Gallery = () => {
                                         top: -2,
                                         right: -2,
                                       }}
-                                      className="btn border-0 btn-transition btn-outline-danger zIndex-inf"
-                                      onClick={() => {
+                                      className="btn border-0 btn-transition btn-danger zIndex-inf"
+                                      onClickCapture={(e) => {
+                                        e.preventDefault();
                                         deletePhoto(
                                           activeGallery,
                                           img.imagePath,
@@ -256,7 +258,7 @@ const Gallery = () => {
                                 />
                               </div>
                             </div>
-                          </a>
+                          </div>
                         );
                       })}
                   </LightGallery>

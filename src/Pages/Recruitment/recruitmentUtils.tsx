@@ -249,10 +249,10 @@ const createNewSqlAndDbTable = async (
       // Send data to firebase database
       createNewDbTable(tableName, tablesList);
 
-      toastrMessage("Success", "Table created successfully", "success", false);
+      toastrMessage("Table created successfully", "success", false);
     }
   } catch (error) {
-    toastrMessage("Error", error as string, "error", false);
+    toastrMessage(error as string, "error", false);
   }
 };
 /**

@@ -629,7 +629,7 @@ const calendarEventDragHandler = (
     }
   }
 
-  toastrMessage("Ook!", "The event was successfully updated", "info");
+  toastrMessage("The event was successfully updated", "info");
 };
 
 /**
@@ -717,7 +717,7 @@ const saveEvent = (
         .update(currEventInfo);
     }
 
-    toastrMessage("Ok!", "You successfully updated the event", "info");
+    toastrMessage("You successfully updated the event", "info");
   } else {
     // If we are creating a new event
     currEventInfo.createdBy = user.id;
@@ -731,7 +731,7 @@ const saveEvent = (
       db.ref(`private/events/current`).push(currEventInfo);
     }
 
-    toastrMessage("Nice!", "You created a brand new event", "success");
+    toastrMessage("You created a brand new event", "success");
   }
 
   setIsModalOpen(false);
@@ -784,7 +784,7 @@ const deleteEvent = (
     db.ref("private/events/current").child(currEventKey).remove();
   }
   setIsModalOpen(false);
-  toastrMessage("Deleted!", "The event is gone now!", "info");
+  toastrMessage("The event is gone now!", "success");
 };
 
 /**
@@ -919,7 +919,7 @@ const eventListClickHandler = (
  */
 const eventListDeleteHandler = (eventId: string) => {
   db.ref(`private/events/current/${eventId}`).remove();
-  toastrMessage("Deleted!", "The event is gone now!", "info");
+  toastrMessage("The event is gone now!", "success");
 };
 
 /**

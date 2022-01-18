@@ -298,7 +298,6 @@ const uploadLoop = async (
         saveUploadedImg(activeGallery, imgPath, rzImgPath, galleryInfo.name);
       } else {
         toastrMessage(
-          "Error",
           resData.msg + " File: " + imageFilesToUpload[i][1].name,
           "error",
           false
@@ -306,7 +305,6 @@ const uploadLoop = async (
       }
     } catch (error) {
       toastrMessage(
-        "Error",
         "Internal Server error while uploading file. " +
           imageFilesToUpload[i][1].name,
         "error",
@@ -317,7 +315,7 @@ const uploadLoop = async (
       let stillUploading = true;
       if (uploadingImgs.current === uploadingImgs.total - 1) {
         stillUploading = false;
-        toastrMessage("", "Upload complete.", "success");
+        toastrMessage("Operation completed.", "success");
       }
       let newCurr = uploadingImgs.current + 1;
 
@@ -464,9 +462,9 @@ const deletePhoto = (
             .remove();
 
           setModalIsOpen(false);
-          toastrMessage("Success", r.msg, "success");
+          toastrMessage(r.msg, "success");
         } else {
-          toastrMessage("Error", r.msg, "error");
+          toastrMessage(r.msg, "error");
         }
       });
   }
@@ -514,11 +512,10 @@ const deleteAlbum = (
 
       if (r.success) {
         setModalIsOpen(false);
-        toastrMessage("", "Album deleted successfully.", "success");
+        toastrMessage("Album deleted successfully.", "success");
         window.location.reload();
       } else {
         toastrMessage(
-          "",
           "Error deleting album from server. Please contact the admin",
           "error"
         );

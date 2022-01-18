@@ -39,14 +39,14 @@ const getEncodedForumTopicPaths = () => {
  * @param  {string} msg message to display
  */
 const successCreatingThreadMessage = (msg: string) => {
-  toastrMessage("Wow!", msg, "success");
+  toastrMessage(msg, "success");
 };
 
 /** Error toastr message
  * @param  {string} msg message to display
  */
 const errorCreatingThreadMessage = (msg: string) => {
-  toastrMessage("Error creating thread.", msg, "error");
+  toastrMessage(msg, "error");
 };
 
 /** Retrieves the corresponding badge class color if any

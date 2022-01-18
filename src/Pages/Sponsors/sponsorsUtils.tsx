@@ -149,7 +149,7 @@ const deleteSponsor = (sponsorId: string, bracketId: string | undefined) => {
   // remove sponsor from inventory
   else db.ref("private/sponsors/inventory").child(sponsorId).remove();
 
-  toastrMessage("", "Sponsor Deleted", "success");
+  toastrMessage("Sponsor Deleted", "success");
 };
 
 /**
@@ -893,9 +893,9 @@ const uploadSponsorSvgToServer = (
         setSponsorInfo(newSponsorInfo);
         saveSponsor(newSponsorInfo, sponsorId, bracketId, null);
         setFileValue(null);
-        toastrMessage("", "File uploaded.", "success");
+        toastrMessage("File uploaded.", "success");
       } else {
-        toastrMessage("", "Error sending file to server.", "error");
+        toastrMessage("Error sending file to server.", "error");
       }
     });
 };
@@ -955,7 +955,6 @@ const publishBracketToWebsite = (
     .catch((err) => {
       if (err)
         toastrMessage(
-          "Error!",
           `An error occurred while publishing ${bracketInfo.name}`,
           "error"
         );
@@ -996,16 +995,12 @@ const publishSponsorsToWebsite = async (
 ) => {
   if (!existingBrackets) return;
   // remove existing from website
-  const res = await db
+  await db
     .ref("public/officialWebsite/sponsors")
     .remove()
     .catch((err) => {
       if (err)
-        toastrMessage(
-          "Error!",
-          `An error occurred while replacing sponsors`,
-          "error"
-        );
+        toastrMessage(`An error occurred while replacing sponsors`, "error");
     });
 
   // Get all existing brackets with sponsors
@@ -1024,11 +1019,7 @@ const publishSponsorsToWebsite = async (
       });
       // Publish last edition timestamp
       publishLastChangeDate();
-      toastrMessage(
-        "Operation Completed",
-        `Publishing sponsors to website complete.`,
-        "success"
-      );
+      toastrMessage(`Publishing sponsors to website complete.`, "success");
     });
 };
 

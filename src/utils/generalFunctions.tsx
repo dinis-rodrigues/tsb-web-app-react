@@ -22,7 +22,6 @@ import {
  * @param  {"error" | "success" | "info" | "warning" | "default"} type Notification type
  */
 const toastrMessage = (
-  title: string = "ola",
   message: string = "",
   type: "error" | "success" | "info" | "warning" | "default" = "info",
   autoclose: boolean = true
