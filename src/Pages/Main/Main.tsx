@@ -10,6 +10,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import AppMain from "../../components/AppMain/AppMain";
 import AppHeader from "../../components/AppHeader/AppHeader";
 import AppSidebar from "../../components/AppSidebar/AppSidebar";
+import { ToastContainer } from "react-toastify";
 
 type Props = {
   colorScheme: string;
@@ -63,6 +64,17 @@ const Main = ({
               {/* Content of the page */}
               <AppMain />
             </div>
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
           </div>
         </Fragment>
       )}

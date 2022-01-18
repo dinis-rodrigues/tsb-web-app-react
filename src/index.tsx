@@ -2,7 +2,9 @@
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 
+import "react-toastify/dist/ReactToastify.css";
 import "./base.css";
+
 import Main from "./Pages/Main/Main";
 
 import configureStore from "./config/configureStore";
