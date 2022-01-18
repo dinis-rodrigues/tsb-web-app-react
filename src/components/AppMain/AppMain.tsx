@@ -2,7 +2,6 @@ import "../../base.css";
 import { Route, Redirect, Switch } from "react-router-dom";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import { Suspense, lazy, Fragment } from "react";
-import { ToastContainer } from "react-toastify";
 import AppLoading from "../AppLoading/AppLoading";
 
 const Attendance = lazy(
@@ -112,8 +111,6 @@ function App() {
         </Switch>
       </Suspense>
       <Route exact path="/" render={() => <Redirect to="/dashboard" />} />
-
-      <ToastContainer />
     </Fragment>
   );
 }

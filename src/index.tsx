@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./base.css";
+import "./custom.css";
 
 import Main from "./Pages/Main/Main";
 

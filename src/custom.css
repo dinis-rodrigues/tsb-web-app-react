@@ -1,0 +1,27 @@
+.lg-outer .lg-thumb-item {
+  border: 4px solid transparent !important;
+}
+.lg-outer .lg-thumb-item.active,
+.lg-outer .lg-thumb-item:hover {
+  border-color: #16aaff !important;
+}
+
+.lg-sub-html {
+  font-family: "Open Sans";
+  color: #f4f5f7 !important;
+  font-size: 15px !important;
+}
+
+.lg-outer .lg-thumb-outer {
+  background-color: #0d0a0a62;
+}
+
+.lg-backdrop.in {
+  opacity: 0.8 !important;
+}
+
+.lg-progress-bar .lg-progress {
+  background-color: #16aaff !important;
+  height: 5px;
+  width: 0;
+}

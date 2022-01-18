@@ -1,12 +1,12 @@
 // import firebase from "firebase/app";
 import { db } from "../config/firebase";
+import { v4 as uuid } from "uuid";
 
 // Swal Notifications
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 // Toastr Notification
-import { toast, Bounce, ToastPosition } from "react-toastify";
-import ToastrMessage from "../components/ToastrMessage/ToastrMessage";
+import { toast, ToastPosition } from "react-toastify";
 import {
   Notification,
   PersonalInformation,
@@ -22,14 +22,17 @@ import {
  * @param  {"error" | "success" | "info" | "warning" | "default"} type Notification type
  */
 const toastrMessage = (
-  title: string,
-  message: string,
-  type: "error" | "success" | "info" | "warning" | "default",
+  title: string = "ola",
+  message: string = "",
+  type: "error" | "success" | "info" | "warning" | "default" = "info",
   autoclose: boolean = true
 ) => {
   const position: ToastPosition = "top-right";
   const config = {
     closeButton: true,
+    newestOnTop: true,
+    closeOnClick: true,
+    pauseOnFocusLoss: true,
     autoClose: autoclose ? 5000 : autoclose,
     position: position,
     pauseOnHover: true,
@@ -37,6 +40,7 @@ const toastrMessage = (
     className: "zIndex-inf",
     progress: undefined,
     hideProgressBar: false,
+    toastId: uuid(),
   };
   switch (type) {
     case "error":
