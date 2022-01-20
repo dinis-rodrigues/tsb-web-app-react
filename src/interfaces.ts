@@ -99,6 +99,8 @@ export interface RecruitmentUser {
   year: string;
   message: string;
   timestamp: number | string | null;
+  country?: string;
+  applicationId?: string; // this is not in the database but its added a posteriori for recruitment table rows
 }
 
 export interface RecruitmentTableSQL {

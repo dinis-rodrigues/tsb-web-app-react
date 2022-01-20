@@ -1,13 +1,25 @@
 import { Button, Modal } from "react-rainbow-components";
 import { RecruitmentUser } from "../../interfaces";
 import TextareaAutosize from "react-textarea-autosize";
+import {
+  deleteRecruitmentMemberFromDB,
+  swalDeleteApplication,
+} from "./recruitmentUtils";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
+  tableName: string | boolean;
   modalIsOpen: boolean;
   info: RecruitmentUser;
   setModalIsOpen: Function;
 };
-const RecruitmentUserModal = ({ setModalIsOpen, modalIsOpen, info }: Props) => {
+const RecruitmentUserModal = ({
+  tableName,
+  setModalIsOpen,
+  modalIsOpen,
+  info,
+}: Props) => {
+  const { isMarketingOrAdmin } = useAuth();
   return (
     <Modal
       size="large"
@@ -18,8 +30,27 @@ const RecruitmentUserModal = ({ setModalIsOpen, modalIsOpen, info }: Props) => {
       }}
       footer={
         <div className="row justify-content-sm-center">
-          <div className="mr-1">
-            <Button label="Close" onClick={() => setModalIsOpen(false)} />
+          <div className="col">
+            {isMarketingOrAdmin && (
+              <Button
+                variant="destructive"
+                label="Delete"
+                onClick={() =>
+                  swalDeleteApplication(() =>
+                    deleteRecruitmentMemberFromDB(
+                      tableName,
+                      info.applicationId,
+                      setModalIsOpen
+                    )
+                  )
+                }
+              />
+            )}
+          </div>
+          <div className="col">
+            <div className="float-right">
+              <Button label="Close" onClick={() => setModalIsOpen(false)} />
+            </div>
           </div>
         </div>
       }
@@ -38,6 +69,7 @@ const RecruitmentUserModal = ({ setModalIsOpen, modalIsOpen, info }: Props) => {
               placeholder=""
             />
           </div>
+
           <div className="col">
             <span className="text-dark small text-uppercase">
               <strong>Degree</strong>
@@ -52,11 +84,23 @@ const RecruitmentUserModal = ({ setModalIsOpen, modalIsOpen, info }: Props) => {
           </div>
           <div className="col">
             <span className="text-dark small text-uppercase">
+              <strong>Year</strong>
+            </span>
+            <input
+              readOnly
+              value={info.year || ""}
+              type="text"
+              className="form-control m-0 text-center"
+              placeholder=""
+            />
+          </div>
+          <div className="col">
+            <span className="text-dark small text-uppercase">
               <strong>Departments</strong>
             </span>
             <input
               readOnly
-              value={info.departments || ""}
+              value={info.departments.join(", ").toUpperCase() || ""}
               type="text"
               className="form-control m-0 text-center"
               placeholder=""
@@ -66,11 +110,11 @@ const RecruitmentUserModal = ({ setModalIsOpen, modalIsOpen, info }: Props) => {
         <div className="form-group row">
           <div className="col">
             <span className="text-dark small text-uppercase">
-              <strong>Year</strong>
+              <strong>Country</strong>
             </span>
             <input
               readOnly
-              value={info.year || ""}
+              value={info.country || ""}
               type="text"
               className="form-control m-0 text-center"
               placeholder=""

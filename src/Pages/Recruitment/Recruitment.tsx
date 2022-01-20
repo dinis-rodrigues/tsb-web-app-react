@@ -24,6 +24,8 @@ import {
   onRowRecruitmentUserClick,
   selectTableHandler,
   selectDepartmentHandler,
+  deleteTable,
+  swalDeleteRecruitmentTable,
 } from "./recruitmentUtils";
 
 // Table
@@ -122,6 +124,23 @@ const Recruitment = () => {
               {currTableName}
               <div className="btn-actions-pane-right text-capitalize">
                 <div className="row mr-1">
+                  {isMarketingOrAdmin && (
+                    <button
+                      type="button"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                      className="p-0 mr-2 btn btn-btn"
+                      onClick={() =>
+                        swalDeleteRecruitmentTable(() =>
+                          deleteTable(currTableName as string, tablesList)
+                        )
+                      }
+                    >
+                      <span className="btn-wide btn-danger mr-md-2 btn btn-sm">
+                        Delete
+                      </span>
+                    </button>
+                  )}
                   <UncontrolledButtonDropdown>
                     <DropdownToggle color="btn" className="p-0 mr-2">
                       <span className="btn-wide btn-dark mr-md-2 btn btn-sm dropdown-toggle">
@@ -183,14 +202,6 @@ const Recruitment = () => {
             <div className="card-body">
               <div className="row" style={{ paddingBottom: "1rem" }}>
                 <div className="col-md-4">
-                  {/* <input
-                    onChange={(e) => {
-                      filterTable(e, gridApi);
-                    }}
-                    className={"form-control"}
-                    placeholder={"Search..."}
-                    type="text"
-                  /> */}
                   <Input
                     className="datePicker mt-1"
                     style={{ borderRadius: "25px" }}
@@ -237,6 +248,7 @@ const Recruitment = () => {
                   onGridReady={(params) =>
                     onFirstDataRendered(params, setGridApi, setColumnApi)
                   }
+                  overlayNoRowsTemplate={"<span >No applications yet :(</span>"}
                   animateRows
                 ></AgGridReact>
               </div>
@@ -246,6 +258,7 @@ const Recruitment = () => {
       </div>
       {userInfo && (
         <RecruitmentUserModal
+          tableName={currTableName}
           modalIsOpen={modalOpen}
           setModalIsOpen={setModalOpen}
           info={userInfo}

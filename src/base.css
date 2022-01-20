@@ -34869,7 +34869,7 @@ body.swal2-no-backdrop .swal2-shown.swal2-bottom-right {
   justify-content: center;
   padding: 10px;
   background-color: transparent;
-  z-index: 1060;
+  z-index: 999999 !important;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
@@ -35079,6 +35079,15 @@ body.swal2-no-backdrop .swal2-shown.swal2-bottom-right {
   margin-left: 30px;
 }
 
+.swal2-styled.swal2-deny {
+  border: 0;
+  border-radius: 0.25em;
+  background: initial;
+  background-color: #d92550 !important;
+  color: #fff;
+  font-size: 1em;
+}
+
 .swal2-popup
   .swal2-actions.swal2-loading
   :not(.swal2-styled).swal2-confirm::after {
@@ -35110,7 +35119,7 @@ body.swal2-no-backdrop .swal2-shown.swal2-bottom-right {
   border: 0;
   border-radius: 0.25em;
   background: initial;
-  background-color: #3f6ad8;
+  background-color: #16aaff;
   color: #fff;
   font-size: 1.0625em;
 }

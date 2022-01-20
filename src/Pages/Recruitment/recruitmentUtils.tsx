@@ -6,6 +6,8 @@ import {
   GridReadyEvent,
   RowClickedEvent,
 } from "ag-grid-community";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import { db } from "../../config/firebase";
 import {
   Departments,
@@ -56,6 +58,65 @@ const numberToMonths: { [key: string]: string } = {
   "10": "NOV",
   "11": "DEC",
 };
+
+/** Show a confirmation message to delete the recruitment table
+ * @param  {Function} deleteFunction function to delete the table
+ */
+const swalDeleteRecruitmentTable = (deleteFunction: Function) => {
+  swalDeleteAlert
+    .fire({
+      reverseButtons: true,
+      title: "Beware",
+      showDenyButton: true,
+      denyButtonText: "Yes, delete!",
+      confirmButtonText: `Cancel`,
+      icon: "warning",
+      html: `<p>You are about to delete this recruitment table, this operation is not reversible.</p>
+      <p><h4>Are you sure to proceed?</h4></p>`,
+
+      customClass: {
+        denyButton: "btn btn-shadow btn-danger",
+        confirmButton: "btn btn-shadow btn-info",
+      },
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        return;
+      } else if (result.isDenied) {
+        deleteFunction();
+      }
+    });
+};
+
+/** Show a confirmation message to delete the recruitment table
+ * @param  {Function} deleteFunction function to delete the table
+ */
+const swalDeleteApplication = (deleteFunction: Function) => {
+  swalDeleteAlert
+    .fire({
+      reverseButtons: true,
+      title: "Beware",
+      showDenyButton: true,
+      denyButtonText: "Yes, delete!",
+      confirmButtonText: `Cancel`,
+      icon: "warning",
+      html: `<p>You are about to delete this user application, this operation is not reversible.</p>
+      <p><h4>Are you sure to proceed?</h4></p>`,
+
+      customClass: {
+        denyButton: "btn btn-shadow btn-danger",
+        confirmButton: "btn btn-shadow btn-info",
+      },
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        return;
+      } else if (result.isDenied) {
+        deleteFunction();
+      }
+    });
+};
+const swalDeleteAlert = withReactContent(Swal);
 
 const openDepartmentsHandler = (value: string[], departments: Departments) => {
   const openedDepartments: Departments = {};
@@ -193,9 +254,13 @@ const selectTableHandler = (
 ) => {
   let tableName = selected.value;
   if (!recruitmentData) return;
-  let newTableData = JSON.parse(
-    JSON.stringify(recruitmentData.tables[tableName])
-  );
+
+  let newTableData: RecruitmentTable = {};
+  if (recruitmentData.tables.hasOwnProperty(tableName)) {
+    newTableData = JSON.parse(
+      JSON.stringify(recruitmentData.tables[tableName])
+    );
+  }
   setCurrTableName(tableName);
   setCurrTableData(newTableData);
   buildTableRows(newTableData, setTableRows);
@@ -221,7 +286,7 @@ const generateRecruitmentTable = () => {
 };
 
 const createNewDbTable = (tableName: string, tablesList: string[]) => {
-  const newTableList = [tableName, ...tablesList];
+  const newTableList = [...tablesList, tableName];
   db.ref("public/recruitment/activeTable").set(tableName);
   db.ref("public/recruitment/tablesList").set(newTableList);
 };
@@ -339,6 +404,7 @@ const onRowRecruitmentUserClick = (
   setUserInfo: Function,
   setModalOpen: Function
 ) => {
+  console.log(e);
   setUserInfo(e.data);
   setModalOpen(true);
 };
@@ -406,6 +472,13 @@ const buildColumns = (
         pinned: "left",
         suppressSizeToFit: true,
       });
+    } else if (key === "applicationId") {
+      columnsDefs.push({
+        headerName: "Id",
+        field: key,
+        suppressColumnsToolPanel: true,
+        hide: true,
+      });
     } else {
       columnsDefs.push({
         field: key,
@@ -426,13 +499,16 @@ const buildTableRows = (
   currTableData: RecruitmentTable | undefined,
   setTableRows: Function
 ) => {
-  if (!currTableData) return;
+  if (!currTableData) {
+    currTableData = {};
+  }
   const rows: RecruitmentUser[] = [];
   Object.entries(currTableData).forEach(([key, user]) => {
     let time = user.timestamp;
-    user.timestamp = time ? dateToString(new Date(time), true) : "-";
+    let date = time ? dateToString(new Date(time), true) : "-";
+    let userData = { ...user, timestamp: date, applicationId: key };
 
-    rows.push(user);
+    rows.push(userData);
   });
   setTableRows(rows);
 };
@@ -495,7 +571,7 @@ const getRecruitmentData = (
       value: table,
       label: table,
     }));
-    setTableOptions(tableOptionsObj);
+    setTableOptions(tableOptionsObj.reverse()); // Last is first to show in select
 
     // Get table name
     const activeTableName = recruitmentData.activeTable;
@@ -512,14 +588,16 @@ const getRecruitmentData = (
     if (!currTableName) {
       // if no table is selected or recruitment is not open
       // if (typeof currTableName === "boolean") {
-      if (tables.hasOwnProperty(tableNames[0])) {
-        let auxTable = JSON.parse(JSON.stringify(tables[tableNames[0]]));
+      setCurrTableName(tableNames[tableNames.length - 1]);
+      if (tables.hasOwnProperty(tableNames[tableNames.length - 1])) {
+        let auxTable = JSON.parse(
+          JSON.stringify(tables[tableNames[tableNames.length - 1]])
+        );
         let newTableData = filterTableByDepartments(
           auxTable,
           selectedDepartments
         );
 
-        setCurrTableName(tableNames[0]);
         setCurrTableData(newTableData);
         buildTableRows(newTableData, setTableRows);
         buildColumns(newTableData, setTableColumns);
@@ -528,25 +606,18 @@ const getRecruitmentData = (
           setDepartmentOptions,
           setSelectedDepartments
         );
-        // } else {
-        //   setCurrTableName(activeTableName);
-        //   setCurrTableData(currTableData);
-        //   buildTableRows(currTableData, setTableRows);
-        //   buildColumns(currTableData, setTableColumns);
-        //   getExistingDepartmentsOptions(
-        //     currTableData,
-        //     setDepartmentOptions,
-        //     setSelectedDepartments
-        //   );
-        // }
       }
     } else {
       if (typeof currTableName !== "boolean") {
-        let auxTable = JSON.parse(JSON.stringify(tables[currTableName]));
-        let newTableData = filterTableByDepartments(
-          auxTable,
-          selectedDepartments
-        );
+        let newTableData: RecruitmentTable = {};
+        if (tables.hasOwnProperty(currTableName)) {
+          let auxTable = JSON.parse(JSON.stringify(tables[currTableName]));
+          newTableData = filterTableByDepartments(
+            auxTable,
+            selectedDepartments
+          );
+        }
+
         setCurrTableData(newTableData);
         setCurrTableName(activeTableName);
         buildTableRows(newTableData, setTableRows);
@@ -615,6 +686,30 @@ const buildUserNames = () => {
     });
 };
 
+const deleteTable = (tableName: string, tablesList: string[]) => {
+  const newTableList = tablesList.filter((table) => table !== tableName);
+  db.ref("public/recruitment/activeTable").child(tableName).remove();
+  db.ref("public/recruitment/tablesList").set(newTableList);
+};
+
+const deleteRecruitmentMemberFromDB = (
+  recruitmentTable: string | boolean,
+  memberId: string | undefined,
+  setModalIsOpen: Function
+) => {
+  if (typeof recruitmentTable !== "string" || !recruitmentTable || !memberId)
+    return;
+  db.ref(`public/recruitment/tables/${recruitmentTable}/${memberId}`)
+    .remove()
+    .then(() => {
+      toastrMessage("Application deleted successfully", "success");
+      setModalIsOpen(false);
+    })
+    .catch(() => {
+      toastrMessage("Error deleting application", "error");
+    });
+};
+
 export {
   buildColumns,
   buildTableRows,
@@ -636,4 +731,8 @@ export {
   openDepartmentsHandler,
   createNewSqlAndDbTable,
   buildUserNames,
+  deleteTable,
+  swalDeleteRecruitmentTable,
+  deleteRecruitmentMemberFromDB,
+  swalDeleteApplication,
 };

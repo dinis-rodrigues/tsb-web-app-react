@@ -28,7 +28,7 @@ const RecruitmentSettings = ({
   const { departments, USER } = useAuth();
   const tableToCreate = generateRecruitmentTable();
   let allowToCreate = false;
-  tablesList && tableToCreate === tablesList[0]
+  tablesList && tableToCreate === tablesList[tablesList.length - 1]
     ? (allowToCreate = false)
     : (allowToCreate = true);
 
@@ -66,7 +66,9 @@ const RecruitmentSettings = ({
                     -{" "}
                     {activeRecruitment
                       ? `Users are allowed to apply to "${activeRecruitment}"`
-                      : "Users are NOT allowed to apply"}
+                      : `Users are NOT allowed to apply to "${
+                          tablesList[tablesList.length - 1]
+                        }"`}
                   </span>
                 </div>
               </div>
