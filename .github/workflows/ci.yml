@@ -64,11 +64,13 @@ jobs:
             cd ${{ secrets.SERVER_ABSOLUTE_PATH }}
             echo "Moving old version to a temporary folder"
             mkdir ../old_version
-            mv {.*,*} ../old_version
+            shopt -s dotglob
+            mv * ../old_version/
             echo "Unzip new version to server location"
             tar -xf ../old_version/deploy.tar.gz -C .
             echo "Move back db folder to server"
             mv ../old_version/db .
             echo "Removing old version"
             rm -rf ../old_version
+            shopt -u dotglob
             echo "Deployment Complete"
