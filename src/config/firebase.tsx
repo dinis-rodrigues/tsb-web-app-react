@@ -3,32 +3,50 @@ import "firebase/auth";
 import "firebase/database";
 import "firebase/storage";
 
-// OFICIAL PRODUCTION DATABASE
-const firebaseConfigProduction = {
-  apiKey: "AIzaSyAHPrWvVr1El3NkJd3C0gbZbiTl_weCTlE",
-  authDomain: "tsb-aplication.firebaseapp.com",
-  databaseURL: "https://tsb-aplication.firebaseio.com",
-  projectId: "tsb-aplication",
-  storageBucket: "tsb-aplication.appspot.com",
-  messagingSenderId: "124968779478",
-  appId: "1:124968779478:web:0a2c6266560c594a779377",
-  measurementId: "G-0Z77DRSCH6",
+let firebaseConfig = {};
+
+// DATABASE
+const firebaseProductionConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
-// DEVELOPMENT DATABASE
-// const firebaseConfigDevelopment = {
-//   apiKey: "AIzaSyBZm2feIZTi5dTGRQuJKoQUEwdh1axiSgs",
-//   authDomain: "tsb-application-dev.firebaseapp.com",
-//   databaseURL:
-//     "https://tsb-application-dev-default-rtdb.europe-west1.firebasedatabase.app/",
-//   projectId: "tsb-application-dev",
-//   storageBucket: "tsb-application-dev.appspot.com",
-//   messagingSenderId: "403433771845",
-//   appId: "1:403433771845:web:1a4bba7416dc343ef9a42c",
-// };
+const firebaseDevConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+};
 
+// Check if we are in development and if DEV api key exists
+if (
+  process.env.NODE_ENV === "development" &&
+  process.env.REACT_APP_FIREBASE_API_KEY
+) {
+  if (
+    process.env.OVERRIDE_DEVELOPMENT &&
+    process.env.OVERRIDE_DEVELOPMENT === "TRUE"
+  ) {
+    firebaseConfig = firebaseProductionConfig;
+  } else {
+    firebaseConfig = firebaseDevConfig;
+  }
+} else {
+  // Use production DB if we are going to build
+  firebaseConfig = firebaseProductionConfig;
+}
 // Initialize Firebase
-const app: firebase.app.App = firebase.initializeApp(firebaseConfigProduction);
+const app: firebase.app.App = firebase.initializeApp(firebaseConfig);
 
 export const db = app.database();
 export const st = app.storage();

@@ -52,6 +52,7 @@
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#firebase-setup">Firebase Setup</a></li>
+        <li><a href="#environment-variables-setup">Environment Variables Setup</a></li>
         <li><a href="#php-setup">PHP Setup</a></li>
       </ul>
     </li>
@@ -131,11 +132,11 @@ npm install
 
 ### Firebase Setup
 
-If you would like to setup your own database, it only takes 2 min.
+To setup your own database, it only takes 2 min.
 
-1. Create a Firebase Project [here](https://firebase.google.com)
+1. Create a Firebase Project [here](https://firebase.google.com) with a name `your-application`
 2. Setup User and Email authentication
-3. Setup Realtime Database
+3. Setup **Realtime Database** (not Firestore)
 4. Import the database template from
 
 ```sh
@@ -148,31 +149,62 @@ src/config/dbTemplate.json
 src/config/dbRules.json
 ```
 
-6. Go to Project Settings and get the API key, should look like this:
+6. Repeat the above steps to create a development database
+   In development you should use a copy of the original database. In the case something goes
+   wrong, your original DB remains intact. So just repeat these steps for the development
+   database and give it a project name, for example, `your-application-dev`.
 
-```js
-const firebaseConfig = {
-  apiKey: "AIzaSyAHPrWvVr1El3NkJd3C0gbZbiTl_weCTlE",
-  authDomain: "tsb-aplication.firebaseapp.com",
-  databaseURL: "https://tsb-aplication.firebaseio.com",
-  projectId: "tsb-aplication",
-  storageBucket: "tsb-aplication.appspot.com",
-  messagingSenderId: "124968779478",
-  appId: "1:124968779478:web:0a2c6266560c594a779377",
-  measurementId: "G-0Z77DRSCH6",
-};
-```
+### Environment Variables Setup
 
-7. Copy and replace the API configuration in
+To protect sensitive information on firebase API keys we take advantage of environment
+variables, which remain private for developers, while maintaining a public repository.
+These variables are stored in a `.env` file in the root of the repository. You can check
+the template used in `template.env` and replace all of the variables with your own.
+Don't forget to rename the file to only `.env` 😀
+
+If you aren't using a development database, or a firebase token leave those fields empty
+or remove them, as they are optional for the next step.
+
+**Optional**
+
+Now let's automate things! The project is already setup to always use the development database while
+in development, and to use the original database when building for production (check `src/config/firebase.tsx`). But we
+also want the development database to always be up to date with the original one, in
+order to work with real data.
+
+For this we take advantage of the [Firebase
+CLI](https://firebase.google.com/docs/cli/#cli-ci-systems) to export the data from
+the original database (`your-application`) and export it to the development database (`your-application-dev`)
+
+Install `Firebase CLI` in your system:
 
 ```sh
-src/config/firebase.tsx
+npm install -g firebase-tools
 ```
 
-In development you should use a copy of the original database . In the case something goes
-wrong, your original DB remains intact. So just repeat these steps for the second one.
-In our config file you will find both API keys. Remember to use the development API key,
-and when building for production, use the original one.
+**You only have to do this once**. Retrieve and copy the firebase CLI token from the terminal and add it to the `.env`
+variable placeholder:
+
+```sh
+firebase login:ci
+```
+
+**You only have to do this once**. Setup the connection to the databases using the provided script, and follow the on-screen
+instructions:
+
+```sh
+sh firebase_databases_setup.sh
+```
+
+Last step! Sync your original database with your development one by running our syncing
+script. This will copy all of the data from the original to the development database:
+
+```sh
+sh firebase_databases_sync.sh
+```
+
+Since we previously configured the databases, you can now sync the databases whenever
+you want, without configuring them again.
 
 ### PHP Setup
 
