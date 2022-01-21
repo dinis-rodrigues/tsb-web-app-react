@@ -820,7 +820,12 @@ const getSvgStringFromPath = async (
     headers: myHeaders,
   };
 
-  fetch(svgPath.replace("https", "http"), requestOptions)
+  // If we are in development, localhost is http and not https
+  if (process.env.NODE_ENV === "development") {
+    svgPath.replace("https://", "http://");
+  }
+
+  fetch(svgPath, requestOptions)
     .then(async (response) => ({ ok: response.ok, txt: await response.text() }))
     .then((result) => {
       if (result.ok) {
