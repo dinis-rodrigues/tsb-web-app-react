@@ -6,9 +6,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  Build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -24,23 +24,23 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      
+
       # Setup NodeJs
       - uses: actions/setup-node@v2
         with:
           node-version: 15
-      
+
       # Install project packages and build project
       - name: Install Packages
         run: npm ci
       - name: Build project
         run: npm run build
-      
+
       - name: Package build
         run: |
           tar -czvf deploy.tar.gz -C build .
           ls
-    
+
       - name: Send packaged build to server
         uses: appleboy/scp-action@master
         with:
@@ -50,8 +50,8 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           source: "deploy.tar.gz"
           target: ${{ secrets.SERVER_ABSOLUTE_PATH }}
-          
-      - name: Repalce previous version and deploy new one
+
+      - name: Replace previous version and deploy new one
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -65,10 +65,7 @@ jobs:
             mkdir ../old_version
             mv ./{.*,*} ../old_version
             echo "Unzip new version to server location"
-            tar -xf deploy.tar.gz -C ./
+            tar -xf ../old_version/deploy.tar.gz -C ./
             echo "Move back db folder to server"
             mv ../old_version/db ./
             echo "Deployment Complete"
-            
-            
-            
