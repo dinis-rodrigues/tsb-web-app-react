@@ -36,12 +36,12 @@ jobs:
       - name: Build project
         run: npm run build
       
-      - name: Zip build
+      - name: Package build
         run: |
           tar -czvf deploy.tar.gz -C build .
           ls
     
-      - name: Deploy static build to server
+      - name: Send packaged build to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -49,9 +49,9 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
           source: "deploy.tar.gz"
-          target: "~/web/projects/tmp"
+          target: ${{ secrets.SERVER_ABSOLUTE_PATH }}
           
-      - name: Remove previous version and unpackage new one
+      - name: Repalce previous version and deploy new one
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -59,5 +59,16 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            echo "Changing directory to server location"
             cd ${{ secrets.SERVER_ABSOLUTE_PATH }}
-            ls
+            echo "Moving old version to a temporary folder"
+            mkdir ../old_version
+            mv ./{.*,*} ../old_version
+            echo "Unzip new version to server location"
+            tar -xf deploy.tar.gz -C ./
+            echo "Move back db folder to server"
+            mv ../old_version/db ./
+            echo "Deployment Complete"
+            
+            
+            
