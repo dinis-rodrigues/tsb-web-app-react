@@ -404,7 +404,6 @@ const onRowRecruitmentUserClick = (
   setUserInfo: Function,
   setModalOpen: Function
 ) => {
-  console.log(e);
   setUserInfo(e.data);
   setModalOpen(true);
 };

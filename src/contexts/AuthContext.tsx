@@ -107,7 +107,6 @@ export function AuthProvider({ children }: Props) {
           if (!userInfo) return;
           let usrImgUrlComp = getUserImgUrl(userId, null, true);
           let usrImgUrl = getUserImgUrl(userId, null, false);
-          console.log("Env", process.env);
           setUSER({
             id: userId,
             name: userInfo.name,

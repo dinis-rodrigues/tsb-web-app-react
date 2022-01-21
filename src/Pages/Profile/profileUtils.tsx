@@ -476,7 +476,7 @@ const formatCoursesLabel = (data: any) => (
   </div>
 );
 
-const defaultInfo = {
+const defaultInfo: PersonalInformation = {
   uid: "",
   fullName: "",
   department: "",
@@ -503,6 +503,7 @@ const defaultInfo = {
   generalStats: 1,
   gender: "",
   curricularYear: 0,
+  userName: "",
 };
 
 const departmentAcronyms: { [key: string]: string } = {
