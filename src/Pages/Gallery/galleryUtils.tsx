@@ -275,7 +275,7 @@ const uploadLoop = async (
   setUploadingImgs: Function
 ) => {
   for (var i = 0; i < imageFilesToUpload.length; i++) {
-    let headers = new Headers();
+    // let headers = new Headers();
     // headers.append("Origin", "http://localhost:3005");
 
     var data = new FormData();
@@ -435,7 +435,7 @@ const deletePhoto = (
       baseNameImg = baseNameImg.substring(0, baseNameImg.lastIndexOf("."));
     else return;
 
-    let headers = new Headers();
+    // let headers = new Headers();
     // headers.append("Origin", "http://localhost:3005");
 
     var data = new FormData();
@@ -482,7 +482,7 @@ const deleteAlbum = (
   setModalIsOpen: Function
 ) => {
   if (!galleryId || !userId) return;
-  let headers = new Headers();
+  // let headers = new Headers();
   // headers.append("Origin", "http://localhost:3005");
 
   var data = new FormData();
