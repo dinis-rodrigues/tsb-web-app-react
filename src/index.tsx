@@ -13,11 +13,9 @@ import { Provider } from "react-redux";
 
 import { AuthProvider } from "./contexts/AuthContext";
 
-import register from "./registerServiceWorker";
+import registerServiceWorker from "./registerServiceWorker";
 const store: any = configureStore();
 const rootElement = document.getElementById("root");
-
-register();
 
 const renderApp = () => {
   ReactDOM.render(
@@ -33,6 +31,7 @@ const renderApp = () => {
 };
 
 renderApp();
+registerServiceWorker();
 
 // if (module.hot) {
 //   module.hot.accept("./Pages/Main/Main", () => {
