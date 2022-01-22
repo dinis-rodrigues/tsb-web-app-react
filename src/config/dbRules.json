@@ -1,12 +1,76 @@
 {
-  "rules": {
-    "private": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "public": {
-      ".read": true,
-      ".write": "auth != null"
+    "rules": {
+        "private": { // only allow authenticated users in private repo
+            ".read": "auth != null", // 2020-10-19
+            ".write": "auth != null", // 2020-10-19
+        },
+        "public": {
+            "applicationSettings": {
+                ".read": true,
+                ".write": "auth != null",
+            },
+            "scheduleWebsite": {
+                "visitCount": { // only allow increments of 1 to the previous value
+                    ".read": true,
+                    ".write": "newData.exists() || (!newData.exists() && auth.uid != null)",
+                    ".validate": "newData.isNumber() && ((!data.exists() && newData.val() === 1 || newData.val() === -1) || newData.val() === data.val()+1 || newData.val() === data.val()-1)",
+                }
+            },
+            "recruitment": {
+                ".write": "auth != null",
+                "activeTable": {
+                    ".read": true,
+                },
+                "openDepartments": {
+                    ".read": true,
+                },
+                "tables": {
+                    "$table": { // anyone can write, only auth users can read
+                        ".write": "newData.exists() || (!newData.exists() && auth.uid != null)",
+                        ".validate": "newData.exists()",
+                        "$applicationId": {
+                            ".validate": "auth.uid != null || 
+                            (newData.hasChildren(['name', 'departments', 'country', 'email', 'phone', 'link', 'degree', 'year', 'message', 'timestamp'
+                            ]) &&
+              							newData.child('name').isString() &&
+                            newData.child('departments').exists() &&
+                            newData.child('country').isString() &&
+                            newData.child('email').isString() &&
+                            newData.child('phone').isString() &&
+                            newData.child('link').isString() &&
+                            newData.child('degree').isString() &&
+                            newData.child('year').isString() &&
+                            newData.child('message').isString() &&
+                            newData.child('timestamp').isNumber())"
+                        }
+                    }
+                }
+            },
+            "officialWebsite": { // anyone can read, only authenticated users to write
+                "team": {
+                    ".read": true,
+                    ".write": "auth != null"
+                },
+                "openSource": {
+                    "$boat": { // use variable for boat
+                        ".read": true,
+                        "buttonCount": {
+                            "$button": { // use variable for button type, only allow increments
+                                ".write": true,
+                                ".validate": "newData.isNumber() && ((!data.exists() && newData.val() === 1 || newData.val() === -1) || newData.val() === data.val()+1 || newData.val() === data.val()-1)",
+                            }
+                        }
+                    }
+                },
+                "gallery": {
+                    ".read": true,
+                    ".write": "auth != null"
+                },
+                "sponsors": {
+                    ".read": true,
+                    ".write": "auth != null"
+                }
+            }
+        }
     }
-  }
 }
