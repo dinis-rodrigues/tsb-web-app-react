@@ -730,6 +730,16 @@ const sendNotification = (
 };
 
 /**
+ * Transforms "thisIsAString" to "This Is A String"
+ * @param str
+ * @returns
+ */
+const pascalStringToTitleCase = (str: string) => {
+  const result = str.replace(/([A-Z])/g, " $1");
+  return result.charAt(0).toUpperCase() + result.slice(1);
+};
+
+/**
  * Checks if the object has childs or not
  * @param obj
  * @returns
@@ -808,4 +818,5 @@ export {
   userHasPermission,
   userHasAdminPermissions,
   dateWithHoursComparator,
+  pascalStringToTitleCase,
 };

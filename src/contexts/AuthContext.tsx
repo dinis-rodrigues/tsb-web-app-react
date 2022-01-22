@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import firebase from "firebase/app";
 import { auth, db } from "../config/firebase";
 import {
+  ApplicationFeatures,
   ApplicationSettings,
   Departments,
   DepartmentsWithDesc,
@@ -26,6 +27,7 @@ interface ContextAuth {
   USER: userContext | null;
   departments: Departments;
   departmentsWDesc: DepartmentsWithDesc;
+  applicationFeatures: ApplicationFeatures;
   isAdminUser: boolean;
   isGod: boolean;
   isMarketingOrAdmin: boolean;
@@ -48,6 +50,7 @@ const AuthContext = React.createContext<ContextAuth>({
     registrationIsOpen: false,
     maintenanceIsOpen: false,
   },
+  applicationFeatures: {},
   departments: {},
   departmentsWDesc: {},
   isGod: false,
@@ -88,6 +91,8 @@ export function AuthProvider({ children }: Props) {
       registrationIsOpen: false,
       maintenanceIsOpen: false,
     });
+  const [applicationFeatures, setApplicationFeatures] =
+    useState<ApplicationFeatures>({});
   const [isAdminUser, setIsAdminUser] = useState(false);
   const [isGod, setIsGod] = useState(false);
   const [isMarketingOrAdmin, setIsMarketingOrAdmin] = useState(false);
@@ -137,13 +142,22 @@ export function AuthProvider({ children }: Props) {
           // Get deparments
           getDepartments(setDepartments, setDepartmentsWDesc);
 
-          // Only set loading to false, after setting the user info
+          // Only set loading to false, after setting the users metadata info and
+          // feature seetings
           db.ref("private/usersMetadata")
             .once("value")
             .then((snapshot) => {
               if (snapshot.val()) {
                 setUsersMetadata(snapshot.val());
-                setLoading(false);
+                db.ref("private/applicationFeatures").on(
+                  "value",
+                  (snapshot) => {
+                    if (snapshot.val()) {
+                      setApplicationFeatures(snapshot.val());
+                      setLoading(false);
+                    }
+                  }
+                );
               }
             });
         }
@@ -175,8 +189,7 @@ export function AuthProvider({ children }: Props) {
       }
     });
     return () => {
-      db.ref("public/applicationSettings").off("value");
-      db.ref(`private/usersMetadata`).off("value");
+      db.ref("/").off("value");
     };
   }, []);
 
@@ -186,6 +199,7 @@ export function AuthProvider({ children }: Props) {
     usersMetadata,
     USER,
     departments,
+    applicationFeatures,
     registerUser,
     loginUser,
     logoutUser,

@@ -1,5 +1,15 @@
 import { ColorPickerValue } from "react-rainbow-components/components/ColorPicker";
 
+export interface ApplicationFeatures {
+  [key: string]: FeaturePermissions;
+}
+
+export interface FeaturePermissions {
+  public: boolean;
+  admin: boolean;
+  god: boolean;
+}
+
 // Public Information
 export interface PublicTeam {
   [key: string]: PublicUser;

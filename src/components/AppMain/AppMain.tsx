@@ -36,6 +36,9 @@ const UserManagement = lazy(
 const DepartmentManagement = lazy(
   () => import("../../Pages/Admin/DepartmentManagement/DepartmentManagement")
 );
+const FeatureManagement = lazy(
+  () => import("../../Pages/Admin/FeatureManagement/FeatureManagement")
+);
 const NotificationsPage = lazy(
   () => import("../../Pages/Notifications/NotificationsPage")
 );
@@ -68,44 +71,95 @@ function App() {
           />
           <Route exact path="/register" component={Register} />
           <Route path="/maintenance" component={Maintenance} />
-          <PrivateRoute path="/dashboard" component={Dashboard} />
-          <PrivateRoute path="/team" component={Team} />
-          <PrivateRoute exact path="/recruitment" component={Recruitment} />
+          <PrivateRoute
+            path="/dashboard"
+            featureName="dashboard"
+            component={Dashboard}
+          />
+          <PrivateRoute path="/team" featureName="members" component={Team} />
+          <PrivateRoute
+            exact
+            path="/recruitment"
+            featureName="recruitment"
+            component={Recruitment}
+          />
           <PrivateRoute path="/profile/u/:userId" component={VisitorProfile} />
           <PrivateRoute path="/profile" exact component={Profile} />
-          <PrivateRoute path="/events" component={Events} />
-          <PrivateRoute path="/attendance/meetings" component={Attendance} />
+          <PrivateRoute
+            path="/events"
+            featureName="events"
+            component={Events}
+          />
+          <PrivateRoute
+            path="/attendance/meetings"
+            featureName="attendance"
+            component={Attendance}
+          />
           <PrivateRoute
             path="/attendance/overall"
+            featureName="attendance"
             component={OverallAttendance}
           />
           <PrivateRoute
             path="/:departmentBoard/b/:encodedCurrBoard"
+            featureName="tasks"
             component={Tasks}
           />
-          <PrivateRoute path="/cashflow" component={CashFlow} />
-          <PrivateRoute path="/budget" component={Budget} />
+          <PrivateRoute
+            path="/cashflow"
+            featureName="cashflow"
+            component={CashFlow}
+          />
+
+          <PrivateRoute
+            path="/budget"
+            featureName="budget"
+            component={Budget}
+          />
           <PrivateRoute
             path="/forum/s/:encodedSectionName/topic/:encodedTopicName/thread/:encodedThreadName"
+            featureName="forum"
             component={ForumThread}
           />
           <PrivateRoute
             path="/forum/s/:encodedSectionName/topic/:encodedTopicName"
+            featureName="forum"
             component={ForumTopic}
           />
-          <PrivateRoute exact path="/forum" component={Forum} />
+          <PrivateRoute
+            exact
+            path="/forum"
+            featureName="forum"
+            component={Forum}
+          />
           <PrivateRoute path="/notifications" component={NotificationsPage} />
-          <PrivateRoute path="/sponsors" component={Sponsors} />
-          <PrivateRoute path="/gallery" component={Gallery} />
+          <PrivateRoute
+            path="/sponsors"
+            featureName="sponsors"
+            component={Sponsors}
+          />
+          <PrivateRoute
+            path="/gallery"
+            featureName="gallery"
+            component={Gallery}
+          />
           <PrivateRoute
             exact
             path="/userManagement"
+            featureName="userManagement"
             component={UserManagement}
           />
           <PrivateRoute
             exact
             path="/departmentManagement"
+            featureName="departmentManagement"
             component={DepartmentManagement}
+          />
+          <PrivateRoute
+            exact
+            path="/featureManagement"
+            featureName="featureManagement"
+            component={FeatureManagement}
           />
           <Redirect to="/" />
         </Switch>

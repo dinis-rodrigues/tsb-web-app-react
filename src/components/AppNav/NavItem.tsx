@@ -1,10 +1,14 @@
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import { ApplicationFeatures } from "../../interfaces";
 
 type Props = {
   pageName: string;
   to: string;
   activeClassName?: string;
   icon?: string;
+  isVisible?: boolean;
 };
 
 const NavItem = ({
@@ -12,8 +16,9 @@ const NavItem = ({
   to,
   activeClassName = "active",
   icon = "",
+  isVisible = true,
 }: Props) => {
-  return (
+  return isVisible ? (
     <li className="metismenu-item">
       <NavLink
         className="metismenu-link"
@@ -24,7 +29,7 @@ const NavItem = ({
         {pageName}
       </NavLink>
     </li>
-  );
+  ) : null;
 };
 
 export default NavItem;
