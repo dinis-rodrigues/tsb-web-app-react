@@ -1,11 +1,10 @@
 import { Fragment } from "react";
 import { connect } from "react-redux";
 
-import Nav from "../AppNav/VerticalNavWrapper";
+import NavigationBar from "../AppNav/NavigationBar";
 
 import PerfectScrollbar from "react-perfect-scrollbar";
 // import AppLogo from "../AppLogo/AppLogo";
-
 import { setEnableMobileMenu } from "../../reducers/ThemeOptions";
 type Props = {
   enableMobileMenu: boolean;
@@ -17,7 +16,7 @@ const AppSidebar = ({ enableMobileMenu }: Props) => {
       <div className="app-sidebar sidebar-shadow">
         <PerfectScrollbar>
           <div className="app-sidebar__inner">
-            <Nav />
+            <NavigationBar />
           </div>
         </PerfectScrollbar>
       </div>
