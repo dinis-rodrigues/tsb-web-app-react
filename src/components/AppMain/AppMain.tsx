@@ -1,4 +1,3 @@
-import "../../base.css";
 import { Route, Redirect, Switch } from "react-router-dom";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import { Suspense, lazy, Fragment } from "react";
