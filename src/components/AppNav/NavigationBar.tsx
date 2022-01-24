@@ -15,6 +15,8 @@ const NavigationBar = () => {
   const { departments } = useAuth();
   const location = window.location.pathname;
 
+  const a = "something";
+
   let isTasksActive = false;
   let isAttendanceActive = false;
 
