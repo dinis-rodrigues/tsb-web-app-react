@@ -740,6 +740,7 @@ const statusSelectOptions = [
   { value: "Required", label: "Required" },
   { value: "In Progress", label: "In Progress" },
   { value: "Acquired", label: "Acquired" },
+  { value: "Sponsor", label: "Sponsor" },
 ];
 
 interface depSelectOptions {
