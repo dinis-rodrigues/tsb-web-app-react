@@ -233,13 +233,17 @@ const VisitorProfile = () => {
                       {userInfo.iban}
                     </span>
                   </div>
-                  <h6>Linkedin</h6>
+                  <span className="text-dark small text-uppercase">
+                    <strong>Linkedin</strong>
+                  </span>
                   <div className="form-group">
                     <span className="form-control text-center">
                       {userInfo.linkedin}
                     </span>
                   </div>
-                  <h6>Description / Bio</h6>
+                  <span className="text-dark small text-uppercase">
+                    <strong>Description / Bio</strong>
+                  </span>
                   <div className="form-group">
                     <span className="form-control text-center">
                       {userInfo.description || ""}

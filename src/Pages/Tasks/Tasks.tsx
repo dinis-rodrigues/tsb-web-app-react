@@ -153,6 +153,7 @@ const Tasks = (props: any) => {
               </button>
               {/* Select the board to view and edit tasks */}
               <CreatableSelect
+                classNamePrefix="react-select-container"
                 className="sel-width text-center"
                 onChange={(option) => {
                   option &&

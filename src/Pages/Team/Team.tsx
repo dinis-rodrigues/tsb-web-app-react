@@ -1,5 +1,6 @@
 import { Fragment, useState, useEffect } from "react";
 import Select from "react-select";
+import cx from "classnames";
 import {
   PersonalInformation,
   selectOption,
@@ -29,12 +30,13 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
 import { ColumnApi, GridApi } from "ag-grid-community";
 
 // Layout
 
 const Team = () => {
-  const { USER, usersMetadata } = useAuth();
+  const { USER, usersMetadata, isDarkMode } = useAuth();
   // Default table options
   const gridOptions = {
     enableCellTextSelection: false,
@@ -112,6 +114,7 @@ const Team = () => {
               <div className="row" style={{ paddingBottom: "1rem" }}>
                 <div className="col-md-8">
                   <Select
+                    classNamePrefix="react-select-container"
                     isMulti
                     options={infoOptions}
                     value={selectedOptions}
@@ -139,7 +142,10 @@ const Team = () => {
                 {/* <button onClick={excelExport}>export</button> */}
               </div>
               <div
-                className="ag-theme-alpine"
+                className={cx({
+                  "ag-theme-alpine": !isDarkMode,
+                  "ag-theme-alpine-dark": isDarkMode,
+                })}
                 style={{ height: "30rem", width: "100%" }}
               >
                 <AgGridReact

@@ -215,7 +215,7 @@ const Gallery = () => {
                                         top: -2,
                                         left: -2,
                                       }}
-                                      className="btn border-0 btn-transition btn-light zIndex-inf"
+                                      className="btn border-0 btn-transition btn-info zIndex-inf"
                                       onClickCapture={(e) => {
                                         e.stopPropagation(); // dont open the gallery modal
                                         openEditPhotoModal(

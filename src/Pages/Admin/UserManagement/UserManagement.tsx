@@ -27,6 +27,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
 import {
   DropdownMenu,
   DropdownToggle,
@@ -34,9 +35,10 @@ import {
 } from "reactstrap";
 import UserManagementModal from "./UserManagementModal";
 import ApplicationSettings from "./ApplicationSettings";
+import cx from "classnames";
 
 const UserManagement = () => {
-  const { USER } = useAuth();
+  const { USER, isDarkMode } = useAuth();
   const [gridApi, setGridApi] = useState<GridApi>(); // Table API
   const [columnApi, setColumnApi] = useState<ColumnApi>(); // Column API
   const [infoOptions, setInfoOptions] = useState<selectOption[]>([]); // ALl select input options
@@ -126,6 +128,7 @@ const UserManagement = () => {
             <div className="row" style={{ paddingBottom: "1rem" }}>
               <div className="col-md-8">
                 <Select
+                  classNamePrefix="react-select-container"
                   isMulti
                   options={infoOptions}
                   value={selectedOptions}
@@ -153,7 +156,10 @@ const UserManagement = () => {
               {/* <button onClick={excelExport}>export</button> */}
             </div>
             <div
-              className="ag-theme-alpine"
+              className={cx({
+                "ag-theme-alpine": !isDarkMode,
+                "ag-theme-alpine-dark": isDarkMode,
+              })}
               style={{ height: "30rem", width: "100%" }}
             >
               <AgGridReact

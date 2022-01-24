@@ -8,6 +8,7 @@ import withReactContent from "sweetalert2-react-content";
 // Toastr Notification
 import { toast, ToastPosition } from "react-toastify";
 import {
+  ApplicationFeatures,
   Notification,
   PersonalInformation,
   selectOption,
@@ -783,6 +784,26 @@ const userHasAdminPermissions = (user: userContext | null) => {
     return true;
   return false;
 };
+
+/**
+ * Defines wheter a user can view a feature or not
+ * @param featureName
+ * @param applicationFeatures
+ * @param isAdminUser
+ * @param isGod
+ * @returns
+ */
+const isFeatureVisible = (
+  featureName: string,
+  applicationFeatures: ApplicationFeatures,
+  isAdminUser: boolean,
+  isGod: boolean
+) => {
+  if (applicationFeatures[featureName].public) return true;
+  else if ((applicationFeatures.admin && isAdminUser) || isGod) return true;
+  else if (isGod) return true;
+  return false;
+};
 export {
   inputToDate,
   dateToString,
@@ -819,4 +840,5 @@ export {
   userHasAdminPermissions,
   dateWithHoursComparator,
   pascalStringToTitleCase,
+  isFeatureVisible,
 };

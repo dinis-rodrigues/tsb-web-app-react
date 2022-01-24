@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Modal, RadioGroup } from "react-rainbow-components";
 import Select from "react-select";
+import { useAuth } from "../../contexts/AuthContext";
 import { ForumMetadata, selectOption, userContext } from "../../interfaces";
 import { getDecodedString } from "../../utils/generalFunctions";
 import { createNewForumSection, radioHandler } from "./forumUtils";
@@ -20,6 +21,7 @@ const ForumCreateModal = ({
   user,
   forumSectionOrder,
 }: Props) => {
+  const { isDarkMode } = useAuth();
   const [sectionOptions, setSectionOptions] = useState<selectOption[]>([]);
   const [radioOption, setRadioOption] = useState("AddTo");
   const [sectionValue, setSectionValue] = useState<selectOption | null>({
@@ -48,6 +50,9 @@ const ForumCreateModal = ({
   }, [forumMetadata]);
   return (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       isOpen={isSectionModalOpen}
       onRequestClose={() => setIsSectionModalOpen(false)}
       style={{ overflow: "hidden" }}
@@ -105,6 +110,7 @@ const ForumCreateModal = ({
           </label>
           {radioOption === "AddTo" ? (
             <Select
+              classNamePrefix="react-select-container"
               options={sectionOptions}
               menuPortalTarget={document.body}
               value={sectionValue}

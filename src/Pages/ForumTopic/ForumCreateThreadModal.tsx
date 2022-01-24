@@ -32,7 +32,7 @@ const ForumCreateThreadModal = ({
   encodedTopicName,
   user,
 }: Props) => {
-  const { usersMetadata } = useAuth();
+  const { usersMetadata, isDarkMode } = useAuth();
   const quillModules = {
     // syntax: true,
     toolbar: [
@@ -54,6 +54,9 @@ const ForumCreateThreadModal = ({
   ];
   return (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       title="New Thread"
       size={"medium"}
       isOpen={isCreateThreadModalOpen}
@@ -111,6 +114,7 @@ const ForumCreateThreadModal = ({
             </span>
           </label>
           <Select
+            classNamePrefix="react-select-container"
             options={labelOptions}
             value={newThreadInfo.label}
             menuPortalTarget={document.body}

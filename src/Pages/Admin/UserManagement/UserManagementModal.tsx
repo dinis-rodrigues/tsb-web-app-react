@@ -39,11 +39,14 @@ const UserManagementModal = ({
   setInfo,
   setSelectPositions,
 }: Props) => {
-  const { departments, USER } = useAuth();
+  const { departments, USER, isDarkMode } = useAuth();
   const today = new Date();
   const departmentOptions = getDepartmentOptions(departments);
   return (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       size="large"
       isOpen={modalIsOpen}
       title={modalTitle}
@@ -85,6 +88,7 @@ const UserManagementModal = ({
               <strong>In Team</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) => handleInTeamSelect(e, setInfo)}
               value={{
                 value: info && info.inTeam ? "true" : "false",
@@ -95,7 +99,7 @@ const UserManagementModal = ({
                 { value: "true", label: "Yes" },
                 { value: "false", label: "No" },
               ]}
-              theme={(theme) => selectStyles(theme, false)}
+              theme={(theme) => selectStyles(theme, false, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -109,6 +113,7 @@ const UserManagementModal = ({
               <strong>Department</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) =>
                 handleSelectDepartment(
                   e,
@@ -124,7 +129,7 @@ const UserManagementModal = ({
               }}
               placeholder={"Select Department"}
               options={departmentOptions}
-              theme={(theme) => selectStyles(theme, false)}
+              theme={(theme) => selectStyles(theme, false, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -136,6 +141,7 @@ const UserManagementModal = ({
               <strong>Position</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) => handleSelect(e, "position", setInfo)}
               options={selectPositions}
               placeholder="Select positition"
@@ -143,7 +149,7 @@ const UserManagementModal = ({
                 value: info && info.position,
                 label: info && info.position,
               }}
-              theme={(theme) => selectStyles(theme, false)}
+              theme={(theme) => selectStyles(theme, false, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -194,6 +200,7 @@ const UserManagementModal = ({
               <strong>MBWay</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) => handleSelect(e, "mbway", setInfo)}
               value={{
                 value: info && info.mbway,
@@ -201,7 +208,7 @@ const UserManagementModal = ({
               }}
               placeholder={"Yes or No?"}
               options={mbWayOptions}
-              theme={(theme) => selectStyles(theme, false)}
+              theme={(theme) => selectStyles(theme, false, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -227,6 +234,7 @@ const UserManagementModal = ({
               <strong>Degree</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) => handleSelect(e, "degree", setInfo)}
               value={{
                 value: info && info.degree,
@@ -236,7 +244,7 @@ const UserManagementModal = ({
               options={coursesOptions}
               isSearchable={true}
               formatGroupLabel={formatCoursesLabel}
-              theme={(theme) => selectStyles(theme, false)}
+              theme={(theme) => selectStyles(theme, false, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -248,6 +256,7 @@ const UserManagementModal = ({
               <strong>Curricular year</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) => handleSelect(e, "curricularYear", setInfo)}
               value={{
                 value: info ? info.curricularYear : "1",
@@ -255,7 +264,7 @@ const UserManagementModal = ({
               }}
               placeholder={"Select"}
               options={curricularYearOptions}
-              theme={(theme) => selectStyles(theme, false)}
+              theme={(theme) => selectStyles(theme, false, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -302,6 +311,7 @@ const UserManagementModal = ({
               <strong>Country</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) => handleSelect(e, "country", setInfo)}
               value={{
                 value: info && info.country,
@@ -310,7 +320,7 @@ const UserManagementModal = ({
               placeholder={"Select Country"}
               options={countryOptions}
               isSearchable={true}
-              theme={(theme) => selectStyles(theme, false)}
+              theme={(theme) => selectStyles(theme, false, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),

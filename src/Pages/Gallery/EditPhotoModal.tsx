@@ -24,9 +24,12 @@ const EditPhotoModal = ({
   setIsModalOpen,
   setImgInfo,
 }: Props) => {
-  const { USER, isMarketingOrAdmin } = useAuth();
+  const { USER, isMarketingOrAdmin, isDarkMode } = useAuth();
   return (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       isOpen={isModalOpen}
       size="medium"
       title={"Edit Photo"}

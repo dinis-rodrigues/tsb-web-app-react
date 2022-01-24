@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 // import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
@@ -11,6 +11,8 @@ import AppMain from "../../components/AppMain/AppMain";
 import AppHeader from "../../components/AppHeader/AppHeader";
 import AppSidebar from "../../components/AppSidebar/AppSidebar";
 import { ToastContainer } from "react-toastify";
+import { Application } from "react-rainbow-components";
+import { rainbowDarkTheme, rainbowWhiteTheme } from "../../utils/colors";
 
 type Props = {
   colorScheme: string;
@@ -31,16 +33,18 @@ const Main = ({
   closedSmallerSidebar,
   enableMobileMenu,
 }: Props) => {
-  const { displayContent } = useAuth();
+  const { displayContent, isDarkMode } = useAuth();
   const [displayMobileSearch, setDisplayMobileSearch] = useState(false);
   return (
     <ResizeDetector
       handleWidth
       render={({ width }: any) => (
-        <Fragment>
+        <Application theme={isDarkMode ? rainbowDarkTheme : rainbowWhiteTheme}>
           <div
             className={cx(
-              "app-container app-theme-" + colorScheme,
+              "app-container",
+              { "app-theme-white": !isDarkMode },
+              { "app-theme-dark": isDarkMode },
               { "fixed-header": enableFixedHeader },
               { "fixed-sidebar": enableFixedSidebar || width < 1250 },
               { "fixed-footer": enableFixedFooter },
@@ -65,6 +69,7 @@ const Main = ({
               <AppMain />
             </div>
             <ToastContainer
+              theme={isDarkMode ? "dark" : "light"}
               position="top-right"
               autoClose={5000}
               hideProgressBar={false}
@@ -76,7 +81,7 @@ const Main = ({
               pauseOnHover
             />
           </div>
-        </Fragment>
+        </Application>
       )}
     />
   );

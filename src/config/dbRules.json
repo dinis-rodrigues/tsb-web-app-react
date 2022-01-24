@@ -18,10 +18,14 @@
             },
             "recruitment": {
                 ".write": "auth != null",
+                ".read": "auth != null",
                 "activeTable": {
                     ".read": true,
                 },
                 "openDepartments": {
+                    ".read": true,
+                },
+                "tablesList": {
                     ".read": true,
                 },
                 "tables": {

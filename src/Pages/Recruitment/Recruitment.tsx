@@ -33,6 +33,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
 import { ColumnApi, GridApi, RowClickedEvent } from "ag-grid-community";
 import RecruitmentUserModal from "./RecruitmentUserModal";
 import RecruitmentSettings from "./RecruitmentSetting";
@@ -41,11 +42,12 @@ import RecruitmentYearCount from "./RecruitmentYearDepCount";
 import { db } from "../../config/firebase";
 
 import { CheckboxGroup, Input } from "react-rainbow-components";
+import cx from "classnames";
 
 // Layout
 
 const Recruitment = () => {
-  const { USER, isMarketingOrAdmin } = useAuth();
+  const { USER, isMarketingOrAdmin, isDarkMode } = useAuth();
   // Default table options
   const gridOptions = {
     enableCellTextSelection: false,
@@ -175,6 +177,7 @@ const Recruitment = () => {
                     </DropdownMenu>
                   </UncontrolledButtonDropdown>
                   <Select
+                    classNamePrefix="react-select-container"
                     className="sel-width text-center"
                     onChange={(selected) => {
                       selectTableHandler(
@@ -235,7 +238,10 @@ const Recruitment = () => {
                 {/* <button onClick={excelExport}>export</button> */}
               </div>
               <div
-                className="ag-theme-alpine"
+                className={cx({
+                  "ag-theme-alpine": !isDarkMode,
+                  "ag-theme-alpine-dark": isDarkMode,
+                })}
                 style={{ height: "30rem", width: "100%" }}
               >
                 <AgGridReact

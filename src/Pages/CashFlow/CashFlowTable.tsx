@@ -4,6 +4,7 @@ import {
   UncontrolledButtonDropdown,
 } from "reactstrap";
 
+import cx from "classnames";
 import { AgGridReact } from "ag-grid-react";
 import { Flow } from "../../interfaces";
 import { useEffect, useState } from "react";
@@ -25,6 +26,7 @@ import {
   pdfExport,
   onFirstDataRendered,
 } from "./cashFlowUtils";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   tableTitle: string;
@@ -66,6 +68,7 @@ const CashFlowTable = ({
   setFlowInfo,
   setShowDeleteButton,
 }: Props) => {
+  const { isDarkMode } = useAuth();
   const gridOptions = {
     enableCellTextSelection: false,
     enableRangeSelection: true,
@@ -155,7 +158,10 @@ const CashFlowTable = ({
       </div>
       <div className="card-body">
         <div
-          className="ag-theme-alpine"
+          className={cx({
+            "ag-theme-alpine": !isDarkMode,
+            "ag-theme-alpine-dark": isDarkMode,
+          })}
           style={{
             height: "20rem",
             width: "100%",

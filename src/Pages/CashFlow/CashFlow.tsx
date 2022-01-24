@@ -3,6 +3,7 @@
 import "ag-grid-enterprise";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
 
 import { useEffect, useState } from "react";
 import { db } from "../../config/firebase";
@@ -18,6 +19,7 @@ import {
 } from "./cashFlowUtils";
 import Chart from "react-apexcharts";
 import CashFlowModal from "./CashFlowModal";
+import { useAuth } from "../../contexts/AuthContext";
 
 /** Creates the necessary arrays to build the cummulative sum arrays for the graph
  * @param  {FlowDB} flowDb flows from database
@@ -78,6 +80,7 @@ const processFlows = (
 };
 
 const CashFlow = () => {
+  const { isDarkMode } = useAuth();
   // Graph state
   const [chartSeries, setChartSeries] = useState([
     { name: "total", data: [] },
@@ -111,7 +114,10 @@ const CashFlow = () => {
               <div className="main-card mb-3 card p-20">
                 <div className="card-body">
                   <Chart
-                    options={apexChartOptions}
+                    options={{
+                      ...apexChartOptions,
+                      theme: { mode: isDarkMode ? "dark" : "light" },
+                    }}
                     series={chartSeries}
                     type="area"
                     width="100%"

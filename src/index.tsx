@@ -5,10 +5,12 @@ import { BrowserRouter } from "react-router-dom";
 // add bootstrap css
 // import "bootstrap/dist/css/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
+import "./colors.scss";
 import "./base.scss";
 import "./icons.scss";
 import "./customBootstrap.scss";
 import "./custom.scss";
+import "./darkTheme.scss";
 
 import Main from "./Pages/Main/Main";
 
@@ -17,7 +19,6 @@ import { Provider } from "react-redux";
 
 import { AuthProvider } from "./contexts/AuthContext";
 
-import registerServiceWorker from "./registerServiceWorker";
 const store: any = configureStore();
 const rootElement = document.getElementById("root");
 
@@ -35,7 +36,6 @@ const renderApp = () => {
 };
 
 renderApp();
-registerServiceWorker();
 
 // if (module.hot) {
 //   module.hot.accept("./Pages/Main/Main", () => {

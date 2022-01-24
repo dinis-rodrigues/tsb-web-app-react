@@ -5,11 +5,13 @@ import {
   apexPolarOptions,
   buildRecruitmentPolarSeries,
 } from "../Statistics/statisticsUtils";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   tableData: RecruitmentTable;
 };
 const RecruitmentDegreeCount = ({ tableData }: Props) => {
+  const { isDarkMode } = useAuth();
   const [teamCount, setTeamCount] = useState(0);
 
   const [degreeLabels, setDegreeLabels] = useState<string[]>([]);
@@ -37,7 +39,11 @@ const RecruitmentDegreeCount = ({ tableData }: Props) => {
           </div>
           {degreeLabels.length > 0 && (
             <Chart
-              options={{ ...apexPolarOptions, labels: degreeLabels }}
+              options={{
+                ...apexPolarOptions,
+                theme: { mode: isDarkMode ? "dark" : "light" },
+                labels: degreeLabels,
+              }}
               series={degreeData}
               type="polarArea"
               width="100%"

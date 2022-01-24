@@ -1,10 +1,11 @@
+@import "colors.scss";
 // Gallery Lightbox
 .lg-outer .lg-thumb-item {
   border: 4px solid transparent !important;
 }
 .lg-outer .lg-thumb-item.active,
 .lg-outer .lg-thumb-item:hover {
-  border-color: #16aaff !important;
+  border-color: $info-color !important;
 }
 
 .lg-sub-html {
@@ -22,7 +23,7 @@
 }
 
 .lg-progress-bar .lg-progress {
-  background-color: #16aaff !important;
+  background-color: $info-color !important;
   height: 5px;
   width: 0;
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import NumberFormat, { NumberFormatValues } from "react-number-format";
 import { Button, Modal } from "react-rainbow-components";
 import { db } from "../../config/firebase";
+import { useAuth } from "../../contexts/AuthContext";
 import { selectOption } from "../../interfaces";
 import { sortSeasonsArray } from "./budgetUtils";
 
@@ -70,8 +71,12 @@ const CreateSeasonModal = ({
   seasonsOptions,
 }: Props) => {
   const [seasonToCreate, setSeasonToCreate] = useState("");
+  const { isDarkMode } = useAuth();
   return (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       isOpen={isSeasonModalOpen}
       onRequestClose={() => setIsSeasonModalOpen(false)}
       footer={

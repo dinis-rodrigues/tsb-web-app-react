@@ -123,15 +123,19 @@ const SponsorBracket = ({
 
                 <UncontrolledButtonDropdown>
                   <DropdownToggle color="btn" className="p-0 mr-2">
-                    <span className="btn-wide btn-outline-success  btn  dropdown-toggle">
+                    <span className="btn-wide btn-outline-success btn dropdown-toggle">
                       Add
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu right className="rm-pointers dropdown-menu">
+                  <DropdownMenu
+                    right
+                    className="rm-pointers dropdown-menu"
+                    style={{ overflow: "hidden" }}
+                  >
                     <input
                       type="text"
                       className="dropdown-search"
-                      placeholder="search"
+                      placeholder="Search..."
                       value={filterSearch}
                       onChange={(e) => {
                         updateSponsorDropdown(

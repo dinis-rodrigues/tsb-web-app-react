@@ -2,6 +2,7 @@ import { useState } from "react";
 import ReactQuill from "react-quill";
 import { Button, Modal } from "react-rainbow-components";
 import Select from "react-select";
+import { useAuth } from "../../contexts/AuthContext";
 import { Thread, ThreadCreation, userContext } from "../../interfaces";
 import {
   editThreadTitleHandler,
@@ -29,6 +30,7 @@ const ForumEditThreadModal = ({
   encodedThreadName,
   user,
 }: Props) => {
+  const { isDarkMode } = useAuth();
   const [newThreadInfo, setNewThreadInfo] = useState<ThreadCreation>({
     title: threadInformation.threadTitle,
     label: {
@@ -58,6 +60,9 @@ const ForumEditThreadModal = ({
   ];
   return (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       title="Edit Thread"
       size={"medium"}
       isOpen={isEditThreadModalOpen}
@@ -113,6 +118,7 @@ const ForumEditThreadModal = ({
             </span>
           </label>
           <Select
+            classNamePrefix="react-select-container"
             options={labelOptions}
             value={newThreadInfo.label}
             menuPortalTarget={document.body}

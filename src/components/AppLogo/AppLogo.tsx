@@ -26,6 +26,7 @@ const AppLogo = ({
   const [active, setActive] = useState(false);
 
   const hamburgerClick = () => {
+    toggleEnableClosedSidebar();
     setActive(!active);
   };
 
@@ -35,16 +36,12 @@ const AppLogo = ({
   return (
     <Fragment>
       <div className="app-header__logo">
-        <div className="logo-src" />
-        <div className="header__pane ml-auto">
-          <div onClick={toggleEnableClosedSidebar}>
-            <Hamburger
-              active={enableClosedSidebar}
-              type="elastic"
-              onClick={hamburgerClick}
-            />
-          </div>
-        </div>
+        <Hamburger
+          active={!enableClosedSidebar}
+          type="slider"
+          onClick={hamburgerClick}
+        />
+        <div className="logo-src ml-auto" />
       </div>
       <AppMobileMenu
         displayMobileSearch={displayMobileSearch}

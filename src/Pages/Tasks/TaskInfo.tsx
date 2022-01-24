@@ -26,6 +26,7 @@ import {
 
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
 import AppModalComment from "../../components/AppModalComment/AppModalComment";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   isDrawerOpen: boolean;
@@ -82,6 +83,7 @@ const TaskInfo = ({
   currTaskColumn,
   user,
 }: Props) => {
+  const { isDarkMode } = useAuth();
   const [commentText, setCommentText] = useState("");
   const today = new Date();
   const quillModules = {
@@ -99,6 +101,9 @@ const TaskInfo = ({
   // }, []);
   return modalTask ? (
     <Drawer
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       id="drawer"
       size={"medium"}
       isOpen={isDrawerOpen}
@@ -148,7 +153,7 @@ const TaskInfo = ({
           id="TTitle"
           placeholder="Task title here..."
           value={modalTask.title}
-          className="form-control-tr bdc-grey-200"
+          className="form-control"
           maxLength={50}
           onChange={(e) => titleHandler(e, modalTask, setModalTask)}
         />
@@ -159,6 +164,7 @@ const TaskInfo = ({
         {/* Description */}
         <ReactQuill
           theme="bubble"
+          placeholder="Task description here..."
           value={modalTask.description || ""}
           modules={quillModules}
           bounds={"#bound"}
@@ -176,6 +182,7 @@ const TaskInfo = ({
               Assign to
             </label>
             <Select
+              classNamePrefix="react-select-container"
               isMulti
               options={userOptions}
               value={modalTask.assignedTo || []}
@@ -217,6 +224,7 @@ const TaskInfo = ({
               Priority
             </label>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(selected) => {
                 priorityHandler(selected, modalTask, setModalTask);
               }}

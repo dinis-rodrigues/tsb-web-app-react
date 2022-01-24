@@ -18,6 +18,7 @@ import {
 import cx from "classnames";
 import { useState } from "react";
 import { UncontrolledTooltip } from "reactstrap";
+import { useAuth } from "../../../contexts/AuthContext";
 
 type Props = {
   issDepartmentModalOpen: boolean;
@@ -37,8 +38,12 @@ const DepartmentModal = ({
   modalText,
 }: Props) => {
   const [newPosition, setNewPosition] = useState("");
+  const { isDarkMode } = useAuth();
   return departmentInfo ? (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       isOpen={issDepartmentModalOpen}
       size="medium"
       title={modalText.title}
@@ -195,6 +200,7 @@ const DepartmentModal = ({
             <strong>Gradient Samples</strong>
           </span>
           <Select
+            classNamePrefix="react-select-container"
             onChange={(e) => handleDepartmentSelect(e, setDepartmentInfo)}
             options={gradientColorOptions}
             placeholder="Select gradient"

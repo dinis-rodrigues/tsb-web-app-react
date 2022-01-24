@@ -27,7 +27,7 @@ const CreateGalleryModal = ({
   isModalOpen,
   setIsModalOpen,
 }: Props) => {
-  const { USER } = useAuth();
+  const { USER, isDarkMode } = useAuth();
   const [modalInfo, setModalInfo] = useState<GalleryItem>();
 
   useEffect(() => {
@@ -44,6 +44,9 @@ const CreateGalleryModal = ({
   const today = new Date();
   return (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       isOpen={isModalOpen}
       size="medium"
       title={editGallery ? "Edit Album" : "Create Album"}

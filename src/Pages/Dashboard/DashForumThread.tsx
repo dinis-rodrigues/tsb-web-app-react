@@ -42,10 +42,10 @@ const DashForumThread = () => {
       <div className="row">
         <div className="col-md mb-3">
           <div
-            className="mr-3 btn bg-grad w-100 cursor-auto"
+            className="mr-3 btn bg-plum-plate w-100 cursor-auto"
             style={{ border: "none" }}
           >
-            <h5 className="mt-2 ">
+            <h5 className="my-2 font-size-xlg text-white">
               <div className="float-left">
                 <span className={"heart-parent"}>
                   <i
@@ -54,7 +54,7 @@ const DashForumThread = () => {
                         threadInformation.likedBy &&
                         USER &&
                         threadInformation.likedBy[USER.id],
-                      "text-muted":
+                      "opacity-8":
                         !threadInformation.likedBy ||
                         (USER && !threadInformation.likedBy[USER.id]),
                     })}
@@ -71,7 +71,7 @@ const DashForumThread = () => {
                 </span>
                 <span
                   id="numThreadLikes"
-                  className="text-muted d-inline-flex align-middle cursor-pointer ml-2"
+                  className="opacity-8 d-inline-flex align-middle cursor-pointer ml-2"
                 >
                   <span className="align-middle">
                     {threadInformation.likedBy
@@ -92,8 +92,8 @@ const DashForumThread = () => {
               </Link>
               <div className="float-right">
                 {/* Views */}
-                <span className="text-muted d-inline-flex  align-middle ml-4 cursor-pointer">
-                  <i className="fas fa-eye text-muted fsize-2"></i>
+                <span className="opacity-8 d-inline-flex align-middle ml-4 cursor-pointer">
+                  <i className="fas fa-eye fsize-2"></i>
                   <span className="align-middle ml-2" id="numWatches">
                     {threadInformation.viewedBy
                       ? Object.entries(threadInformation.viewedBy).length

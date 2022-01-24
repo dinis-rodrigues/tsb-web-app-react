@@ -87,11 +87,14 @@ const BudgetModal = ({
 }: Props) => {
   const today = new Date();
   const [commentText, setCommentText] = useState("");
-  const { departments } = useAuth();
+  const { departments, isDarkMode } = useAuth();
   const departmentSelectOptions = getBudgetDepartmentOptions(departments);
 
   return (
     <Drawer
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       header={"Material Information"}
       onRequestClose={() => closeModal()}
       size={"medium"}
@@ -159,7 +162,7 @@ const BudgetModal = ({
             }
             type="text"
             className="form-control m-0 text-center"
-            placeholder=""
+            placeholder="Material.."
           />
         </div>
         <div className="col-md-5">
@@ -177,7 +180,7 @@ const BudgetModal = ({
             }
             type="text"
             className="form-control m-0 text-center"
-            placeholder=""
+            placeholder="Company..."
           />
         </div>
       </div>
@@ -249,6 +252,7 @@ const BudgetModal = ({
             </span>
           </label>
           <Select
+            classNamePrefix="react-select-container"
             options={assignToOptions}
             value={materialInfo.assignedTo || []}
             onChange={(selected) => {
@@ -289,6 +293,7 @@ const BudgetModal = ({
           </label>
 
           <Select
+            classNamePrefix="react-select-container"
             options={statusSelectOptions}
             value={
               {
@@ -313,6 +318,7 @@ const BudgetModal = ({
             </span>
           </label>
           <Select
+            classNamePrefix="react-select-container"
             options={departmentSelectOptions}
             value={
               {

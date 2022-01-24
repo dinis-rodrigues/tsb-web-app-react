@@ -110,6 +110,7 @@ const Budget = (props: any) => {
                   style={{ opacity: 1 }}
                 >
                   <Select
+                    classNamePrefix="react-select-container"
                     className={"sel-width-budget"}
                     value={[
                       {
