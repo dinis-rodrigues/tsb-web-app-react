@@ -1,12 +1,9 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on pull request events but only for the main branch
-
-  pull_request:
+  # Triggers the workflow on push events but only for the main branch
+  push:
     branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -65,3 +62,42 @@ jobs:
 
       - name: Build project
         run: npm run build
+
+      - name: Package build
+        run: |
+          tar -czvf deploy.tar.gz -C build .
+          ls
+
+      - name: Send packaged build to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "deploy.tar.gz"
+          target: ${{ secrets.SERVER_ABSOLUTE_PATH }}
+
+      - name: Replace previous version and deploy new one
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            echo "Changing directory to server location"
+            cd ${{ secrets.SERVER_ABSOLUTE_PATH }}
+            echo "Moving old version to a temporary folder"
+            mkdir ../old_version
+            shopt -s dotglob
+            mv * ../old_version/
+            echo "Unzip new version to server location"
+            tar -xf ../old_version/deploy.tar.gz -C .
+            echo "Move back db folder to server"
+            mv ../old_version/db .
+            echo "Removing old version"
+            rm -rf ../old_version
+            shopt -u dotglob
+            echo "Deployment Complete"
