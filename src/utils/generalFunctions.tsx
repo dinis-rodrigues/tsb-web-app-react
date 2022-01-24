@@ -799,11 +799,15 @@ const isFeatureVisible = (
   isAdminUser: boolean,
   isGod: boolean
 ) => {
-  if (applicationFeatures[featureName].public) return true;
-  else if ((applicationFeatures.admin && isAdminUser) || isGod) return true;
-  else if (isGod) return true;
+  if (applicationFeatures.hasOwnProperty(featureName)) {
+    if (applicationFeatures[featureName].public) return true;
+    else if ((applicationFeatures[featureName].admin && isAdminUser) || isGod)
+      return true;
+    else if (isGod) return true;
+  }
   return false;
 };
+
 export {
   inputToDate,
   dateToString,

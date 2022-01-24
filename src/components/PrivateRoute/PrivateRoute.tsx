@@ -1,7 +1,7 @@
 import { Route, Redirect } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { Fragment } from "react";
-import { ApplicationFeatures } from "../../interfaces";
+import { isFeatureVisible } from "../../utils/generalFunctions";
 
 type Props = {
   component: any;
@@ -27,18 +27,18 @@ const PrivateRoute = ({
     isGod,
   } = useAuth();
 
-  const isVisible = (
-    applicationFeatures: ApplicationFeatures,
-    isAdminUser: boolean,
-    isGod: boolean,
-    featureName?: string
-  ) => {
-    if (!featureName) return true;
-    if (applicationFeatures[featureName].public) return true;
-    else if ((applicationFeatures.admin && isAdminUser) || isGod) return true;
-    else if (isGod) return true;
-    return false;
-  };
+  // const isVisible = (
+  //   applicationFeatures: ApplicationFeatures,
+  //   isAdminUser: boolean,
+  //   isGod: boolean,
+  //   featureName?: string
+  // ) => {
+  //   if (!featureName) return true;
+  //   if (applicationFeatures[featureName].public) return true;
+  //   else if ((applicationFeatures.admin && isAdminUser) || isGod) return true;
+  //   else if (isGod) return true;
+  //   return false;
+  // };
 
   return (
     <Route
@@ -46,7 +46,13 @@ const PrivateRoute = ({
       path={path}
       render={(props) => {
         return currentUser && displayContent ? (
-          isVisible(applicationFeatures, isAdminUser, isGod, featureName) ? (
+          !featureName ||
+          isFeatureVisible(
+            featureName,
+            applicationFeatures,
+            isAdminUser,
+            isGod
+          ) ? (
             <Fragment>
               <Component {...props} />
             </Fragment>

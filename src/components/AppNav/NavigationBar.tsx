@@ -1,10 +1,7 @@
 import { Fragment, useState } from "react";
 import { withRouter } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import {
-  isFeatureVisible,
-  userHasPermission,
-} from "../../utils/generalFunctions";
+import { isFeatureVisible } from "../../utils/generalFunctions";
 import NavItem from "./NavItem";
 import NavigationSection from "./NavigationSection";
 import NavigationSubSection from "./NavigationSubSection";
@@ -43,8 +40,9 @@ const NavigationBar = () => {
       attendance: !activeCollapse.attendance,
     });
   };
-  const { USER, applicationFeatures, isAdminUser, isGod } = useAuth();
-  const userAdmin = userHasPermission(USER);
+  const { applicationFeatures, isAdminUser, isGod } = useAuth();
+
+  console.log("Is Admin", isAdminUser);
 
   return (
     <Fragment>
@@ -215,7 +213,7 @@ const NavigationBar = () => {
           />
         </NavigationSubSection>
       </NavigationSection>
-      {userAdmin && (
+      {isAdminUser && (
         <Fragment>
           <h5 className="app-sidebar__heading">Admin</h5>
           <NavigationSection>
