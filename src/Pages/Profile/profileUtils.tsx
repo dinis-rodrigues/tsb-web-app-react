@@ -456,7 +456,7 @@ const groupBadgeStyles = {
   minWidth: 1,
   padding: "0.16666666666667em 0.5em",
 };
-const selectStyles = (theme: any, isDisabled: boolean) => {
+const selectStyles = (theme: any, isDisabled: boolean, isDarkMode: boolean) => {
   return {
     ...theme,
     borderRadius: "0.2rem",

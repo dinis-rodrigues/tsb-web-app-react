@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import Chart from "react-apexcharts";
+import { useAuth } from "../../contexts/AuthContext";
 import { UserMetadata } from "../../interfaces";
 import {
   apexPolarOptions,
@@ -10,6 +11,7 @@ type Props = {
   usersMetadata: UserMetadata;
 };
 const DegreeCount = ({ usersMetadata }: Props) => {
+  const { isDarkMode } = useAuth();
   const [degreeLabels, setDegreeLabels] = useState<string[]>([]);
   const [degreeData, setDegreeData] = useState<number[]>([]);
   useEffect(() => {
@@ -20,7 +22,11 @@ const DegreeCount = ({ usersMetadata }: Props) => {
     <Fragment>
       {degreeLabels.length > 0 && (
         <Chart
-          options={apexPolarOptions}
+          // theme={{ mode: isDarkMode ? "dark" : "light" }}
+          options={{
+            ...apexPolarOptions,
+            theme: { mode: isDarkMode ? "dark" : "light" },
+          }}
           series={degreeData}
           labels={degreeLabels}
           type="polarArea"

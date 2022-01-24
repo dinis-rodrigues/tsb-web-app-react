@@ -38,7 +38,7 @@ const SponsorModal = ({
   retroActives,
   sponsorId,
 }: Props) => {
-  const { USER, isMarketingOrAdmin } = useAuth();
+  const { USER, isMarketingOrAdmin, isDarkMode } = useAuth();
   const [focusInput, setFocusInput] = useState("");
   let sponsorValue = 0;
   if (sponsorInfo?.history) {
@@ -53,6 +53,9 @@ const SponsorModal = ({
 
   return (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       isOpen={isModalOpen}
       size="medium"
       title={sponsorInfo?.name}
@@ -332,7 +335,7 @@ const SponsorModal = ({
                     <Fragment>
                       <SponsorImage svgPath={sponsorInfo?.svgPath} />
                       <button
-                        className="btn btn-success"
+                        className="btn btn-info"
                         onClick={() =>
                           downloadSponsorFile(
                             sponsorInfo.svgPath,
@@ -405,9 +408,9 @@ const SponsorModal = ({
                 <Fragment>
                   {!fileValue ? (
                     <Fragment>
-                      <SponsorFileIcon url={sponsorInfo?.logoWhite} />
+                      <SponsorFileIcon url={sponsorInfo?.logoWhite} isFile />
                       <button
-                        className="btn btn-success"
+                        className="btn btn-info"
                         onClick={() =>
                           downloadSponsorFile(
                             sponsorInfo.logoWhite,
@@ -479,9 +482,9 @@ const SponsorModal = ({
                 <Fragment>
                   {!fileValue ? (
                     <Fragment>
-                      <SponsorFileIcon url={sponsorInfo?.logoBlack} />
+                      <SponsorFileIcon url={sponsorInfo?.logoBlack} isFile />
                       <button
-                        className="btn btn-success"
+                        className="btn btn-info"
                         onClick={() =>
                           downloadSponsorFile(
                             sponsorInfo.logoBlack,

@@ -1,0 +1,340 @@
+@import "colors.scss";
+
+body .app-theme-dark {
+  color: $text-white-primary;
+  a {
+    color: $info-color;
+  }
+  &.app-container {
+    background: $black-darker;
+  }
+
+  .app-sidebar {
+    background: $black-primary;
+  }
+
+  .app-page-title {
+    background: rgba(255, 255, 255, 0.45);
+  }
+
+  .app-footer .app-footer__inner,
+  .app-header {
+    background: $black-secondary;
+  }
+
+  .app-sidebar__heading {
+    color: $info-color;
+  }
+
+  .logo-src {
+    background-image: url(assets/images/logo-inverse.png) !important;
+    height: 15px;
+    width: 184px;
+    background-size: 184px 15px;
+    z-index: 999 !important;
+  }
+
+  .card {
+    background-color: $black-primary;
+  }
+
+  .card-header {
+    color: $text-white-primary !important;
+    background-color: $black-primary;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.125);
+  }
+
+  .card-title {
+    color: $text-white-primary !important;
+  }
+
+  .card-body {
+    color: $text-white-primary;
+  }
+  .card-footer {
+    background-color: $black-primary;
+    border-top: 1px solid rgba(255, 255, 255, 0.125);
+  }
+
+  .list-group-item {
+    background-color: $black-primary;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.125);
+    margin-bottom: 0 !important;
+  }
+
+  .vertical-nav-menu .metismenu-container .metismenu-link {
+    color: $text-white-secondary;
+  }
+
+  .vertical-nav-menu .metismenu-container .metismenu-link {
+    text-decoration: none;
+    &.active {
+      background: #c4c4c444;
+    }
+    &:hover {
+      background: #c4c4c444;
+    }
+  }
+
+  .vertical-nav-menu
+    .metismenu-container
+    .metismenu-container.visible
+    > .metismenu-item
+    > .metismenu-link {
+    color: $text-white-darker;
+    &.active {
+      background: #c4c4c444;
+    }
+    &:hover {
+      background: #c4c4c444;
+    }
+  }
+
+  .vertical-nav-menu .metismenu-container .gallery-link {
+    color: $text-white-secondary;
+    &.active {
+      background: #c4c4c444;
+    }
+    &:hover {
+      background: #c4c4c444;
+    }
+  }
+
+  .kanban-item {
+    background: $black-primary;
+  }
+  .sponsor-card {
+    border: 2px solid rgba(204, 204, 204, 0.438);
+    background-color: $black-secondary;
+    &:hover {
+      border: 2px solid $info-color;
+    }
+  }
+
+  .text-dark {
+    color: $white-darker !important;
+  }
+
+  .c-grey-900,
+  .cH-grey-900:hover {
+    color: $white-darker !important;
+  }
+  .bg-grad {
+    background-image: none;
+  }
+
+  table {
+    border: 1px solid rgba(255, 255, 255, 0.125) !important;
+  }
+  thead {
+    border-color: rgba(255, 255, 255, 0.125) !important;
+  }
+  tr {
+    border-color: rgba(255, 255, 255, 0.125) !important;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #c4c4c444;
+  }
+
+  .react-select-container__control {
+    background-color: $black-secondary;
+    border: 1px solid rgba(255, 255, 255, 0.397) !important;
+    font-size: 1rem;
+  }
+
+  .react-select-container__control--is-disabled {
+    background-color: lighten($black-secondary, 10%) !important;
+  }
+
+  .react-select-container__control--is-focused {
+    box-shadow: -0 0 0 1px #01b6f5 !important;
+    border-color: #01b6f5 !important;
+  }
+  .react-select-container__input {
+    color: $white-darker !important;
+  }
+
+  .react-select-container__single-value {
+    color: $white-darker !important;
+  }
+
+  .react-select-container__single-value.react-select-container__single-value--is-disabled {
+    color: darken($white-darker, 10%) !important;
+  }
+  .react-select-container__menu-list {
+    background-color: $black-secondary;
+    border: 1px solid rgba(255, 255, 255, 0.397) !important;
+  }
+  .react-select-container__option {
+    &:hover {
+      background: #c4c4c444;
+    }
+  }
+  .react-select-container__option--is-focused {
+    background: #c4c4c444;
+  }
+  .react-select-container__option--is-selected {
+    background: rgb(38, 132, 255);
+  }
+
+  .react-select-container__multi-value {
+    background-color: $black-light !important;
+  }
+  .react-select-container__multi-value__label {
+    color: $white-secondary !important;
+  }
+  .form-control {
+    background-color: $black-secondary;
+    color: $white-darker;
+    border: 1px solid rgba(255, 255, 255, 0.397);
+    &:disabled {
+      background-color: lighten($black-secondary, 10%);
+      color: darken($white-darker, 10%) !important;
+    }
+    &:focus {
+      border: 2px solid #01b6f5 !important;
+    }
+  }
+
+  .list-group-item.search-hover:hover {
+    background-color: $info-color;
+  }
+
+  .datePicker div div input {
+    &:focus {
+      border: 2px solid #01b6f5 !important;
+    }
+
+    &:disabled {
+      background-color: lighten($black-secondary, 10%);
+      color: darken($white-darker, 10%) !important;
+    }
+
+    background-color: $black-secondary;
+    color: $white-darker;
+    border: 1px solid rgba(255, 255, 255, 0.397);
+    border-radius: 0.25rem;
+  }
+
+  .dropdown-menu {
+    background-color: $black-darker !important;
+  }
+  .dropdown-item {
+    color: $text-white-primary !important;
+    &:hover {
+      background-color: #c4c4c444 !important;
+    }
+  }
+  .btn {
+    color: $text-white-primary;
+    &.btn-light {
+      color: $black-darker;
+    }
+  }
+  .ql-container {
+    background-color: $black-secondary;
+    color: $white-darker;
+  }
+  .modal-heading {
+    background-color: $black-primary;
+    color: $text-white-primary;
+    border-color: rgba(255, 255, 255, 0.125) !important;
+  }
+
+  .widget-heading {
+    color: $text-white-primary;
+  }
+  .widget-subheading {
+    color: $text-white-secondary;
+  }
+
+  .quill > .ql-container > .ql-editor.ql-blank::before {
+    color: darken($white-darker, 10%) !important;
+    font-size: 1rem;
+  }
+
+  .dropdown-search {
+    background-color: $black-darker;
+    color: $white-darker;
+  }
+  .search-wrapper .input-holder .search-icon span {
+    &::before {
+      background: $info-color;
+    }
+    &::after {
+      border-color: $info-color;
+    }
+  }
+  button.close {
+    &::before {
+      background: $info-color;
+    }
+    &::after {
+      background: $info-color;
+    }
+  }
+  .hamburger {
+    .hamburger-inner {
+      background-color: $info-color;
+      &::before {
+        background-color: $info-color;
+      }
+      &::after {
+        background-color: $info-color;
+      }
+    }
+    &.is-active {
+      .hamburger-inner {
+        background-color: $info-color;
+        &::before {
+          background-color: $info-color;
+        }
+        &::after {
+          background-color: $info-color;
+        }
+      }
+    }
+  }
+  .fc-theme-standard td,
+  .fc-theme-standard th {
+    border: 1px solid #dddddd38 !important;
+    /* border: 1px solid var(--fc-border-color, #ddd); */
+  }
+
+  .fc-daygrid-day {
+    &.fc-day-sun,
+    &.fc-day-sat {
+      background-color: #ececec21;
+    }
+  }
+
+  .fc-timegrid-col {
+    &.fc-day-sun,
+    &.fc-day-sat {
+      background-color: #ececec21;
+    }
+  }
+  .fc .fc-daygrid-day.fc-day-today {
+    background-color: #0b8ce21c;
+  }
+  .fc-timegrid-col {
+    &.fc-day-today {
+      background-color: #0b8ce21c;
+    }
+  }
+
+  .swal2-success-circular-line-left {
+    background-color: transparent !important;
+  }
+  .swal2-success-circular-line-right {
+    background-color: transparent !important;
+  }
+  .swal2-success-fix {
+    background-color: transparent !important;
+  }
+}
+
+.app-modal-dark {
+  background-color: #1f1f1f !important;
+}

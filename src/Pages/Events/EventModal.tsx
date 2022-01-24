@@ -45,13 +45,16 @@ const EventModal = ({
   showDeleteEvent,
   disabledInput,
 }: Props) => {
-  const { departments } = useAuth();
+  const { departments, isDarkMode } = useAuth();
   const today = new Date();
 
   const eventTypeOptions = getEventTypeOptions(departments);
   return (
     <Fragment>
       <Modal
+        className={
+          isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+        }
         isOpen={isModalOpen}
         title={modalTitle}
         onRequestClose={() => {
@@ -153,6 +156,7 @@ const EventModal = ({
               <strong>Type</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) =>
                 selectHandler(e, "type", currEventInfo, setCurrEventInfo)
               }

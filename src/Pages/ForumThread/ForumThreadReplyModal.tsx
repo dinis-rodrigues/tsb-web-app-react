@@ -2,6 +2,7 @@ import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Button, Modal } from "react-rainbow-components";
+import { useAuth } from "../../contexts/AuthContext";
 import { Thread, userContext } from "../../interfaces";
 import { submitThreadReply } from "./forumThreadUtils";
 
@@ -23,6 +24,7 @@ const ForumThreadReplyModal = ({
   encodedThreadName,
   user,
 }: Props) => {
+  const { isDarkMode } = useAuth();
   const [replyText, setReplyText] = useState("");
   const quillModules = {
     // syntax: true,
@@ -38,6 +40,9 @@ const ForumThreadReplyModal = ({
   };
   return (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       title="Add Comment"
       size={"medium"}
       isOpen={isForumThreadReplyModalOpen}

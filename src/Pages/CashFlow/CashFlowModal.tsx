@@ -3,6 +3,7 @@ import NumberFormat, { NumberFormatValues } from "react-number-format";
 import { Modal, Button, DatePicker } from "react-rainbow-components";
 import Select from "react-select";
 import { db } from "../../config/firebase";
+import { useAuth } from "../../contexts/AuthContext";
 import { Flow } from "../../interfaces";
 import { dateToString, inputToDate } from "../../utils/generalFunctions";
 
@@ -73,6 +74,7 @@ const CashFlowModal = ({
   setFlowInfo,
   showDeleteButton,
 }: Props) => {
+  const { isDarkMode } = useAuth();
   const today = new Date();
   const flowTypeOptions = [
     { value: "Income", label: "Income" },
@@ -86,6 +88,9 @@ const CashFlowModal = ({
   return (
     <Fragment>
       <Modal
+        className={
+          isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+        }
         isOpen={isModalOpen}
         title="Flow"
         onRequestClose={() => {
@@ -155,6 +160,7 @@ const CashFlowModal = ({
               <strong>Flow type</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               className={"text-center"}
               onChange={(option) =>
                 selectHandler(option!.value!, "type", flowInfo!, setFlowInfo)
@@ -172,6 +178,7 @@ const CashFlowModal = ({
               <strong>Account</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(option) =>
                 selectHandler(option!.value!, "account", flowInfo!, setFlowInfo)
               }

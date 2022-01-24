@@ -25,10 +25,10 @@ const apexBarOptions: ApexOptions = {
       const percent = (val / sum) * 100;
       return percent.toFixed(0) + "%";
     },
-    offsetY: -20,
+    offsetY: 10,
     style: {
       fontSize: "12px",
-      colors: ["#3F51B5", "#03A9F4", "#4CAF50", "#F9CE1D", "#FF9800"],
+      colors: ["#fff", "#03A9F4", "#4CAF50", "#F9CE1D", "#FF9800"],
     },
   },
 
@@ -115,6 +115,16 @@ const apexPolarOptions: ApexOptions = {
   },
   markers: {
     size: 0,
+  },
+  plotOptions: {
+    polarArea: {
+      rings: {
+        strokeColor: "#e0e0e0",
+      },
+      spokes: {
+        strokeWidth: 0,
+      },
+    },
   },
 };
 

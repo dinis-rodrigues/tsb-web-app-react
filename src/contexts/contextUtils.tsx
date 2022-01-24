@@ -8,6 +8,7 @@ import {
 import firebase from "firebase/app";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
+import { getUserImgUrl } from "../utils/generalFunctions";
 
 /**
  * Get and set application settings state
@@ -130,6 +131,30 @@ const getDepartments = (
   });
 };
 
+/**
+ * Sets the User essential information
+ * @param userInfo
+ * @param userId
+ * @param setUSER
+ */
+const setUserInformation = (
+  userInfo: userContext,
+  userId: string,
+  setUSER: Function
+) => {
+  let usrImgUrlComp = getUserImgUrl(userId, null, true);
+  let usrImgUrl = getUserImgUrl(userId, null, false);
+  setUSER({
+    id: userId,
+    name: userInfo.name,
+    department: userInfo.department,
+    position: userInfo.position,
+    joinedIn: userInfo.joinedIn,
+    usrImg: usrImgUrl,
+    usrImgComp: usrImgUrlComp,
+  });
+};
+
 export {
   getAndSetApplicationSettings,
   getCurrentUser,
@@ -137,5 +162,6 @@ export {
   loginUser,
   logoutUser,
   setDisplayApplication,
+  setUserInformation,
   getDepartments,
 };

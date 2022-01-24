@@ -19,7 +19,7 @@ const getRows = (sortedUsers: [string, User][], usersDb: UsersDB) => {
 };
 
 const OverallAttendance = () => {
-  const { usersMetadata } = useAuth();
+  const { usersMetadata, isDarkMode } = useAuth();
   const [usersDb, setUsersDb] = useState<UserMetadata>({});
   const [sortedUsers, setSortedUsers] = useState<[string, User][]>([]);
 
@@ -59,9 +59,10 @@ const OverallAttendance = () => {
             <div className="card-body p-0">
               {/* Add table with users of the corresponding department */}
               <table
-                className={
-                  "table table-striped table-hover row-border align-middle text-truncate"
-                }
+                className={cx(
+                  "table table-striped table-hover row-border align-middle text-truncate",
+                  { "table-dark": isDarkMode }
+                )}
               >
                 <thead>
                   <tr>

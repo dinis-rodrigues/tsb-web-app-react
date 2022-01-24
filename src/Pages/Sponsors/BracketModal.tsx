@@ -1,5 +1,6 @@
 import NumberFormat from "react-number-format";
 import { Button, Modal, Slider, ColorPicker } from "react-rainbow-components";
+import { useAuth } from "../../contexts/AuthContext";
 import { SponsorBracketListItem } from "../../interfaces";
 import {
   bracketColorHandler,
@@ -27,8 +28,12 @@ const BracketModal = ({
   setBracketInfo,
   sponsorsItems,
 }: Props) => {
+  const { isDarkMode } = useAuth();
   return (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       isOpen={isModalOpen}
       size="medium"
       title={bracketInfo?.name}

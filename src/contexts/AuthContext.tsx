@@ -9,10 +9,7 @@ import {
   userContext,
   UserMetadata,
 } from "../interfaces";
-import {
-  getUserImgUrl,
-  userHasAdminPermissions,
-} from "../utils/generalFunctions";
+import { userHasAdminPermissions } from "../utils/generalFunctions";
 import {
   registerUser,
   loginUser,
@@ -20,6 +17,7 @@ import {
   getCurrentUser,
   setDisplayApplication,
   getDepartments,
+  setUserInformation,
 } from "./contextUtils";
 
 interface ContextAuth {
@@ -36,6 +34,8 @@ interface ContextAuth {
   displayContent: boolean;
   displayMaintenance: boolean;
   displayLogin: boolean;
+  isDarkMode: boolean;
+  setIsDarkMode: Function;
   registerUser: Function;
   loginUser: Function;
   logoutUser: Function;
@@ -59,11 +59,13 @@ const AuthContext = React.createContext<ContextAuth>({
   displayContent: true,
   displayLogin: false,
   displayMaintenance: false,
+  isDarkMode: false,
   registerUser: () => {},
   loginUser: () => {},
   logoutUser: () => {},
   setCurrentUser: () => {},
   setUSER: () => {},
+  setIsDarkMode: () => {},
 });
 
 export const useAuth = () => {
@@ -74,6 +76,7 @@ type Props = {
 };
 
 export function AuthProvider({ children }: Props) {
+  // All of the states below are used across the entire applciation
   const [currentUser, setCurrentUser] = useState<any>();
   const [USER, setUSER] = useState<userContext | null>({
     id: "",
@@ -104,26 +107,35 @@ export function AuthProvider({ children }: Props) {
     {}
   );
 
+  const [isDarkMode, setIsDarkMode] = useState(
+    localStorage.getItem("tsbDarkTheme") === "true" ? true : false
+  );
+
+  /**
+   * Retrieves all essential data from the database in order to get the Website running
+   * for the user
+   * @param userId
+   */
   const getUserState = (userId: string) => {
     db.ref("public/applicationSettings").on("value", (snapshot) => {
       let appSettings: ApplicationSettings = snapshot.val();
       setApplicationSettings(appSettings);
+
+      // Get Application Features
+      db.ref("private/applicationFeatures").on("value", (snapshot) => {
+        if (snapshot.val()) {
+          setApplicationFeatures(snapshot.val());
+        }
+      });
+
       db.ref(`private/usersMetadata/${userId}/pinfo`).on(
         "value",
         (snapshot) => {
           var userInfo: userContext | null = snapshot.val();
           if (!userInfo) return;
-          let usrImgUrlComp = getUserImgUrl(userId, null, true);
-          let usrImgUrl = getUserImgUrl(userId, null, false);
-          setUSER({
-            id: userId,
-            name: userInfo.name,
-            department: userInfo.department,
-            position: userInfo.position,
-            joinedIn: userInfo.joinedIn,
-            usrImg: usrImgUrl,
-            usrImgComp: usrImgUrlComp,
-          });
+
+          setUserInformation(userInfo, userId, setUSER);
+
           // Checks if the user is admin or not
           let userAdmin = userHasAdminPermissions(userInfo);
           let userMarketing =
@@ -131,6 +143,7 @@ export function AuthProvider({ children }: Props) {
           setIsAdminUser(userAdmin);
           setIsGod(userInfo.position === "God");
           setIsMarketingOrAdmin(userMarketing);
+
           setDisplayApplication(
             userInfo,
             appSettings.maintenanceIsOpen,
@@ -143,21 +156,12 @@ export function AuthProvider({ children }: Props) {
           getDepartments(setDepartments, setDepartmentsWDesc);
 
           // Only set loading to false, after setting the users metadata info and
-          // feature seetings
           db.ref("private/usersMetadata")
             .once("value")
             .then((snapshot) => {
               if (snapshot.val()) {
                 setUsersMetadata(snapshot.val());
-                db.ref("private/applicationFeatures").on(
-                  "value",
-                  (snapshot) => {
-                    if (snapshot.val()) {
-                      setApplicationFeatures(snapshot.val());
-                      setLoading(false);
-                    }
-                  }
-                );
+                setLoading(false);
               }
             });
         }
@@ -184,6 +188,7 @@ export function AuthProvider({ children }: Props) {
             setDisplayMaintenance,
             setDisplayLogin
           );
+
           setLoading(false);
         });
       }
@@ -214,6 +219,8 @@ export function AuthProvider({ children }: Props) {
     departmentsWDesc,
     setCurrentUser,
     setUSER,
+    isDarkMode,
+    setIsDarkMode,
   };
 
   return (

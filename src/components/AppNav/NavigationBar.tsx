@@ -1,12 +1,14 @@
 import { Fragment, useState } from "react";
 import { withRouter } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { userHasPermission } from "../../utils/generalFunctions";
+import {
+  isFeatureVisible,
+  userHasPermission,
+} from "../../utils/generalFunctions";
 import NavItem from "./NavItem";
 import NavigationSection from "./NavigationSection";
 import NavigationSubSection from "./NavigationSubSection";
 import NavigationDropdown from "./NavigationDropdown";
-import { ApplicationFeatures } from "../../interfaces";
 
 interface NavTasks {
   tasks: boolean;
@@ -44,19 +46,6 @@ const NavigationBar = () => {
   const { USER, applicationFeatures, isAdminUser, isGod } = useAuth();
   const userAdmin = userHasPermission(USER);
 
-  const isVisible = (
-    featureName: string,
-    applicationFeatures: ApplicationFeatures,
-    isAdminUser: boolean,
-    isGod: boolean
-  ) => {
-    console.log(featureName);
-    if (applicationFeatures[featureName].public) return true;
-    else if ((applicationFeatures.admin && isAdminUser) || isGod) return true;
-    else if (isGod) return true;
-    return false;
-  };
-
   return (
     <Fragment>
       <h5 className="app-sidebar__heading">Menu</h5>
@@ -66,7 +55,7 @@ const NavigationBar = () => {
             pageName={"Dashboard"}
             to={"/dashboard"}
             icon={"pe-7s-world"}
-            isVisible={isVisible(
+            isVisible={isFeatureVisible(
               "dashboard",
               applicationFeatures,
               isAdminUser,
@@ -77,7 +66,7 @@ const NavigationBar = () => {
             pageName={"Events"}
             to={"/events"}
             icon={"pe-7s-date"}
-            isVisible={isVisible(
+            isVisible={isFeatureVisible(
               "events",
               applicationFeatures,
               isAdminUser,
@@ -88,7 +77,7 @@ const NavigationBar = () => {
             pageName={"Gallery"}
             to={"/gallery"}
             icon={"pe-7s-photo"}
-            isVisible={isVisible(
+            isVisible={isFeatureVisible(
               "gallery",
               applicationFeatures,
               isAdminUser,
@@ -99,7 +88,7 @@ const NavigationBar = () => {
             pageName={"Forum"}
             to={"/forum"}
             icon={"pe-7s-chat"}
-            isVisible={isVisible(
+            isVisible={isFeatureVisible(
               "forum",
               applicationFeatures,
               isAdminUser,
@@ -123,7 +112,7 @@ const NavigationBar = () => {
                   key={idx}
                   pageName={department.description}
                   to={`/tasks${acronym.toUpperCase()}/b/General`}
-                  isVisible={isVisible(
+                  isVisible={isFeatureVisible(
                     "tasks",
                     applicationFeatures,
                     isAdminUser,
@@ -144,7 +133,7 @@ const NavigationBar = () => {
               <NavItem
                 pageName={"Meetings"}
                 to={"/attendance/meetings"}
-                isVisible={isVisible(
+                isVisible={isFeatureVisible(
                   "attendance",
                   applicationFeatures,
                   isAdminUser,
@@ -154,7 +143,7 @@ const NavigationBar = () => {
               <NavItem
                 pageName={"Overall"}
                 to={"/attendance/overall"}
-                isVisible={isVisible(
+                isVisible={isFeatureVisible(
                   "attendance",
                   applicationFeatures,
                   isAdminUser,
@@ -167,7 +156,7 @@ const NavigationBar = () => {
             pageName={"Members"}
             to={"/team"}
             icon={"pe-7s-users"}
-            isVisible={isVisible(
+            isVisible={isFeatureVisible(
               "members",
               applicationFeatures,
               isAdminUser,
@@ -178,7 +167,7 @@ const NavigationBar = () => {
             pageName={"Recruitment"}
             to={"/recruitment"}
             icon={"pe-7s-add-user"}
-            isVisible={isVisible(
+            isVisible={isFeatureVisible(
               "recruitment",
               applicationFeatures,
               isAdminUser,
@@ -194,7 +183,7 @@ const NavigationBar = () => {
             pageName={"Budget"}
             to={"/budget"}
             icon={"pe-7s-piggy"}
-            isVisible={isVisible(
+            isVisible={isFeatureVisible(
               "budget",
               applicationFeatures,
               isAdminUser,
@@ -205,7 +194,7 @@ const NavigationBar = () => {
             pageName={"Cash Flow"}
             to={"/cashflow"}
             icon={"pe-7s-graph2"}
-            isVisible={isVisible(
+            isVisible={isFeatureVisible(
               "cashflow",
               applicationFeatures,
               isAdminUser,
@@ -217,7 +206,7 @@ const NavigationBar = () => {
             pageName={"Sponsors"}
             to={"/sponsors"}
             icon={"pe-7s-note2"}
-            isVisible={isVisible(
+            isVisible={isFeatureVisible(
               "sponsors",
               applicationFeatures,
               isAdminUser,
@@ -235,7 +224,7 @@ const NavigationBar = () => {
                 pageName={"User Management"}
                 to={"/userManagement"}
                 icon={"pe-7s-users"}
-                isVisible={isVisible(
+                isVisible={isFeatureVisible(
                   "userManagement",
                   applicationFeatures,
                   isAdminUser,
@@ -246,7 +235,7 @@ const NavigationBar = () => {
                 pageName={"Department Management"}
                 to={"/departmentManagement"}
                 icon={"pe-7s-culture"}
-                isVisible={isVisible(
+                isVisible={isFeatureVisible(
                   "departmentManagement",
                   applicationFeatures,
                   isAdminUser,
@@ -257,7 +246,7 @@ const NavigationBar = () => {
                 pageName={"Feature Management"}
                 to={"/featureManagement"}
                 icon={"pe-7s-flag"}
-                isVisible={isVisible(
+                isVisible={isFeatureVisible(
                   "featureManagement",
                   applicationFeatures,
                   isAdminUser,

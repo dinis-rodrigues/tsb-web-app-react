@@ -1,3 +1,25 @@
+import { ThemeType } from "react-rainbow-components/components/Application";
+
+const rainbowDarkTheme: ThemeType = {
+  rainbow: {
+    palette: {
+      mainBackground: "#363636",
+    },
+  },
+};
+
+const rainbowWhiteTheme: ThemeType = {
+  rainbow: {
+    palette: {
+      mainBackground: "#fff",
+      brand: "#01B6F5",
+      error: "#FE4849",
+      warning: "#FC0",
+      success: "#1DE9B6",
+    },
+  },
+};
+
 const meetingIcons = {
   "General Meeting": `fa fa-globe-europe bg-night-fade`,
   "Electrical Systems Meeting": `fa fa-lightbulb bg-sunny-morning`,
@@ -40,4 +62,10 @@ const customInputs: { [key: string]: React.CSSProperties } = {
   },
 };
 
-export { meetingIcons, departmentColors, customInputs };
+export {
+  rainbowDarkTheme,
+  meetingIcons,
+  departmentColors,
+  customInputs,
+  rainbowWhiteTheme,
+};

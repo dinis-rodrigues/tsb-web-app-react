@@ -15,7 +15,7 @@ type Props = {
 const DashEvent = ({
   meetingType,
   tooltipTarget,
-  bgColor = "bg-grad",
+  bgColor = "bg-plum-plate",
 }: Props) => {
   const { USER } = useAuth();
   const [event, setEvent] = useState<EventInformation>();
@@ -44,12 +44,14 @@ const DashEvent = ({
               {event && event.type === "Competition" ? event.title : event.type}
             </div>
           </div>
-          <div className="text-muted">
+          <div className="opacity-8">
             {extendDate(event.date)}, at {event.hours}:{event.minutes}
           </div>
 
           <div className="widget-chart-flex">
-            <div className="widget-numbers text-warning">{timeLeft}</div>
+            <div className="widget-numbers text-warning opacity-9">
+              {timeLeft}
+            </div>
             <div className="text-warning float-right">
               <button
                 id={tooltipTarget}

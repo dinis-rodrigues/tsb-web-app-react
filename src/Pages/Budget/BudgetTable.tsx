@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import "ag-grid-enterprise";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
 import cx from "classnames";
 import {
   DropdownMenu,
@@ -31,6 +32,7 @@ import {
 } from "./budgetUtils";
 import { dateComparator } from "../../utils/generalFunctions";
 import { AgGridReact } from "ag-grid-react";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   tableData: [string, BomMaterial][];
@@ -61,6 +63,7 @@ const BudgetTable = ({
   allTabs,
   usersMetadata,
 }: Props) => {
+  const { isDarkMode } = useAuth();
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
   const [columnApi, setColumnApi] = useState<ColumnApi | null>(null); // Column API
   const [tableRows, setTableRows] = useState([]);
@@ -180,7 +183,10 @@ const BudgetTable = ({
       </div>
       <div className="card-body">
         <div
-          className="ag-theme-alpine"
+          className={cx({
+            "ag-theme-alpine": !isDarkMode,
+            "ag-theme-alpine-dark": isDarkMode,
+          })}
           style={{
             height: "30rem",
             width: "100%",

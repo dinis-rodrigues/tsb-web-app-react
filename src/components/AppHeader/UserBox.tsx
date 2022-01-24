@@ -17,12 +17,24 @@ import { setUserProfilePicture } from "../../reducers/ThemeOptions";
 import { useHistory } from "react-router-dom";
 import UserNotifications from "./UserNotifications";
 import ImageContainer from "../AppImage/ImageContainer";
+import { isFeatureVisible } from "../../utils/generalFunctions";
+import DarkModeToggle from "./DarkModeToggle";
 
 type Props = {
   userProfilePicture: string;
 };
 const UserBox = ({ userProfilePicture }: Props) => {
-  const { USER, logoutUser, applicationSettings, setCurrentUser } = useAuth();
+  const {
+    USER,
+    logoutUser,
+    applicationSettings,
+    setCurrentUser,
+    isDarkMode,
+    setIsDarkMode,
+    applicationFeatures,
+    isAdminUser,
+    isGod,
+  } = useAuth();
   const history = useHistory();
   const handleLogout = () => {
     logoutUser(setCurrentUser)
@@ -40,13 +52,17 @@ const UserBox = ({ userProfilePicture }: Props) => {
       <div className="dropdown">
         <div className="header-dots">
           <UserNotifications />
-          {/* <span className="icon-wrapper icon-wrapper-alt rounded-circle text-dark">
-            <span
-              id="notificationColorWrapper"
-              className="icon-wrapper-bg"
-            ></span>
-            <i id="notificationColor" className="icon fas fa-moon"></i>
-          </span> */}
+          {isFeatureVisible(
+            "darkTheme",
+            applicationFeatures,
+            isAdminUser,
+            isGod
+          ) && (
+            <DarkModeToggle
+              isDarkMode={isDarkMode}
+              setIsDarkMode={setIsDarkMode}
+            />
+          )}
         </div>
       </div>
       {/* Notifications */}
@@ -59,13 +75,6 @@ const UserBox = ({ userProfilePicture }: Props) => {
               {/* User Info */}
               <UncontrolledButtonDropdown>
                 <DropdownToggle color="btn" className="p-0">
-                  {/* <img
-                    width={42}
-                    className="rounded-circle"
-                    src={userProfilePicture} //{altUserImg}
-                    onError={(el: any) => (el.src = altUserImg)}
-                    alt=""
-                  /> */}
                   <ImageContainer
                     width={42}
                     classNames={"rounded-circle"}

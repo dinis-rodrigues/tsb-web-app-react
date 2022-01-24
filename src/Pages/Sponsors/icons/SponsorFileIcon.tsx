@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import cx from "classnames";
 import { ReactComponent as AiIcon } from "./aiIcon.svg";
 import { ReactComponent as EpsIcon } from "./epsIcon.svg";
 import { ReactComponent as JpegIcon } from "./jpegIcon.svg";
@@ -7,9 +8,10 @@ import { ReactComponent as PngIcon } from "./pngIcon.svg";
 
 type Props = {
   url: string;
+  isFile?: boolean;
 };
 
-const SponsorFileIcon = ({ url }: Props) => {
+const SponsorFileIcon = ({ url, isFile = false }: Props) => {
   let errMsg = <span>Error retrieving file extension</span>;
   let filename = "";
   let fileExt = "";
@@ -22,7 +24,9 @@ const SponsorFileIcon = ({ url }: Props) => {
     <Fragment>
       <div className="col">
         <span>{filename ? filename : errMsg}</span>
-        <div className="sponsor-content">
+        <div
+          className={cx({ "sponsor-content": !isFile, "file-content": isFile })}
+        >
           {fileExt === "ai" ? (
             <AiIcon />
           ) : fileExt === "eps" ? (

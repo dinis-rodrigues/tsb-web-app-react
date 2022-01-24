@@ -55,7 +55,7 @@ const PersonalInformationOptions = ({
   setShowSaveImg,
   setSelectPositions,
 }: Props) => {
-  const { departments } = useAuth();
+  const { departments, isDarkMode } = useAuth();
   const today = new Date();
   const departmentOptions = getDepartmentOptions(departments);
 
@@ -79,6 +79,7 @@ const PersonalInformationOptions = ({
               <strong>Department</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) =>
                 handleSelectDepartment(
                   e,
@@ -95,7 +96,7 @@ const PersonalInformationOptions = ({
               placeholder={"Select Department"}
               options={departmentOptions}
               isDisabled={disabledInput}
-              theme={(theme) => selectStyles(theme, disabledInput)}
+              theme={(theme) => selectStyles(theme, disabledInput, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -107,6 +108,7 @@ const PersonalInformationOptions = ({
               <strong>Position</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) => handleSelect(e, "position", setInfo)}
               isDisabled={disabledInput}
               options={selectPositions}
@@ -115,7 +117,7 @@ const PersonalInformationOptions = ({
                 value: info && info.position,
                 label: info && info.position,
               }}
-              theme={(theme) => selectStyles(theme, disabledInput)}
+              theme={(theme) => selectStyles(theme, disabledInput, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -167,6 +169,7 @@ const PersonalInformationOptions = ({
               <strong>MBWay</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) => handleSelect(e, "mbway", setInfo)}
               value={{
                 value: info && info.mbway,
@@ -175,7 +178,7 @@ const PersonalInformationOptions = ({
               placeholder={"Yes or No?"}
               options={mbWayOptions}
               isDisabled={disabledInput}
-              theme={(theme) => selectStyles(theme, disabledInput)}
+              theme={(theme) => selectStyles(theme, disabledInput, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -202,6 +205,7 @@ const PersonalInformationOptions = ({
               <strong>Degree</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) => handleSelect(e, "degree", setInfo)}
               value={{
                 value: info && info.degree,
@@ -212,7 +216,7 @@ const PersonalInformationOptions = ({
               isDisabled={disabledInput}
               isSearchable={true}
               formatGroupLabel={formatCoursesLabel}
-              theme={(theme) => selectStyles(theme, disabledInput)}
+              theme={(theme) => selectStyles(theme, disabledInput, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -224,6 +228,7 @@ const PersonalInformationOptions = ({
               <strong>Curricular year</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) => handleSelect(e, "curricularYear", setInfo)}
               value={{
                 value: info ? info.curricularYear : "1",
@@ -232,7 +237,7 @@ const PersonalInformationOptions = ({
               placeholder={"Select"}
               options={curricularYearOptions}
               isDisabled={disabledInput}
-              theme={(theme) => selectStyles(theme, disabledInput)}
+              theme={(theme) => selectStyles(theme, disabledInput, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -282,6 +287,7 @@ const PersonalInformationOptions = ({
               <strong>Country</strong>
             </span>
             <Select
+              classNamePrefix="react-select-container"
               onChange={(e) => handleSelect(e, "country", setInfo)}
               value={{
                 value: info && info.country,
@@ -291,7 +297,7 @@ const PersonalInformationOptions = ({
               options={countryOptions}
               isDisabled={disabledInput}
               isSearchable={true}
-              theme={(theme) => selectStyles(theme, disabledInput)}
+              theme={(theme) => selectStyles(theme, disabledInput, isDarkMode)}
               styles={{
                 // Fixes the overlapping problem of the component with the datepicker
                 menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -365,7 +371,9 @@ const PersonalInformationOptions = ({
             allowEmptyFormatting
           />
         </div>
-        <h6>Linkedin</h6>
+        <span className="text-dark small text-uppercase">
+          <strong>Linkedin</strong>
+        </span>
         <div className="form-group">
           <input
             value={info.linkedin || ""}
@@ -376,7 +384,9 @@ const PersonalInformationOptions = ({
             placeholder="https://www.linkedin/in/dinis-rodrigues"
           />
         </div>
-        <h6>Description / Bio</h6>
+        <span className="text-dark small text-uppercase">
+          <strong>Description / Bio</strong>
+        </span>
         <div className="form-group">
           <input
             value={info.description || ""}

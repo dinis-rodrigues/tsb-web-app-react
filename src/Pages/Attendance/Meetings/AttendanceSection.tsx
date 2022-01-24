@@ -19,7 +19,7 @@ type Props = {
 };
 
 const AttendanceSection = ({ eventId, event, usersDb }: Props) => {
-  const { departmentsWDesc } = useAuth();
+  const { departmentsWDesc, isDarkMode } = useAuth();
   const currMeeting = event.type.replace(" Meeting", "");
 
   const attendanceTitleIconColor: EventColors =
@@ -69,9 +69,10 @@ const AttendanceSection = ({ eventId, event, usersDb }: Props) => {
       <div className="card-body p-0">
         {/* Add table with users of the corresponding department */}
         <table
-          className={
-            "table table-striped table-hover row-border align-middle text-truncate"
-          }
+          className={cx(
+            "table table-striped table-hover row-border align-middle text-truncate",
+            { "table-dark": isDarkMode }
+          )}
         >
           <thead>
             <tr>

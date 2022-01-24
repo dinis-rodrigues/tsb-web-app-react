@@ -9,11 +9,13 @@ import {
   buildRecruitmentBarSeries,
 } from "../Statistics/statisticsUtils";
 import { switchBarChart } from "./recruitmentUtils";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   tableData: RecruitmentTable;
 };
 const RecruitmentDegreeCount = ({ tableData }: Props) => {
+  const { isDarkMode } = useAuth();
   const [teamCount, setTeamCount] = useState(0);
 
   const [activeTab, setActiveTab] = useState("0");
@@ -91,7 +93,11 @@ const RecruitmentDegreeCount = ({ tableData }: Props) => {
           </div>
           {chartLabels.length > 0 && (
             <Chart
-              options={{ ...apexBarOptions, labels: chartLabels }}
+              options={{
+                ...apexBarOptions,
+                theme: { mode: isDarkMode ? "dark" : "light" },
+                labels: chartLabels,
+              }}
               series={chartSeries}
               type={"bar"}
               width="100%"

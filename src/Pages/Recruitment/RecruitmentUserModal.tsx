@@ -19,9 +19,12 @@ const RecruitmentUserModal = ({
   modalIsOpen,
   info,
 }: Props) => {
-  const { isMarketingOrAdmin } = useAuth();
+  const { isMarketingOrAdmin, isDarkMode } = useAuth();
   return (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       size="large"
       isOpen={modalIsOpen}
       title={"Individual Information"}

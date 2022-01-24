@@ -192,6 +192,10 @@ const addSponsorToBracket = (
         .child(sponsorId)
         .child("level")
         .set(bracketName);
+      toastrMessage(`${sponsor.name} added to ${bracketName}`, "error");
+    })
+    .catch((err) => {
+      toastrMessage(err.message, "error");
     });
 };
 

@@ -1,5 +1,6 @@
 import ReactQuill from "react-quill";
 import { Button, Modal } from "react-rainbow-components";
+import { useAuth } from "../../contexts/AuthContext";
 import { ThreadEditComment, userContext } from "../../interfaces";
 import { saveComment } from "./forumThreadUtils";
 
@@ -30,6 +31,7 @@ const ForumThreadEditComment = ({
   encodedTopicName,
   encodedThreadName,
 }: Props) => {
+  const { isDarkMode } = useAuth();
   const quillModules = {
     // syntax: true,
     toolbar: [
@@ -44,6 +46,9 @@ const ForumThreadEditComment = ({
   };
   return (
     <Modal
+      className={
+        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
+      }
       title="Edit Comment"
       size={"medium"}
       isOpen={isEditCommentModalOpen}

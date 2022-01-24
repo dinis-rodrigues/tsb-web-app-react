@@ -163,14 +163,14 @@ const ForumThread = (props: any) => {
         </div>
         {/* Thread Content */}
         <div className="btn-shadow mr-3 btn btn-dark w-100 cursor-auto">
-          <h5 className="mt-2 ">
+          <h5 className="my-2 font-size-xlg">
             {/* Thread Title */}
             {threadInformation?.threadTitle}
             <div className="float-right">
               {/* Toggle notifications */}
               <span
                 id="toggleNotif"
-                className={cx("cursor-pointer mr-1", {
+                className={cx("cursor-pointer mr-3", {
                   "text-info": userWatchesThread(USER, threadInformation),
                   "text-muted": !userWatchesThread(USER, threadInformation),
                 })}
@@ -285,7 +285,7 @@ const ForumThread = (props: any) => {
                   </div>
                 </div>
               </div>
-              <div className="card-body ql-editor wh-sp-inh ">
+              <div className="card-body ql-editor wh-sp-inh">
                 {/* Thread post, we need to use a html -> react parser, because the string is pure html and react renders as a string*/}
                 {parse(threadInformation.htmlContent)}
               </div>
@@ -328,9 +328,12 @@ const ForumThread = (props: any) => {
                     )}
                   </UncontrolledTooltip>
                   {/* Views */}
-                  <span className="text-muted d-inline-flex  align-middle ml-4 cursor-pointer">
-                    <i className="fas fa-eye text-muted fsize-2"></i>
-                    <span className="align-middle ml-2" id="numWatches">
+                  <span className="d-inline-flex  align-middle ml-4 cursor-pointer">
+                    <i className="fas fa-eye fsize-2"></i>
+                    <span
+                      className="text-muted align-middle ml-2"
+                      id="numWatches"
+                    >
                       {threadInformation.viewedBy
                         ? Object.entries(threadInformation.viewedBy).length
                         : "0"}
