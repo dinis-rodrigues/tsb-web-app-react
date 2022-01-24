@@ -1,4 +1,4 @@
-name: CI
+name: CD
 
 # Controls when the workflow will run
 on:
@@ -29,6 +29,7 @@ jobs:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
   # This workflow contains a single job called "build"
   deploy:
+    name: Build and Deploy Application to Server
     # Only deploy if security checks out
     needs: scanning
     # The type of runner that the job will run on
@@ -62,7 +63,7 @@ jobs:
 
       - name: Build project
         run: npm run build
-
+    
       - name: Package build
         run: |
           tar -czvf deploy.tar.gz -C build .
