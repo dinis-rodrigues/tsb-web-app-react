@@ -26,6 +26,10 @@ body .app-theme-dark {
     color: $info-color;
   }
 
+  .app-header__content {
+    background: $black-secondary;
+  }
+
   .logo-src {
     background-image: url(assets/images/logo-inverse.png) !important;
     height: 15px;

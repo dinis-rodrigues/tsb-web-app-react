@@ -75,7 +75,7 @@ const AppMobileMenu = ({
             className={cx("btn-icon btn-icon-only", {
               active: mobileState.activeSecondaryMenuMobile,
             })}
-            color="primary"
+            color="info"
             onClick={() => toggleMobileSmall()}
           >
             <div className="btn-icon-wrapper">

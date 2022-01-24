@@ -11,12 +11,14 @@ import SearchBox from "./SearchBox";
 import UserBox from "./UserBox";
 
 type Props = {
+  isMobileView?: boolean;
   enableMobileMenuSmall: boolean;
   displayMobileSearch: boolean;
   setDisplayMobileSearch: Function;
 };
 
 const Header = ({
+  isMobileView = false,
   enableMobileMenuSmall,
   displayMobileSearch,
   setDisplayMobileSearch,
@@ -25,6 +27,7 @@ const Header = ({
     <div className="app-header header-shadow">
       <Fragment>
         <AppLogo
+          isMobileView={isMobileView}
           displayMobileSearch={displayMobileSearch}
           setDisplayMobileSearch={setDisplayMobileSearch}
         />

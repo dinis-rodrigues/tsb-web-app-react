@@ -12,12 +12,14 @@ import {
 } from "../../reducers/ThemeOptions";
 
 type Props = {
+  isMobileView?: boolean;
   enableClosedSidebar: boolean;
   displayMobileSearch: boolean;
   setEnableClosedSidebar: Function;
   setDisplayMobileSearch: Function;
 };
 const AppLogo = ({
+  isMobileView = false,
   enableClosedSidebar,
   setEnableClosedSidebar,
   displayMobileSearch,
@@ -36,11 +38,13 @@ const AppLogo = ({
   return (
     <Fragment>
       <div className="app-header__logo">
-        <Hamburger
-          active={!enableClosedSidebar}
-          type="slider"
-          onClick={hamburgerClick}
-        />
+        {!isMobileView && (
+          <Hamburger
+            active={!enableClosedSidebar}
+            type="slider"
+            onClick={hamburgerClick}
+          />
+        )}
         <div className="logo-src ml-auto" />
       </div>
       <AppMobileMenu

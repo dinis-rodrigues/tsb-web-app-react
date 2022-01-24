@@ -58,6 +58,7 @@ const Main = ({
             {/* Header of the application */}
             {displayContent ? (
               <AppHeader
+                isMobileView={closedSmallerSidebar || width < 1250}
                 setDisplayMobileSearch={setDisplayMobileSearch}
                 displayMobileSearch={displayMobileSearch}
               />
