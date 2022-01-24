@@ -31,7 +31,8 @@ jobs:
           GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
   # This workflow contains a single job called "build"
-  deploy:
+  build:
+    name: Build application
     # Only deploy if security checks out
     needs: scanning
     # The type of runner that the job will run on
