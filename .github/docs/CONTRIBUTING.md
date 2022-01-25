@@ -93,7 +93,7 @@ feat: add hat wobble
 +-------> Type: chore, docs, feat, fix, refactor, style, or test.
 ```
 
-- build: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+- build: Changes that affect the build system or external dependencies (npm packages etc)
 - ci: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
 - docs: Documentation only changes
 - feat: A new feature
@@ -106,7 +106,7 @@ feat: add hat wobble
 
 ### Naming your Branch
 
-Your branch name should follow the format `type/scope(-issue_id)`:
+Your branch name should follow the format `type/scope-issue_id`:
 
 - `type` is one of the [types above](#specify-the-correct-types)
 - `scope` is optional, and represents the module your branch is working on.
