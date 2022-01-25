@@ -32,7 +32,6 @@ jobs:
       - uses: ffittschen/pr-branch-labeler@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          configuration-path: .github/workflows/configs/pr-title-branch-labeler.yml
 
       # Automatically assigns reviewers to pull requests
       - uses: kentaro-m/auto-assign-action@v1.2.1

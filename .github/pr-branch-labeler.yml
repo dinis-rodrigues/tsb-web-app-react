@@ -2,7 +2,7 @@
 New Feature 🍾:
   head: ["feature/*", "feat/*"]
 
-# Apply label "bugfix" if head matches one of "bugfix/*" or "hotfix/*"
+# Apply label for bugs
 Bug fix 🐛:
   head: ["bugfix/*", "hotfix/*", "fix/*"]
 
