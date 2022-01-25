@@ -1,26 +1,26 @@
 name: PR Validations
 
 on:
-  pull_request: 
+  pull_request:
     branches: [main]
-    
+
   workflow_dispatch:
 
 jobs:
   assign-label-to-pr:
     name: Assign Labels to PR
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: codelytv/pr-size-labeler@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          xs_max_size: '10'
-          s_max_size: '100'
-          m_max_size: '500'
-          l_max_size: '1000'
-          fail_if_xl: 'false'
-          
+          xs_max_size: "10"
+          s_max_size: "100"
+          m_max_size: "500"
+          l_max_size: "1000"
+          fail_if_xl: "false"
+
   labeler:
     runs-on: ubuntu-latest
     steps:
@@ -29,8 +29,6 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           configuration-path: .github/labeler-config.yml
 
-        
-        
   commitlint:
     name: Validate Commit Messages
     runs-on: ubuntu-latest
@@ -39,6 +37,3 @@ jobs:
         with:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v4
-
-
-  
