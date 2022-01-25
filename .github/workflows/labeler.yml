@@ -34,6 +34,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/workflows/configs/pr-title-branch-labeler.yml
 
+      # Automatically assigns reviewers to pull requests
       - uses: kentaro-m/auto-assign-action@v1.2.1
         with:
           configuration-path: ".github/workflows/configs/assignment-config.yml" # Only needed if you use something other than .github/auto_assign.yml
