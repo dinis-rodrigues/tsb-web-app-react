@@ -1,23 +1,23 @@
 # Add 'root' label to any root file changes
-root: '*'
+root: "*"
 
 components:
-- src/components/*
+  - src/components/*
 
 pages:
-- src/Pages/*
+  - src/Pages/*
 
 config:
-- src/config/*
+  - src/config/*
 
 contexts:
-- src/contexts/*
+  - src/contexts/*
 
 utils:
-- src/utils/*
+  - src/utils/*
 
 public:
-- public/*
+  - public/*
 
 docs:
-- *.md
+  - /*.md

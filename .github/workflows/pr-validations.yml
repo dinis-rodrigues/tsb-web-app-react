@@ -20,20 +20,7 @@ jobs:
           m_max_size: "500"
           l_max_size: "1000"
           fail_if_xl: "false"
-
-  labeler:
-    runs-on: ubuntu-latest
-    steps:
       - uses: actions/labeler@v3
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           configuration-path: .github/labeler-config.yml
-
-  commitlint:
-    name: Validate Commit Messages
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: wagoid/commitlint-github-action@v4
