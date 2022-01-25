@@ -11,6 +11,8 @@ const BadgeBomRender = (props: ICellRendererParams) => {
     <span className="badge badge-pill badge-danger">Required</span>
   ) : cellValue === "In Progress" ? (
     <span className="badge badge-pill badge-warning">In Progress</span>
+  ) : cellValue === "Sponsor" ? (
+    <span className="badge badge-pill badge-info">Sponsor</span>
   ) : (
     <span>"Format error"</span>
   );
