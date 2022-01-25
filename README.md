@@ -58,7 +58,7 @@
     </li>
     <li><a href="#deploy">Deploy</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#contributing">Contributing Guidelines</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
@@ -246,13 +246,11 @@ of proposed features (and known issues), if any.
 
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are what make the open source community such an amazing place to learn,
+inspire, and create. Any contributions you make are **greatly appreciated**. To ensure a
+good workflow for this repository please follow our contributing guidelines:
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- [Contributin Guidelines](.github/docs/CONTRIBUTING.md)
 
 <!-- LICENSE -->
 
