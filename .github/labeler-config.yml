@@ -1,0 +1,21 @@
+# Add 'root' label to any root file changes
+root: "*"
+
+components:
+  - src/components/*
+
+pages:
+  - src/Pages/*
+
+config:
+  - src/config/*
+
+contexts:
+  - src/contexts/*
+
+utils:
+  - src/utils/*
+
+public:
+  - public/*
+
