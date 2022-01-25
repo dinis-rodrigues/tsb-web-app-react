@@ -25,14 +25,14 @@ jobs:
       - uses: actions/labeler@v3
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          configuration-path: .github/configs/labeler-config.yml
+          configuration-path: .github/workflows/configs/labeler-config.yml
 
       - uses: TimonVS/pr-labeler-action@v3
         with:
-          configuration-path: .github/configs/pr-title-branch-labeler.yml
+          configuration-path: .github/workflows/configs/pr-title-branch-labeler.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: kentaro-m/auto-assign-action@v1.2.1
         with:
-          configuration-path: ".github/configs/assignment-config.yml" # Only needed if you use something other than .github/auto_assign.yml
+          configuration-path: ".github/workflows/configs/assignment-config.yml" # Only needed if you use something other than .github/auto_assign.yml
