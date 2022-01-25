@@ -29,6 +29,7 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           configuration-path: .github/workflows/configs/labeler-config.yml
 
+      # Adds labels based on branch type
       - uses: TimonVS/pr-labeler-action@v3
         with:
           configuration-path: ".github/workflows/configs/pr-title-branch-labeler.yml"
