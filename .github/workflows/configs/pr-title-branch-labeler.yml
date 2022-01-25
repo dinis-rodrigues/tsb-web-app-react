@@ -1,9 +1,9 @@
 # Apply label "feature" if head matches "feature/*"
-New Feature 🍾:
+🍾 New Feature:
   head: ["feature/*", "feat/*"]
 
 # Apply label "bugfix" if head matches one of "bugfix/*" or "hotfix/*"
-Bug fix 🐛:
+🐛 Bug fix:
   head: ["bugfix/*", "hotfix/*", "fix/*"]
 
 📖 Documentation:
