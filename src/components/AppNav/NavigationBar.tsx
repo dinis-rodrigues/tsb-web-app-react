@@ -42,8 +42,6 @@ const NavigationBar = () => {
   };
   const { applicationFeatures, isAdminUser, isGod } = useAuth();
 
-  console.log("Is Admin", isAdminUser);
-
   return (
     <Fragment>
       <h5 className="app-sidebar__heading">Menu</h5>
