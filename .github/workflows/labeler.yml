@@ -1,4 +1,4 @@
-name: PR Validations
+name: PR Labelling
 
 on:
   pull_request:
