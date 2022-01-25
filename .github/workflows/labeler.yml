@@ -31,7 +31,7 @@ jobs:
 
       - uses: TimonVS/pr-labeler-action@v3
         with:
-          configuration-path: .github/workflows/configs/pr-title-branch-labeler.yml
+          configuration-path: ".github/workflows/configs/pr-title-branch-labeler.yml"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

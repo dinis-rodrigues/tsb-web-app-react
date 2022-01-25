@@ -6,26 +6,26 @@ New Feature 🍾:
 Bug fix 🐛:
   head: ["bugfix/*", "hotfix/*", "fix/*"]
 
-Documentation 📖:
+📖 Documentation:
   head: "docs/*"
 
-CI 🛠:
+🛠 CI:
   head: "ci/*"
 
-Build 📦:
+📦 Build:
   head: "build/*"
 
-Refactor 🔨:
+🔨 Refactor:
   head: "refactor/*"
 
-Test 📝:
+📝 Test:
   head: "test/*"
 
-Style 🎀:
+🎀 Style:
   head: "style/*"
 
-Performance 🚘:
+🚘 Performance:
   head: "perf/*"
 
-Chore 🌾:
+🌾 Chore:
   head: "chore/*"
