@@ -44,7 +44,9 @@ jobs:
   build:
     name: Build application
     # Only deploy if security checks out
-    needs: scanning && commitlint
+    needs: 
+      - scanning
+      - commitlint
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
