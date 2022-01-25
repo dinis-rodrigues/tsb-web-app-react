@@ -1,0 +1,31 @@
+# Apply label "feature" if head matches "feature/*"
+🍾 New Feature:
+  head: ["feature/*", "feat/*"]
+
+# Apply label "bugfix" if head matches one of "bugfix/*" or "hotfix/*"
+🐛 Bug fix:
+  head: ["bugfix/*", "hotfix/*", "fix/*"]
+
+📖 Documentation:
+  head: "docs/*"
+
+🛠 CI:
+  head: "ci/*"
+
+📦 Build:
+  head: "build/*"
+
+🔨 Refactor:
+  head: "refactor/*"
+
+📝 Test:
+  head: "test/*"
+
+🎀 Style:
+  head: "style/*"
+
+🚘 Performance:
+  head: "perf/*"
+
+🌾 Chore:
+  head: "chore/*"
