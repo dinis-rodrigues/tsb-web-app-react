@@ -3,9 +3,8 @@ name: PR Labelling
 on:
   pull_request:
     branches: [main]
-    types: [opened]
   pull_request_target:
-    types: [opened]
+    branches: [main]
 
   workflow_dispatch:
 
@@ -30,11 +29,10 @@ jobs:
           configuration-path: .github/workflows/configs/labeler-config.yml
 
       # Adds labels based on branch type
-      - uses: TimonVS/pr-labeler-action@v3
+      - uses: ffittschen/pr-branch-labeler@v1
         with:
-          configuration-path: ".github/workflows/configs/pr-title-branch-labeler.yml"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration-path: .github/workflows/configs/pr-title-branch-labeler.yml
 
       - uses: kentaro-m/auto-assign-action@v1.2.1
         with:
