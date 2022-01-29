@@ -1,4 +1,5 @@
 import cx from "classnames";
+import { child, ref, update } from "firebase/database";
 import { db } from "../../../config/firebase";
 import { useAuth } from "../../../contexts/AuthContext";
 import { FeaturePermissions } from "../../../interfaces";
@@ -12,20 +13,18 @@ const FeatureEnable = ({ featurePermissions, featureName }: Props) => {
   const { isGod, isAdminUser } = useAuth();
 
   const publicToggle = () => {
-    db.ref("private/applicationFeatures").child(featureName).update({
+    update(child(ref(db, "private/applicationFeatures"), featureName), {
       public: !featurePermissions.public,
       admin: true,
       god: true,
     });
   };
   const adminToggle = () => {
-    db.ref("private/applicationFeatures")
-      .child(featureName)
-      .update({
-        public: featurePermissions.admin ? false : featurePermissions.public,
-        admin: !featurePermissions.admin,
-        god: true,
-      });
+    update(child(ref(db, "private/applicationFeatures"), featureName), {
+      public: featurePermissions.admin ? false : featurePermissions.public,
+      admin: !featurePermissions.admin,
+      god: true,
+    });
   };
 
   return isGod || (featurePermissions.admin && isAdminUser) ? (

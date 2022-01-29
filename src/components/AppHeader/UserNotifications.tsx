@@ -15,6 +15,7 @@ import {
 } from "../../Pages/Notifications/notificationsUtils";
 import NotificationRow from "../../Pages/Notifications/NotificationRow";
 import { Link } from "react-router-dom";
+import { off, ref } from "firebase/database";
 
 const UserNotifications = () => {
   const { USER } = useAuth();
@@ -30,7 +31,7 @@ const UserNotifications = () => {
       setUnreadNotifications
     );
     return () => {
-      db.ref(`private/usersNotifications/${USER?.id}/new`).off("value");
+      off(ref(db, `private/usersNotifications/${USER?.id}/new`));
       removeNewNotifications(USER, unreadNotifications);
     };
   }, [USER]); // eslint-disable-line react-hooks/exhaustive-deps

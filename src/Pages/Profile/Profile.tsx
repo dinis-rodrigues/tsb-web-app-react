@@ -23,6 +23,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { db } from "../../config/firebase";
 import UserAttendance from "./UserAttendance";
 import ImageContainer from "../../components/AppImage/ImageContainer";
+import { get, off, ref } from "firebase/database";
 
 type Props = {
   setUserProfilePicture: Function;
@@ -49,9 +50,8 @@ const Profile = ({ setUserProfilePicture }: Props) => {
       if (!USER) {
         return;
       }
-      db.ref(`private/usersMetadata/${USER.id}/pinfo`)
-        .once("value")
-        .then((snapshot) => {
+      get(ref(db, `private/usersMetadata/${USER.id}/pinfo`)).then(
+        (snapshot) => {
           const data = snapshot.val();
           const dataArr: any = {};
           for (var key in data) {
@@ -62,15 +62,16 @@ const Profile = ({ setUserProfilePicture }: Props) => {
           setDepartmentPositions(dataArr.department, USER, setSelectPositions);
           setInfo(dataArr);
           setPrevInfo(dataArr);
-        });
+        }
+      );
     }
     getPersonalInfo();
     return () => {
-      db.ref(`private/departments/es/positions`).off("value");
-      db.ref(`private/departments/ms/positions`).off("value");
-      db.ref(`private/departments/dc/positions`).off("value");
-      db.ref(`private/departments/hp/positions`).off("value");
-      db.ref(`private/departments/mm/positions`).off("value");
+      off(ref(db, `private/departments/es/positions`));
+      off(ref(db, `private/departments/ms/positions`));
+      off(ref(db, `private/departments/dc/positions`));
+      off(ref(db, `private/departments/hp/positions`));
+      off(ref(db, `private/departments/mm/positions`));
     };
   }, [USER]);
 

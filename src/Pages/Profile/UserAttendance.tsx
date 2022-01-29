@@ -1,3 +1,4 @@
+import { off, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import { db } from "../../config/firebase";
 import { attendanceArrayRechart, graphColor } from "../../interfaces";
@@ -53,8 +54,8 @@ const UserAttendance = ({ userId }: Props) => {
       setGeneralOptions
     );
     return () => {
-      db.ref(`private/usersStatistics/${userId}/departmentStats`).off("value");
-      db.ref(`private/usersStatistics/${userId}/generalStats`).off("value");
+      off(ref(db, `private/usersStatistics/${userId}/departmentStats`));
+      off(ref(db, `private/usersStatistics/${userId}/generalStats`));
     };
   }, [userId]); // eslint-disable-line react-hooks/exhaustive-deps
   return (

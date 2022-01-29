@@ -3,8 +3,6 @@ import cx from "classnames";
 
 import { connect } from "react-redux";
 
-// import { TransitionGroup, CSSTransition } from "react-transition-group";
-
 import AppLogo from "../AppLogo/AppLogo";
 
 import SearchBox from "./SearchBox";

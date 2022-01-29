@@ -20,6 +20,7 @@ import {
 import Chart from "react-apexcharts";
 import CashFlowModal from "./CashFlowModal";
 import { useAuth } from "../../contexts/AuthContext";
+import { off, onValue, ref } from "firebase/database";
 
 /** Creates the necessary arrays to build the cummulative sum arrays for the graph
  * @param  {FlowDB} flowDb flows from database
@@ -97,12 +98,12 @@ const CashFlow = () => {
   const [showDeleteButton, setShowDeleteButton] = useState(false);
 
   useEffect(() => {
-    db.ref("private/finances/flow").on("value", (snapshot) => {
+    onValue(ref(db, "private/finances/flow"), (snapshot) => {
       if (!snapshot.val()) return;
       processFlows(snapshot.val(), tableFlow, setChartSeries, setTableFlow);
     });
     return () => {
-      db.ref("private/finances/flow").off("value");
+      off(ref(db, "private/finances/flow"));
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (

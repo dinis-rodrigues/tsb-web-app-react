@@ -9,6 +9,7 @@ import {
 import { addOverallStatisticListener, graphGreen } from "../attendanceUtils";
 import AvatarOverlap from "../../../components/AppImage/AvatarOverlap";
 import AttendanceChart from "../AttendanceChart";
+import { off, ref } from "firebase/database";
 
 type Props = {
   userId: string;
@@ -57,8 +58,8 @@ const OverallAttendanceRow = ({ userId, user, usersMetadata }: Props) => {
     );
 
     return () => {
-      db.ref(`private/usersStatistics/${userId}/departmentStats`).off("value");
-      db.ref(`private/usersStatistics/${userId}/generalStats`).off("value");
+      off(ref(db, `private/usersStatistics/${userId}/departmentStats`));
+      off(ref(db, `private/usersStatistics/${userId}/generalStats`));
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (

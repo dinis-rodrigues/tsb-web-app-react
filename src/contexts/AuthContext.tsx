@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect } from "react";
-import firebase from "firebase/app";
 import { auth, db } from "../config/firebase";
 import {
   ApplicationFeatures,
@@ -19,9 +18,11 @@ import {
   getDepartments,
   setUserInformation,
 } from "./contextUtils";
+import { get, off, onValue, ref } from "firebase/database";
+import { User } from "firebase/auth";
 
 interface ContextAuth {
-  currentUser: firebase.User | null;
+  currentUser: User | null;
   USER: userContext | null;
   departments: Departments;
   departmentsWDesc: DepartmentsWithDesc;
@@ -117,55 +118,50 @@ export function AuthProvider({ children }: Props) {
    * @param userId
    */
   const getUserState = (userId: string) => {
-    db.ref("public/applicationSettings").on("value", (snapshot) => {
+    onValue(ref(db, "public/applicationSettings"), (snapshot) => {
       let appSettings: ApplicationSettings = snapshot.val();
       setApplicationSettings(appSettings);
 
       // Get Application Features
-      db.ref("private/applicationFeatures").on("value", (snapshot) => {
+      onValue(ref(db, "private/applicationFeatures"), (snapshot) => {
         if (snapshot.val()) {
           setApplicationFeatures(snapshot.val());
         }
       });
 
-      db.ref(`private/usersMetadata/${userId}/pinfo`).on(
-        "value",
-        (snapshot) => {
-          var userInfo: userContext | null = snapshot.val();
-          if (!userInfo) return;
+      onValue(ref(db, `private/usersMetadata/${userId}/pinfo`), (snapshot) => {
+        var userInfo: userContext | null = snapshot.val();
+        if (!userInfo) return;
 
-          setUserInformation(userInfo, userId, setUSER);
+        setUserInformation(userInfo, userId, setUSER);
 
-          // Checks if the user is admin or not
-          let userAdmin = userHasAdminPermissions(userInfo);
-          let userMarketing =
-            userInfo.position === "Management and Marketing" || userAdmin;
-          setIsAdminUser(userAdmin);
-          setIsGod(userInfo.position === "God");
-          setIsMarketingOrAdmin(userMarketing);
+        // Checks if the user is admin or not
+        let userAdmin = userHasAdminPermissions(userInfo);
+        let userMarketing =
+          userInfo.position === "Management and Marketing" || userAdmin;
+        setIsAdminUser(userAdmin);
+        setIsGod(userInfo.position === "God");
+        setIsMarketingOrAdmin(userMarketing);
 
-          setDisplayApplication(
-            userInfo,
-            appSettings.maintenanceIsOpen,
-            userAdmin,
-            setDisplayContent,
-            setDisplayMaintenance,
-            setDisplayLogin
-          );
-          // Get deparments
-          getDepartments(setDepartments, setDepartmentsWDesc);
+        setDisplayApplication(
+          userInfo,
+          appSettings.maintenanceIsOpen,
+          userAdmin,
+          setDisplayContent,
+          setDisplayMaintenance,
+          setDisplayLogin
+        );
+        // Get deparments
+        getDepartments(setDepartments, setDepartmentsWDesc);
 
-          // Only set loading to false, after setting the users metadata info and
-          db.ref("private/usersMetadata")
-            .once("value")
-            .then((snapshot) => {
-              if (snapshot.val()) {
-                setUsersMetadata(snapshot.val());
-                setLoading(false);
-              }
-            });
-        }
-      );
+        // Only set loading to false, after setting the users metadata info and
+        get(ref(db, "private/usersMetadata")).then((snapshot) => {
+          if (snapshot.val()) {
+            setUsersMetadata(snapshot.val());
+            setLoading(false);
+          }
+        });
+      });
     });
   };
 
@@ -177,7 +173,7 @@ export function AuthProvider({ children }: Props) {
         getUserState(user.uid);
       } else {
         // sets loading to false, for the login/register page
-        db.ref("public/applicationSettings").on("value", (snapshot) => {
+        onValue(ref(db, "public/applicationSettings"), (snapshot) => {
           let appSettings: ApplicationSettings = snapshot.val();
           setApplicationSettings(appSettings);
           setDisplayApplication(
@@ -194,9 +190,12 @@ export function AuthProvider({ children }: Props) {
       }
     });
     return () => {
-      db.ref("/").off("value");
+      off(ref(db, "public/applicationSettings"));
+      off(ref(db, `private/usersMetadata/${USER?.id}/pinfo`));
+      off(ref(db, "private/applicationFeatures"));
+      off(ref(db, "private/departments"));
     };
-  }, []);
+  }, []); // eslint-disable-line
 
   // This functions and values will be available in the entire application
   const value = {

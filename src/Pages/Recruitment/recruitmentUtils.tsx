@@ -6,6 +6,7 @@ import {
   GridReadyEvent,
   RowClickedEvent,
 } from "ag-grid-community";
+import { get, onValue, ref, remove, set } from "firebase/database";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { db } from "../../config/firebase";
@@ -125,7 +126,7 @@ const openDepartmentsHandler = (value: string[], departments: Departments) => {
     let depToOpen = departments[acronym];
     openedDepartments[acronym] = depToOpen;
   });
-  db.ref("public/recruitment/openDepartments").set(openedDepartments);
+  set(ref(db, "public/recruitment/openDepartments"), openedDepartments);
 };
 const getDepartmentOptions = (
   departments: Departments,
@@ -143,7 +144,7 @@ const getDepartmentOptions = (
 };
 
 const getOpenedDepartments = (setOpenDepartments: Function) => {
-  db.ref("public/recruitment/openDepartments").on("value", (snapshot) => {
+  onValue(ref(db, "public/recruitment/openDepartments"), (snapshot) => {
     const openDepartments: Departments = snapshot.val();
     if (!openDepartments) {
       setOpenDepartments([]);
@@ -189,8 +190,8 @@ const toggleRegistration = (
   tablesList: string[],
   activeRecruitment: string | boolean
 ) => {
-  if (activeRecruitment) db.ref("public/recruitment/activeTable").set(false);
-  else db.ref("public/recruitment/activeTable").set(tablesList[0]);
+  if (activeRecruitment) set(ref(db, "public/recruitment/activeTable"), false);
+  else set(ref(db, "public/recruitment/activeTable"), tablesList[0]);
 };
 
 /**
@@ -287,8 +288,8 @@ const generateRecruitmentTable = () => {
 
 const createNewDbTable = (tableName: string, tablesList: string[]) => {
   const newTableList = [...tablesList, tableName];
-  db.ref("public/recruitment/activeTable").set(tableName);
-  db.ref("public/recruitment/tablesList").set(newTableList);
+  set(ref(db, "public/recruitment/activeTable"), tableName);
+  set(ref(db, "public/recruitment/tablesList"), newTableList);
 };
 
 const createNewSqlAndDbTable = async (
@@ -559,7 +560,7 @@ const getRecruitmentData = (
   setDepartmentOptions: Function,
   setSelectedDepartments: Function
 ) => {
-  db.ref("public/recruitment").on("value", (snapshot) => {
+  onValue(ref(db, "public/recruitment"), (snapshot) => {
     const recruitmentData: RecruitmentData = snapshot.val();
 
     if (!recruitmentData) return;
@@ -639,56 +640,56 @@ const buildUserNameFromFullName = (fullName: string) => {
 };
 
 const buildUserNames = () => {
-  db.ref("private/usersMetadata")
-    .once("value")
-    .then((snapshot) => {
-      const users: UserMetadata = snapshot.val();
+  get(ref(db, "private/usersMetadata")).then((snapshot) => {
+    const users: UserMetadata = snapshot.val();
 
-      const usersList = Object.entries(users);
+    const usersList = Object.entries(users);
 
-      let existingUserNames: string[] = [];
+    let existingUserNames: string[] = [];
 
-      for (let i = 0; i < usersList.length; i++) {
-        const userId = usersList[i][0];
-        const userInfo = usersList[i][1].pinfo;
+    for (let i = 0; i < usersList.length; i++) {
+      const userId = usersList[i][0];
+      const userInfo = usersList[i][1].pinfo;
 
-        let currUserName = buildUserNameFromFullName(userInfo.fullName!);
+      let currUserName = buildUserNameFromFullName(userInfo.fullName!);
 
-        // check if user name already exists
-        let equalUserNames: string[] = [];
-        for (const userName of existingUserNames) {
-          if (userName.includes(currUserName)) {
-            equalUserNames.push(userName);
-          }
+      // check if user name already exists
+      let equalUserNames: string[] = [];
+      for (const userName of existingUserNames) {
+        if (userName.includes(currUserName)) {
+          equalUserNames.push(userName);
         }
-
-        // add index to current username
-        if (equalUserNames.length > 0) {
-          // sort equalusernames
-          equalUserNames.sort();
-          currUserName = `${currUserName}-${equalUserNames.length}`;
-        }
-
-        // add to existing usernames
-        existingUserNames.push(currUserName);
-
-        // Add user name to user metadata
-        db.ref(`private/usersMetadata/${userId}/pinfo/userName`).set(
-          currUserName
-        );
-
-        // Add user name public official website team
-        db.ref(`public/officialWebsite/team/${userId}/info/userName`).set(
-          currUserName
-        );
       }
-    });
+
+      // add index to current username
+      if (equalUserNames.length > 0) {
+        // sort equalusernames
+        equalUserNames.sort();
+        currUserName = `${currUserName}-${equalUserNames.length}`;
+      }
+
+      // add to existing usernames
+      existingUserNames.push(currUserName);
+
+      // Add user name to user metadata
+      set(
+        ref(db, `private/usersMetadata/${userId}/pinfo/userName`),
+        currUserName
+      );
+
+      // Add user name public official website team
+      set(
+        ref(db, `public/officialWebsite/team/${userId}/info/userName`),
+        currUserName
+      );
+    }
+  });
 };
 
 const deleteTable = (tableName: string, tablesList: string[]) => {
   const newTableList = tablesList.filter((table) => table !== tableName);
-  db.ref("public/recruitment/activeTable").child(tableName).remove();
-  db.ref("public/recruitment/tablesList").set(newTableList);
+  remove(ref(db, `public/recruitment/activeTable/${tableName}`));
+  set(ref(db, "public/recruitment/tablesList"), newTableList);
 };
 
 const deleteRecruitmentMemberFromDB = (
@@ -698,8 +699,7 @@ const deleteRecruitmentMemberFromDB = (
 ) => {
   if (typeof recruitmentTable !== "string" || !recruitmentTable || !memberId)
     return;
-  db.ref(`public/recruitment/tables/${recruitmentTable}/${memberId}`)
-    .remove()
+  remove(ref(db, `public/recruitment/tables/${recruitmentTable}/${memberId}`))
     .then(() => {
       toastrMessage("Application deleted successfully", "success");
       setModalIsOpen(false);

@@ -18,6 +18,7 @@ import BudgetTable from "./BudgetTable";
 import BudgetModal from "./BudgetModal";
 import { useAuth } from "../../contexts/AuthContext";
 import CreateSeasonModal from "./CreateSeasonModal";
+import { child, off, ref } from "firebase/database";
 
 const toggle = (tab: string, activeTab: string, setActiveTab: Function) => {
   setActiveTab(tab);
@@ -29,7 +30,7 @@ const seasonSelectHandler = (
   setSeason: Function
 ) => {
   // remove all database reference listeners from current season
-  db.ref("private/bom").child(season).off("value");
+  off(child(ref(db, "private/bom"), season));
   setSeason(selected.value.replace("/", "-"));
 };
 
@@ -93,7 +94,7 @@ const Budget = (props: any) => {
     // Get users metadata and set the state of user options
 
     return () => {
-      db.ref(`private/season/${season}`).off("value");
+      off(ref(db, `private/season/${season}`));
     };
   }, [season, openMatId, openSeasonId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -159,7 +160,9 @@ const Budget = (props: any) => {
                 </div>
                 <div className="widget-numbers">
                   <span id="BAcquiredBudget">{money.acquired} €</span> of{" "}
-                  <span id="BTotalBudget">{money.total} €</span>
+                  <span id="BTotalBudget">
+                    {Number(money.total).toFixed(2)} €
+                  </span>
                 </div>
                 <div className="widget-description text-success">
                   <i className="fas fa-bullseye"></i>

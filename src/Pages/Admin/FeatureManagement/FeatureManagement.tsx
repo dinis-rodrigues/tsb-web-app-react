@@ -77,8 +77,7 @@ const FeatureManagement = () => {
   //         god: true,
   //       },
   //     };
-
-  //     db.ref("private/applicationFeatures").set(features);
+  //     set(ref(db,"private/applicationFeatures"), features);
   //   };
 
   const sortFeatures = (features: ApplicationFeatures) => {

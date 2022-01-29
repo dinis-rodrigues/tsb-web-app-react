@@ -31,6 +31,7 @@ import {
   saveEvent,
   deleteEvent,
 } from "./eventsUtils";
+import { off, ref } from "firebase/database";
 
 const Events = () => {
   const { USER, departmentsWDesc } = useAuth();
@@ -60,7 +61,7 @@ const Events = () => {
     checkEventPeriodicity();
 
     return () => {
-      db.ref("private/events").off("value");
+      off(ref(db, "private/events"));
     };
   }, [departmentsWDesc]);
   return (

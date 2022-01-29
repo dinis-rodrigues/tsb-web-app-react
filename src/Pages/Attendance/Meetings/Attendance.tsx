@@ -6,6 +6,7 @@ import { remainingHours } from "../../../utils/generalFunctions";
 import { allowedMeetingType, isCorrectType } from "../attendanceUtils";
 import AttendanceSection from "./AttendanceSection";
 import { useAuth } from "../../../contexts/AuthContext";
+import { off, onValue, ref } from "firebase/database";
 
 const Attendance = () => {
   const { usersMetadata } = useAuth();
@@ -19,7 +20,7 @@ const Attendance = () => {
   useEffect(() => {
     // Retrieve current events
 
-    db.ref("private/events/current").on("value", (snapshot) => {
+    onValue(ref(db, "private/events/current"), (snapshot) => {
       if (!snapshot.val()) return false;
       const events: EventDatabase = snapshot.val();
       const eventsToStore: [string, EventInformation][] = [];
@@ -40,7 +41,7 @@ const Attendance = () => {
     // Retrieve Users metadata
     setUsersDb(usersMetadata);
     return () => {
-      db.ref("private/events/current").off("value");
+      off(ref(db, "private/events/current"));
     };
   }, [usersMetadata]);
   return (

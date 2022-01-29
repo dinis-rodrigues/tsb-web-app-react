@@ -1,5 +1,6 @@
-import firebase from "firebase/app";
+import { sendPasswordResetEmail } from "firebase/auth";
 import { FieldValues, UseFormGetValues } from "react-hook-form";
+import { auth } from "../../config/firebase";
 
 const resetPassword = (getValues: UseFormGetValues<FieldValues>) => {
   //   const { password } = getValues();
@@ -11,9 +12,7 @@ const sendResetLink = (
   setErrorMsg: Function
 ) => {
   const { email } = getValues();
-  firebase
-    .auth()
-    .sendPasswordResetEmail(email)
+  sendPasswordResetEmail(auth, email)
     .then(() => {
       setSentEmail(true);
     })

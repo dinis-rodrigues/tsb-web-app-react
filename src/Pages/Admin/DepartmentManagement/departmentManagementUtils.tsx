@@ -1,3 +1,4 @@
+import { child, get, ref, remove, set, update } from "firebase/database";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { db } from "../../../config/firebase";
@@ -169,7 +170,8 @@ const addPosition = (
  * @param departmentInfo
  */
 const createTaskPage = (departmentInfo: Department) => {
-  db.ref(`private/tasks${departmentInfo.acronym.toUpperCase()}`).set(
+  set(
+    ref(db, `private/tasks${departmentInfo.acronym.toUpperCase()}`),
     taskPageObject
   );
 };
@@ -179,20 +181,18 @@ const createTaskPage = (departmentInfo: Department) => {
  * @param departmentDescription
  */
 const deleteAssignedUserMaterials = (departmentDescription: string) => {
-  db.ref("private/usersBomMaterials")
-    .once("value")
-    .then((snapshot) => {
-      let assignedUsers: AssignedUserMaterials = snapshot.val();
-      if (!assignedUsers) return;
-      Object.entries(assignedUsers).forEach(([userId, materials]) => {
-        Object.entries(materials).forEach(([materialId, material]) => {
-          if (material.toDepartment === departmentDescription) {
-            delete assignedUsers[userId][materialId];
-          }
-        });
+  get(ref(db, "private/usersBomMaterials")).then((snapshot) => {
+    let assignedUsers: AssignedUserMaterials = snapshot.val();
+    if (!assignedUsers) return;
+    Object.entries(assignedUsers).forEach(([userId, materials]) => {
+      Object.entries(materials).forEach(([materialId, material]) => {
+        if (material.toDepartment === departmentDescription) {
+          delete assignedUsers[userId][materialId];
+        }
       });
-      db.ref("private/usersBomMaterials").update(assignedUsers);
     });
+    update(ref(db, "private/usersBomMaterials"), assignedUsers);
+  });
 };
 
 /**
@@ -200,25 +200,23 @@ const deleteAssignedUserMaterials = (departmentDescription: string) => {
  * @param departmentDescription
  */
 const deleteBudgetMetadata = (departmentDescription: string) => {
-  db.ref("private/bom")
-    .once("value")
-    .then((snapshot) => {
-      let bomDb: EntireBom = snapshot.val();
-      if (!bomDb) return;
-      // loop all seasons
-      Object.entries(bomDb).forEach(([season, seasonData]) => {
-        // dont go through the seasons list
-        if (season !== "seasons") {
-          Object.entries(seasonData).forEach(([materialId, material]) => {
-            // Change department to the new one
-            if (material.toDepartment === departmentDescription) {
-              delete bomDb[season][materialId];
-            }
-          });
-        }
-        db.ref("private/bom").update(bomDb);
-      });
+  get(ref(db, "private/bom")).then((snapshot) => {
+    let bomDb: EntireBom = snapshot.val();
+    if (!bomDb) return;
+    // loop all seasons
+    Object.entries(bomDb).forEach(([season, seasonData]) => {
+      // dont go through the seasons list
+      if (season !== "seasons") {
+        Object.entries(seasonData).forEach(([materialId, material]) => {
+          // Change department to the new one
+          if (material.toDepartment === departmentDescription) {
+            delete bomDb[season][materialId];
+          }
+        });
+      }
+      update(ref(db, "private/bom"), bomDb);
     });
+  });
 };
 
 /**
@@ -226,22 +224,20 @@ const deleteBudgetMetadata = (departmentDescription: string) => {
  * @param departmentDescription
  */
 const deleteAllEventsMetadata = (departmentDescription: string) => {
-  db.ref("private/events")
-    .once("value")
-    .then((snapshot) => {
-      const allEvents: AllEvents = snapshot.val();
+  get(ref(db, "private/events")).then((snapshot) => {
+    const allEvents: AllEvents = snapshot.val();
 
-      if (!allEvents) return;
-      Object.entries(allEvents).forEach(([time, eventDb]) => {
-        Object.entries(eventDb).forEach(([eventId, event]) => {
-          let eventDepartment = event.type.replace(" Meeting", "");
-          if (eventDepartment === departmentDescription) {
-            delete allEvents[time][eventId];
-          }
-        });
+    if (!allEvents) return;
+    Object.entries(allEvents).forEach(([time, eventDb]) => {
+      Object.entries(eventDb).forEach(([eventId, event]) => {
+        let eventDepartment = event.type.replace(" Meeting", "");
+        if (eventDepartment === departmentDescription) {
+          delete allEvents[time][eventId];
+        }
       });
-      db.ref("private/events").update(allEvents);
     });
+    update(ref(db, "private/events"), allEvents);
+  });
 };
 
 /**
@@ -249,23 +245,21 @@ const deleteAllEventsMetadata = (departmentDescription: string) => {
  * @param departmentDescription
  */
 const deleteAssignedUserTasks = (departmentAcronym: string) => {
-  db.ref("private/usersTasks")
-    .once("value")
-    .then((snapshot) => {
-      let allUsersTasks: AllUserTasks = snapshot.val();
-      if (!allUsersTasks) return;
-      Object.entries(allUsersTasks).forEach(([userId, tasks]) => {
-        Object.entries(tasks).forEach(([taskId, task]) => {
-          if (
-            task.departmentBoard.replace("tasks", "") ===
-            departmentAcronym.toUpperCase()
-          ) {
-            delete allUsersTasks[userId][taskId];
-          }
-        });
+  get(ref(db, "private/usersTasks")).then((snapshot) => {
+    let allUsersTasks: AllUserTasks = snapshot.val();
+    if (!allUsersTasks) return;
+    Object.entries(allUsersTasks).forEach(([userId, tasks]) => {
+      Object.entries(tasks).forEach(([taskId, task]) => {
+        if (
+          task.departmentBoard.replace("tasks", "") ===
+          departmentAcronym.toUpperCase()
+        ) {
+          delete allUsersTasks[userId][taskId];
+        }
       });
-      db.ref("private/usersTasks").update(allUsersTasks);
     });
+    update(ref(db, "private/usersTasks"), allUsersTasks);
+  });
 };
 
 /**
@@ -292,19 +286,17 @@ const changeUserMetadata = (
   previousDescription: string,
   currDescription: string
 ) => {
-  db.ref("private/usersMetadata")
-    .once("value")
-    .then((snapshot) => {
-      let usersMetadata: UserMetadata = snapshot.val();
-      if (!usersMetadata) return;
-      Object.entries(usersMetadata).forEach(([userId, userInfo]) => {
-        if (userInfo.pinfo.department === previousDescription) {
-          // change to the new department
-          usersMetadata[userId].pinfo.department = currDescription;
-        }
-      });
-      db.ref("private/usersMetadata").update(usersMetadata);
+  get(ref(db, "private/usersMetadata")).then((snapshot) => {
+    let usersMetadata: UserMetadata = snapshot.val();
+    if (!usersMetadata) return;
+    Object.entries(usersMetadata).forEach(([userId, userInfo]) => {
+      if (userInfo.pinfo.department === previousDescription) {
+        // change to the new department
+        usersMetadata[userId].pinfo.department = currDescription;
+      }
     });
+    update(ref(db, "private/usersMetadata"), usersMetadata);
+  });
 };
 
 /**
@@ -316,19 +308,17 @@ const changePublicUserMetadata = (
   previousDescription: string,
   currDescription: string
 ) => {
-  db.ref("public/officialWebsite/team")
-    .once("value")
-    .then((snapshot) => {
-      let usersMetadata: PublicTeam = snapshot.val();
-      if (!usersMetadata) return;
-      Object.entries(usersMetadata).forEach(([userId, userInfo]) => {
-        if (userInfo.info.department === previousDescription) {
-          // change to the new department
-          usersMetadata[userId].info.department = currDescription;
-        }
-      });
-      db.ref("public/officialWebsite/team").update(usersMetadata);
+  get(ref(db, "public/officialWebsite/team")).then((snapshot) => {
+    let usersMetadata: PublicTeam = snapshot.val();
+    if (!usersMetadata) return;
+    Object.entries(usersMetadata).forEach(([userId, userInfo]) => {
+      if (userInfo.info.department === previousDescription) {
+        // change to the new department
+        usersMetadata[userId].info.department = currDescription;
+      }
     });
+    update(ref(db, "public/officialWebsite/team"), usersMetadata);
+  });
 };
 
 /**
@@ -340,25 +330,23 @@ const changeBudgetMetadata = (
   previousDescription: string,
   currDescription: string
 ) => {
-  db.ref("private/bom")
-    .once("value")
-    .then((snapshot) => {
-      let bomDb: EntireBom = snapshot.val();
-      if (!bomDb) return;
-      // loop all seasons
-      Object.entries(bomDb).forEach(([season, seasonData]) => {
-        // dont go through the seasons list
-        if (season !== "seasons") {
-          Object.entries(seasonData).forEach(([materialId, material]) => {
-            // Change department to the new one
-            if (material.toDepartment === previousDescription) {
-              bomDb[season][materialId].toDepartment = currDescription;
-            }
-          });
-        }
-        db.ref("private/bom").update(bomDb);
-      });
+  get(ref(db, "private/bom")).then((snapshot) => {
+    let bomDb: EntireBom = snapshot.val();
+    if (!bomDb) return;
+    // loop all seasons
+    Object.entries(bomDb).forEach(([season, seasonData]) => {
+      // dont go through the seasons list
+      if (season !== "seasons") {
+        Object.entries(seasonData).forEach(([materialId, material]) => {
+          // Change department to the new one
+          if (material.toDepartment === previousDescription) {
+            bomDb[season][materialId].toDepartment = currDescription;
+          }
+        });
+      }
+      update(ref(db, "private/bom"), bomDb);
     });
+  });
 };
 
 /**
@@ -370,20 +358,18 @@ const changeAssignedUserMaterials = (
   previousDescription: string,
   currDescription: string
 ) => {
-  db.ref("private/usersBomMaterials")
-    .once("value")
-    .then((snapshot) => {
-      let assignedUsers: AssignedUserMaterials = snapshot.val();
-      if (!assignedUsers) return;
-      Object.entries(assignedUsers).forEach(([userId, materials]) => {
-        Object.entries(materials).forEach(([materialId, material]) => {
-          if (material.toDepartment === previousDescription) {
-            assignedUsers[userId][materialId].toDepartment = currDescription;
-          }
-        });
+  get(ref(db, "private/usersBomMaterials")).then((snapshot) => {
+    let assignedUsers: AssignedUserMaterials = snapshot.val();
+    if (!assignedUsers) return;
+    Object.entries(assignedUsers).forEach(([userId, materials]) => {
+      Object.entries(materials).forEach(([materialId, material]) => {
+        if (material.toDepartment === previousDescription) {
+          assignedUsers[userId][materialId].toDepartment = currDescription;
+        }
       });
-      db.ref("private/usersBomMaterials").update(assignedUsers);
     });
+    update(ref(db, "private/usersBomMaterials"), assignedUsers);
+  });
 };
 
 /**
@@ -395,22 +381,20 @@ const changeAllEventsMetadata = (
   previousDescription: string,
   currDescription: string
 ) => {
-  db.ref("private/events")
-    .once("value")
-    .then((snapshot) => {
-      const allEvents: AllEvents = snapshot.val();
+  get(ref(db, "private/events")).then((snapshot) => {
+    const allEvents: AllEvents = snapshot.val();
 
-      if (!allEvents) return;
-      Object.entries(allEvents).forEach(([time, eventDb]) => {
-        Object.entries(eventDb).forEach(([eventId, event]) => {
-          let eventDepartment = event.type.replace(" Meeting", "");
-          if (eventDepartment === previousDescription) {
-            allEvents[time][eventId].type = currDescription + " Meeting";
-          }
-        });
+    if (!allEvents) return;
+    Object.entries(allEvents).forEach(([time, eventDb]) => {
+      Object.entries(eventDb).forEach(([eventId, event]) => {
+        let eventDepartment = event.type.replace(" Meeting", "");
+        if (eventDepartment === previousDescription) {
+          allEvents[time][eventId].type = currDescription + " Meeting";
+        }
       });
-      db.ref("private/events").update(allEvents);
     });
+    update(ref(db, "private/events"), allEvents);
+  });
 };
 
 /**
@@ -458,7 +442,7 @@ const saveDepartment = (
       changeAllDepartmentRelatedMetadata(previousDescription, currDescription);
     }
   }
-  db.ref("private/departments").child(acronym).update(departmentInfo);
+  update(child(ref(db, "private/departments"), acronym), departmentInfo);
   updateRecruitmentDepartments(acronym, departmentInfo);
   closeDepartmentModal(setIsDepartmentModalOpen, setNewPosition);
 };
@@ -472,17 +456,17 @@ const updateRecruitmentDepartments = (
   acronym: string,
   departmentInfo: Department
 ) => {
-  db.ref("public/recruitment/openDepartments")
-    .child(acronym)
-    .once("value")
-    .then((snapshot) => {
+  get(child(ref(db, "public/recruitment/openDepartments"), acronym)).then(
+    (snapshot) => {
       let recruitmentDepartment = snapshot.val();
       if (!recruitmentDepartment) return;
       else
-        db.ref("public/recruitment/openDepartments")
-          .child(acronym)
-          .set(departmentInfo);
-    });
+        set(
+          child(ref(db, "public/recruitment/openDepartments"), acronym),
+          departmentInfo
+        );
+    }
+  );
 };
 
 /**
@@ -571,8 +555,8 @@ const swalDeleteAlert = withReactContent(Swal);
  */
 const deleteDepartment = (departmentInfo: Department) => {
   let acronym = departmentInfo.acronym;
-  db.ref("private/departments").child(acronym).remove();
-  db.ref("public/recruitment/openDepartments").child(acronym).remove();
+  remove(child(ref(db, "private/departments"), acronym));
+  remove(child(ref(db, "public/recruitment/openDepartments"), acronym));
   removeAllDepartmentRelatedMetadata(departmentInfo);
 };
 export {

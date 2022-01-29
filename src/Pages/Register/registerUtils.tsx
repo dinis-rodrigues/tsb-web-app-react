@@ -1,5 +1,6 @@
 // Register User process, personal info
 
+import { get, ref, set } from "firebase/database";
 import { FieldValues, UseFormGetValues } from "react-hook-form";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -61,7 +62,8 @@ const signUpUser = async (
           uid: data.user.uid,
           fullName: fullName,
           department: "Management and Marketing",
-          position: "Team Member",
+          position:
+            process.env.NODE_ENV === "production" ? "Team Member" : "God",
           joinedIn: "",
           name: name,
           email: email,
@@ -86,7 +88,7 @@ const signUpUser = async (
           curricularYear: 1,
           userName: userName,
         };
-        db.ref(`private/usersMetadata/${userId}/pinfo`).set(info);
+        set(ref(db, `private/usersMetadata/${userId}/pinfo`), info);
 
         savePublicUser(userId, info);
       })
@@ -121,41 +123,38 @@ const buildUserNameFromFullName = (fullName: string) => {
 };
 
 const buildUserName = (fullName: string) => {
-  return db
-    .ref("private/usersMetadata")
-    .once("value")
-    .then((snapshot) => {
-      const users: UserMetadata = snapshot.val();
+  return get(ref(db, "private/usersMetadata")).then((snapshot) => {
+    const users: UserMetadata = snapshot.val();
 
-      const usersList = Object.entries(users);
+    const usersList = Object.entries(users);
 
-      let existingUserNames: string[] = [];
-      let currUserName = buildUserNameFromFullName(fullName);
+    let existingUserNames: string[] = [];
+    let currUserName = buildUserNameFromFullName(fullName);
 
-      // Get existing user names
-      for (let i = 0; i < usersList.length; i++) {
-        const userInfo = usersList[i][1].pinfo;
+    // Get existing user names
+    for (let i = 0; i < usersList.length; i++) {
+      const userInfo = usersList[i][1].pinfo;
 
-        existingUserNames.push(userInfo.userName);
+      existingUserNames.push(userInfo.userName);
+    }
+
+    // check if user name already exists
+    let equalUserNames: string[] = [];
+    for (const userName of existingUserNames) {
+      if (userName.includes(currUserName)) {
+        equalUserNames.push(userName);
       }
+    }
 
-      // check if user name already exists
-      let equalUserNames: string[] = [];
-      for (const userName of existingUserNames) {
-        if (userName.includes(currUserName)) {
-          equalUserNames.push(userName);
-        }
-      }
+    // add index to current username
+    if (equalUserNames.length > 0) {
+      // sort equalusernames
+      equalUserNames.sort();
+      currUserName = `${currUserName}-${equalUserNames.length}`;
+    }
 
-      // add index to current username
-      if (equalUserNames.length > 0) {
-        // sort equalusernames
-        equalUserNames.sort();
-        currUserName = `${currUserName}-${equalUserNames.length}`;
-      }
-
-      return currUserName;
-    });
+    return currUserName;
+  });
 };
 
 export { signUpUser, showAlert, getNameFromFullName };

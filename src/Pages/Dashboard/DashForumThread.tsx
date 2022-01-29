@@ -18,6 +18,7 @@ import {
   usersWhoLikedOrWatchedTooltipList,
 } from "../ForumThread/forumThreadUtils";
 import { Thread } from "../../interfaces";
+import { off, ref } from "firebase/database";
 
 const DashForumThread = () => {
   const { usersMetadata, USER } = useAuth();
@@ -30,11 +31,8 @@ const DashForumThread = () => {
   useEffect(() => {
     getPinnedThreadInfo(USER, setThreadInformation, setForumPaths);
 
-    // get encoded Topic Name
-
-    // get encoded Thread Information and name
     return () => {
-      db.ref("private/forumPinned").off("value");
+      off(ref(db, "private/forumPinned"));
     };
   }, [USER]);
   return threadInformation ? (

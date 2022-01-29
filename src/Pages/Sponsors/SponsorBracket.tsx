@@ -38,6 +38,7 @@ import SponsorModal from "./SponsorModal";
 import BracketModal from "./BracketModal";
 import { useAuth } from "../../contexts/AuthContext";
 import { toastrMessage } from "../../utils/generalFunctions";
+import { off, ref } from "firebase/database";
 
 type Props = {
   bracket: SponsorBracketListItem;
@@ -88,7 +89,7 @@ const SponsorBracket = ({
     getSponsorsListFromBrackets(bracketId, setsSponsorsItems, setSponsorsObj);
     updateSponsorDropdown("", sponsors, setDropdownResults);
     return () => {
-      db.ref("private/sponsors/brackets").child(bracketId).off("value");
+      off(ref(db, `private/sponsors/brackets/${bracketId}`));
     };
   }, [sponsors, bracketId]);
   return (

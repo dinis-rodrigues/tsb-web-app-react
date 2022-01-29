@@ -21,6 +21,7 @@ import Inventory from "./Inventory";
 import SponsorModal from "./SponsorModal";
 import BracketModal from "./BracketModal";
 import { useAuth } from "../../contexts/AuthContext";
+import { off, ref } from "firebase/database";
 
 const Sponsors = () => {
   const { isMarketingOrAdmin } = useAuth();
@@ -47,10 +48,10 @@ const Sponsors = () => {
     getInventorySponsors(setSponsors, setExistingBrackets);
     getLastEditionDate(setLastEditionDate);
     return () => {
-      db.ref("private/sponsors/brackets").off("value");
-      db.ref("private/sponsors/retroActives").off("value");
-      db.ref("private/sponsors/inventory").off("value");
-      db.ref("private/sponsors/bracketsList").off("value");
+      off(ref(db, "private/sponsors/brackets"));
+      off(ref(db, "private/sponsors/retroActives"));
+      off(ref(db, "private/sponsors/inventory"));
+      off(ref(db, "private/sponsors/bracketsList"));
     };
   }, []);
   return (

@@ -17,6 +17,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import ForumThreadRow from "./ForumThreadRow";
 import { db } from "../../config/firebase";
 import ForumCreateThreadModal from "./ForumCreateThreadModal";
+import { off, ref } from "firebase/database";
 
 const ForumTopic = (props: any) => {
   const { USER, usersMetadata } = useAuth();
@@ -60,10 +61,12 @@ const ForumTopic = (props: any) => {
     );
 
     return () => {
-      db.ref("private/forumTopicMetadata")
-        .child(encodedSectionName)
-        .child(encodedTopicName)
-        .off("value");
+      off(
+        ref(
+          db,
+          `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}`
+        )
+      );
     };
   }, [encodedTopicName, encodedSectionName]);
   return (

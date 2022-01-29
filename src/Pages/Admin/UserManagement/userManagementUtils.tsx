@@ -1,4 +1,5 @@
 import { ColumnApi, GridApi, RowClickedEvent } from "ag-grid-community";
+import { child, get, onValue, ref, set, update } from "firebase/database";
 import { db } from "../../../config/firebase";
 import {
   AllEvents,
@@ -66,7 +67,7 @@ const getAllUserDataForTable = (
   if (!user) {
     return;
   }
-  db.ref("private/usersMetadata").on("value", (snapshot) => {
+  onValue(ref(db, "private/usersMetadata"), (snapshot) => {
     const usersMetadata = snapshot.val();
     if (!usersMetadata) return;
     setUsersMetadata(usersMetadata);
@@ -165,18 +166,14 @@ const onRowUserClick = (
   let userId = event.data.userId;
 
   // Retrieve user data
-  db.ref("private/usersMetadata")
-    .child(userId)
-    .child("pinfo")
-    .once("value")
-    .then((snapshot) => {
-      if (!snapshot.val()) return;
-      let userInfo = snapshot.val();
-      setInfo(userInfo);
-      setDepartmentPositions(userInfo.department, user, setSelectPositions);
-      setModalOpen(true);
-      setModalTitle(`Edit "${userInfo.name}" Information`);
-    });
+  get(ref(db, `private/usersMetadata/${userId}/pinfo`)).then((snapshot) => {
+    if (!snapshot.val()) return;
+    let userInfo = snapshot.val();
+    setInfo(userInfo);
+    setDepartmentPositions(userInfo.department, user, setSelectPositions);
+    setModalOpen(true);
+    setModalTitle(`Edit "${userInfo.name}" Information`);
+  });
 };
 
 /**
@@ -189,7 +186,7 @@ const saveUserInfo = (info: PersonalInformation, setModalOpen: Function) => {
   let userId = info.uid;
   if (!userId) return;
   const newInfo = updateWithLeftInDate(info);
-  db.ref("private/usersMetadata").child(userId).child("pinfo").update(newInfo);
+  update(ref(db, `private/usersMetadata/${userId}/pinfo`), newInfo);
   savePublicUser(userId, newInfo);
   setModalOpen(false);
 };
@@ -215,7 +212,7 @@ const getAndSetApplicationSettings = (
   setRegistrationIsOpen: Function,
   setMaintenanceIsOpen: Function
 ) => {
-  db.ref("public/applicationSettings").on("value", (snapshot) => {
+  onValue(ref(db, "public/applicationSettings"), (snapshot) => {
     let applicationSettings: ApplicationSettings = snapshot.val();
     if (!applicationSettings) return;
     setMaintenanceIsOpen(applicationSettings.maintenanceIsOpen);
@@ -228,7 +225,7 @@ const getAndSetApplicationSettings = (
  * @param setRegistrationIsOpen
  */
 const toggleRegistration = (registrationIsOpen: boolean) => {
-  db.ref("public/applicationSettings").update({
+  update(ref(db, "public/applicationSettings"), {
     registrationIsOpen: !registrationIsOpen,
   });
 };
@@ -237,92 +234,84 @@ const toggleRegistration = (registrationIsOpen: boolean) => {
  * @param setMaintenanceIsOpen
  */
 const toggleMaintenance = (maintenanceIsOpen: boolean) => {
-  db.ref("public/applicationSettings").update({
+  update(ref(db, "public/applicationSettings"), {
     maintenanceIsOpen: !maintenanceIsOpen,
   });
 };
 
 const moveEverythingInUsers = () => {
-  db.ref("private/users")
-    .once("value")
-    .then((snapshot) => {
-      let allusers: UsersDB = snapshot.val();
-      if (!allusers) return;
-      Object.entries(allusers).forEach(([userId, user]) => {
-        if (user.hasOwnProperty("statistics")) {
-          let statistics = user.statistics;
-          db.ref("private/usersStatistics").child(userId).set(statistics);
-        }
-        if (user.hasOwnProperty("notifications")) {
-          let statistics = user.statistics;
-          db.ref("private/usersNotifications").child(userId).set(statistics);
-        }
-      });
+  get(ref(db, "private/users")).then((snapshot) => {
+    let allusers: UsersDB = snapshot.val();
+    if (!allusers) return;
+    Object.entries(allusers).forEach(([userId, user]) => {
+      if (user.hasOwnProperty("statistics")) {
+        let statistics = user.statistics;
+        set(child(ref(db, "private/usersStatistics"), userId), statistics);
+      }
+      if (user.hasOwnProperty("notifications")) {
+        let statistics = user.statistics;
+        set(child(ref(db, "private/usersNotifications"), userId), statistics);
+      }
     });
+  });
 };
 
 const replaceEventMeetingType = () => {
-  db.ref("private/events")
-    .once("value")
-    .then((snapshot) => {
-      const allEvents: AllEvents = snapshot.val();
+  get(ref(db, "private/events")).then((snapshot) => {
+    const allEvents: AllEvents = snapshot.val();
 
-      if (!allEvents) return;
-      Object.entries(allEvents).forEach(([time, eventDb]) => {
-        if (time === "history") {
-          Object.entries(eventDb).forEach(([eventId, event]) => {
-            allEvents[time][eventId].isHistory = true;
-          });
-        }
-      });
-      db.ref("private/events").update(allEvents);
+    if (!allEvents) return;
+    Object.entries(allEvents).forEach(([time, eventDb]) => {
+      if (time === "history") {
+        Object.entries(eventDb).forEach(([eventId, event]) => {
+          allEvents[time][eventId].isHistory = true;
+        });
+      }
     });
+    update(ref(db, "private/events"), allEvents);
+  });
 };
 
 const replaceUidFromAllNotifications = () => {
   let uuidToReplace = "bkYOlvmsz3hpoeEHQxzi6dYBaVC2";
-  db.ref("private/usersNotifications")
-    .once("value")
-    .then((snapshot) => {
-      let allUserNotifications: {
-        [key: string]: { [key: string]: Notifications };
-      } = snapshot.val();
-      if (!allUserNotifications) return;
+  get(ref(db, "private/usersNotifications")).then((snapshot) => {
+    let allUserNotifications: {
+      [key: string]: { [key: string]: Notifications };
+    } = snapshot.val();
+    if (!allUserNotifications) return;
 
-      Object.entries(allUserNotifications).forEach(([userId, names]) => {
-        Object.entries(names).forEach(([nameId, notifications]) => {
-          if (nameId === "all" || nameId === "new") {
-            Object.entries(notifications).forEach(([notifId, notification]) => {
-              if (notification.sentBy === "v9J2pDVMmvM4bS3qwdTcSScT6YR2") {
-                allUserNotifications[userId][nameId][notifId].sentBy =
-                  uuidToReplace;
-              }
-            });
-          } else {
-            delete allUserNotifications[userId][nameId];
-          }
-        });
+    Object.entries(allUserNotifications).forEach(([userId, names]) => {
+      Object.entries(names).forEach(([nameId, notifications]) => {
+        if (nameId === "all" || nameId === "new") {
+          Object.entries(notifications).forEach(([notifId, notification]) => {
+            if (notification.sentBy === "v9J2pDVMmvM4bS3qwdTcSScT6YR2") {
+              allUserNotifications[userId][nameId][notifId].sentBy =
+                uuidToReplace;
+            }
+          });
+        } else {
+          delete allUserNotifications[userId][nameId];
+        }
       });
-      db.ref("private/usersNotifications").update(allUserNotifications);
     });
+    update(ref(db, "private/usersNotifications"), allUserNotifications);
+  });
 };
 
 const replaceUidFromAllTasks = () => {
   let uuidToReplace = "bkYOlvmsz3hpoeEHQxzi6dYBaVC2";
-  db.ref("private/usersTasks")
-    .once("value")
-    .then((snapshot) => {
-      let allUsersTasks: AllUserTasks = snapshot.val();
-      if (!allUsersTasks) return;
-      Object.entries(allUsersTasks).forEach(([userId, tasks]) => {
-        Object.entries(tasks).forEach(([taskId, task]) => {
-          if (task.assignedBy === "v9J2pDVMmvM4bS3qwdTcSScT6YR2") {
-            allUsersTasks[userId][taskId].assignedBy = uuidToReplace;
-          }
-        });
+  get(ref(db, "private/usersTasks")).then((snapshot) => {
+    let allUsersTasks: AllUserTasks = snapshot.val();
+    if (!allUsersTasks) return;
+    Object.entries(allUsersTasks).forEach(([userId, tasks]) => {
+      Object.entries(tasks).forEach(([taskId, task]) => {
+        if (task.assignedBy === "v9J2pDVMmvM4bS3qwdTcSScT6YR2") {
+          allUsersTasks[userId][taskId].assignedBy = uuidToReplace;
+        }
       });
-      db.ref("private/usersTasks").update(allUsersTasks);
     });
+    update(ref(db, "private/usersTasks"), allUsersTasks);
+  });
 };
 export {
   getAllUserDataForTable,

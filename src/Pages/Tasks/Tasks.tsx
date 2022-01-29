@@ -39,6 +39,7 @@ import {
   getDecodedString,
   setUserAssignmentOptions,
 } from "../../utils/generalFunctions";
+import { off, onValue, ref } from "firebase/database";
 
 const Tasks = (props: any) => {
   const { USER, usersMetadata, departments } = useAuth();
@@ -78,8 +79,8 @@ const Tasks = (props: any) => {
   useEffect(() => {
     // Update board state on every change
     if (departmentBoard && currBoard) {
-      db.ref(`private/${departmentBoard}/b/${currBoard}`).on(
-        "value",
+      onValue(
+        ref(db, `private/${departmentBoard}/b/${currBoard}`),
         (snapshot) => {
           if (!snapshot.val()) setRedirectToBoard(`/dashboard`);
           setColumns(snapshot.val());
@@ -111,7 +112,7 @@ const Tasks = (props: any) => {
       updateExistingBoards(departmentBoard, setExistingBoards);
     }
     return () => {
-      db.ref(`private/${departmentBoard}/b/${currBoard}`).off("value");
+      off(ref(db, `private/${departmentBoard}/b/${currBoard}`));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [departmentBoard, currBoard, openColId, openTaskId, usersMetadata]);

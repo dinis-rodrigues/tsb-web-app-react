@@ -14,6 +14,7 @@ import {
   toastrMessage,
   userHasPermission,
 } from "../../utils/generalFunctions";
+import { onValue, ref, set } from "firebase/database";
 
 /** Updates the user database with attended or missed evet of user
  * @param  {boolean} payload content of the tooltip
@@ -249,7 +250,8 @@ const updateUserAttendance = (
     // Set the event in the user statistics, with attendance update
     event = { ...event, attended: didAttend };
 
-    db.ref(`private/usersStatistics/${userId}/${statType}/${eventId}`).set(
+    set(
+      ref(db, `private/usersStatistics/${userId}/${statType}/${eventId}`),
       event
     );
     if (userId !== user.id) {
@@ -301,8 +303,8 @@ const addStatisticListener = (
   setGraphOptions: Function,
   setCurrStatus: Function
 ) => {
-  db.ref(`private/usersStatistics/${userId}/${statType}`).on(
-    "value",
+  onValue(
+    ref(db, `private/usersStatistics/${userId}/${statType}`),
     (snapshot) => {
       let statistic: Statistic = snapshot.val();
 
@@ -461,8 +463,8 @@ const addOverallStatisticListener = (
   setGraphSeries: Function,
   setGraphOptions: Function
 ) => {
-  db.ref(`private/usersStatistics/${userId}/${statType}`).on(
-    "value",
+  onValue(
+    ref(db, `private/usersStatistics/${userId}/${statType}`),
     (snapshot) => {
       let statistic: Statistic = snapshot.val();
 

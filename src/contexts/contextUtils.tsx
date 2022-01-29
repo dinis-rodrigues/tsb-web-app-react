@@ -5,10 +5,18 @@ import {
   DepartmentsWithDesc,
   userContext,
 } from "../interfaces";
-import firebase from "firebase/app";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import { getUserImgUrl } from "../utils/generalFunctions";
+import { onValue, ref } from "firebase/database";
+import {
+  createUserWithEmailAndPassword,
+  setPersistence,
+  signInWithEmailAndPassword,
+  User,
+  browserLocalPersistence,
+  browserSessionPersistence,
+} from "firebase/auth";
 
 /**
  * Get and set application settings state
@@ -16,7 +24,7 @@ import { getUserImgUrl } from "../utils/generalFunctions";
  * @param setRegistrationIsOpen
  */
 const getAndSetApplicationSettings = (setApplicationSettings: Function) => {
-  db.ref("public/applicationSettings").on("value", (snapshot) => {
+  onValue(ref(db, "public/applicationSettings"), (snapshot) => {
     let applicationSettings: ApplicationSettings = snapshot.val();
     if (!applicationSettings) return;
     setApplicationSettings(applicationSettings);
@@ -30,7 +38,7 @@ const getAndSetApplicationSettings = (setApplicationSettings: Function) => {
  */
 const getCurrentUser = (auth: any) => {
   return new Promise((resolve, reject) => {
-    const unsubscribe: any = auth.onAuthStateChanged((user: firebase.User) => {
+    const unsubscribe: any = auth.onAuthStateChanged((user: User) => {
       resolve([user, unsubscribe]);
     }, reject);
   });
@@ -45,7 +53,7 @@ const getCurrentUser = (auth: any) => {
 const registerUser = (email: string, password: string): Promise<any> => {
   // this returns a promise
 
-  return auth.createUserWithEmailAndPassword(email, password);
+  return createUserWithEmailAndPassword(auth, email, password);
 };
 const swalAlert = withReactContent(Swal);
 /**
@@ -55,15 +63,12 @@ const swalAlert = withReactContent(Swal);
  * @returns
  */
 const loginUser = (email: string, password: string, rememberMe: boolean) => {
-  firebase
-    .auth()
-    .setPersistence(
-      rememberMe
-        ? firebase.auth.Auth.Persistence.LOCAL
-        : firebase.auth.Auth.Persistence.SESSION
-    )
+  setPersistence(
+    auth,
+    rememberMe ? browserLocalPersistence : browserSessionPersistence
+  )
     .then(() => {
-      return auth.signInWithEmailAndPassword(email, password);
+      return signInWithEmailAndPassword(auth, email, password);
     })
     .catch((error) => {
       // Display alert with the login error
@@ -118,7 +123,7 @@ const getDepartments = (
   setDepartments: Function,
   setDepartmentsWDesc: Function
 ) => {
-  db.ref("private/departments").on("value", (snapshot) => {
+  onValue(ref(db, "private/departments"), (snapshot) => {
     let departments: Departments = snapshot.val();
     if (!departments) return;
     setDepartments(departments);

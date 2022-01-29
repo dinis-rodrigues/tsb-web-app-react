@@ -37,6 +37,7 @@ import { db } from "../../config/firebase";
 import { dateToString } from "../../utils/generalFunctions";
 import EditPhotoModal from "./EditPhotoModal";
 import { useAuth } from "../../contexts/AuthContext";
+import { off, ref } from "firebase/database";
 
 const Gallery = () => {
   const { USER, isMarketingOrAdmin } = useAuth();
@@ -66,7 +67,7 @@ const Gallery = () => {
       setActiveGalleryDbRef
     );
     return () => {
-      if (activeGalleryDbRef) db.ref(activeGalleryDbRef).off("value");
+      if (activeGalleryDbRef) off(ref(db, activeGalleryDbRef));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

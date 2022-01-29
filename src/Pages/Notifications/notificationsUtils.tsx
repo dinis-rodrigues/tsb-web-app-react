@@ -1,3 +1,13 @@
+import {
+  endAt,
+  get,
+  limitToLast,
+  onValue,
+  orderByKey,
+  query,
+  ref,
+  remove,
+} from "firebase/database";
 import { db } from "../../config/firebase";
 import { Notification, Notifications, userContext } from "../../interfaces";
 
@@ -14,18 +24,20 @@ const fetchBatchNotifications = (
 ) => {
   let notificationBatch = 10;
   if (!user) return;
-  db.ref(`private/usersNotifications/${user.id}/all`)
-    .orderByKey()
-    .limitToLast(notificationBatch)
-    .once("value")
-    .then((snapshot) => {
-      if (snapshot.val()) {
-        let allNotifs = Object.entries(snapshot.val()).sort().reverse();
-        setNotifications(allNotifs);
-        let lastNotifKey = allNotifs[allNotifs.length - 1][0];
-        setReferenceToOldestKey(lastNotifKey);
-      }
-    });
+  get(
+    query(
+      ref(db, `private/usersNotifications/${user.id}/all`),
+      orderByKey(),
+      limitToLast(notificationBatch)
+    )
+  ).then((snapshot) => {
+    if (snapshot.val()) {
+      let allNotifs = Object.entries(snapshot.val()).sort().reverse();
+      setNotifications(allNotifs);
+      let lastNotifKey = allNotifs[allNotifs.length - 1][0];
+      setReferenceToOldestKey(lastNotifKey);
+    }
+  });
 };
 
 const notificationsOnScroll = (
@@ -42,11 +54,14 @@ const notificationsOnScroll = (
     const { scrollTop, scrollHeight, clientHeight } = notificationsRef.current;
 
     if (scrollTop + clientHeight === scrollHeight && referenceToOldestKey) {
-      db.ref(`private/usersNotifications/${user.id}/all`)
-        .orderByKey()
-        .endAt(referenceToOldestKey)
-        .limitToLast(notificationBatch + 1)
-        .once("value")
+      get(
+        query(
+          ref(db, `private/usersNotifications/${user.id}/all`),
+          orderByKey(),
+          endAt(referenceToOldestKey),
+          limitToLast(notificationBatch + 1)
+        )
+      )
         .then((snapshot) => {
           let moreNotifications: Notifications = snapshot.val();
           let arrayOfNotifications = Object.entries(moreNotifications)
@@ -84,21 +99,18 @@ const newNotificationsListener = (
   setUnreadNotifications: Function
 ) => {
   if (!user) return;
-  db.ref(`private/usersNotifications/${user.id}/new`).on(
-    "value",
-    (snapshot) => {
-      let notifications = snapshot.val();
-      if (notifications) {
-        setNotificationsMask({ ...notificationsMask, ...notifications });
-      }
-      if (notifications) {
-        // Notification icon animation and color
-        setUnreadNotifications(true);
-      } else {
-        setUnreadNotifications(false);
-      }
+  onValue(ref(db, `private/usersNotifications/${user.id}/new`), (snapshot) => {
+    let notifications = snapshot.val();
+    if (notifications) {
+      setNotificationsMask({ ...notificationsMask, ...notifications });
     }
-  );
+    if (notifications) {
+      // Notification icon animation and color
+      setUnreadNotifications(true);
+    } else {
+      setUnreadNotifications(false);
+    }
+  });
 };
 
 /**
@@ -111,7 +123,7 @@ const removeNewNotifications = (
   unreadNotifications: boolean
 ) => {
   if (!user || unreadNotifications) return;
-  db.ref(`private/usersNotifications/${user.id}/new`).remove();
+  remove(ref(db, `private/usersNotifications/${user.id}/new`));
 };
 /**
  * Get the color of the notification

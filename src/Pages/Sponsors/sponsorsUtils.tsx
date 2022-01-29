@@ -23,6 +23,7 @@ import {
   normalizedString,
   toastrMessage,
 } from "../../utils/generalFunctions";
+import { get, onValue, push, ref, remove, set } from "firebase/database";
 
 const sponsorSkeleton: Sponsor = {
   name: "New Sponsor Name",
@@ -120,34 +121,33 @@ const updateSponsorDropdown = (
 const deleteSponsor = (sponsorId: string, bracketId: string | undefined) => {
   // retrieve board items from bracket to remove sponsor
   if (bracketId)
-    db.ref("private/sponsors/brackets")
-      .child(bracketId)
-      .child("sponsorsBoardList")
-      .once("value")
-      .then((snapshot) => {
-        let sponsorsList: string[] = snapshot.val();
-        if (!sponsorsList) sponsorsList = [];
-        const newSponsorsList = sponsorsList.filter((sponsor) => {
-          return sponsor !== sponsorId;
-        });
-
-        // Update with new List
-        db.ref("private/sponsors/brackets")
-          .child(bracketId)
-          .child("sponsorsBoardList")
-          .set(newSponsorsList);
-
-        // Remove sponsor from bracket sponsors
-        db.ref("private/sponsors/brackets")
-          .child(bracketId)
-          .child("bracketSponsors")
-          .child(sponsorId)
-          .remove();
-        // remove sponsor from inventory
-        db.ref("private/sponsors/inventory").child(sponsorId).remove();
+    get(
+      ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`)
+    ).then((snapshot) => {
+      let sponsorsList: string[] = snapshot.val();
+      if (!sponsorsList) sponsorsList = [];
+      const newSponsorsList = sponsorsList.filter((sponsor) => {
+        return sponsor !== sponsorId;
       });
+
+      // Update with new List
+      set(
+        ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`),
+        newSponsorsList
+      );
+
+      // Remove sponsor from bracket sponsors
+      remove(
+        ref(
+          db,
+          `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`
+        )
+      );
+      // remove sponsor from inventory
+      remove(ref(db, `private/sponsors/inventory/${sponsorId}`));
+    });
   // remove sponsor from inventory
-  else db.ref("private/sponsors/inventory").child(sponsorId).remove();
+  else remove(ref(db, `private/sponsors/inventory/${sponsorId}`));
 
   toastrMessage("Sponsor Deleted", "success");
 };
@@ -166,32 +166,31 @@ const addSponsorToBracket = (
   bracketName: string
 ) => {
   // retrieve board items from bracket to add sponsor
-  db.ref("private/sponsors/brackets")
-    .child(bracketId)
-    .child("sponsorsBoardList")
-    .once("value")
+  get(ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`))
     .then((snapshot) => {
       let sponsorsList: string[] = snapshot.val();
       if (!sponsorsList) sponsorsList = [];
       sponsorsList.push(sponsorId);
 
       // Update with new List
-      db.ref("private/sponsors/brackets")
-        .child(bracketId)
-        .child("sponsorsBoardList")
-        .set(sponsorsList);
+      set(
+        ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`),
+        sponsorsList
+      );
 
       // Add sponsor to bracket sponsors
-      db.ref("private/sponsors/brackets")
-        .child(bracketId)
-        .child("bracketSponsors")
-        .child(sponsorId)
-        .set({ ...sponsor, level: bracketName });
+      set(
+        ref(
+          db,
+          `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`
+        ),
+        { ...sponsor, level: bracketName }
+      );
       // update sponsor in inventory with new bracket
-      db.ref("private/sponsors/inventory")
-        .child(sponsorId)
-        .child("level")
-        .set(bracketName);
+      set(
+        ref(db, `private/sponsors/inventory/${sponsorId}/level`),
+        bracketName
+      );
       toastrMessage(`${sponsor.name} added to ${bracketName}`, "error");
     })
     .catch((err) => {
@@ -206,35 +205,34 @@ const addSponsorToBracket = (
  */
 const removeSponsorFromBracket = (sponsorId: string, bracketId: string) => {
   // retrieve board items from bracket
-  db.ref("private/sponsors/brackets")
-    .child(bracketId)
-    .child("sponsorsBoardList")
-    .once("value")
-    .then((snapshot) => {
-      const sponsorsList: string[] = snapshot.val();
-      // remove from list
-      const newSponsorsList = sponsorsList.filter((sponsor) => {
-        return sponsor !== sponsorId;
-      });
-
-      // Update with new List
-      db.ref("private/sponsors/brackets")
-        .child(bracketId)
-        .child("sponsorsBoardList")
-        .set(newSponsorsList);
-
-      // Remove sponsor from bracket sponsors
-      db.ref("private/sponsors/brackets")
-        .child(bracketId)
-        .child("bracketSponsors")
-        .child(sponsorId)
-        .remove();
-      // update sponsor in inventory with blank bracket
-      db.ref("private/sponsors/inventory")
-        .child(sponsorId)
-        .child("level")
-        .set("");
+  get(
+    ref(
+      db,
+      `private/sponsors/brackets/${bracketId}/sponsorsBoardList/${sponsorId}`
+    )
+  ).then((snapshot) => {
+    const sponsorsList: string[] = snapshot.val();
+    // remove from list
+    const newSponsorsList = sponsorsList.filter((sponsor) => {
+      return sponsor !== sponsorId;
     });
+
+    // Update with new List
+    set(
+      ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`),
+      newSponsorsList
+    );
+
+    // Remove sponsor from bracket sponsors
+    remove(
+      ref(
+        db,
+        `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`
+      )
+    );
+    // update sponsor in inventory with blank bracket name
+    set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), "");
+  });
 };
 
 /**
@@ -245,22 +243,23 @@ const removeSponsorFromBracket = (sponsorId: string, bracketId: string) => {
 const deleteBracket = (bracketId: string, sponsorsItems: string[]) => {
   // Update name information in each sponsor of bracket to ""
   sponsorsItems.forEach((sponsorId) => {
-    db.ref("private/sponsors/inventory")
-      .child(sponsorId)
-      .child("level")
-      .set("");
-    db.ref("private/sponsors/brackets")
-      .child(bracketId)
-      .child("bracketSponsors")
-      .child(sponsorId)
-      .child("level")
-      .set("");
+    set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), "");
+
+    // this one is unnecessary, but just in case... Review later
+    set(
+      ref(
+        db,
+        `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}/level`
+      ),
+      ""
+    );
   });
 
   // delete from bracket list
-  db.ref("private/sponsors/bracketsList").child(bracketId).remove();
+  remove(ref(db, `private/sponsors/bracketsList/${bracketId}`));
+
   // Delete from board
-  db.ref("private/sponsors/brackets").child(bracketId).remove();
+  remove(ref(db, `private/sponsors/brackets/${bracketId}`));
 };
 
 /**
@@ -279,23 +278,24 @@ const saveBracket = (
 ) => {
   if (!bracketInfo) return;
   if (bracketId) {
-    db.ref("private/sponsors/bracketsList").child(bracketId).set(bracketInfo);
+    set(ref(db, `private/sponsors/bracketsList/${bracketId}`), bracketInfo);
 
     // Update name information in each sponsor of bracket
     sponsorsItems.forEach((sponsorId) => {
-      db.ref("private/sponsors/inventory")
-        .child(sponsorId)
-        .child("level")
-        .set(bracketInfo.name);
+      set(
+        ref(db, `private/sponsors/inventory/${sponsorId}/level`),
+        bracketInfo.name
+      );
 
-      db.ref("private/sponsors/brackets")
-        .child(bracketId)
-        .child("bracketSponsors")
-        .child(sponsorId)
-        .child("level")
-        .set(bracketInfo.name);
+      set(
+        ref(
+          db,
+          `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}/level`
+        ),
+        bracketInfo.name
+      );
     });
-  } else db.ref("private/sponsors/bracketsList").push(bracketInfo); // create new
+  } else push(ref(db, "private/sponsors/bracketsList"), bracketInfo); // create new
   setBracketModalOpen(false);
 };
 
@@ -505,15 +505,17 @@ const saveSponsor = (
   if (!sponsorInfo) return;
   // save in bracket
   if (bracketid)
-    db.ref("private/sponsors/brackets")
-      .child(bracketid)
-      .child("bracketSponsors")
-      .child(sponsorId)
-      .set(sponsorInfo);
+    set(
+      ref(
+        db,
+        `private/sponsors/brackets/${bracketid}/bracketSponsors/${sponsorId}`
+      ),
+      sponsorInfo
+    );
   // save in inventory
   if (sponsorId !== "createNew") {
-    db.ref("private/sponsors/inventory").child(sponsorId).set(sponsorInfo);
-  } else db.ref("private/sponsors/inventory").push(sponsorInfo);
+    set(ref(db, `private/sponsors/inventory/${sponsorId}`), sponsorInfo);
+  } else push(ref(db, "private/sponsors/inventory"), sponsorInfo);
   if (setModalIsOpen) setModalIsOpen(false);
 };
 
@@ -547,10 +549,10 @@ const handleDragEnd = (
       const oldIndex = items.indexOf(active.id);
       const newIndex = items.indexOf(over!.id);
       const newOrder = arrayMove(items, oldIndex, newIndex);
-      db.ref("private/sponsors/brackets")
-        .child(bracketId)
-        .child("sponsorsBoardList")
-        .set(newOrder);
+      set(
+        ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`),
+        newOrder
+      );
       // return newOrder;
     });
   }
@@ -571,7 +573,7 @@ const handleDragCancel = (setActiveId: Function) => {
  * @param setBrackets
  */
 const getAllSponsorBrackets = (setBrackets: Function) => {
-  db.ref("private/sponsors/bracketsList").on("value", (snapshot) => {
+  onValue(ref(db, "private/sponsors/bracketsList"), (snapshot) => {
     const sponsorBrackets: SponsorBracketListItem = snapshot.val();
     if (!sponsorBrackets) return;
     setBrackets(
@@ -598,22 +600,20 @@ const getSponsorsListFromBrackets = (
   setSponsorsItems: Function,
   setSponsorsObj: Function
 ) => {
-  db.ref("private/sponsors/brackets")
-    .child(bracketId)
-    .on("value", (snapshot) => {
-      const sponsorBracket: SponsorBracketsDB = snapshot.val();
-      if (!sponsorBracket) {
-        setSponsorsItems([]);
-        return;
-      } else {
-        if (!sponsorBracket.sponsorsBoardList) setSponsorsItems([]);
-        else setSponsorsItems(sponsorBracket.sponsorsBoardList);
+  onValue(ref(db, `private/sponsors/brackets/${bracketId}`), (snapshot) => {
+    const sponsorBracket: SponsorBracketsDB = snapshot.val();
+    if (!sponsorBracket) {
+      setSponsorsItems([]);
+      return;
+    } else {
+      if (!sponsorBracket.sponsorsBoardList) setSponsorsItems([]);
+      else setSponsorsItems(sponsorBracket.sponsorsBoardList);
 
-        if (!sponsorBracket.bracketSponsors) setSponsorsObj({});
-        else setSponsorsObj(sponsorBracket.bracketSponsors);
-      }
-      // setSponsorsItems(sponsorsList);
-    });
+      if (!sponsorBracket.bracketSponsors) setSponsorsObj({});
+      else setSponsorsObj(sponsorBracket.bracketSponsors);
+    }
+    // setSponsorsItems(sponsorsList);
+  });
 };
 
 /**
@@ -744,7 +744,7 @@ const calculateRetroActives = (
  * @param setRetroValues
  */
 const getRetroActives = (setRetroValues: Function) => {
-  db.ref("private/sponsors/retroActives").on("value", (snapshot) => {
+  onValue(ref(db, "private/sponsors/retroActives"), (snapshot) => {
     const retroVals: number[] = snapshot.val();
     if (!retroVals) setRetroValues([]);
     setRetroValues(retroVals);
@@ -760,7 +760,7 @@ const getInventorySponsors = (
   setSponsors: Function,
   setExistingBrackets: Function
 ) => {
-  db.ref("private/sponsors/inventory").on("value", (snapshot) => {
+  onValue(ref(db, "private/sponsors/inventory"), (snapshot) => {
     const allSponsors: SponsorsOrder = snapshot.val();
 
     if (!allSponsors) return;
@@ -776,7 +776,7 @@ const getInventorySponsors = (
     });
     setSponsors(sortedSponsors);
   });
-  db.ref("private/sponsors/bracketsList").on("value", (snapshot) => {
+  onValue(ref(db, "private/sponsors/bracketsList"), (snapshot) => {
     const allBrackets: SponsorBracketsDB = snapshot.val();
     if (allBrackets) setExistingBrackets(allBrackets);
   });
@@ -958,16 +958,16 @@ const publishBracketToWebsite = (
   };
 
   // Publish public bracket to public database
-  db.ref("public/officialWebsite/sponsors/brackets")
-    .child(bracketId)
-    .set(publicBracket)
-    .catch((err) => {
-      if (err)
-        toastrMessage(
-          `An error occurred while publishing ${bracketInfo.name}`,
-          "error"
-        );
-    });
+  set(
+    ref(db, `public/officialWebsite/sponsors/brackets/${bracketId}`),
+    publicBracket
+  ).catch((err) => {
+    if (err)
+      toastrMessage(
+        `An error occurred while publishing ${bracketInfo.name}`,
+        "error"
+      );
+  });
 };
 
 /**
@@ -975,15 +975,12 @@ const publishBracketToWebsite = (
  * @param setLastChangeDate
  */
 const getLastEditionDate = (setLastChangeDate: Function) => {
-  db.ref("public/officialWebsite/sponsors/lastChange").on(
-    "value",
-    (snapshot) => {
-      const lastChangeTimestamp: number = snapshot.val();
-      if (!lastChangeTimestamp) return;
-      const lastChangeDate = dateToString(lastChangeTimestamp, true);
-      setLastChangeDate(lastChangeDate);
-    }
-  );
+  onValue(ref(db, "public/officialWebsite/sponsors/lastChange"), (snapshot) => {
+    const lastChangeTimestamp: number = snapshot.val();
+    if (!lastChangeTimestamp) return;
+    const lastChangeDate = dateToString(lastChangeTimestamp, true);
+    setLastChangeDate(lastChangeDate);
+  });
 };
 
 /**
@@ -991,7 +988,10 @@ const getLastEditionDate = (setLastChangeDate: Function) => {
  */
 const publishLastChangeDate = () => {
   const lastChangeTimeStamp = new Date().getTime();
-  db.ref("public/officialWebsite/sponsors/lastChange").set(lastChangeTimeStamp);
+  set(
+    ref(db, "public/officialWebsite/sponsors/lastChange"),
+    lastChangeTimeStamp
+  );
 };
 
 /**
@@ -1004,32 +1004,23 @@ const publishSponsorsToWebsite = async (
 ) => {
   if (!existingBrackets) return;
   // remove existing from website
-  await db
-    .ref("public/officialWebsite/sponsors")
-    .remove()
-    .catch((err) => {
-      if (err)
-        toastrMessage(`An error occurred while replacing sponsors`, "error");
-    });
+  await remove(ref(db, "public/officialWebsite/sponsors")).catch((err) => {
+    if (err)
+      toastrMessage(`An error occurred while replacing sponsors`, "error");
+  });
 
   // Get all existing brackets with sponsors
-  db.ref("private/sponsors/brackets")
-    .once("value")
-    .then((snapshot) => {
-      const allBrackets: SponsorBracketsDB = snapshot.val();
-      if (!allBrackets) return;
-      Object.entries(allBrackets).forEach(([bracketId, bracket]) => {
-        // For each bracket, publish to public db of sponsors
-        publishBracketToWebsite(
-          bracketId,
-          existingBrackets[bracketId],
-          bracket
-        );
-      });
-      // Publish last edition timestamp
-      publishLastChangeDate();
-      toastrMessage(`Publishing sponsors to website complete.`, "success");
+  get(ref(db, "private/sponsors/brackets")).then((snapshot) => {
+    const allBrackets: SponsorBracketsDB = snapshot.val();
+    if (!allBrackets) return;
+    Object.entries(allBrackets).forEach(([bracketId, bracket]) => {
+      // For each bracket, publish to public db of sponsors
+      publishBracketToWebsite(bracketId, existingBrackets[bracketId], bracket);
     });
+    // Publish last edition timestamp
+    publishLastChangeDate();
+    toastrMessage(`Publishing sponsors to website complete.`, "success");
+  });
 };
 
 export {
