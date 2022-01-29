@@ -1,4 +1,5 @@
 import cx from "classnames";
+import { off, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import { CheckboxGroup } from "react-rainbow-components";
 import { db } from "../../config/firebase";
@@ -40,7 +41,7 @@ const RecruitmentSettings = ({
     getDepartmentOptions(departments, setDepartmentOptions);
     getOpenedDepartments(setOpenDepartments);
     return () => {
-      db.ref("public/recruitment/openDepartments").off("value");
+      off(ref(db, "public/recruitment/openDepartments"));
     };
   }, [departments]);
 

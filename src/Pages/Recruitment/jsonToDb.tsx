@@ -1,3 +1,4 @@
+import { ref, set } from "firebase/database";
 import { v4 as uuid } from "uuid";
 import { db } from "../../config/firebase";
 import { RecruitmentTable, RecruitmentTableSQL } from "../../interfaces";
@@ -94,7 +95,7 @@ const sendJsonToDb = () => {
       timestamp: newDate,
     };
   });
-  db.ref("public/recruitment/tables/" + tableName).set(newData);
+  set(ref(db, "public/recruitment/tables/" + tableName), newData);
 };
 
 export { sendJsonToDb };

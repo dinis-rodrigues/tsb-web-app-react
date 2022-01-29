@@ -13,6 +13,8 @@ import { dateToString, userHasPermission } from "../../utils/generalFunctions";
 import Compress from "compress.js";
 import { NumberFormatValues } from "react-number-format";
 import { getNameFromFullName } from "../Register/registerUtils";
+import { get, ref, set, update } from "firebase/database";
+import * as fbStorage from "firebase/storage";
 
 // PHP SERVER VARIABLES
 // const developmentPHPTarget =
@@ -589,22 +591,19 @@ const setDepartmentPositions = (
 ) => {
   // Sets the optional positions based on the current department
   const acronym: string = departmentProfileAcronyms[option];
-  db.ref(`private/departments/${acronym}/positions`).once(
-    "value",
-    (snapshot) => {
-      const positions = snapshot.val();
-      const dataArr: selectOption[] = [];
-      for (var key in positions) {
-        if (positions.hasOwnProperty(key)) {
-          dataArr.push({ value: positions[key], label: positions[key] });
-        }
+  get(ref(db, `private/departments/${acronym}/positions`)).then((snapshot) => {
+    const positions = snapshot.val();
+    const dataArr: selectOption[] = [];
+    for (var key in positions) {
+      if (positions.hasOwnProperty(key)) {
+        dataArr.push({ value: positions[key], label: positions[key] });
       }
-      let morePositions: selectOption[] = getAdditionalAdminPositions(user);
-      let defaultPositions = getDefaultPositions();
-      let allPositions = [...defaultPositions, ...dataArr, ...morePositions];
-      setSelectPositions(allPositions);
     }
-  );
+    let morePositions: selectOption[] = getAdditionalAdminPositions(user);
+    let defaultPositions = getDefaultPositions();
+    let allPositions = [...defaultPositions, ...dataArr, ...morePositions];
+    setSelectPositions(allPositions);
+  });
 };
 
 /**
@@ -742,44 +741,36 @@ const savePublicUser = (userId: string, info: PersonalInformation) => {
     leftIn: info.leftIn ? info.leftIn : "",
     userName: info.userName ? info.userName : "",
   };
-  db.ref("public/officialWebsite/team")
-    .child(userId)
-    .child("info")
-    .set(publicInfo);
+  set(ref(db, `public/officialWebsite/team/${userId}/info`), publicInfo);
 };
 
 /**
  * Copies all public user data to Public directory DB
  */
 const sendTeamToPublic = () => {
-  db.ref(`private/usersMetadata`)
-    .once("value")
-    .then((snapshot) => {
-      const allUsers: UserMetadata = snapshot.val();
+  get(ref(db, `private/usersMetadata`)).then((snapshot) => {
+    const allUsers: UserMetadata = snapshot.val();
 
-      if (!allUsers) return;
+    if (!allUsers) return;
 
-      Object.entries(allUsers).forEach(([userKey, user]) => {
-        const info = user.pinfo;
-        const publicInfo: PublicUserInfo = {
-          name: info.name ? info.name : "",
-          position: info.position ? info.position : "",
-          degree: info.degree ? info.degree : "",
-          birth: info.birth ? info.birth : "",
-          department: info.department ? info.department : "",
-          joinedIn: info.joinedIn ? info.joinedIn : "",
-          linkedin: info.linkedin ? info.linkedin : "",
-          description: info.description ? info.description : "",
-          email: info.email ? info.email : "",
-          inTeam: info.inTeam,
-          leftIn: info.leftIn ? info.leftIn : "",
-        };
-        db.ref("public/officialWebsite/team")
-          .child(userKey)
-          .child("info")
-          .set(publicInfo);
-      });
+    Object.entries(allUsers).forEach(([userKey, user]) => {
+      const info = user.pinfo;
+      const publicInfo: PublicUserInfo = {
+        name: info.name ? info.name : "",
+        position: info.position ? info.position : "",
+        degree: info.degree ? info.degree : "",
+        birth: info.birth ? info.birth : "",
+        department: info.department ? info.department : "",
+        joinedIn: info.joinedIn ? info.joinedIn : "",
+        linkedin: info.linkedin ? info.linkedin : "",
+        description: info.description ? info.description : "",
+        email: info.email ? info.email : "",
+        inTeam: info.inTeam,
+        leftIn: info.leftIn ? info.leftIn : "",
+      };
+      set(ref(db, `public/officialWebsite/team/${userKey}/info`), publicInfo);
     });
+  });
 };
 
 /**
@@ -807,7 +798,7 @@ const saveInformation = (
     return;
   }
   const userData = { ...info, name: getNameFromFullName(info.fullName!) };
-  db.ref(`private/usersMetadata/${user.id}/pinfo`).update(userData);
+  update(ref(db, `private/usersMetadata/${user.id}/pinfo`), userData);
   savePublicUser(user.id, userData);
   setDisabledInput((disabledInput: boolean) => !disabledInput);
   setPrevInfo(userData);
@@ -965,7 +956,10 @@ const resizeImage = (
         .then((response) => {
           // If succesfful, save in firebase storage
           // Send image to firebase storage
-          st.ref(`users/${user.id}/${user.id}comp`).put(fileBlob);
+          fbStorage.uploadBytes(
+            fbStorage.ref(st, `users/${user.id}/${user.id}comp`),
+            fileBlob
+          );
           // When all works out well, kill croppie and save button
           killCroppie(setCroppie, croppie, setShowSaveImg);
           // update/refresh the profile image
@@ -1033,7 +1027,11 @@ const sendImgToServer = async (
       // Send image to firebase storage
     })
     .catch((error) => {});
-  await st.ref(`users/${user.id}/${user.id}`).put(blob);
+
+  await fbStorage.uploadBytes(
+    fbStorage.ref(st, `users/${user.id}/${user.id}`),
+    blob
+  );
   resizeImage(user, blob, croppie, setCroppie, setShowSaveImg, setUSER);
 };
 

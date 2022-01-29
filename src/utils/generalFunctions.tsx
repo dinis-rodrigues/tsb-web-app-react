@@ -16,6 +16,7 @@ import {
   userContext,
   UserMetadata,
 } from "../interfaces";
+import { get, push, ref } from "firebase/database";
 
 /** Sends a Toastr Notification to the User
  * @param  {string} title Notification title
@@ -83,20 +84,17 @@ const swalAlert = withReactContent(Swal);
  * @return {snapshot} all users metadata snapshot
  */
 const getAllUsersMetadata = async () => {
-  return db.ref("private/usersMetadata").once("value");
+  return get(ref(db, "private/usersMetadata"));
 };
 
 /** Retrieves and sets users metadata into the state
  * @param {Function} setUsersMetadata users metadata update state function
  */
 const getAndSetAllUsersMetadata = (setUsersMetadata: Function) => {
-  return db
-    .ref("private/usersMetadata")
-    .once("value")
-    .then((snapshot) => {
-      if (!snapshot.val()) return;
-      setUsersMetadata(snapshot.val());
-    });
+  return get(ref(db, "private/usersMetadata")).then((snapshot) => {
+    if (!snapshot.val()) return;
+    setUsersMetadata(snapshot.val());
+  });
 };
 
 /** Retrieves the profile image path based on the User ID
@@ -628,27 +626,25 @@ const getUserAssignmentOptions = (
   setUserOptions: Function,
   setUsersMetadata: Function
 ) => {
-  db.ref("private/usersMetadata")
-    .once("value")
-    .then((snapshot) => {
-      const allUsers = snapshot.val();
-      setUsersMetadata(allUsers);
+  get(ref(db, "private/usersMetadata")).then((snapshot) => {
+    const allUsers = snapshot.val();
+    setUsersMetadata(allUsers);
 
-      let sortableUsers: [string, PersonalInformation, boolean][] = [];
-      snapshot.forEach((user) => {
-        if (user.key) {
-          sortableUsers.push([
-            user.key,
-            user.val().pinfo,
-            user.val().pinfo.inTeam,
-          ]);
-        }
-      });
-      let sortedUsers = sortUsers(sortableUsers);
-
-      let options = buildUserSelectOptions(sortedUsers);
-      setUserOptions(options);
+    let sortableUsers: [string, PersonalInformation, boolean][] = [];
+    snapshot.forEach((user) => {
+      if (user.key) {
+        sortableUsers.push([
+          user.key,
+          user.val().pinfo,
+          user.val().pinfo.inTeam,
+        ]);
+      }
     });
+    let sortedUsers = sortUsers(sortableUsers);
+
+    let options = buildUserSelectOptions(sortedUsers);
+    setUserOptions(options);
+  });
 };
 
 /** Sets users to build the select assignment
@@ -725,8 +721,8 @@ const sendNotification = (
       color: color,
       timestamp: new Date().getTime(),
     };
-    db.ref(`private/usersNotifications/${sendTo}/all`).push(notification);
-    db.ref(`private/usersNotifications/${sendTo}/new`).push(notification);
+    push(ref(db, `private/usersNotifications/${sendTo}/all`), notification);
+    push(ref(db, `private/usersNotifications/${sendTo}/new`), notification);
   }
 };
 

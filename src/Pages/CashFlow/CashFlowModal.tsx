@@ -1,3 +1,4 @@
+import { push, ref, remove, set } from "firebase/database";
 import { Fragment } from "react";
 import NumberFormat, { NumberFormatValues } from "react-number-format";
 import { Modal, Button, DatePicker } from "react-rainbow-components";
@@ -18,16 +19,16 @@ type Props = {
 const saveFlow = (flowInfo: Flow, closeModal: Function) => {
   let flowData = { ...flowInfo, id: "" };
   if (flowInfo.id) {
-    db.ref("private/finances/flow").child(flowInfo.id).set(flowData);
+    set(ref(db, "private/finances/flow/" + flowInfo.id), flowInfo);
   } else {
-    db.ref("private/finances/flow").push(flowData);
+    push(ref(db, "private/finances/flow"), flowData);
   }
   closeModal();
 };
 
 const deleteFlow = (flowInfo: Flow, closeModal: Function) => {
   if (!flowInfo.id) return;
-  db.ref("private/finances/flow").child(flowInfo.id).remove();
+  remove(ref(db, "private/finances/flow/" + flowInfo.id));
   closeModal();
 };
 const inputHandler = (

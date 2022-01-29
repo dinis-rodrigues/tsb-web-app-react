@@ -6,6 +6,7 @@ import ForumCreateModal from "./ForumCreateModal";
 import ForumSection from "./ForumSection";
 import { getForumMetadata } from "./forumUtils";
 import { withRouter } from "react-router-dom";
+import { off, ref } from "firebase/database";
 
 const Forum = () => {
   const { USER } = useAuth();
@@ -16,8 +17,8 @@ const Forum = () => {
   useEffect(() => {
     getForumMetadata(setForumMetadata, setForumSectionOrder);
     return () => {
-      db.ref("private/forumMetadata").off("value");
-      db.ref("private/forumOrder").off("value");
+      off(ref(db, "private/forumMetadata"));
+      off(ref(db, "private/forumOrder"));
     };
   }, []);
   return (

@@ -6,6 +6,7 @@ import { v4 as uuid } from "uuid";
 import { sortUsersDb } from "../attendanceUtils";
 import OverallAttendanceRow from "./OverallAttendanceRow";
 import { useAuth } from "../../../contexts/AuthContext";
+import { off, ref } from "firebase/database";
 
 const getRows = (sortedUsers: [string, User][], usersDb: UsersDB) => {
   return sortedUsers.map(([userId, user], idx) => (
@@ -37,7 +38,7 @@ const OverallAttendance = () => {
     setSortedUsers(usersSorted);
 
     return () => {
-      db.ref(`private/users`).off("value");
+      off(ref(db, `private/users`));
     };
   }, [usersMetadata]);
   return (

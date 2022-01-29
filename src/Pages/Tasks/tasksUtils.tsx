@@ -17,6 +17,17 @@ import {
   sendNotification,
 } from "../../utils/generalFunctions";
 import { v4 as uuid } from "uuid";
+import {
+  get,
+  off,
+  onValue,
+  push,
+  ref,
+  remove,
+  runTransaction,
+  set,
+  update,
+} from "firebase/database";
 
 /** SHow a confirmation message to delete the task board
  * @param  {Function} deleteBoard function to delete the board
@@ -88,7 +99,7 @@ const addTaskToUsers = (
   for (let userOption of usersToRemove) {
     let userKey = userOption.value;
     // remove users
-    db.ref(`private/usersTasks/${userKey}/${taskInfo.id}`).remove();
+    remove(ref(db, `private/usersTasks/${userKey}/${taskInfo.id}`));
   }
 
   // Make a copy of the task to add to users
@@ -104,7 +115,7 @@ const addTaskToUsers = (
   for (let userOption of usersToAdd) {
     let userKey = userOption.value;
     // add users
-    db.ref(`private/usersTasks/${userKey}/${taskInfo.id}`).set(taskToAdd);
+    set(ref(db, `private/usersTasks/${userKey}/${taskInfo.id}`), taskToAdd);
     if (userKey !== user.id) {
       sendNotification(
         userKey,
@@ -128,7 +139,10 @@ const addTaskToUsers = (
   for (let userOption of usersToUpdate) {
     let userKey = userOption.value;
     // add users
-    db.ref(`private/usersTasks/${userKey}/${taskInfo.id}`).update(taskToUpdate);
+    update(
+      ref(db, `private/usersTasks/${userKey}/${taskInfo.id}`),
+      taskToUpdate
+    );
   }
 };
 
@@ -155,7 +169,7 @@ const deleteTask = (
     for (let userOption of taskInfo.assignedTo) {
       let userKey = userOption.value;
       // remove users
-      db.ref(`private/usersTasks/${userKey}/${taskInfo.id}`).remove();
+      remove(ref(db, `private/usersTasks/${userKey}/${taskInfo.id}`));
     }
   }
   // Remove the task of the board db
@@ -167,7 +181,7 @@ const deleteTask = (
   // Remove task from the column (inplace)
   updatedItems.splice(currTaskNum, 1);
   // update database, with the removed column
-  db.ref(`private/${departmentBoard}/b/${currBoard}`).update({
+  update(ref(db, `private/${departmentBoard}/b/${currBoard}`), {
     ...columns,
     [taskInfo.columnId]: { ...updatedColumn, items: updatedItems },
   });
@@ -217,9 +231,13 @@ const saveTask = (
     modalTask = { ...modalTask, totalObj: total, completedObj: completed };
   }
 
-  db.ref(
-    `private/${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}`
-  ).update(modalTask);
+  update(
+    ref(
+      db,
+      `private/${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}`
+    ),
+    modalTask
+  );
   drawerOpenHandler();
   addTaskToUsers(taskInfo, modalTask, departmentBoard, currBoard, USER);
 };
@@ -327,14 +345,13 @@ const submitComment = (
   };
 
   // Push the comment to DB
-  let commentRef = `private/${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}`;
-  db.ref(commentRef).child("comments").push(comment);
+  let commentRef = `private/${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}/comments`;
+  push(ref(db, commentRef), comment);
   // Increment comment count on task db, and in state
-  db.ref(commentRef)
-    .child("numComments")
-    .transaction((num) => {
-      return (num || 0) + 1;
-    });
+  let commentNumRef = `private/${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}/numComments`;
+  runTransaction(ref(db, commentNumRef), (num) => {
+    return (num || 0) + 1;
+  });
   setModalTask({ ...modalTask, numComments: modalTask.numComments + 1 });
 
   // Update number of comments on assigned users db (this is cheating because we
@@ -342,13 +359,11 @@ const submitComment = (
   if (taskInfo.assignedTo) {
     for (let userOption of taskInfo.assignedTo) {
       let userKey = userOption.value;
-      let userCommentRef = `usersTasks/${userKey}/${taskInfo.id}`;
+      let userCommentRef = `usersTasks/${userKey}/${taskInfo.id}/numComments`;
       // increment count users
-      db.ref(userCommentRef)
-        .child("numComments")
-        .transaction((num) => {
-          return (num || 0) + 1;
-        });
+      runTransaction(ref(db, userCommentRef), (num) => {
+        return (num || 0) + 1;
+      });
       if (userKey !== user.id) {
         sendNotification(
           userKey,
@@ -418,7 +433,7 @@ const onDragEnd = (
     // insert the moved task into the destination column
     destItems.splice(destination.index, 0, movedTask);
     // update database
-    db.ref(`private/${departmentBoard}/b/${currBoard}`).update({
+    update(ref(db, `private/${departmentBoard}/b/${currBoard}`), {
       ...columns,
       [source.droppableId]: { ...sourceColumn, items: sourceItems },
       [destination.droppableId]: { ...destColumn, items: destItems },
@@ -428,7 +443,8 @@ const onDragEnd = (
       for (let userOption of movedTask.assignedTo) {
         let userKey = userOption.value;
         // remove users
-        db.ref(`private/usersTasks/${userKey}/${movedTask.id}`).update(
+        update(
+          ref(db, `private/usersTasks/${userKey}/${movedTask.id}`),
           movedTask
         );
       }
@@ -442,7 +458,7 @@ const onDragEnd = (
     const [movedTask] = copiedItems.splice(source.index, 1);
     copiedItems.splice(destination.index, 0, movedTask);
 
-    db.ref(`private/${departmentBoard}/b/${currBoard}`).update({
+    update(ref(db, `private/${departmentBoard}/b/${currBoard}`), {
       ...columns,
       [source.droppableId]: { ...column, items: copiedItems },
     });
@@ -495,7 +511,7 @@ const addTask = (
   };
   copiedItems.push(newTask);
   let taskNum = copiedItems.length - 1;
-  db.ref(`private/${departmentBoard}/b/${currBoard}`).update({
+  update(ref(db, `private/${departmentBoard}/b/${currBoard}`), {
     ...columns,
     "0Todo": { ...column, items: copiedItems },
   });
@@ -503,11 +519,15 @@ const addTask = (
   setCurrTaskNum(taskNum);
   setModalTask(newTask);
   // Add a listener for the comments
-  db.ref(
-    `private/${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`
-  ).on("value", (snapshot) => {
-    setCurrTaskInfo(snapshot.val());
-  });
+  onValue(
+    ref(
+      db,
+      `private/${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`
+    ),
+    (snapshot) => {
+      setCurrTaskInfo(snapshot.val());
+    }
+  );
   // Save the database reference we are listening to of the comments, to remove
   // on drawer close
   setCommentListener(
@@ -545,11 +565,15 @@ const taskOnClick = (
   setCurrTaskColumn(colId); // save the task column
   setCurrTaskNum(taskNum); // save the index of the task of the column items
   // Add a listener for the comments
-  db.ref(
-    `private/${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`
-  ).on("value", (snapshot) => {
-    setCurrTaskInfo(snapshot.val());
-  });
+  onValue(
+    ref(
+      db,
+      `private/${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`
+    ),
+    (snapshot) => {
+      setCurrTaskInfo(snapshot.val());
+    }
+  );
   // An auxiliary task info for the drawer modal, on value changes
   setModalTask(currTask);
   // Save the database reference we are listening to of the comments, to remove
@@ -588,12 +612,16 @@ const openMatchingTaskId = (
     Object.entries(selectedCol.items).forEach(([taskNum, task]) => {
       if (task.id === taskId) {
         // Add a listener for the comments
-        db.ref(
-          `private/${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`
-        ).on("value", (snapshot) => {
-          setCurrTaskInfo(snapshot.val());
-          setModalTask(snapshot.val());
-        });
+        onValue(
+          ref(
+            db,
+            `private/${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`
+          ),
+          (snapshot) => {
+            setCurrTaskInfo(snapshot.val());
+            setModalTask(snapshot.val());
+          }
+        );
         setDrawerOpen(true);
         // An auxiliary task info for the drawer modal, on value changes
         setCurrTaskColumn(colId);
@@ -615,7 +643,7 @@ const drawerOpenHandler = (
   setCommentListener: Function
 ) => {
   setDrawerOpen(false);
-  if (commentListener) db.ref(commentListener).off("value");
+  if (commentListener) off(ref(db, commentListener));
   setCommentListener(null);
 };
 
@@ -627,7 +655,7 @@ const updateExistingBoards = (
   departmentBoard: string,
   setExistingBoards: Function
 ) => {
-  db.ref(`private/${departmentBoard}/list`).on("value", (snapshot) => {
+  onValue(ref(db, `private/${departmentBoard}/list`), (snapshot) => {
     let boards: string[] = snapshot.val();
     setExistingBoards(
       boards.map((board, idx) => {
@@ -653,19 +681,18 @@ const createNewBoard = (
   boardSkeleton: columnsShape,
   setRedirectToBoard: Function
 ) => {
-  let encodedBoardString = getEncodedString(boardString);
+  let encodedBoardString = getEncodedString(boardString.trim());
   // Build the new board skeleton
-  db.ref(`private/${departmentBoard}/b/${encodedBoardString}`).set(
+  set(
+    ref(db, `private/${departmentBoard}/b/${encodedBoardString}`),
     boardSkeleton
   );
   // Update the boards list
-  db.ref(`private/${departmentBoard}/list`)
-    .once("value")
-    .then((snapshot) => {
-      let boards: string[] = snapshot.val();
-      let newBoardsList = [...boards, encodedBoardString];
-      db.ref(`private/${departmentBoard}/list`).set(newBoardsList);
-    });
+  get(ref(db, `private/${departmentBoard}/list`)).then((snapshot) => {
+    let boards: string[] = snapshot.val();
+    let newBoardsList = [...boards, encodedBoardString];
+    set(ref(db, `private/${departmentBoard}/list`), newBoardsList);
+  });
   // Redirect to the newly created board
   setRedirectToBoard(encodedBoardString);
 };
@@ -689,7 +716,7 @@ const goToBoard = (
   let encodedBoardString = getEncodedString(option); // this is the decoded string
   if (currBoard === encodedBoardString) return;
   // Remove current board listener
-  db.ref(`private/${departmentBoard}/b/${currBoard}`).off("value");
+  off(ref(db, `private/${departmentBoard}/b/${currBoard}`));
   setColumns([]);
   setRedirectToBoard(encodedBoardString);
 };
@@ -718,30 +745,26 @@ const deleteBoard = (
           task.assignedTo.forEach((option, idx) => {
             let userId = option.value;
             // remove task from user
-            db.ref(`private/usersTasks/${userId}/${taskId}`).remove();
+            remove(ref(db, `private/usersTasks/${userId}/${taskId}`));
           });
         }
       });
     }
   });
   // Remove board from DB
-  db.ref(`private/${departmentBoard}/b/${currBoard}`).remove();
+  remove(ref(db, `private/${departmentBoard}/b/${currBoard}`));
   // Remove board name from department boards list
-  db.ref(`private/${departmentBoard}/list`)
-    .once("value")
-    .then((snapshot) => {
-      let boards: string[] = snapshot.val();
-      const index = boards.indexOf(currBoard);
-      if (index > -1) {
-        boards.splice(index, 1);
-      }
-      db.ref(`private/${departmentBoard}/list`)
-        .set(boards)
-        .then(() => {
-          setRedirectToBoard(`/${departmentBoard}/b/General`);
-        });
-      // Redirect to general
+  get(ref(db, `private/${departmentBoard}/list`)).then((snapshot) => {
+    let boards: string[] = snapshot.val();
+    const index = boards.indexOf(currBoard);
+    if (index > -1) {
+      boards.splice(index, 1);
+    }
+    set(ref(db, `private/${departmentBoard}/list`), boards).then(() => {
+      setRedirectToBoard(`/${departmentBoard}/b/General`);
     });
+    // Redirect to general
+  });
 };
 
 /** Checks if the department board is allowed to search in the DB

@@ -1,3 +1,4 @@
+import { ref, set } from "firebase/database";
 import { useState } from "react";
 import NumberFormat, { NumberFormatValues } from "react-number-format";
 import { Button, Modal } from "react-rainbow-components";
@@ -60,7 +61,7 @@ const createNewSeason = (
   // sort the list
   let sortedSeasons = sortSeasonsArray(seasonArray);
   //   Push the array to the DB
-  db.ref("private/bom/seasons").update(sortedSeasons);
+  set(ref(db, "private/bom/seasons"), sortedSeasons);
   setIsSeasonModalOpen(false);
   setSeasonToCreate("");
 };

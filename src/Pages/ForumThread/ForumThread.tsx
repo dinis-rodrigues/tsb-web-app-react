@@ -32,6 +32,7 @@ import ForumEditThreadModal from "./ForumEditThreadModal";
 import ThreadReply from "./ThreadReply";
 import { UncontrolledTooltip } from "reactstrap";
 import ForumThreadEditComment from "./ForumThreadEditComment";
+import { off, ref } from "firebase/database";
 
 const ForumThread = (props: any) => {
   const { USER } = useAuth();
@@ -81,16 +82,18 @@ const ForumThread = (props: any) => {
       encodedThreadName
     );
     return () => {
-      db.ref("private/forumThreads")
-        .child(encodedSectionName)
-        .child(encodedTopicName)
-        .child(encodedThreadName)
-        .off("value");
-      db.ref("private/forumPinned")
-        .child(encodedSectionName)
-        .child(encodedTopicName)
-        .child(encodedThreadName)
-        .off("value");
+      off(
+        ref(
+          db,
+          `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+        )
+      );
+      off(
+        ref(
+          db,
+          `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+        )
+      );
     };
   }, [encodedSectionName, encodedTopicName, encodedThreadName, USER]);
   return (

@@ -1,3 +1,4 @@
+import { get, onValue, ref } from "firebase/database";
 import { db } from "../../config/firebase";
 import {
   BomMaterial,
@@ -26,25 +27,23 @@ const getSpecifiedEvent = (
   setEvent: Function
 ) => {
   if (!user) return;
-  db.ref(`private/events/current`)
-    .once("value")
-    .then((snapshot) => {
-      let eventsDb: EventDatabase = snapshot.val();
-      let events = Object.entries(eventsDb);
-      let prevDate: null | string = null;
-      for (const event of events) {
-        let eventInfo = event[1];
-        let date = eventInfo.date;
-        // check department Meeting
-        if (eventInfo.type.includes(meetingType)) {
-          let [newPrevDate, mostRecent] = compareMeetingTime(date, prevDate);
-          prevDate = newPrevDate;
-          if (mostRecent && !currEvent) {
-            setEvent(eventInfo);
-          }
+  get(ref(db, `private/events/current`)).then((snapshot) => {
+    let eventsDb: EventDatabase = snapshot.val();
+    let events = Object.entries(eventsDb);
+    let prevDate: null | string = null;
+    for (const event of events) {
+      let eventInfo = event[1];
+      let date = eventInfo.date;
+      // check department Meeting
+      if (eventInfo.type.includes(meetingType)) {
+        let [newPrevDate, mostRecent] = compareMeetingTime(date, prevDate);
+        prevDate = newPrevDate;
+        if (mostRecent && !currEvent) {
+          setEvent(eventInfo);
         }
       }
-    });
+    }
+  });
 };
 
 /** Gets the most recent date between two
@@ -155,7 +154,7 @@ const getPinnedThreadInfo = (
   setThreadInformation: Function,
   setForumPaths: Function
 ) => {
-  db.ref("private/forumPinned").on("value", (snapshot) => {
+  onValue(ref(db, "private/forumPinned"), (snapshot) => {
     if (!snapshot.val()) {
       setThreadInformation(null);
       return;
@@ -228,6 +227,7 @@ const getMaterialStatusBadge = (toDo: taskShape & BomMaterial) => {
     if (toDo.status === "Required") colors = ["bg-danger", "badge-danger"];
     else if (toDo.status === "In Progress")
       colors = ["bg-warning", "badge-warning"];
+    else if (toDo.status === "Sponsor") colors = ["bg-info", "badge-info"];
   }
   return colors;
 };
@@ -309,13 +309,19 @@ const getLinkTo = (
 const getUserTasks = (user: userContext | null) => {
   return new Promise<false | UserTasks>((resolve, reject) => {
     if (!user) resolve(false);
-    db.ref("private/usersTasks")
-      .child(user!.id)
-      .once("value")
-      .then((snapshot) => {
-        if (snapshot.val()) resolve(snapshot.val());
-        resolve(false);
+    get(ref(db, "private/usersTasks/" + user!.id)).then((snapshot) => {
+      if (!snapshot.val()) resolve(false);
+      const tasks: UserTasks = snapshot.val();
+      const toDoTasks: UserTasks = {};
+
+      Object.entries(tasks).forEach(([key, task]) => {
+        if (task.status !== "Completed") {
+          toDoTasks[key] = task;
+        }
       });
+
+      resolve(toDoTasks);
+    });
   });
 };
 
@@ -327,13 +333,23 @@ const getUserTasks = (user: userContext | null) => {
 const getUserBomMaterials = (user: userContext | null) => {
   return new Promise<false | UserBomMaterials>((resolve) => {
     if (!user) resolve(false);
-    db.ref("private/usersBomMaterials")
-      .child(user!.id)
-      .once("value")
-      .then((snapshot) => {
-        if (snapshot.val()) resolve(snapshot.val());
-        resolve(false);
+    get(ref(db, "private/usersBomMaterials/" + user!.id)).then((snapshot) => {
+      if (!snapshot.val()) resolve(false);
+
+      const materials: UserBomMaterials = snapshot.val();
+      const todoMaterials: UserBomMaterials = {};
+
+      Object.entries(materials).forEach(([key, material]) => {
+        if (
+          material.status === "Required" ||
+          material.status === "In Progress"
+        ) {
+          todoMaterials[key] = material;
+        }
       });
+
+      resolve(todoMaterials);
+    });
   });
 };
 

@@ -1,3 +1,4 @@
+import { off, onValue, push, ref, remove, set } from "firebase/database";
 import { db } from "../../config/firebase";
 import {
   GalleryAlbum,
@@ -171,23 +172,20 @@ const getGalleryList = (
   setActiveGallery: Function,
   setActiveGalleryDbRef: Function
 ) => {
-  db.ref("public/officialWebsite/gallery/galleryList").on(
-    "value",
-    (snapshot) => {
-      const publicGallery: PublicGallery = snapshot.val();
-      if (!publicGallery) return;
-      const sortedGallery = sortPublicGallery(publicGallery);
+  onValue(ref(db, "public/officialWebsite/gallery/galleryList"), (snapshot) => {
+    const publicGallery: PublicGallery = snapshot.val();
+    if (!publicGallery) return;
+    const sortedGallery = sortPublicGallery(publicGallery);
 
-      setGalleryList(sortedGallery);
-      // Get current gallery info and photos
-      getActiveGallery(
-        sortedGallery,
-        setGalleryInfo,
-        setActiveGallery,
-        setActiveGalleryDbRef
-      );
-    }
-  );
+    setGalleryList(sortedGallery);
+    // Get current gallery info and photos
+    getActiveGallery(
+      sortedGallery,
+      setGalleryInfo,
+      setActiveGallery,
+      setActiveGalleryDbRef
+    );
+  });
 };
 
 /**
@@ -207,11 +205,12 @@ const createGallery = (
   if (!galleryInfo || galleryInfo.name.length <= 0) return;
 
   if (!editGallery)
-    db.ref("public/officialWebsite/gallery/galleryList").push(galleryInfo);
+    push(ref(db, "public/officialWebsite/gallery/galleryList"), galleryInfo);
   else
-    db.ref("public/officialWebsite/gallery/galleryList")
-      .child(activeGallery)
-      .set(galleryInfo);
+    set(
+      ref(db, `public/officialWebsite/gallery/galleryList/${activeGallery}`),
+      galleryInfo
+    );
   setModalIsOpen(false);
 };
 
@@ -234,9 +233,9 @@ const getGalleryPhotos = (
   setActiveGalleryDbRef: Function
 ) => {
   if (!newActiveGallery) return;
-  db.ref("public/officialWebsite/gallery/galleryPhotos")
-    .child(newActiveGallery)
-    .on("value", (snapshot) => {
+  onValue(
+    ref(db, `public/officialWebsite/gallery/galleryPhotos/${newActiveGallery}`),
+    (snapshot) => {
       const allPhotos: GalleryAlbum = snapshot.val();
 
       // get all photos of album
@@ -249,15 +248,16 @@ const getGalleryPhotos = (
 
       // remove old reference
       setActiveGalleryDbRef((oldRef: string) => {
-        db.ref(`"public/officialWebsite/gallery/galleryPhotos/${oldRef}"`).off(
-          "value"
+        off(
+          ref(db, `"public/officialWebsite/gallery/galleryPhotos/${oldRef}"`)
         );
         return newActiveGallery;
       });
 
       // Set new active gallery
       setActiveGallery(newActiveGallery);
-    });
+    }
+  );
 };
 
 /**
@@ -385,9 +385,10 @@ const saveUploadedImg = (
     description: desc,
     createdAt: new Date().getTime(),
   };
-  db.ref("public/officialWebsite/gallery/galleryPhotos")
-    .child(activeGallery)
-    .push(imgObj);
+  push(
+    ref(db, `public/officialWebsite/gallery/galleryPhotos/${activeGallery}`),
+    imgObj
+  );
 };
 
 /**
@@ -404,10 +405,13 @@ const saveEditedPhoto = (
   setModalIsOpen: Function
 ) => {
   if (activeGallery && imgId && photoInfo) {
-    db.ref("public/officialWebsite/gallery/galleryPhotos")
-      .child(activeGallery)
-      .child(imgId)
-      .set(photoInfo);
+    set(
+      ref(
+        db,
+        `public/officialWebsite/gallery/galleryPhotos/${activeGallery}/${imgId}`
+      ),
+      photoInfo
+    );
     setModalIsOpen(false);
   }
 };
@@ -456,10 +460,12 @@ const deletePhoto = (
       })
       .then((r: UploadedImgResponse) => {
         if (r.success) {
-          db.ref("public/officialWebsite/gallery/galleryPhotos")
-            .child(activeGallery)
-            .child(imgId)
-            .remove();
+          remove(
+            ref(
+              db,
+              `public/officialWebsite/gallery/galleryPhotos/${activeGallery}/${imgId}`
+            )
+          );
 
           setModalIsOpen(false);
           toastrMessage(r.msg, "success");
@@ -503,12 +509,12 @@ const deleteAlbum = (
     })
     .then((r: UploadedImgResponse) => {
       // Reload page -> Easy way :)
-      db.ref("public/officialWebsite/gallery/galleryPhotos")
-        .child(galleryId)
-        .remove();
-      db.ref("public/officialWebsite/gallery/galleryList")
-        .child(galleryId)
-        .remove();
+      remove(
+        ref(db, `public/officialWebsite/gallery/galleryPhotos/${galleryId}`)
+      );
+      remove(
+        ref(db, `public/officialWebsite/gallery/galleryList/${galleryId}`)
+      );
 
       if (r.success) {
         setModalIsOpen(false);

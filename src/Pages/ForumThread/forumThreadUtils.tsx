@@ -14,6 +14,16 @@ import {
   getEncodedString,
   sendNotification,
 } from "../../utils/generalFunctions";
+import {
+  get,
+  onValue,
+  push,
+  ref,
+  remove,
+  runTransaction,
+  set,
+  update,
+} from "firebase/database";
 
 /** Show a confirmation message to delete the thread
  * @param  {Function} deleteFunction function to delete the board
@@ -37,7 +47,7 @@ const swalDeleteThreadMessage = (deleteFunction: Function) => {
     .then((result) => {
       if (result.isConfirmed) {
         return;
-      } else if (result.isDenied) {
+      } else {
         deleteFunction();
       }
     });
@@ -91,17 +101,19 @@ const isThreadPinnedListener = (
   encodedTopicName: string,
   encodedThreadName: string
 ) => {
-  db.ref("private/forumPinned")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .on("value", (snapshot) => {
+  onValue(
+    ref(
+      db,
+      `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+    ),
+    (snapshot) => {
       if (snapshot.val()) {
         setIsPinned(true);
         return;
       }
       setIsPinned(false);
-    });
+    }
+  );
 };
 /** Checks if the current thread is pinned or not
  * @param  {string} encodedSectionName encoded string of section name
@@ -114,15 +126,15 @@ const isThreadPinned = (
   encodedThreadName: string
 ) => {
   return new Promise((resolve) => {
-    db.ref("private/forumPinned")
-      .child(encodedSectionName)
-      .child(encodedTopicName)
-      .child(encodedThreadName)
-      .once("value")
-      .then((snapshot) => {
-        if (snapshot.val()) resolve(true);
-        resolve(false);
-      });
+    get(
+      ref(
+        db,
+        `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+      )
+    ).then((snapshot) => {
+      if (snapshot.val()) resolve(true);
+      resolve(false);
+    });
   });
 };
 
@@ -156,19 +168,21 @@ const toggleWatchList = (
     delete watchList[user.id];
   }
   // Update thread
-  db.ref("private/forumThreads")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .child("watchList")
-    .set(watchList);
+  set(
+    ref(
+      db,
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/watchList`
+    ),
+    watchList
+  );
   // Update topic metadata
-  db.ref("private/forumTopicMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .child("watchList")
-    .set(watchList);
+  set(
+    ref(
+      db,
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/watchList`
+    ),
+    watchList
+  );
   // }
 
   // Update who watches the thread on the pinned db as well
@@ -176,12 +190,13 @@ const toggleWatchList = (
     (isPinned) => {
       if (isPinned) {
         // Update pinned thread as well
-        db.ref("private/forumPinned")
-          .child(encodedSectionName)
-          .child(encodedTopicName)
-          .child(encodedThreadName)
-          .child("watchList")
-          .set(watchList);
+        set(
+          ref(
+            db,
+            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/watchList`
+          ),
+          watchList
+        );
       }
     }
   );
@@ -204,22 +219,23 @@ const togglePinnedThread = (
     (isPinned) => {
       if (isPinned) {
         // remove pinned thread
-        db.ref("private/forumPinned")
-          .child(encodedSectionName)
-          .child(encodedTopicName)
-          .child(encodedThreadName)
-          .remove();
+        remove(
+          ref(
+            db,
+            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+          )
+        );
       } else {
         // thread is not pinned, so remove existing one, and add it
-        db.ref("private/forumPinned")
-          .remove()
-          .then(() => {
-            db.ref("private/forumPinned")
-              .child(encodedSectionName)
-              .child(encodedTopicName)
-              .child(encodedThreadName)
-              .set(threadInformation);
-          });
+        remove(ref(db, "private/forumPinned")).then(() => {
+          set(
+            ref(
+              db,
+              `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+            ),
+            threadInformation
+          );
+        });
       }
     }
   );
@@ -238,11 +254,12 @@ const removePinnedThreadIfEqual = (
   isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then(
     (isPinned) => {
       if (isPinned) {
-        db.ref("private/forumPinned")
-          .child(encodedSectionName)
-          .child(encodedTopicName)
-          .child(encodedThreadName)
-          .remove();
+        remove(
+          ref(
+            db,
+            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+          )
+        );
       }
     }
   );
@@ -270,28 +287,33 @@ const deleteThread = (
     totalReplies = totalReplies + numReplies;
   }
   // subtract number of replies to the forum metadata
-  db.ref("private/forumMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child("numberReplies")
-    .transaction((num) => {
-      return (num || 0) - totalReplies;
-    });
+  runTransaction(
+    ref(
+      db,
+      `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`
+    ),
+    (currentValue) => {
+      return (currentValue || 0) - totalReplies;
+    }
+  );
   // subtract number of threads to the forum metadata
-  db.ref("private/forumMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child("numberThreads")
-    .transaction((num) => {
-      return (num || 0) - 1;
-    });
+  runTransaction(
+    ref(
+      db,
+      `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberThreads`
+    ),
+    (currentValue) => {
+      return (currentValue || 0) - totalReplies;
+    }
+  );
 
   // remove from topic metadata
-  db.ref("private/forumTopicMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .remove();
+  remove(
+    ref(
+      db,
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+    )
+  );
   //Remove Pinned Thread if equal
   removePinnedThreadIfEqual(
     encodedSectionName,
@@ -300,15 +322,12 @@ const deleteThread = (
   );
 
   // Remove thread
-  db.ref("private/forumThreads")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .remove()
-    .then(
-      function () {},
-      (err) => {}
-    );
+  remove(
+    ref(
+      db,
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+    )
+  );
 };
 
 /** Adds a like entry to the comment
@@ -344,14 +363,13 @@ const toggleCommentLikedBy = (
     likedBy = { [user.id]: user.name };
   }
   // Update thread
-  db.ref("private/forumThreads")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .child("replies")
-    .child(replyId)
-    .child("likedBy")
-    .set(likedBy);
+  set(
+    ref(
+      db,
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/replies/${replyId}/likedBy`
+    ),
+    likedBy
+  );
 };
 
 /** Adds a like entry to the thread and topic metadata
@@ -384,31 +402,34 @@ const toggleThreadLikedBy = (
     delete likedBy[user.id];
   }
   // Update thread
-  db.ref("private/forumThreads")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .child("likedBy")
-    .set(likedBy);
+  set(
+    ref(
+      db,
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/likedBy`
+    ),
+    likedBy
+  );
   // Update topic metadata
-  db.ref("private/forumTopicMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .child("likedBy")
-    .set(likedBy);
+  set(
+    ref(
+      db,
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/likedBy`
+    ),
+    likedBy
+  );
 
   // Update who liked the thread on the pinned db sa well
   isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then(
     (isPinned) => {
       if (isPinned) {
         // Update pinned thread as well
-        db.ref("private/forumPinned")
-          .child(encodedSectionName)
-          .child(encodedTopicName)
-          .child(encodedThreadName)
-          .child("likedBy")
-          .set(likedBy);
+        set(
+          ref(
+            db,
+            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/likedBy`
+          ),
+          likedBy
+        );
       }
     }
   );
@@ -482,11 +503,13 @@ const saveThread = (
     latestUpdateTimestamp: new Date().getTime(),
   };
   // Update thread
-  db.ref("private/forumThreads")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .update(dataToUpdate);
+  update(
+    ref(
+      db,
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+    ),
+    dataToUpdate
+  );
 
   //   Update forum topic metadata
   newReplyUpdateTopicMetadata(
@@ -511,11 +534,13 @@ const saveThread = (
     (isPinned) => {
       if (isPinned) {
         // Update pinned thread as well
-        db.ref("private/forumPinned")
-          .child(encodedSectionName)
-          .child(encodedTopicName)
-          .child(encodedThreadName)
-          .update(dataToUpdate);
+        update(
+          ref(
+            db,
+            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+          ),
+          dataToUpdate
+        );
       }
     }
   );
@@ -550,13 +575,13 @@ const saveComment = (
   };
 
   // Update thread
-  db.ref("private/forumThreads")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .child("replies")
-    .child(threadId)
-    .update(dataToUpdate);
+  update(
+    ref(
+      db,
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/replies/${threadId}`
+    ),
+    dataToUpdate
+  );
 
   setIsCommentModalOpen(false);
 };
@@ -582,29 +607,31 @@ const deleteComment = (
   }
   // Decrement number of replies in the forum getForumMetadata, and topic
   // metadata
-  db.ref("private/forumTopicMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .child("numberReplies")
-    .transaction((num) => {
+  runTransaction(
+    ref(
+      db,
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/numberReplies`
+    ),
+    (num) => {
       return (num || 0) - 1;
-    });
-  db.ref("private/forumMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child("numberReplies")
-    .transaction((num) => {
+    }
+  );
+  runTransaction(
+    ref(
+      db,
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`
+    ),
+    (num) => {
       return (num || 0) - 1;
-    });
-  // Update thread with the removed commment
-  db.ref("private/forumThreads")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .child("replies")
-    .child(threadId)
-    .remove();
+    }
+  );
+  // Update thread with the removed comment
+  remove(
+    ref(
+      db,
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/replies/${threadId}`
+    )
+  );
 };
 
 /** Pushes a new comment to the db and updates forum metadata after a reply has been submitted
@@ -632,12 +659,13 @@ const submitThreadReply = (
     likedBy: {},
   };
   //   Add reply to thread
-  db.ref("private/forumThreads")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .child("replies")
-    .push(reply);
+  push(
+    ref(
+      db,
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/replies`
+    ),
+    reply
+  );
   //   Update topic metadata
   newReplyUpdateTopicMetadata(
     user,
@@ -750,30 +778,33 @@ const updateWhoViewedMostRecentUpdate = (
     }
   }
   // Update thread
-  db.ref("private/forumThreads")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .child(viewedByKey)
-    .set(viewedByObject);
+  set(
+    ref(
+      db,
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/${viewedByKey}`
+    ),
+    viewedByObject
+  );
   // Update topic thread Metadata
-  db.ref("private/forumTopicMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .child(viewedByKey)
-    .set(viewedByObject);
+  set(
+    ref(
+      db,
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/${viewedByKey}`
+    ),
+    viewedByObject
+  );
   // Update who viewed the thread on the pinned db as well
   isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then(
     (isPinned) => {
       if (isPinned) {
         // Update pinned thread as well
-        db.ref("private/forumPinned")
-          .child(encodedSectionName)
-          .child(encodedTopicName)
-          .child(encodedThreadName)
-          .child(viewedByKey)
-          .set(viewedByObject);
+        set(
+          ref(
+            db,
+            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/${viewedByKey}`
+          ),
+          viewedByObject
+        );
       }
     }
   );
@@ -804,19 +835,21 @@ const newReplyUpdateForumMetadata = (
     // numberOfReplies:
   };
   // Update metadata
-  db.ref("private/forumMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .update(dataToUpdate);
+  update(
+    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`),
+    dataToUpdate
+  );
   // Increment number of replies
   if (increment) {
-    db.ref("private/forumMetadata")
-      .child(encodedSectionName)
-      .child(encodedTopicName)
-      .child("numberReplies")
-      .transaction((num) => {
+    runTransaction(
+      ref(
+        db,
+        `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`
+      ),
+      (num) => {
         return (num || 0) + 1;
-      });
+      }
+    );
   }
 };
 
@@ -847,21 +880,24 @@ const newReplyUpdateTopicMetadata = (
     // numberOfReplies:
   }
   // Update metadata
-  db.ref("private/forumTopicMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .update(dataToUpdate);
+  update(
+    ref(
+      db,
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+    ),
+    dataToUpdate
+  );
   // Increment number of replies
   if (increment) {
-    db.ref("private/forumTopicMetadata")
-      .child(encodedSectionName)
-      .child(encodedTopicName)
-      .child(encodedThreadName)
-      .child("numberReplies")
-      .transaction((num) => {
+    runTransaction(
+      ref(
+        db,
+        `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/numberReplies`
+      ),
+      (num) => {
         return (num || 0) + 1;
-      });
+      }
+    );
   }
 };
 /** Retrieves encoded thread strings from url
@@ -915,11 +951,12 @@ const getAndSetThreadInformation = (
   setThreadInformation: Function,
   setRedirectTo: Function
 ) => {
-  db.ref("private/forumThreads")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .on("value", (snapshot) => {
+  onValue(
+    ref(
+      db,
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+    ),
+    (snapshot) => {
       if (!snapshot.val()) {
         setRedirectTo(
           `/forum/s/${encodedSectionName}/topic/${encodedTopicName}`
@@ -948,7 +985,8 @@ const getAndSetThreadInformation = (
         "viewedBy",
         threadInfo.viewedBy
       );
-    });
+    }
+  );
 };
 
 /** Retrieves decoded thread strings

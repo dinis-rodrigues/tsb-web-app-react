@@ -5,6 +5,7 @@ import { Course } from "../../interfaces";
 import CourseRow from "./CourseRow";
 import { getAndSetAllUsersMetadata } from "../../utils/generalFunctions";
 import { UserMetadata } from "../../interfaces";
+import { off, onValue, ref } from "firebase/database";
 
 type Props = {
   userName: string | null;
@@ -16,7 +17,7 @@ const CoursesTable = ({ userName, userId }: Props) => {
   const [usersMetadata, setUsersMetadata] = useState<UserMetadata | null>(null);
   useEffect(() => {
     const getCourses = () => {
-      db.ref("private/usersAcademia").on("value", (snapshot) => {
+      onValue(ref(db, "private/usersAcademia"), (snapshot) => {
         // Collection of users Academics
         var users = snapshot.val();
         if (!users) return false;
@@ -45,7 +46,7 @@ const CoursesTable = ({ userName, userId }: Props) => {
     };
     getCourses();
     return () => {
-      db.ref("private/usersAcademia").off("value");
+      off(ref(db, "private/usersAcademia"));
     };
   }, [userId]);
 

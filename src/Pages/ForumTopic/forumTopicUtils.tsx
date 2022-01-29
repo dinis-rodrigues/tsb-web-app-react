@@ -1,3 +1,12 @@
+import {
+  get,
+  onValue,
+  ref,
+  remove,
+  runTransaction,
+  set,
+  update,
+} from "firebase/database";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { db } from "../../config/firebase";
@@ -92,26 +101,30 @@ const updateForumMetadata = (
     latestUpdateTimestamp: createdAtTimestamp,
   };
   // update metadata
-  db.ref("private/forumMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .update(dataToUpdate);
+  update(
+    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`),
+    dataToUpdate
+  );
   // Increment number of threads
-  db.ref("private/forumMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child("numberThreads")
-    .transaction((num) => {
+  runTransaction(
+    ref(
+      db,
+      `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberThreads`
+    ),
+    (num) => {
       return (num || 0) + 1;
-    });
+    }
+  );
   // Increment number of replies
-  db.ref("private/forumMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child("numberReplies")
-    .transaction((num) => {
+  runTransaction(
+    ref(
+      db,
+      `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`
+    ),
+    (num) => {
       return (num || 0) + 1;
-    });
+    }
+  );
 };
 
 /** Updates forum topic metadata, with the latest thread creation
@@ -148,11 +161,13 @@ const updateForumTopicMetadata = (
     numberReplies: 1,
     recentUpdateViewedBy: { [user.id]: user.name },
   };
-  db.ref("private/forumTopicMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .set(threadInTopicMetadata);
+  set(
+    ref(
+      db,
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+    ),
+    threadInTopicMetadata
+  );
 };
 
 /** Creates a new thread entry in the database, and updates all forum metadata
@@ -222,18 +237,14 @@ const createNewThread = (
     viewedBy: { [user.id]: user.name },
     recentUpdateViewedBy: { [user.id]: user.name },
   };
-  db.ref("private/forumThreads")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .child(encodedThreadName)
-    .set(newThreadTemplate, (error) => {
-      if (error) {
-        errorCreatingThreadMessage(
-          "Error creating the thread. Contact the admin."
-        );
-        setIsCreateThreadModalOpen(false);
-        return;
-      }
+  set(
+    ref(
+      db,
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+    ),
+    newThreadTemplate
+  )
+    .then(() => {
       // update forum metadata
       updateForumMetadata(
         newThreadInfo,
@@ -267,6 +278,15 @@ const createNewThread = (
           "info"
         );
       });
+    })
+    .catch((error) => {
+      if (error) {
+        errorCreatingThreadMessage(
+          "Error creating the thread. Contact the admin."
+        );
+        setIsCreateThreadModalOpen(false);
+        return;
+      }
     });
 };
 
@@ -345,11 +365,9 @@ const checkIfThreadExists = (
   encodedSectionName: string,
   encodedTopicName: string
 ) => {
-  return db
-    .ref("private/forumMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .once("value");
+  return get(
+    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`)
+  );
 };
 /** Retrieves topic metadata containing all the threadsHandles the on change input of the description
  * @param  {string} encodedSectionName encoded section name, db and url ready string
@@ -362,10 +380,12 @@ const getForumTopicMetadata = (
   encodedTopicName: string,
   setForumTopicMetadata: Function
 ) => {
-  db.ref("private/forumTopicMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .on("value", (snapshot) => {
+  onValue(
+    ref(
+      db,
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}`
+    ),
+    (snapshot) => {
       let topicMetadata: ForumTopicMetadata = snapshot.val();
       if (!topicMetadata) {
         return;
@@ -373,7 +393,8 @@ const getForumTopicMetadata = (
 
       let sortedThreads = sortThreadsByDate(topicMetadata);
       setForumTopicMetadata(sortedThreads);
-    });
+    }
+  );
 };
 
 /**
@@ -401,16 +422,17 @@ const deleteTopic = (
     );
   });
   // subtract number of replies to the forum metadata
-  db.ref("private/forumMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .remove();
+  remove(
+    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`)
+  );
 
   // remove from topic
-  db.ref("private/forumTopicMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .remove();
+  remove(
+    ref(
+      db,
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}`
+    )
+  );
   setRedirectTo("/forum");
 };
 

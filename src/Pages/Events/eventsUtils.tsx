@@ -1,5 +1,15 @@
 import { EventResizeDoneArg } from "@fullcalendar/interaction";
 import { EventClickArg, EventDropArg } from "@fullcalendar/react";
+import {
+  child,
+  get,
+  onValue,
+  push,
+  ref,
+  remove,
+  set,
+  update,
+} from "firebase/database";
 import { db } from "../../config/firebase";
 import {
   calendarEvent,
@@ -259,48 +269,46 @@ const selectStyles = (theme: any, isDisabled: boolean) => {
 const checkEventPeriodicity = () => {
   let hoursOffset = 2;
   // Loop through all events
-  db.ref("private/events/current")
-    .once("value")
-    .then((snapshot) => {
-      // Collection of nodes from the tree
-      const allEvents: EventDatabase = snapshot.val();
-      if (!allEvents) return;
+  get(ref(db, "private/events/current")).then((snapshot) => {
+    // Collection of nodes from the tree
+    const allEvents: EventDatabase = snapshot.val();
+    if (!allEvents) return;
 
-      // Get the objects in a new list
-      Object.entries(allEvents).forEach(([eventId, event]) => {
-        // Current Event Date
-        var toChange = inputToDate(event.date);
-        toChange.setHours(parseInt(event.hours));
-        toChange.setMinutes(parseInt(event.minutes));
+    // Get the objects in a new list
+    Object.entries(allEvents).forEach(([eventId, event]) => {
+      // Current Event Date
+      var toChange = inputToDate(event.date);
+      toChange.setHours(parseInt(event.hours));
+      toChange.setMinutes(parseInt(event.minutes));
 
-        // Only change event if it passes 2 hours from start, allows for late
-        // arrivals at meetings
-        var today = new Date();
-        var todaysHours = today.getHours();
-        today.setHours(todaysHours - hoursOffset);
+      // Only change event if it passes 2 hours from start, allows for late
+      // arrivals at meetings
+      var today = new Date();
+      var todaysHours = today.getHours();
+      today.setHours(todaysHours - hoursOffset);
 
-        try {
-          if (event.weeks && today.getTime() > toChange.getTime()) {
-            // change the date, add more days if periodic
-            toChange.setDate(toChange.getDate() + event.weeks * 7);
-            var newDate = dateToString(toChange);
+      try {
+        if (event.weeks && today.getTime() > toChange.getTime()) {
+          // change the date, add more days if periodic
+          toChange.setDate(toChange.getDate() + event.weeks * 7);
+          var newDate = dateToString(toChange);
 
-            // Send the event to history
-            db.ref("private/events/history").child(eventId).set(event);
-            // Remove the old event from "current events" (which was added to history)
-            db.ref("private/events/current").child(eventId).remove();
-            // Update the new event with the new date (based on peridiocity)
-            let newEvent = { ...event, date: newDate };
-            // Create new event in current events
-            db.ref("private/events/current/").push(newEvent);
-          } else if (today.getTime() > toChange.getTime() && !event.weeks) {
-            // move event if it's not periodic
-            db.ref("private/events/current").child(eventId).remove();
-            db.ref("private/events/history").child(eventId).set(event);
-          }
-        } catch (error) {}
-      });
+          // Send the event to history
+          set(child(ref(db, "private/events/history"), eventId), event);
+          // Remove the old event from "current events" (which was added to history)
+          remove(child(ref(db, "private/events/current"), eventId));
+          // Update the new event with the new date (based on peridiocity)
+          let newEvent = { ...event, date: newDate };
+          // Create new event in current events
+          push(ref(db, "private/events/current/"), newEvent);
+        } else if (today.getTime() > toChange.getTime() && !event.weeks) {
+          // move event if it's not periodic
+          remove(child(ref(db, "private/events/current"), eventId));
+          set(child(ref(db, "private/events/history"), eventId), event);
+        }
+      } catch (error) {}
     });
+  });
 };
 
 /**
@@ -395,7 +403,7 @@ const getAndSetHistoryEvents = (
   setCalendarEvents: Function,
   departmentsWDesc: DepartmentsWithDesc
 ) => {
-  db.ref("private/events/history").on("value", (snapshot) => {
+  onValue(ref(db, "private/events/history"), (snapshot) => {
     if (!snapshot.val()) return false;
     const events: EventDatabase = snapshot.val();
     const historyEvents = addHistoryKeyToEachEvent(events);
@@ -434,7 +442,7 @@ const getAndSetEvents = (
   setCalendarEvents: Function,
   departmentsWDesc: DepartmentsWithDesc
 ) => {
-  db.ref("private/events").on("value", (snapshot) => {
+  onValue(ref(db, "private/events"), (snapshot) => {
     if (!snapshot.val()) return false;
     const events = snapshot.val();
     let currEvents = {};
@@ -556,17 +564,13 @@ const calendarEventResizeHandler = (
   let dbEvent = eventsDatabase[eventId];
   if (!dbEvent.isHistory) {
     // Update the duration in the database
-    db.ref("private/events/current")
-      .child(eventId)
-      .update({
-        duration: `${newHours}h${newMinutes}`,
-      });
+    update(child(ref(db, "private/events/current"), eventId), {
+      duration: `${newHours}h${newMinutes}`,
+    });
   } else {
-    db.ref("private/events/history")
-      .child(eventId)
-      .update({
-        duration: `${newHours}h${newMinutes}`,
-      });
+    update(child(ref(db, "private/events/history"), eventId), {
+      duration: `${newHours}h${newMinutes}`,
+    });
   }
 };
 
@@ -607,12 +611,12 @@ const calendarEventDragHandler = (
       // add history marker
       updatedEvent = { ...updatedEvent, isHistory: true };
       // if true, remove the event from current, and move it to history
-      db.ref(`private/events/current/${eventId}`).remove();
-      db.ref(`private/events/history/${eventId}`).set(updatedEvent);
+      remove(ref(db, `private/events/current/${eventId}`));
+      set(ref(db, `private/events/history/${eventId}`), updatedEvent);
     } else {
       updatedEvent = { ...updatedEvent, isHistory: false };
       // Update the duration in the database
-      db.ref(`private/events/current/${eventId}`).update(updatedEvent);
+      update(ref(db, `private/events/current/${eventId}`), updatedEvent);
     }
   } else {
     // if we are moving a "history" event
@@ -620,12 +624,12 @@ const calendarEventDragHandler = (
     if (newDate > today) {
       updatedEvent = { ...updatedEvent, isHistory: false };
       // if true, remove the event from history, and move it to current
-      db.ref(`private/events/history/${eventId}`).remove();
-      db.ref(`private/events/current/${eventId}`).set(updatedEvent);
+      remove(ref(db, `private/events/history/${eventId}`));
+      set(ref(db, `private/events/current/${eventId}`), updatedEvent);
     } else {
       updatedEvent = { ...updatedEvent, isHistory: true };
       // Update the duration in the database
-      db.ref(`private/events/history/${eventId}`).update(updatedEvent);
+      update(ref(db, `private/events/history/${eventId}`), updatedEvent);
     }
   }
 
@@ -710,11 +714,9 @@ const saveEvent = (
         ...currEventInfo,
         isHistory: true,
       };
-      db.ref("private/events/history").child(currEventKey).update(historyEvent);
+      update(ref(db, `private/events/history/${currEventKey}`), historyEvent);
     } else {
-      db.ref("private/events/current")
-        .child(currEventKey)
-        .update(currEventInfo);
+      update(ref(db, `private/events/current/${currEventKey}`), currEventInfo);
     }
 
     toastrMessage("You successfully updated the event", "info");
@@ -726,9 +728,9 @@ const saveEvent = (
         ...currEventInfo,
         isHistory: true,
       };
-      db.ref(`private/events/history`).push(historyEvent);
+      push(ref(db, `private/events/history`), historyEvent);
     } else {
-      db.ref(`private/events/current`).push(currEventInfo);
+      push(ref(db, `private/events/current`), currEventInfo);
     }
 
     toastrMessage("You created a brand new event", "success");
@@ -779,9 +781,9 @@ const deleteEvent = (
   setIsModalOpen: Function
 ) => {
   if (event.isHistory) {
-    db.ref("private/events/history").child(currEventKey).remove();
+    remove(ref(db, `private/events/history/${currEventKey}`));
   } else {
-    db.ref("private/events/current").child(currEventKey).remove();
+    remove(ref(db, `private/events/current/${currEventKey}`));
   }
   setIsModalOpen(false);
   toastrMessage("The event is gone now!", "success");
@@ -918,7 +920,7 @@ const eventListClickHandler = (
  * @param eventId
  */
 const eventListDeleteHandler = (eventId: string) => {
-  db.ref(`private/events/current/${eventId}`).remove();
+  remove(ref(db, `private/events/current/${eventId}`));
   toastrMessage("The event is gone now!", "success");
 };
 

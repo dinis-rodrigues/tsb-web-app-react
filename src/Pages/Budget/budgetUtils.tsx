@@ -4,6 +4,17 @@ import {
   GridReadyEvent,
   RowClickedEvent,
 } from "ag-grid-community";
+import {
+  child,
+  off,
+  onValue,
+  push,
+  ref,
+  remove,
+  runTransaction,
+  set,
+  update,
+} from "firebase/database";
 import { NumberFormatValues } from "react-number-format";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -79,9 +90,9 @@ const deleteSeason = (season: string, seasonOptions: selectOption[]) => {
     return item !== seasonOfList;
   });
   // remove all materials from season
-  db.ref("private/bom").child(season).remove();
+  remove(child(ref(db, "private/bom"), season));
   // update seasons list database
-  db.ref("private/bom/seasons").set(updatedSeasons);
+  set(ref(db, "private/bom/seasons"), updatedSeasons);
 };
 
 /** Builds rows for the ag grid from the database material data
@@ -138,7 +149,7 @@ const closeMaterialModal = (
   setMaterialInfo(defaultMaterial);
   setMaterialInfoMask(defaultMaterial);
   // remove material listener off comments
-  if (commentListener) db.ref(commentListener).off("value");
+  if (commentListener) off(ref(db, commentListener));
   setCommentListener("");
 };
 /** Opens the material model with clean information
@@ -175,7 +186,7 @@ const onRowBomClick = (
 
   // Add listener for the comments
   setCommentListener(`bom/${season}/${materialData.id}`);
-  db.ref(`private/bom/${season}/${materialData.id}`).on("value", (snapshot) => {
+  onValue(ref(db, `private/bom/${season}/${materialData.id}`), (snapshot) => {
     let materialDataDb = snapshot.val();
 
     if (!materialDataDb) return;
@@ -279,13 +290,13 @@ const deleteMaterial = (
     return;
   } else {
     // Update material
-    db.ref("private/bom/").child(season).child(materialId).remove();
+    remove(ref(db, `private/bom/${season}/${materialId}`));
   }
 
   if (materialInfoMask.assignedTo) {
     // delete material from user
     let userKey = materialInfo.assignedTo.value;
-    db.ref(`private/usersBomMaterials/${userKey}/${materialInfo.id}`).remove();
+    remove(ref(db, `private/usersBomMaterials/${userKey}/${materialInfo.id}`));
   }
 
   closeModal();
@@ -307,7 +318,8 @@ const updateMaterialsForUsers = (
     let prevUserKey = materialInfoMask.assignedTo.value;
     // update information on assigned user
     let userKey = materialInfo.assignedTo.value;
-    db.ref(`private/usersBomMaterials/${userKey}/${materialId}`).update(
+    update(
+      ref(db, `private/usersBomMaterials/${userKey}/${materialId}`),
       materialInfo
     );
 
@@ -328,9 +340,12 @@ const updateMaterialsForUsers = (
         materialInfoMask.assignedTo &&
         materialInfoMask.assignedTo !== materialInfo.assignedTo
       ) {
-        db.ref(
-          `private/usersBomMaterials/${prevUserKey}/${materialInfoMask.id}`
-        ).remove();
+        remove(
+          ref(
+            db,
+            `private/usersBomMaterials/${prevUserKey}/${materialInfoMask.id}`
+          )
+        );
       }
     }
   }
@@ -376,10 +391,8 @@ const saveMaterial = (
   materialData = validateInputs(materialData);
   if (!materialId) {
     // Create new material
-    db.ref("private/bom/")
-      .child(season)
-      .push(materialData)
-      .then((snapshot) => {
+    push(child(ref(db, "private/bom/"), season), materialData).then(
+      (snapshot) => {
         // retrieve newly created Key of the DB
         let materialKey = snapshot.key;
         if (materialKey)
@@ -389,10 +402,11 @@ const saveMaterial = (
             materialKey,
             user
           );
-      });
+      }
+    );
   } else {
     // Update material
-    db.ref("private/bom/").child(season).child(materialId).set(materialData);
+    set(ref(db, `private/bom/${season}/${materialId}`), materialData);
     updateMaterialsForUsers(materialData, materialInfoMask, materialId, user);
   }
 
@@ -424,25 +438,22 @@ const submitComment = (
     createdByName: user.name,
   };
   // Push the comment to DB
-  let commentRef = `private/bom/${season}/${materialInfo.id}`;
-  db.ref(commentRef).child("comments").push(comment);
+  let commentRef = `private/bom/${season}/${materialInfo.id}/comments`;
+  push(ref(db, commentRef), comment);
+  let numCommentRef = `private/bom/${season}/${materialInfo.id}/numComments`;
   // Increment comment count on task db, and in state
-  db.ref(commentRef)
-    .child("numComments")
-    .transaction((num) => {
-      return (num || 0) + 1;
-    });
+  runTransaction(ref(db, numCommentRef), (num) => {
+    return (num || 0) + 1;
+  });
   // Update number of comments on assigned users db (this is cheating because we
   // are not updating the comments themselves, no need)
   if (materialInfo.assignedTo) {
     let userKey = materialInfo.assignedTo.value;
     let userCommentRef = `usersBomMaterials/${userKey}/${materialInfo.id}`;
     // increment count users
-    db.ref(userCommentRef)
-      .child("numComments")
-      .transaction((num) => {
-        return (num || 0) + 1;
-      });
+    runTransaction(child(ref(db, userCommentRef), "numComments"), (num) => {
+      return (num || 0) + 1;
+    });
     if (userKey !== user.id) {
       sendNotification(
         userKey,
@@ -657,7 +668,7 @@ const getSeasonBudgetData = (
     // This will trigger the useEffect again, with the new season
     return;
   }
-  db.ref("private/bom/seasons").on("value", (snapshot) => {
+  onValue(ref(db, "private/bom/seasons"), (snapshot) => {
     let seasonsFromDb: string[] = snapshot.val();
     if (!seasonsFromDb) return;
     let selectSeasons = seasonsFromDb.map((season) => ({
@@ -669,44 +680,42 @@ const getSeasonBudgetData = (
       setSeason(seasonsFromDb[0].replace("/", "-"));
       return;
     }
-    db.ref("private/bom")
-      .child(season)
-      .on("value", (snapshot) => {
-        let bomDataHolder = getEmptyTableDataObject(departmentsWDesc);
-        let budgetSeasonData: BomDb = snapshot.val();
-        if (budgetSeasonData) {
-          Object.entries(budgetSeasonData).forEach(([materialId, material]) => {
-            // append material to respective department, and to all
-            try {
-              bomDataHolder[material.toDepartment].push([materialId, material]);
-            } catch (error) {
-              bomDataHolder[material.toDepartment] = [[materialId, material]];
-            }
+    onValue(ref(db, "private/bom/" + season), (snapshot) => {
+      let bomDataHolder = getEmptyTableDataObject(departmentsWDesc);
+      let budgetSeasonData: BomDb = snapshot.val();
+      if (budgetSeasonData) {
+        Object.entries(budgetSeasonData).forEach(([materialId, material]) => {
+          // append material to respective department, and to all
+          try {
+            bomDataHolder[material.toDepartment].push([materialId, material]);
+          } catch (error) {
+            bomDataHolder[material.toDepartment] = [[materialId, material]];
+          }
 
-            bomDataHolder["All"].push([materialId, material]);
-            if (openMatId === materialId && openedFromRedirect) {
-              onRowBomClick(
-                { data: { ...material, id: materialId } }, // add id
-                setMaterialInfo,
-                setMaterialInfoMask,
-                setModalOpen,
-                setShowDeleteButton,
-                setCommentListener
-              );
-            }
-          });
-          // sort by date all arrays
-          Object.entries(bomDataHolder).forEach(([department, materials]) => {
-            let sortedMaterials = sortMaterialsByDate(materials);
-            bomDataHolder[department] = sortedMaterials;
-          });
-        }
-        // open budget modal if from redirect
+          bomDataHolder["All"].push([materialId, material]);
+          if (openMatId === materialId && openedFromRedirect) {
+            onRowBomClick(
+              { data: { ...material, id: materialId } }, // add id
+              setMaterialInfo,
+              setMaterialInfoMask,
+              setModalOpen,
+              setShowDeleteButton,
+              setCommentListener
+            );
+          }
+        });
+        // sort by date all arrays
+        Object.entries(bomDataHolder).forEach(([department, materials]) => {
+          let sortedMaterials = sortMaterialsByDate(materials);
+          bomDataHolder[department] = sortedMaterials;
+        });
+      }
+      // open budget modal if from redirect
 
-        setTableData(bomDataHolder);
-        setLoadingData(false);
-        if (openedFromRedirect) setOpenedFromRedirect(false);
-      });
+      setTableData(bomDataHolder);
+      setLoadingData(false);
+      if (openedFromRedirect) setOpenedFromRedirect(false);
+    });
   });
 };
 

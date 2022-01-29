@@ -43,6 +43,7 @@ import { db } from "../../config/firebase";
 
 import { CheckboxGroup, Input } from "react-rainbow-components";
 import cx from "classnames";
+import { off, ref } from "firebase/database";
 
 // Layout
 
@@ -97,7 +98,7 @@ const Recruitment = () => {
       setSelectedDepartments
     );
     return () => {
-      db.ref("public/recruitment").off("value");
+      off(ref(db, "public/recruitment"));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [USER]);

@@ -1,3 +1,4 @@
+import { get, onValue, ref, remove, set } from "firebase/database";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { db } from "../../config/firebase";
@@ -71,15 +72,15 @@ const createNewForumSection = (
     latestUpdateTimestamp: now,
   };
   // Create the topic in the database
-  db.ref("private/forumMetadata")
-    .child(encodedSectionName)
-    .child(encodedTopicName)
-    .set(topicToCreate);
+  set(
+    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`),
+    topicToCreate
+  );
 
   // Push new section into the forumOrder
   if (createNewSection) {
     let newForumOrder = [...forumSectionOrder, encodedSectionName];
-    db.ref("private/forumOrder").set(newForumOrder);
+    set(ref(db, "private/forumOrder"), newForumOrder);
   }
   // Push
   setIsSectionModalOpen(false);
@@ -110,12 +111,12 @@ const getForumMetadata = async (
   setForumSectionOrder: Function
 ) => {
   // Get order of the sections to display
-  db.ref("private/forumOrder").on("value", (sectionOrder) => {
+  onValue(ref(db, "private/forumOrder"), (sectionOrder) => {
     let forumOrder = sectionOrder.val() ? sectionOrder.val() : [];
 
     setForumSectionOrder(forumOrder);
     // Get forum metadata
-    db.ref("private/forumMetadata").on("value", (snapshot) => {
+    onValue(ref(db, "private/forumMetadata"), (snapshot) => {
       let forumMetadata: ForumMetadata = snapshot.val();
       if (!forumMetadata) return;
       // sort by timestamp creation
@@ -123,10 +124,6 @@ const getForumMetadata = async (
     });
   });
 };
-
-// const getForumSectionOrder = () => {
-//   return db.ref("private/forumOrder").once("value");
-// };
 
 /**
  * Delete the section and all of its topics and threads
@@ -149,10 +146,8 @@ const deleteSection = (
   topicsFromSection &&
     Object.entries(topicsFromSection).forEach(
       ([encodedTopicName, topicMetadata]) => {
-        db.ref("private/forumTopicMetadata")
-          .child(encodedTopicName)
-          .once("value")
-          .then((snapshot) => {
+        get(ref(db, `private/forumTopicMetadata/${encodedTopicName}`)).then(
+          (snapshot) => {
             let allThreads: ForumTopicMetadata = snapshot.val();
             if (allThreads) {
               Object.entries(allThreads).forEach(
@@ -166,19 +161,20 @@ const deleteSection = (
                 }
               );
             }
-          });
+          }
+        );
       }
     );
 
   // Now, remove section from forum metadata
-  db.ref("private/forumMetadata").child(encodedSectionName).remove();
+  remove(ref(db, `private/forumMetadata/${encodedSectionName}`));
   // Remove from forum topic metadata
-  db.ref("private/forumTopicMetadata").child(encodedSectionName).remove();
+  remove(ref(db, `private/forumTopicMetadata/${encodedSectionName}`));
   // Remove all threads
-  db.ref("private/forumThreads").child(encodedSectionName).remove();
+  remove(ref(db, `private/forumThreads/${encodedSectionName}`));
 
   // Update new forum order
-  db.ref("private/forumOrder").set(newSectionOrder);
+  set(ref(db, "private/forumOrder"), newSectionOrder);
 };
 
 /** Show a confirmation message to delete the topic
@@ -231,7 +227,7 @@ const moveSectionDown = (
   let newSectionIdx = sectionIdx + 1;
   if (newSectionIdx > sectionOrder.length - 1) return;
   let newSectionOrder = moveElementTo(sectionOrder, sectionIdx, sectionIdx + 1);
-  db.ref("private/forumOrder").set(newSectionOrder);
+  set(ref(db, "private/forumOrder"), newSectionOrder);
 };
 
 /**
@@ -244,7 +240,7 @@ const moveSectionUp = (encodedSectionName: string, sectionOrder: string[]) => {
   let newSectionIdx = sectionIdx + 1;
   if (newSectionIdx < 0) return;
   let newSectionOrder = moveElementTo(sectionOrder, sectionIdx, sectionIdx - 1);
-  db.ref("private/forumOrder").set(newSectionOrder);
+  set(ref(db, "private/forumOrder"), newSectionOrder);
 };
 
 export {
