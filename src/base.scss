@@ -3047,6 +3047,11 @@ scrollbar-container .app-sidebar.sidebar-text-light .vertical-nav-menu li a {
     min-width: 10px !important;
   }
 
+  .card > .dropdown-menu-header .dropdown-menu-header-inner {
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+  }
+
   .popover .btn-icon-vertical .btn-icon-wrapper,
   .dropdown-menu .btn-icon-vertical .btn-icon-wrapper {
     display: none;
