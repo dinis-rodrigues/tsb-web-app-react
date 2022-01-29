@@ -35,7 +35,7 @@ import ForumThreadEditComment from "./ForumThreadEditComment";
 import { off, ref } from "firebase/database";
 
 const ForumThread = (props: any) => {
-  const { USER } = useAuth();
+  const { USER, isMarketingOrAdmin } = useAuth();
   // dont trust url parameters from react router, it auto encodes/decodes stuff
   // get it directly from url path
   let [encodedSectionName, encodedTopicName, encodedThreadName] =
@@ -140,7 +140,8 @@ const ForumThread = (props: any) => {
             className="col-md-3 p-0"
             style={{ marginBottom: "auto", marginTop: "auto" }}
           >
-            {userHasPermission(USER, threadInformation?.createdBy) && (
+            {(userHasPermission(USER, threadInformation?.createdBy) ||
+              isMarketingOrAdmin) && (
               <button
                 type="button"
                 className="float-right mr-1 btn btn-shadow  btn-danger"
@@ -148,6 +149,7 @@ const ForumThread = (props: any) => {
                   swalDeleteThreadMessage(() =>
                     deleteThread(
                       USER,
+                      isMarketingOrAdmin,
                       threadInformation,
                       encodedSectionName,
                       encodedTopicName,

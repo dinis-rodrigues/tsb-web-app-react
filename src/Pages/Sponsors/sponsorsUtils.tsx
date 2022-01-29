@@ -208,7 +208,7 @@ const removeSponsorFromBracket = (sponsorId: string, bracketId: string) => {
   get(
     ref(
       db,
-      `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`
+      `private/sponsors/brackets/${bracketId}/sponsorsBoardList/${sponsorId}`
     )
   ).then((snapshot) => {
     const sponsorsList: string[] = snapshot.val();
@@ -230,8 +230,8 @@ const removeSponsorFromBracket = (sponsorId: string, bracketId: string) => {
         `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`
       )
     );
-    // update sponsor in inventory with blank bracket
-    set(ref(db, `private/sponsors/inventory/${sponsorId}`), "");
+    // update sponsor in inventory with blank bracket name
+    set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), "");
   });
 };
 
@@ -244,6 +244,8 @@ const deleteBracket = (bracketId: string, sponsorsItems: string[]) => {
   // Update name information in each sponsor of bracket to ""
   sponsorsItems.forEach((sponsorId) => {
     set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), "");
+
+    // this one is unnecessary, but just in case... Review later
     set(
       ref(
         db,

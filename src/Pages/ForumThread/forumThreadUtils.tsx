@@ -47,7 +47,7 @@ const swalDeleteThreadMessage = (deleteFunction: Function) => {
     .then((result) => {
       if (result.isConfirmed) {
         return;
-      } else {
+      } else if (result.isDenied) {
         deleteFunction();
       }
     });
@@ -274,13 +274,15 @@ const removePinnedThreadIfEqual = (
  */
 const deleteThread = (
   user: userContext | null,
+  isMarketingOrAdmin: boolean,
   threadInformation: Thread | undefined,
   encodedSectionName: string,
   encodedTopicName: string,
   encodedThreadName: string
 ) => {
   if (!threadInformation) return;
-  if (!user || user.id !== threadInformation.createdBy) return;
+  if (!user || (user.id !== threadInformation.createdBy && !isMarketingOrAdmin))
+    return;
   let totalReplies = 1; // the original post is a reply
   if (threadInformation.replies) {
     let numReplies = Object.entries(threadInformation.replies).length;
@@ -619,7 +621,7 @@ const deleteComment = (
   runTransaction(
     ref(
       db,
-      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`
+      `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`
     ),
     (num) => {
       return (num || 0) - 1;
@@ -629,7 +631,7 @@ const deleteComment = (
   remove(
     ref(
       db,
-      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/replies/${threadId}`
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/replies/${threadId}`
     )
   );
 };
