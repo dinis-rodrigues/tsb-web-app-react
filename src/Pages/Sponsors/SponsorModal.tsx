@@ -191,6 +191,27 @@ const SponsorModal = ({
               />
             </div>
           </div>
+          <div className="form-group row text-center">
+            <div className="col">
+              <label>
+                <span className="text-dark small text-uppercase">
+                  <i className="fas fa-link"></i>
+                  <strong> Website</strong>
+                </span>
+              </label>
+
+              <input
+                value={sponsorInfo ? sponsorInfo.url : ""}
+                readOnly={isMarketingOrAdmin ? false : true}
+                onChange={(e) =>
+                  sponsorInputHandler(e.target.value, "url", setSponsorInfo)
+                }
+                type="text"
+                className="form-control m-0 text-center"
+                placeholder=""
+              />
+            </div>
+          </div>
 
           <div className="row">
             <div className="col">
