@@ -1,26 +1,25 @@
 import { buildSponsorGraph, sponsorChartOptions } from "./sponsorsUtils";
 import Chart from "react-apexcharts";
 import { useEffect, useState } from "react";
-import { Sponsor, SponsorChartData } from "../../interfaces";
+import {
+  SponsorChartData,
+  SponsorHistory,
+  SponsorRetroactives,
+} from "../../interfaces";
 import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
-  sponsorInfo: Sponsor | null;
-  retroActives: number[];
+  values: SponsorHistory | undefined;
+  retroActives: SponsorRetroactives;
 };
-const SponsorChart = ({ sponsorInfo, retroActives }: Props) => {
+const SponsorChart = ({ values, retroActives }: Props) => {
   const { isDarkMode } = useAuth();
   const [chartLabels, setChartLabels] = useState<string[]>([]);
   const [chartSeries, setChartSeries] = useState<SponsorChartData[]>([]);
 
   useEffect(() => {
-    buildSponsorGraph(
-      sponsorInfo?.history,
-      retroActives,
-      setChartSeries,
-      setChartLabels
-    );
-  }, [sponsorInfo, retroActives]);
+    buildSponsorGraph(values, retroActives, setChartSeries, setChartLabels);
+  }, [values, retroActives]);
   return (
     <div>
       <Chart

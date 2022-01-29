@@ -27,6 +27,7 @@ import {
   onFirstDataRendered,
 } from "./cashFlowUtils";
 import { useAuth } from "../../contexts/AuthContext";
+import { Input } from "react-rainbow-components";
 
 type Props = {
   tableTitle: string;
@@ -103,18 +104,6 @@ const CashFlowTable = ({
         <i className="header-icon fas fa-money-bill icon-gradient bg-happy-green"></i>
         Cash Flow - {tableTitle}
         <div className="btn-actions-pane-right text-capitalize">
-          <input
-            onChange={(e) => {
-              filterTable(e, gridApi);
-            }}
-            className={"form-control mr-md-2"}
-            style={{
-              display: "inline-block",
-              width: "10rem",
-            }}
-            placeholder={"Search..."}
-            type="text"
-          />
           <button
             onClick={() => openFlowModal(setModalOpen, setFlowInfo, tableTitle)}
             className="btn-wide btn-dark mr-md-2 btn btn-sm"
@@ -157,6 +146,14 @@ const CashFlowTable = ({
         </div>
       </div>
       <div className="card-body">
+        <Input
+          className="mb-2"
+          placeholder="Filter..."
+          icon={<i className="fa fa-search"></i>}
+          onChange={(e) => {
+            filterTable(e, gridApi);
+          }}
+        />
         <div
           className={cx({
             "ag-theme-alpine": !isDarkMode,

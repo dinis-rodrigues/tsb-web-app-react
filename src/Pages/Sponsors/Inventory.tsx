@@ -1,10 +1,16 @@
-import { Fragment, useState } from "react";
-import { Sponsor, SponsorBracketsListDB } from "../../interfaces";
+import { Fragment, useEffect, useState } from "react";
+import { Input } from "react-rainbow-components";
+import {
+  Sponsor,
+  SponsorBracketsListDB,
+  SponsorRetroactives,
+} from "../../interfaces";
 import InventorySponsorCard from "./InventorySponsorCard";
 import SponsorModal from "./SponsorModal";
+import { filterSponsors } from "./sponsorsUtils";
 
 type Props = {
-  retroActives: number[];
+  retroActives: SponsorRetroactives;
   sponsors: [string, Sponsor][];
   existingBrackets: SponsorBracketsListDB | undefined;
 };
@@ -14,11 +20,26 @@ const Inventory = ({ retroActives, sponsors, existingBrackets }: Props) => {
   const [sponsorId, setSponsorId] = useState("");
   const [currBracketId, setCurrBracketId] = useState();
 
+  const [inventorySponsors, setInventorySponsors] =
+    useState<[string, Sponsor][]>(sponsors);
+
+  useEffect(() => {
+    setInventorySponsors(sponsors);
+  }, [sponsors]);
+
   return (
     <Fragment>
+      <Input
+        className="rainbow-p-around_medium"
+        placeholder="Filter..."
+        icon={<i className="fa fa-search"></i>}
+        onChange={(e) =>
+          filterSponsors(e.target.value, sponsors, setInventorySponsors)
+        }
+      />
       <div className="row">
-        {sponsors &&
-          sponsors.map(([sponsordUId, sponsor]) => {
+        {inventorySponsors &&
+          inventorySponsors.map(([sponsordUId, sponsor]) => {
             return (
               <div className="col-3" key={sponsordUId}>
                 <InventorySponsorCard
@@ -39,7 +60,7 @@ const Inventory = ({ retroActives, sponsors, existingBrackets }: Props) => {
         bracketId={currBracketId}
         isModalOpen={modalOpen}
         setIsModalOpen={setModalOpen}
-        sponsorInfo={sponsorInfo}
+        mockSponsorInfo={sponsorInfo}
         setSponsorInfo={setSponsorInfo}
         sponsorId={sponsorId}
       />

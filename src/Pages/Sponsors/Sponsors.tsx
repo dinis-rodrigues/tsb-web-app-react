@@ -4,6 +4,7 @@ import {
   Sponsor,
   SponsorBracketsListDB,
   SponsorBracketListItem,
+  SponsorRetroactives,
 } from "../../interfaces";
 import SponsorBracket from "./SponsorBracket";
 import {
@@ -13,6 +14,7 @@ import {
   getLastEditionDate,
   getRetroActives,
   publishSponsorsToWebsite,
+  retroActivesSkeleton,
   sponsorSkeleton,
 } from "./sponsorsUtils";
 import { Nav, NavItem, NavLink } from "reactstrap";
@@ -22,12 +24,14 @@ import SponsorModal from "./SponsorModal";
 import BracketModal from "./BracketModal";
 import { useAuth } from "../../contexts/AuthContext";
 import { off, ref } from "firebase/database";
+import SponsorRetroActives from "./SponsorRetroActives";
 
 const Sponsors = () => {
   const { isMarketingOrAdmin } = useAuth();
   const [brackets, setBrackets] =
     useState<[string, SponsorBracketListItem][]>();
-  const [retroActives, setRetroActives] = useState([]);
+  const [retroActives, setRetroActives] =
+    useState<SponsorRetroactives>(retroActivesSkeleton);
   const [activeTab, setactiveTab] = useState("Sponsors");
 
   const [newSponsorInfo, setNewSponsorInfo] = useState(sponsorSkeleton);
@@ -85,6 +89,16 @@ const Sponsors = () => {
                     <span>Inventory</span>
                   </NavLink>
                 </NavItem>
+                <NavItem key={"Retro-Actives"}>
+                  <NavLink
+                    className={cx({ active: activeTab === "Retro-Actives" })}
+                    onClick={() => {
+                      setactiveTab("Retro-Actives");
+                    }}
+                  >
+                    <span>Retro-Actives</span>
+                  </NavLink>
+                </NavItem>
               </Nav>
             </div>
             {isMarketingOrAdmin && (
@@ -117,7 +131,7 @@ const Sponsors = () => {
             <Fragment>
               {brackets?.map(([bracketId, bracket]) => (
                 <SponsorBracket
-                  key={bracket.name}
+                  key={bracketId}
                   bracketId={bracketId}
                   bracket={bracket}
                   retroActives={retroActives}
@@ -140,13 +154,18 @@ const Sponsors = () => {
                 </div>
               )}
             </Fragment>
-          ) : (
+          ) : activeTab === "Inventory" ? (
             <Inventory
               retroActives={retroActives}
               existingBrackets={existingBrackets}
               sponsors={sponsors}
             />
-          )}
+          ) : activeTab === "Retro-Actives" ? (
+            <SponsorRetroActives
+              retroActives={retroActives}
+              setRetroActives={setRetroActives}
+            />
+          ) : null}
         </div>
       </div>
       <SponsorModal
@@ -154,7 +173,7 @@ const Sponsors = () => {
         bracketId={undefined}
         isModalOpen={createModalOpen}
         setIsModalOpen={setCreateModalOpen}
-        sponsorInfo={newSponsorInfo}
+        mockSponsorInfo={newSponsorInfo}
         setSponsorInfo={setNewSponsorInfo}
         sponsorId={"createNew"}
       />

@@ -55,7 +55,7 @@ const ResetPasswordEmail = ({ setEnableLoginPage }: Props) => {
                     <div className="form-row">
                       <div className="col">
                         <div className="position-relative form-group text-white">
-                          <label htmlFor="exampleEmail" className="">
+                          <label htmlFor="exampleEmail">
                             <span className="text-info">*</span>Email
                           </label>
                           <input

@@ -3,7 +3,7 @@ import NumberFormat from "react-number-format";
 import { Button, Modal, FileSelector, Spinner } from "react-rainbow-components";
 import cx from "classnames";
 import { Nav, NavItem, NavLink } from "reactstrap";
-import { Sponsor } from "../../interfaces";
+import { Sponsor, SponsorRetroactives } from "../../interfaces";
 import SponsorFileIcon from "./icons/SponsorFileIcon";
 import SponsorChart from "./SponsorChart";
 import SponsorImage from "./SponsorImage";
@@ -25,21 +25,27 @@ type Props = {
   setIsModalOpen: Function;
   bracketId?: string;
   sponsorId: string;
-  sponsorInfo: Sponsor | null;
-  retroActives: number[];
+  mockSponsorInfo: Sponsor | null;
+  retroActives: SponsorRetroactives;
   setSponsorInfo: Function;
 };
 const SponsorModal = ({
   isModalOpen,
   setIsModalOpen,
   bracketId,
-  sponsorInfo,
-  setSponsorInfo,
+  mockSponsorInfo,
   retroActives,
   sponsorId,
 }: Props) => {
   const { USER, isMarketingOrAdmin, isDarkMode } = useAuth();
   const [focusInput, setFocusInput] = useState("");
+
+  const [sponsorInfo, setSponsorInfo] = useState(mockSponsorInfo);
+
+  useEffect(() => {
+    setSponsorInfo(mockSponsorInfo);
+  }, [mockSponsorInfo]);
+
   let sponsorValue = 0;
   if (sponsorInfo?.history) {
     let vals = Object.entries(sponsorInfo.history).map(([_, val]) => val);
@@ -47,6 +53,7 @@ const SponsorModal = ({
   }
   const [fileValue, setFileValue] = useState<FileList | undefined>();
   const [activeTab, setActiveTab] = useState("0");
+
   useEffect(() => {
     setActiveTab("0");
   }, [sponsorId]);
@@ -184,11 +191,32 @@ const SponsorModal = ({
               />
             </div>
           </div>
+          <div className="form-group row text-center">
+            <div className="col">
+              <label>
+                <span className="text-dark small text-uppercase">
+                  <i className="fas fa-link"></i>
+                  <strong> Website</strong>
+                </span>
+              </label>
+
+              <input
+                value={sponsorInfo ? sponsorInfo.url : ""}
+                readOnly={isMarketingOrAdmin ? false : true}
+                onChange={(e) =>
+                  sponsorInputHandler(e.target.value, "url", setSponsorInfo)
+                }
+                type="text"
+                className="form-control m-0 text-center"
+                placeholder=""
+              />
+            </div>
+          </div>
 
           <div className="row">
             <div className="col">
               <SponsorChart
-                sponsorInfo={sponsorInfo}
+                values={sponsorInfo?.history}
                 retroActives={retroActives}
               />
             </div>

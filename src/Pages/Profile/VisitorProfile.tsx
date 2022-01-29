@@ -50,7 +50,7 @@ const VisitorProfile = () => {
                         />
                       </div>
                     </div>
-                    <div className="">
+                    <div>
                       <div className="btn-group text-center"></div>
                     </div>
                     <div>

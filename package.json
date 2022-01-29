@@ -5,7 +5,7 @@
   "homepage": "https://tsb.tecnico.ulisboa.pt/",
   "scripts": {
     "start": "GENERATE_SOURCEMAP=false PORT=3005 react-scripts start",
-    "build": "react-scripts build",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "analyze": "source-map-explorer './build/static/js/*.js'",
     "eject": "react-scripts eject"

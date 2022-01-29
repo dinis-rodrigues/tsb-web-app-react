@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { Sponsor } from "../../interfaces";
+import { Sponsor, SponsorRetroactives } from "../../interfaces";
 import SponsorImage from "./SponsorImage";
 import { UncontrolledTooltip } from "reactstrap";
 import {
@@ -19,7 +19,7 @@ type Props = {
   index: number;
   faded?: boolean;
   style?: any;
-  retroActives: number[];
+  retroActives: SponsorRetroactives;
 };
 
 const SponsorCard = forwardRef<HTMLInputElement, Props>(
@@ -57,8 +57,10 @@ const SponsorCard = forwardRef<HTMLInputElement, Props>(
         style={{ ...style, position: "relative" }}
         {...props}
       >
-        <span style={{ position: "absolute", top: 0 }}>{`${totalVal} / ${
-          retroVal + totalVal
+        <span style={{ position: "absolute", top: 0 }}>{`${
+          totalVal ? Number(totalVal).toFixed(0) : 0
+        } / ${
+          retroVal + totalVal ? Number(retroVal + totalVal).toFixed(0) : 0
         }`}</span>
         <button
           style={{ position: "absolute", top: -2, left: -2 }}

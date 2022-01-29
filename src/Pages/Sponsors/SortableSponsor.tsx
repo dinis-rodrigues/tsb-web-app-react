@@ -2,7 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 import { SponsorCard } from "./SponsorCard";
-import { Sponsor } from "../../interfaces";
+import { Sponsor, SponsorRetroactives } from "../../interfaces";
 
 type Props = {
   sponsor: Sponsor;
@@ -13,7 +13,7 @@ type Props = {
   index: number;
   faded: boolean;
   style?: any;
-  retroActives: number[];
+  retroActives: SponsorRetroactives;
   setModalIsOpen: Function;
   setSponsorInfo: Function;
 };

@@ -32,6 +32,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
 import { ColumnApi, GridApi } from "ag-grid-community";
+import { Input } from "react-rainbow-components";
 
 // Layout
 
@@ -130,13 +131,13 @@ const Team = () => {
                   />
                 </div>
                 <div className="col-md-4">
-                  <input
+                  <Input
+                    className=""
+                    placeholder="Filter..."
+                    icon={<i className="fa fa-search"></i>}
                     onChange={(e) => {
                       filterTable(e, gridApi);
                     }}
-                    className={"form-control"}
-                    placeholder={"Search..."}
-                    type="text"
                   />
                 </div>
                 {/* <button onClick={excelExport}>export</button> */}

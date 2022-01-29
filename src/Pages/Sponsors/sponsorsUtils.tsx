@@ -11,6 +11,7 @@ import {
   SponsorBracketsListDB,
   SponsorHistory,
   SponsorPublic,
+  SponsorRetroactives,
   SponsorsOrder,
   SponsorsOrderPublic,
 } from "../../interfaces";
@@ -30,6 +31,12 @@ const sponsorSkeleton: Sponsor = {
   level: "",
   svgPath: "",
   url: "",
+};
+
+const retroActivesSkeleton: SponsorRetroactives = {
+  isActive: true,
+  threshold: 1000,
+  values: [1, 0.4, 0.2, 0.1, 0],
 };
 const bracketSkeleton: SponsorBracketListItem = {
   name: "New Bracket",
@@ -87,6 +94,37 @@ const sponsorChartOptions: ApexOptions = {
         return val.toString();
       },
     },
+  },
+};
+
+const retroChartOptions: ApexOptions = {
+  chart: {
+    id: "area",
+    height: 350,
+    zoom: {
+      autoScaleYaxis: true,
+    },
+  },
+  stroke: {
+    show: true,
+    width: 2,
+  },
+
+  markers: {
+    size: 0,
+  },
+
+  // fill: {
+  //   type: "gradient",
+  //   gradient: {
+  //     shadeIntensity: 1,
+  //     opacityFrom: 0.7,
+  //     opacityTo: 0.9,
+  //     stops: [0, 100],
+  //   },
+  // },
+  title: {
+    text: "Técnico Solar Boat Sponsor Retro-Actives",
   },
 };
 
@@ -691,7 +729,7 @@ const replaceLinearGradients = (s: string, toFind: string, expr = "linear") => {
  */
 const buildSponsorGraph = (
   data: SponsorHistory | undefined,
-  retroActives: number[],
+  retroActives: SponsorRetroactives,
   setChartSeries: Function,
   setChartLabels: Function
 ) => {
@@ -719,22 +757,25 @@ const buildSponsorGraph = (
  */
 const calculateRetroActives = (
   data: SponsorHistory | undefined,
-  retroActives: number[]
+  retroActives: SponsorRetroactives
 ) => {
   if (!data) return { simpleValues: [], retroValues: [] };
   const simpleValues = Object.entries(data).map(([_, value]) => value);
-  // Build retroactives array
-  const retroValues = new Array(simpleValues.length).fill(0);
+  // Build retro-actives array
+  const retroValues: number[] = new Array(simpleValues.length).fill(0);
 
-  for (let i = simpleValues.length - 1; i > 0; i--) {
-    let retroSum = 0;
-    for (let j = 0; j < retroActives.length; j++) {
-      if (i - j < 0) break;
-      if (simpleValues[i - j] === 0) break;
-      if (retroActives[j] !== 1)
-        retroSum += simpleValues[i - j] * retroActives[j];
+  if (retroActives.isActive) {
+    for (let i = simpleValues.length - 1; i > 0; i--) {
+      let retroSum = 0;
+      if (simpleValues[i] > retroActives.threshold)
+        for (let j = 0; j < retroActives.values.length; j++) {
+          if (i - j < 0) break;
+          if (simpleValues[i - j] === 0) break;
+          if (retroActives.values[j] !== 1)
+            retroSum += simpleValues[i - j] * retroActives.values[j];
+        }
+      retroValues[i] = retroSum;
     }
-    retroValues[i] = retroSum;
   }
   return { simpleValues: simpleValues, retroValues: retroValues };
 };
@@ -1023,6 +1064,117 @@ const publishSponsorsToWebsite = async (
   });
 };
 
+/**
+ * Filters sponsors by name
+ * @param searchTerm
+ * @param sponsors
+ * @param setSponsors
+ * @returns
+ */
+const filterSponsors = (
+  searchTerm: string,
+  sponsors: [string, Sponsor][],
+  setInventorySponsors: Function
+) => {
+  if (!searchTerm) {
+    setInventorySponsors(sponsors);
+    return;
+  }
+  const filteredSponsors = sponsors.filter(([sponsorId, sponsor]) => {
+    return sponsor.name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+  setInventorySponsors(filteredSponsors);
+};
+
+/**
+ * Edits the value of the retro active percentage of the specific year
+ * @param value
+ * @param yearToEdit
+ * @param retroActives
+ * @param setRetroActives
+ */
+const editRetroValueHandler = (
+  value: number,
+  yearToEdit: number,
+  retroActives: SponsorRetroactives,
+  setRetroActives: Function
+) => {
+  const newRetroActives = [...retroActives.values];
+  newRetroActives[yearToEdit] = value;
+  setRetroActives({ ...retroActives, values: newRetroActives });
+};
+
+/**
+ * Enables or disables the retroactives to be applies
+ * @param value
+ * @param retroActives
+ * @param setRetroActives
+ */
+const retroSelectHandler = (
+  value: string,
+  retroActives: SponsorRetroactives,
+  setRetroActives: Function
+) => {
+  const isActiveValue = value === "Yes" ? true : false;
+  setRetroActives({ ...retroActives, isActive: isActiveValue });
+};
+
+/**
+ * Edits the value of the retro active threshold
+ * @param number
+ * @param retroActives
+ * @param setRetroActives
+ */
+const retroThresholdHandler = (
+  number: number,
+  retroActives: SponsorRetroactives,
+  setRetroActives: Function
+) => {
+  setRetroActives({ ...retroActives, threshold: number });
+};
+
+/**
+ * Adds a new retro active year to the list
+ * @param retroActives
+ * @param setRetroActives
+ */
+const addRetroYear = (
+  retroActives: SponsorRetroactives,
+  setRetroActives: Function
+) => {
+  const newRetroActives = [...retroActives.values, 0];
+  setRetroActives({ ...retroActives, values: newRetroActives });
+};
+
+/**
+ * Deletes a specified retro active year from the list
+ * @param idx
+ * @param retroActives
+ * @param setRetroActives
+ */
+const deleteRetroYear = (
+  idx: number,
+  retroActives: SponsorRetroactives,
+  setRetroActives: Function
+) => {
+  const newRetroActives = retroActives.values.filter((_, i) => i !== idx);
+  setRetroActives({ ...retroActives, values: newRetroActives });
+};
+
+/**
+ * Saves the retro actives values in the database
+ * @param retroActives
+ */
+const saveRetroActives = (retroActives: SponsorRetroactives) => {
+  set(ref(db, "private/sponsors/retroActives"), retroActives)
+    .then(() => {
+      toastrMessage("Retroactives saved", "success");
+    })
+    .catch((err) => {
+      toastrMessage("Error saving retro-actives", "error");
+    });
+};
+
 export {
   handleDragCancel,
   handleDragEnd,
@@ -1061,4 +1213,13 @@ export {
   deleteSponsor,
   publishSponsorsToWebsite,
   getLastEditionDate,
+  retroChartOptions,
+  editRetroValueHandler,
+  addRetroYear,
+  deleteRetroYear,
+  retroActivesSkeleton,
+  saveRetroActives,
+  retroThresholdHandler,
+  retroSelectHandler,
+  filterSponsors,
 };

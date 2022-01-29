@@ -31,6 +31,7 @@ import {
 import {
   Sponsor,
   SponsorBracketListItem,
+  SponsorRetroactives,
   SponsorsOrder,
 } from "../../interfaces";
 import { db } from "../../config/firebase";
@@ -42,7 +43,7 @@ import { off, ref } from "firebase/database";
 
 type Props = {
   bracket: SponsorBracketListItem;
-  retroActives: number[];
+  retroActives: SponsorRetroactives;
   bracketId: string;
   sponsors: [string, Sponsor][];
 };
@@ -232,7 +233,7 @@ const SponsorBracket = ({
         bracketId={currBracketId}
         isModalOpen={modalIsOpen}
         setIsModalOpen={setModalIsOpen}
-        sponsorInfo={sponsorInfo}
+        mockSponsorInfo={sponsorInfo}
         setSponsorInfo={setSponsorInfo}
         sponsorId={sponsorId}
       />
