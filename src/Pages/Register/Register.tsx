@@ -90,7 +90,7 @@ const Register = ({ setEnableLoginPage }: Props) => {
                     <div className="form-row">
                       <div className="col">
                         <div className="position-relative form-group text-white">
-                          <label htmlFor="exampleEmail" className="">
+                          <label htmlFor="exampleEmail">
                             <span className="text-info">*</span>Email
                           </label>
                           <input
@@ -117,7 +117,7 @@ const Register = ({ setEnableLoginPage }: Props) => {
                       </div>
                       <div className="col-md-6">
                         <div className="position-relative form-group text-white">
-                          <label htmlFor="exampleConfirmEmail" className="">
+                          <label htmlFor="exampleConfirmEmail">
                             <span className="text-info">* </span>
                             Confirm Email
                           </label>
@@ -155,7 +155,7 @@ const Register = ({ setEnableLoginPage }: Props) => {
 
                       <div className="col-md-6">
                         <div className="position-relative form-group text-white">
-                          <label htmlFor="examplePassword" className="">
+                          <label htmlFor="examplePassword">
                             <span className="text-info">* </span>
                             Password
                           </label>
@@ -188,7 +188,7 @@ const Register = ({ setEnableLoginPage }: Props) => {
                       </div>
                       <div className="col-md-6">
                         <div className="position-relative form-group text-white">
-                          <label htmlFor="examplePasswordRep" className="">
+                          <label htmlFor="examplePasswordRep">
                             <span className="text-info">* </span>Repeat Password
                           </label>
                           <input

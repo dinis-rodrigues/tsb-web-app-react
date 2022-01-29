@@ -211,7 +211,7 @@ const createArrayBetweenDates = (
           dateArray[i][1] = 0;
         }
       } else {
-        //   if we are above and equal the target, it's equal to the last (first) value
+        // if we are above and equal the target, it's equal to the last (first) value
         dateArray[i][1] = chartData[0][1];
       }
     }

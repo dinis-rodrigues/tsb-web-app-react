@@ -175,7 +175,7 @@ const TaskInfo = ({
         <div className="col">
           {/* User assignment */}
           <div className="form-group">
-            <label className="">
+            <label>
               <span className="pr-2 opacity-6">
                 <i className="fas fa-users"></i>
               </span>

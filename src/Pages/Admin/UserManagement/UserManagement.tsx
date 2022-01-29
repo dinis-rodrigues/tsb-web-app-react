@@ -36,6 +36,7 @@ import {
 import UserManagementModal from "./UserManagementModal";
 import ApplicationSettings from "./ApplicationSettings";
 import cx from "classnames";
+import { Input } from "react-rainbow-components";
 
 const UserManagement = () => {
   const { USER, isDarkMode } = useAuth();
@@ -144,13 +145,12 @@ const UserManagement = () => {
                 />
               </div>
               <div className="col-md-4">
-                <input
+                <Input
+                  placeholder="Filter..."
+                  icon={<i className="fa fa-search"></i>}
                   onChange={(e) => {
                     filterTable(e, gridApi);
                   }}
-                  className={"form-control"}
-                  placeholder={"Search..."}
-                  type="text"
                 />
               </div>
               {/* <button onClick={excelExport}>export</button> */}

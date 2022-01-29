@@ -48,7 +48,7 @@ const ResetPassword = ({ setEnableLoginPage }: Props) => {
                     <div className="form-row">
                       <div className="col-md-6">
                         <div className="position-relative form-group text-white">
-                          <label htmlFor="examplePassword" className="">
+                          <label htmlFor="examplePassword">
                             <span className="text-info">* </span>
                             Password
                           </label>
@@ -81,7 +81,7 @@ const ResetPassword = ({ setEnableLoginPage }: Props) => {
                       </div>
                       <div className="col-md-6">
                         <div className="position-relative form-group text-white">
-                          <label htmlFor="examplePasswordRep" className="">
+                          <label htmlFor="examplePasswordRep">
                             <span className="text-info">* </span>Repeat Password
                           </label>
                           <input

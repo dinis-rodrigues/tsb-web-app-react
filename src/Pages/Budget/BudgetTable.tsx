@@ -33,6 +33,7 @@ import {
 import { dateComparator } from "../../utils/generalFunctions";
 import { AgGridReact } from "ag-grid-react";
 import { useAuth } from "../../contexts/AuthContext";
+import { Input } from "react-rainbow-components";
 
 type Props = {
   tableData: [string, BomMaterial][];
@@ -122,7 +123,7 @@ const BudgetTable = ({
         ></i>
         Budget - {allTabs[department].description}
         <div className="btn-actions-pane-right text-capitalize">
-          <input
+          {/* <input
             onChange={(e) => {
               filterTable(e, gridApi);
             }}
@@ -133,7 +134,7 @@ const BudgetTable = ({
             }}
             placeholder={"Search..."}
             type="text"
-          />
+          /> */}
           <button
             onClick={() =>
               openCleanMaterialModal(
@@ -182,6 +183,14 @@ const BudgetTable = ({
         </div>
       </div>
       <div className="card-body">
+        <Input
+          className="mb-2"
+          placeholder="Filter..."
+          icon={<i className="fa fa-search"></i>}
+          onChange={(e) => {
+            filterTable(e, gridApi);
+          }}
+        />
         <div
           className={cx({
             "ag-theme-alpine": !isDarkMode,
