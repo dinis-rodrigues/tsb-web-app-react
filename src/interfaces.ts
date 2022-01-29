@@ -600,7 +600,9 @@ export interface SponsorHistory {
 }
 
 export interface SponsorRetroactives {
-  [index: number]: number;
+  isActive: boolean;
+  threshold: number;
+  values: number[];
 }
 
 export interface SponsorChartData {
