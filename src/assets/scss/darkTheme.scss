@@ -31,7 +31,7 @@ body .app-theme-dark {
   }
 
   .logo-src {
-    background-image: url(assets/images/logo-inverse.png) !important;
+    background-image: url(../images/logo-inverse.png) !important;
     height: 15px;
     width: 184px;
     background-size: 184px 15px;
@@ -326,6 +326,30 @@ body .app-theme-dark {
     &.fc-day-today {
       background-color: #0b8ce21c;
     }
+  }
+
+  .vertical-time-icons::before {
+    background: $black-light;
+  }
+
+  .vertical-time-icons .vertical-timeline-element-icon .timeline-icon {
+    background: $black-primary;
+  }
+
+  .chat-box-wrapper .chat-box-fb {
+    background: #464646;
+  }
+
+  .swal2-popup {
+    background: $modal-black-bg;
+  }
+
+  .swal2-title {
+    color: $text-white-primary;
+  }
+
+  .swal2-content {
+    color: $text-white-darker;
   }
 
   .swal2-success-circular-line-left {

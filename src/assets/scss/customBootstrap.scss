@@ -20267,7 +20267,6 @@ a.avatar-icon-wrapper:hover .avatar-icon {
       border-radius: 50px;
       border-width: 2px;
       border-style: solid;
-      box-shadow: 0 0 0 5px #fff;
       text-align: center;
       display: flex;
       align-items: center;
@@ -21526,14 +21525,14 @@ legend {
 .app-logo {
   height: 15px;
   width: 185px;
-  background: url(assets/images/logo.png);
+  background: url(../images/logo.png);
   background-size: 184px 15px;
 }
 
 .app-logo-inverse {
   height: 23px;
   width: 97px;
-  background: url(assets/images/logo.png);
+  background: url(../images/logo.png);
 }
 
 .app-login-box .app-logo {
@@ -21543,14 +21542,14 @@ legend {
 .app-logo-w {
   height: 15px;
   width: 184px;
-  background: url(assets/images/logo-inverse.png);
+  background: url(../images/logo-inverse.png);
   background-size: 184px 15px;
 }
 
 /* .app-logo-w-inverse {
   height: 23px;
   width: 97px;
-  background: url(assets/images/white.png);
+  background: url(../images/white.png);
 } */
 
 .app-login-box {

@@ -513,10 +513,10 @@ template {
   .logo-src {
     /* height: 23px;
     width: 97px;
-    background: url(assets/images/logo-inverse.png); */
+    background: url(../images/logo-inverse.png); */
     height: 15px;
     width: 184px;
-    background-image: url(assets/images/logo.png);
+    background-image: url(../images/logo.png);
     background-size: 184px 15px;
   }
 }
@@ -818,7 +818,7 @@ template {
     }
 
     .app-header__logo .logo-src {
-      background: url(assets/images/logo.png);
+      background: url(../images/logo.png);
     }
 
     .app-header__mobile-menu .hamburger-inner {
@@ -974,7 +974,7 @@ template {
     }
 
     .app-header__logo .logo-src {
-      background: url(assets/images/logo-inverse.png);
+      background: url(../images/logo-inverse.png);
     }
   }
 }
@@ -1402,7 +1402,7 @@ scrollbar-container .app-sidebar.sidebar-text-light .vertical-nav-menu li a {
 
     .app-header__logo {
       .logo-src {
-        background: url(assets/images/logo.png);
+        background: url(../images/logo.png);
       }
 
       .hamburger-inner {
@@ -3820,7 +3820,7 @@ outline-style: none !important;
 
 .tsb-background {
   background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
-    url("assets/images/loginBackground.jpg") center center no-repeat;
+    url("../images/loginBackground.jpg") center center no-repeat;
   background-size: cover;
 }
 
@@ -3853,7 +3853,7 @@ outline-style: none !important;
 
 @font-face {
   font-family: lato-light;
-  src: url(assets/fonts/Lato/Lato-Light.ttf);
+  src: url(../fonts/Lato/Lato-Light.ttf);
 }
 
 .lato-light-font {
@@ -4150,7 +4150,7 @@ input:-webkit-autofill:active
 
 .maintenance {
   background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
-    url("assets/images/loginBackground.jpg") center center no-repeat;
+    url("../images/loginBackground.jpg") center center no-repeat;
   background-size: cover;
 
   .maintenance-content {

@@ -517,6 +517,12 @@ const editDepartment = (
 const swalDeleteDepartmentMessage = (deleteFunction: Function) => {
   swalDeleteAlert
     .fire({
+      target: ".app-container",
+      customClass: {
+        denyButton: "btn btn-shadow btn-danger",
+        confirmButton: "btn btn-shadow btn-info",
+        container: "zIndex-inf",
+      },
       reverseButtons: true,
       title: "Beware",
       showDenyButton: true,
@@ -533,11 +539,6 @@ const swalDeleteDepartmentMessage = (deleteFunction: Function) => {
         <li>All assigned tasks and materials of users will be deleted</li>
       </ul>
       <p><h4>Are you sure to proceed?</h4></p>`,
-
-      customClass: {
-        denyButton: "btn btn-shadow btn-danger",
-        confirmButton: "btn btn-shadow btn-info",
-      },
     })
     .then((result) => {
       if (result.isConfirmed) {

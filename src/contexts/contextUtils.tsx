@@ -73,6 +73,11 @@ const loginUser = (email: string, password: string, rememberMe: boolean) => {
     .catch((error) => {
       // Display alert with the login error
       swalAlert.fire({
+        target: ".app-container",
+        customClass: {
+          denyButton: "btn btn-shadow btn-danger",
+          confirmButton: "btn btn-shadow btn-info",
+        },
         title: "Ooops!",
         icon: "error",
         html: `<p>${error.message}</p>`, // prettier message
