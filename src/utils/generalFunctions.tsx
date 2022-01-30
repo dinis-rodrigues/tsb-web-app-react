@@ -73,6 +73,11 @@ const swalMessage = (
   type: "error" | "success" | "info" | "question"
 ) => {
   swalAlert.fire({
+    target: ".app-container",
+    customClass: {
+      denyButton: "btn btn-shadow btn-danger",
+      confirmButton: "btn btn-shadow btn-info",
+    },
     title: title,
     icon: type,
     html: `<p>${message}</p>`,

@@ -2,15 +2,13 @@
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 
-// add bootstrap css
-// import "bootstrap/dist/css/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
-import "./colors.scss";
-import "./base.scss";
-import "./icons.scss";
-import "./customBootstrap.scss";
-import "./custom.scss";
-import "./darkTheme.scss";
+import "./assets/scss/colors.scss";
+import "./assets/scss/base.scss";
+import "./assets/scss/icons.scss";
+import "./assets/scss/customBootstrap.scss";
+import "./assets/scss/custom.scss";
+import "./assets/scss/darkTheme.scss";
 
 import Main from "./Pages/Main/Main";
 

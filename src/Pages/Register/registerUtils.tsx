@@ -15,6 +15,10 @@ const swalAlert = withReactContent(Swal);
 const showAlert = (getValues: UseFormGetValues<FieldValues>) => {
   var timerInterval: any = null;
   swalAlert.fire({
+    customClass: {
+      denyButton: "btn btn-shadow btn-danger",
+      confirmButton: "btn btn-shadow btn-info",
+    },
     title: "You are now a member of Técnico Solar Boat!",
     icon: "success",
     html: "<p>Get ready to work your ass off!</p> <p>You will be redirected in <b></b>s</p>",
@@ -94,6 +98,10 @@ const signUpUser = async (
       })
       .catch((error: string) => {
         swalAlert.fire({
+          customClass: {
+            denyButton: "btn btn-shadow btn-danger",
+            confirmButton: "btn btn-shadow btn-info",
+          },
           title: "Ooops!",
           icon: "error",
           html: `<p>${error}</p>`,
@@ -101,6 +109,11 @@ const signUpUser = async (
       });
   } else {
     swalAlert.fire({
+      customClass: {
+        denyButton: "btn btn-shadow btn-danger",
+        confirmButton: "btn btn-shadow btn-info",
+        container: "zIndex-inf",
+      },
       title: "Registration is closed!",
       icon: "error",
       html: `<p>Contact the admin for further details.</p>`,

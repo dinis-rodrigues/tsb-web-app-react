@@ -44,7 +44,12 @@ import printDoc from "../../utils/pdfExport/printDoc";
 const swalBomDeleteMessage = (deleteFunction: Function) => {
   swalDeleteAlert
     .fire({
-      customClass: { container: "zIndex-inf" },
+      target: ".app-container",
+      customClass: {
+        denyButton: "btn btn-shadow btn-danger",
+        confirmButton: "btn btn-shadow btn-info",
+        container: "zIndex-inf",
+      },
       reverseButtons: true,
       title: "Beware",
       showDenyButton: true,

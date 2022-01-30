@@ -183,6 +183,12 @@ const deleteSection = (
 const swalDeleteSectionMessage = (deleteFunction: Function) => {
   swalDeleteAlert
     .fire({
+      target: ".app-container",
+      customClass: {
+        denyButton: "btn btn-shadow btn-danger",
+        confirmButton: "btn btn-shadow btn-info",
+        container: "zIndex-inf",
+      },
       reverseButtons: true,
       title: "Beware",
       showDenyButton: true,
@@ -190,11 +196,6 @@ const swalDeleteSectionMessage = (deleteFunction: Function) => {
       confirmButtonText: `Cancel`,
       icon: "warning",
       html: `<p>You are about to delete this section, and all its content.</p> <p><h4>Are you sure?</h4></p>`,
-
-      customClass: {
-        denyButton: "btn btn-shadow btn-danger",
-        confirmButton: "btn btn-shadow btn-info",
-      },
     })
     .then((result) => {
       if (result.isConfirmed) {

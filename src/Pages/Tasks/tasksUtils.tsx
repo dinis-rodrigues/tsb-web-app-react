@@ -35,6 +35,12 @@ import {
 const swalDeleteMessage = (deleteBoard: Function) => {
   swalDeleteAlert
     .fire({
+      target: ".app-container",
+      customClass: {
+        denyButton: "btn btn-shadow btn-danger",
+        confirmButton: "btn btn-shadow btn-info",
+        container: "zIndex-inf",
+      },
       reverseButtons: true,
       title: "Beware",
       showDenyButton: true,

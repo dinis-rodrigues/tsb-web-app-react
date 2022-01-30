@@ -66,6 +66,12 @@ const numberToMonths: { [key: string]: string } = {
 const swalDeleteRecruitmentTable = (deleteFunction: Function) => {
   swalDeleteAlert
     .fire({
+      target: ".app-container",
+      customClass: {
+        denyButton: "btn btn-shadow btn-danger",
+        confirmButton: "btn btn-shadow btn-info",
+        container: "zIndex-inf",
+      },
       reverseButtons: true,
       title: "Beware",
       showDenyButton: true,
@@ -74,11 +80,6 @@ const swalDeleteRecruitmentTable = (deleteFunction: Function) => {
       icon: "warning",
       html: `<p>You are about to delete this recruitment table, this operation is not reversible.</p>
       <p><h4>Are you sure to proceed?</h4></p>`,
-
-      customClass: {
-        denyButton: "btn btn-shadow btn-danger",
-        confirmButton: "btn btn-shadow btn-info",
-      },
     })
     .then((result) => {
       if (result.isConfirmed) {
@@ -95,6 +96,12 @@ const swalDeleteRecruitmentTable = (deleteFunction: Function) => {
 const swalDeleteApplication = (deleteFunction: Function) => {
   swalDeleteAlert
     .fire({
+      target: ".app-container",
+      customClass: {
+        denyButton: "btn btn-shadow btn-danger",
+        confirmButton: "btn btn-shadow btn-info",
+        container: "zIndex-inf",
+      },
       reverseButtons: true,
       title: "Beware",
       showDenyButton: true,
@@ -103,11 +110,6 @@ const swalDeleteApplication = (deleteFunction: Function) => {
       icon: "warning",
       html: `<p>You are about to delete this user application, this operation is not reversible.</p>
       <p><h4>Are you sure to proceed?</h4></p>`,
-
-      customClass: {
-        denyButton: "btn btn-shadow btn-danger",
-        confirmButton: "btn btn-shadow btn-info",
-      },
     })
     .then((result) => {
       if (result.isConfirmed) {
