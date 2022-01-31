@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { taskCommentInfo, userContext, UserMetadata } from "../../interfaces";
 import cx from "classnames";
-import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
+import AvatarOverlap from "../AppImage/AvatarOverlap";
 import { isDateInPastWeek } from "../../utils/generalFunctions";
 
 type Props = {
