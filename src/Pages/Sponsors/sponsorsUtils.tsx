@@ -1078,7 +1078,9 @@ const filterSponsors = (
     return;
   }
   const filteredSponsors = sponsors.filter(([sponsorId, sponsor]) => {
-    return sponsor.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return normalizedString(sponsor.name)
+      .toLowerCase()
+      .includes(normalizedString(searchTerm).toLowerCase());
   });
   setInventorySponsors(filteredSponsors);
 };
