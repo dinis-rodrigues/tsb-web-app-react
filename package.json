@@ -2,12 +2,16 @@
   "name": "@tsb/root",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "frontend",
+    "backend"
   ],
   "scripts": {
-    "all": "lerna run start",
+    "all": "lerna run start --stream",
     "web": "lerna run start --scope=@tsb/frontend",
-    "server": "lerna run start --scope=backend"
+    "server": "lerna run start --scope=@tsb/backend --stream"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "dependencies": {
+    "dotenv": "^15.0.0"
+  }
 }
