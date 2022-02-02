@@ -1,4 +1,4 @@
-import { Fragment } from "@fullcalendar/common";
+import { Fragment } from "react";
 import { extendDate } from "../../utils/generalFunctions";
 import { useAuth } from "../../contexts/AuthContext";
 import { EventColors } from "../../interfaces";

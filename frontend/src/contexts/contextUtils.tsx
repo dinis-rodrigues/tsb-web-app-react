@@ -16,6 +16,7 @@ import {
   User,
   browserLocalPersistence,
   browserSessionPersistence,
+  Auth,
 } from "firebase/auth";
 
 /**
@@ -165,6 +166,15 @@ const setUserInformation = (
   });
 };
 
+/**
+ * Retrieves a uniquely generated id of the authenticated user
+ * @param auth
+ * @returns
+ */
+const getUserAuthToken = (auth: Auth) => {
+  return auth.currentUser?.getIdToken(true);
+};
+
 export {
   getAndSetApplicationSettings,
   getCurrentUser,
@@ -174,4 +184,5 @@ export {
   setDisplayApplication,
   setUserInformation,
   getDepartments,
+  getUserAuthToken,
 };

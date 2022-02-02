@@ -52,6 +52,6 @@ const app: FirebaseApp = initializeApp(firebaseConfig);
 
 export const db = getDatabase(app);
 export const st = getStorage(app);
-export const auth = getAuth();
+export const auth = getAuth(app);
 
 export default app;
