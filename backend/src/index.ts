@@ -11,7 +11,7 @@ const port = process.env.PORT || 4000;
 import { initializeApp, applicationDefault, cert } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 
-const adminCredentials = require("./tsb-admin-dev.json");
+const adminCredentials = require("./tsb-dev-admin-key.json");
 
 const firebaseApp = initializeApp({
   credential: cert(adminCredentials),

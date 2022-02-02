@@ -6,6 +6,7 @@
 # environment variables
 .env
 .firebase
+**admin-key.json
 
 # dependencies
 **/node_modules
