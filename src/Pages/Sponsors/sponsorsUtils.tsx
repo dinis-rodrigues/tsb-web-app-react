@@ -805,8 +805,8 @@ const getInventorySponsors = (
 
     // order by name
     const sortedSponsors = Object.entries(allSponsors).sort((a, b) => {
-      let sponsorNameA = a[1].name;
-      let sponsorNameB = b[1].name;
+      let sponsorNameA = normalizedString(a[1].name).toLowerCase();
+      let sponsorNameB = normalizedString(b[1].name).toLowerCase();
 
       if (sponsorNameA > sponsorNameB) return 1;
       if (sponsorNameA < sponsorNameB) return -1;
