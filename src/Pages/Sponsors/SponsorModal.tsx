@@ -8,14 +8,9 @@ import SponsorFileIcon from "./icons/SponsorFileIcon";
 import SponsorChart from "./SponsorChart";
 import SponsorImage from "./SponsorImage";
 import {
-  addNewSeason,
-  deleteSeason,
   deleteSponsor,
   downloadSponsorFile,
-  editSeasonHandler,
-  editSeasonValueHandler,
   saveSponsor,
-  sponsorInputHandler,
   uploadSponsorSvgToServer,
 } from "./sponsorsUtils";
 import { useAuth } from "../../contexts/AuthContext";
