@@ -13,6 +13,7 @@ const SponsorImage = ({ svgPath }: Props) => {
     getSvgStringFromPath(svgPath, setSvgString);
   }, [svgPath]);
 
+  if (!svgPath) return null;
   if (!svgString) return <Spinner size="large" type="arc" variant="brand" />;
 
   //   const jsxEl = parse(s) as JSX.Element;
