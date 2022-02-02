@@ -243,34 +243,31 @@ const addSponsorToBracket = (
  */
 const removeSponsorFromBracket = (sponsorId: string, bracketId: string) => {
   // retrieve board items from bracket
-  get(
-    ref(
-      db,
-      `private/sponsors/brackets/${bracketId}/sponsorsBoardList/${sponsorId}`
-    )
-  ).then((snapshot) => {
-    const sponsorsList: string[] = snapshot.val();
-    // remove from list
-    const newSponsorsList = sponsorsList.filter((sponsor) => {
-      return sponsor !== sponsorId;
-    });
+  get(ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`)).then(
+    (snapshot) => {
+      const sponsorsList: string[] = snapshot.val();
+      // remove from list
+      const newSponsorsList = sponsorsList.filter((sponsor) => {
+        return sponsor !== sponsorId;
+      });
 
-    // Update with new List
-    set(
-      ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`),
-      newSponsorsList
-    );
+      // Update with new List
+      set(
+        ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`),
+        newSponsorsList
+      );
 
-    // Remove sponsor from bracket sponsors
-    remove(
-      ref(
-        db,
-        `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`
-      )
-    );
-    // update sponsor in inventory with blank bracket name
-    set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), "");
-  });
+      // Remove sponsor from bracket sponsors
+      remove(
+        ref(
+          db,
+          `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`
+        )
+      );
+      // update sponsor in inventory with blank bracket name
+      set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), "");
+    }
+  );
 };
 
 /**
@@ -808,8 +805,8 @@ const getInventorySponsors = (
 
     // order by name
     const sortedSponsors = Object.entries(allSponsors).sort((a, b) => {
-      let sponsorNameA = a[1].name;
-      let sponsorNameB = b[1].name;
+      let sponsorNameA = normalizedString(a[1].name).toLowerCase();
+      let sponsorNameB = normalizedString(b[1].name).toLowerCase();
 
       if (sponsorNameA > sponsorNameB) return 1;
       if (sponsorNameA < sponsorNameB) return -1;
@@ -1081,7 +1078,9 @@ const filterSponsors = (
     return;
   }
   const filteredSponsors = sponsors.filter(([sponsorId, sponsor]) => {
-    return sponsor.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return normalizedString(sponsor.name)
+      .toLowerCase()
+      .includes(normalizedString(searchTerm).toLowerCase());
   });
   setInventorySponsors(filteredSponsors);
 };

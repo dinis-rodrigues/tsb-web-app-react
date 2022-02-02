@@ -1,6 +1,6 @@
 import { buildSponsorGraph, sponsorChartOptions } from "./sponsorsUtils";
 import Chart from "react-apexcharts";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SponsorChartData,
   SponsorHistory,
@@ -11,30 +11,38 @@ import { useAuth } from "../../contexts/AuthContext";
 type Props = {
   values: SponsorHistory | undefined;
   retroActives: SponsorRetroactives;
+  refreshChart: boolean;
 };
-const SponsorChart = ({ values, retroActives }: Props) => {
-  const { isDarkMode } = useAuth();
-  const [chartLabels, setChartLabels] = useState<string[]>([]);
-  const [chartSeries, setChartSeries] = useState<SponsorChartData[]>([]);
+const SponsorChart = React.memo(
+  ({ values, retroActives, refreshChart }: Props) => {
+    const { isDarkMode } = useAuth();
+    const [chartLabels, setChartLabels] = useState<string[]>([]);
+    const [chartSeries, setChartSeries] = useState<SponsorChartData[]>([]);
 
-  useEffect(() => {
-    buildSponsorGraph(values, retroActives, setChartSeries, setChartLabels);
-  }, [values, retroActives]);
-  return (
-    <div>
-      <Chart
-        options={{
-          ...sponsorChartOptions,
-          theme: { mode: isDarkMode ? "dark" : "light" },
-          labels: chartLabels,
-        }}
-        series={chartSeries}
-        type={"bar"}
-        width="100%"
-        height="300"
-      />
-    </div>
-  );
-};
+    useEffect(() => {
+      buildSponsorGraph(
+        !!values ? values : {},
+        retroActives,
+        setChartSeries,
+        setChartLabels
+      );
+    }, [values, retroActives, refreshChart]);
+    return (
+      <div>
+        <Chart
+          options={{
+            ...sponsorChartOptions,
+            theme: { mode: isDarkMode ? "dark" : "light" },
+            labels: chartLabels,
+          }}
+          series={chartSeries}
+          type={"bar"}
+          width="100%"
+          height="300"
+        />
+      </div>
+    );
+  }
+);
 
 export default SponsorChart;
