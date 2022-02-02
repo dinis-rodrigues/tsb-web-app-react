@@ -118,7 +118,7 @@ const Sponsors = () => {
                   className="btn btn-primary"
                   onClick={() => {
                     setCreateModalOpen(true);
-                    setNewSponsorInfo(sponsorSkeleton);
+                    setNewSponsorInfo({ ...sponsorSkeleton });
                   }}
                 >
                   Create Sponsor

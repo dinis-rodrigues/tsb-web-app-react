@@ -243,34 +243,31 @@ const addSponsorToBracket = (
  */
 const removeSponsorFromBracket = (sponsorId: string, bracketId: string) => {
   // retrieve board items from bracket
-  get(
-    ref(
-      db,
-      `private/sponsors/brackets/${bracketId}/sponsorsBoardList/${sponsorId}`
-    )
-  ).then((snapshot) => {
-    const sponsorsList: string[] = snapshot.val();
-    // remove from list
-    const newSponsorsList = sponsorsList.filter((sponsor) => {
-      return sponsor !== sponsorId;
-    });
+  get(ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`)).then(
+    (snapshot) => {
+      const sponsorsList: string[] = snapshot.val();
+      // remove from list
+      const newSponsorsList = sponsorsList.filter((sponsor) => {
+        return sponsor !== sponsorId;
+      });
 
-    // Update with new List
-    set(
-      ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`),
-      newSponsorsList
-    );
+      // Update with new List
+      set(
+        ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`),
+        newSponsorsList
+      );
 
-    // Remove sponsor from bracket sponsors
-    remove(
-      ref(
-        db,
-        `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`
-      )
-    );
-    // update sponsor in inventory with blank bracket name
-    set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), "");
-  });
+      // Remove sponsor from bracket sponsors
+      remove(
+        ref(
+          db,
+          `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`
+        )
+      );
+      // update sponsor in inventory with blank bracket name
+      set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), "");
+    }
+  );
 };
 
 /**

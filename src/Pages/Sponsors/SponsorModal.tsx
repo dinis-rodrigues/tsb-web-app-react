@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
-import NumberFormat from "react-number-format";
+
 import { Button, Modal, FileSelector, Spinner } from "react-rainbow-components";
 import cx from "classnames";
 import { Nav, NavItem, NavLink } from "reactstrap";
@@ -19,6 +19,8 @@ import {
   uploadSponsorSvgToServer,
 } from "./sponsorsUtils";
 import { useAuth } from "../../contexts/AuthContext";
+import SponsorModalInfo from "./SponsorModalInfo";
+import SponsorModalAddSeason from "./SponsorModalAddSeason";
 
 type Props = {
   isModalOpen: boolean;
@@ -38,19 +40,14 @@ const SponsorModal = ({
   sponsorId,
 }: Props) => {
   const { USER, isMarketingOrAdmin, isDarkMode } = useAuth();
-  const [focusInput, setFocusInput] = useState("");
 
   const [sponsorInfo, setSponsorInfo] = useState(mockSponsorInfo);
+  const [refreshChart, setRefreshChart] = useState(false);
 
   useEffect(() => {
     setSponsorInfo(mockSponsorInfo);
   }, [mockSponsorInfo]);
 
-  let sponsorValue = 0;
-  if (sponsorInfo?.history) {
-    let vals = Object.entries(sponsorInfo.history).map(([_, val]) => val);
-    sponsorValue = vals[vals.length - 1];
-  }
   const [fileValue, setFileValue] = useState<FileList | undefined>();
   const [activeTab, setActiveTab] = useState("0");
 
@@ -128,183 +125,28 @@ const SponsorModal = ({
       </div>
       {activeTab === "0" && (
         <Fragment>
-          <div className="form-group row text-center">
-            <div className="col">
-              <label>
-                <span className="text-dark small text-uppercase">
-                  <i className="fas fa-quote-right"></i>
-                  <strong> Name</strong>
-                </span>
-              </label>
-
-              <input
-                value={sponsorInfo ? sponsorInfo.name : ""}
-                readOnly={isMarketingOrAdmin ? false : true}
-                onChange={(e) =>
-                  sponsorInputHandler(e.target.value, "name", setSponsorInfo)
-                }
-                type="text"
-                className="form-control m-0 text-center"
-                placeholder=""
-              />
-            </div>
-            <div className="col">
-              <label>
-                <span className="text-dark small text-uppercase">
-                  <i className="fas fa-quote-right"></i>
-                  <strong> Bracket</strong>
-                </span>
-              </label>
-
-              <input
-                value={sponsorInfo ? sponsorInfo.level : ""}
-                readOnly
-                type="text"
-                className="form-control m-0 text-center"
-                placeholder=""
-              />
-            </div>
-            <div className="col">
-              <label>
-                <span className="text-dark small text-uppercase">
-                  <i className="fas fa-euro-sign"></i>
-                  <strong> Value</strong>
-                </span>
-              </label>
-
-              <NumberFormat
-                value={sponsorValue}
-                readOnly
-                onValueChange={(value) =>
-                  sponsorInputHandler(
-                    value.floatValue ? value.floatValue : 0,
-                    "value",
-                    setSponsorInfo
-                  )
-                }
-                decimalScale={2}
-                fixedDecimalScale={true}
-                suffix={" €"}
-                thousandSeparator={" "}
-                className="form-control text-center"
-                placeholder="  €"
-              />
-            </div>
-          </div>
-          <div className="form-group row text-center">
-            <div className="col">
-              <label>
-                <span className="text-dark small text-uppercase">
-                  <i className="fas fa-link"></i>
-                  <strong> Website</strong>
-                </span>
-              </label>
-
-              <input
-                value={sponsorInfo ? sponsorInfo.url : ""}
-                readOnly={isMarketingOrAdmin ? false : true}
-                onChange={(e) =>
-                  sponsorInputHandler(e.target.value, "url", setSponsorInfo)
-                }
-                type="text"
-                className="form-control m-0 text-center"
-                placeholder=""
-              />
-            </div>
-          </div>
+          <SponsorModalInfo
+            sponsorInfo={sponsorInfo}
+            setSponsorInfo={setSponsorInfo}
+          />
 
           <div className="row">
             <div className="col">
               <SponsorChart
-                values={sponsorInfo?.history}
+                values={sponsorInfo?.history ? sponsorInfo.history : {}}
                 retroActives={retroActives}
+                refreshChart={refreshChart}
               />
             </div>
           </div>
 
           <hr className="divider" />
 
-          <div className="row form-group text-center">
-            <div className="col-1"></div>
-            <div className="col-5 text-dark small text-uppercase">Season</div>
-            <div className="col-5 text-dark small text-uppercase">Value</div>
-            <div className="col-1"></div>
-            {sponsorInfo?.history &&
-              Object.entries(sponsorInfo?.history).map(([season, value]) => {
-                return (
-                  <Fragment key={season}>
-                    <div className="col-1"></div>
-                    <div className="col-5">
-                      <NumberFormat
-                        value={season.replace("-", "/")}
-                        readOnly={isMarketingOrAdmin ? false : true}
-                        className="form-control text-center"
-                        format={"####/####"}
-                        allowEmptyFormatting
-                        mask="_"
-                        autoFocus={season === focusInput}
-                        onValueChange={(val) =>
-                          editSeasonHandler(
-                            val.formattedValue,
-                            season,
-                            sponsorInfo,
-                            setSponsorInfo,
-                            setFocusInput
-                          )
-                        }
-                      />
-                    </div>
-                    <div className="col-5">
-                      <NumberFormat
-                        value={value}
-                        readOnly={isMarketingOrAdmin ? false : true}
-                        onValueChange={(value) =>
-                          editSeasonValueHandler(
-                            value.floatValue ? value.floatValue : 0,
-                            season,
-                            sponsorInfo,
-                            setSponsorInfo
-                          )
-                        }
-                        decimalScale={2}
-                        fixedDecimalScale={true}
-                        suffix={" €"}
-                        thousandSeparator={" "}
-                        className="form-control text-center"
-                        placeholder="  €"
-                      />
-                    </div>
-
-                    <div className="col-1 justify-content-center d-flex align-items-center">
-                      {isMarketingOrAdmin && (
-                        <span
-                          className={"float-right cursor-pointer text-danger"}
-                          onClick={() =>
-                            deleteSeason(season, sponsorInfo, setSponsorInfo)
-                          }
-                        >
-                          <i className="fa fa-times"></i>
-                        </span>
-                      )}
-                    </div>
-                  </Fragment>
-                );
-              })}
-          </div>
-          {isMarketingOrAdmin && (
-            <div className="row">
-              <div className="col-4"></div>
-              <div className="col d-flex justify-content-center">
-                <button
-                  className="btn btn-outline-success"
-                  onClick={() => addNewSeason(sponsorInfo, setSponsorInfo)}
-                >
-                  Add Season
-                </button>
-              </div>
-              <div className="col-4"></div>
-            </div>
-          )}
+          <SponsorModalAddSeason
+            sponsorInfo={sponsorInfo}
+            setSponsorInfo={setSponsorInfo}
+            setRefreshChart={setRefreshChart}
+          />
         </Fragment>
       )}
 
