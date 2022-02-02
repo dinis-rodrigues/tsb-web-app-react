@@ -1,3 +1,4 @@
+import React from "react";
 import { AreaChart, Area, Tooltip, ResponsiveContainer } from "recharts";
 import { attendanceArrayRechart, graphColor } from "../../interfaces";
 import { customTooltip } from "./attendanceUtils";
@@ -7,7 +8,7 @@ type Props = {
   chartSeries: attendanceArrayRechart[];
 };
 
-const AttendanceChart = ({ chartOptions, chartSeries }: Props) => {
+const AttendanceChart = React.memo(({ chartOptions, chartSeries }: Props) => {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart
@@ -52,6 +53,6 @@ const AttendanceChart = ({ chartOptions, chartSeries }: Props) => {
       </AreaChart>
     </ResponsiveContainer>
   );
-};
+});
 
 export default AttendanceChart;
