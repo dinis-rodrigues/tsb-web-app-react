@@ -17,14 +17,13 @@ import { get, ref, set, update } from "firebase/database";
 import * as fbStorage from "firebase/storage";
 
 // PHP SERVER VARIABLES
-// const developmentPHPTarget =
-//   "http://localhost:3000/public/assets/php/save_image_on_server.php";
-// const testBuildPHPTarget =
-//   "http://localhost:3000/build/php/save_image_on_server.php";
-const productionPHPTarget =
+var saveUserImgInDatabasePHPTarget =
   "https://tsb.tecnico.ulisboa.pt/assets/php/save_image_on_server.php";
 
-const saveUserImgInDatabasePHPTarget = productionPHPTarget;
+if (process.env.NODE_ENV === "development") {
+  saveUserImgInDatabasePHPTarget =
+    "http://localhost:3000/public/assets/php/save_image_on_server.php";
+}
 
 const departmentOptions = [
   {
@@ -1004,14 +1003,24 @@ const sendImgToServer = async (
   }
   // croppie to blob, this returns a promise, use await to get the blob file
   if (!blob) {
+    var imageSize = {
+      width: 500,
+      height: 500,
+      type: "square",
+    };
     blob = await croppie.result({
       type: "blob", // blob is just a file type  that works with firebase
-      size: "viewport",
+      size: imageSize,
+      format: "jpeg",
+      quality: 1,
     });
   }
   if (!filename) {
     filename = user.id;
   }
+
+  var blobUrl = URL.createObjectURL(blob);
+  window.open(blobUrl, "_blank");
 
   var data = new FormData();
   data.append("file", blob, user.id);

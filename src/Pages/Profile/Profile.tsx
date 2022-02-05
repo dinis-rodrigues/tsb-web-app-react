@@ -91,7 +91,7 @@ const Profile = ({ setUserProfilePicture }: Props) => {
                     <div className={cx("avatar-icon-wrapper mb-2")}>
                       <div
                         id="PImgContainer"
-                        className={cx("rounded w-fit h-fit", {
+                        className={cx("rounded w-fit h-fit profile-image", {
                           "avatar-icon": disabledInput,
                         })}
                       >
