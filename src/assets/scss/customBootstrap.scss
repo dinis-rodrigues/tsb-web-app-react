@@ -17622,6 +17622,11 @@ a.avatar-icon-wrapper:hover .avatar-icon {
   opacity: 1;
   border-radius: 50px;
 
+  &.profile-image {
+    width: 400px !important;
+    height: 400px !important;
+  }
+
   &.rounded {
     border-radius: 0.39rem !important;
   }
