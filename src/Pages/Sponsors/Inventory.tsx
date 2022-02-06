@@ -8,6 +8,7 @@ import {
 import InventorySponsorCard from "./InventorySponsorCard";
 import SponsorModal from "./SponsorModal";
 import { filterSponsors } from "./sponsorsUtils";
+import { CheckboxToggle } from "react-rainbow-components";
 
 type Props = {
   retroActives: SponsorRetroactives;
@@ -23,20 +24,95 @@ const Inventory = ({ retroActives, sponsors, existingBrackets }: Props) => {
   const [inventorySponsors, setInventorySponsors] =
     useState<[string, Sponsor][]>(sponsors);
 
+  const [filterTerm, setFilterTerm] = useState("");
+  const [filterNoLogo, setFilterNoLogo] = useState(false);
+  const [filterLowQualityLogo, setFilterLowQualityLogo] = useState(false);
+  const [filterOutdatedValues, setFilterOutdatedValues] = useState(false);
+
   useEffect(() => {
     setInventorySponsors(sponsors);
   }, [sponsors]);
+
+  // useEffect(() => {
+  //   filterSponsors(
+  //     "",
+  //     filterOutdatedValues,
+  //     filterNoLogo,
+  //     filterLowQualityLogo,
+  //     sponsors,
+  //     setInventorySponsors
+  //   );
+  // }, [sponsors, filterNoLogo, filterLowQualityLogo, filterOutdatedValues]);
 
   return (
     <Fragment>
       <Input
         className="rainbow-p-around_medium"
+        value={filterTerm}
         placeholder="Filter..."
         icon={<i className="fa fa-search"></i>}
-        onChange={(e) =>
-          filterSponsors(e.target.value, sponsors, setInventorySponsors)
-        }
+        onChange={(e) => {
+          setFilterTerm(e.target.value);
+          filterSponsors(
+            e.target.value,
+            filterOutdatedValues,
+            filterNoLogo,
+            filterLowQualityLogo,
+            sponsors,
+            setInventorySponsors
+          );
+        }}
       />
+      <div className="row">
+        <CheckboxToggle
+          label="Outdated Values:"
+          labelAlignment="left"
+          value={filterOutdatedValues}
+          onChange={() => {
+            setFilterOutdatedValues(!filterOutdatedValues);
+            filterSponsors(
+              filterTerm,
+              !filterOutdatedValues,
+              filterNoLogo,
+              filterLowQualityLogo,
+              sponsors,
+              setInventorySponsors
+            );
+          }}
+        />
+        <CheckboxToggle
+          label="Without Logo:"
+          labelAlignment="left"
+          value={filterNoLogo}
+          onChange={() => {
+            setFilterNoLogo(!filterNoLogo);
+            filterSponsors(
+              filterTerm,
+              filterOutdatedValues,
+              !filterNoLogo,
+              filterLowQualityLogo,
+              sponsors,
+              setInventorySponsors
+            );
+          }}
+        />
+        <CheckboxToggle
+          label="Low quality Logo:"
+          labelAlignment="left"
+          value={filterLowQualityLogo}
+          onChange={() => {
+            setFilterLowQualityLogo(!filterLowQualityLogo);
+            filterSponsors(
+              filterTerm,
+              filterOutdatedValues,
+              filterNoLogo,
+              !filterLowQualityLogo,
+              sponsors,
+              setInventorySponsors
+            );
+          }}
+        />
+      </div>
       <div className="row">
         {inventorySponsors &&
           inventorySponsors.map(([sponsordUId, sponsor]) => {

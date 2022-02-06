@@ -1,10 +1,11 @@
 import { forwardRef } from "react";
-import { Sponsor, SponsorRetroactives } from "../../interfaces";
+import { Sponsor, SponsorHistory, SponsorRetroactives } from "../../interfaces";
 import SponsorImage from "./SponsorImage";
 import { UncontrolledTooltip } from "reactstrap";
 import {
   calculateRetroActives,
   removeSponsorFromBracket,
+  getCurrentSeasonYear,
 } from "./sponsorsUtils";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -20,6 +21,37 @@ type Props = {
   faded?: boolean;
   style?: any;
   retroActives: SponsorRetroactives;
+};
+
+const missingBadge = (history: SponsorHistory | undefined) => {
+  const currSeason = getCurrentSeasonYear();
+
+  if (!history)
+    return <span className="badge badge-pill badge-danger">Missing</span>;
+  if (!history[currSeason])
+    return <span className="badge badge-pill badge-warning">Outdated</span>;
+  return null;
+};
+
+const badQualityBadge = (sponsor: Sponsor) => {
+  if (sponsor.isBadQualityLogo)
+    return <span className="badge badge-pill badge-danger">Bad Logo</span>;
+
+  return null;
+};
+
+const formatNumber = (num: number | string) => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+};
+
+const returnTotalVal = (totalVal: number) => {
+  return formatNumber(totalVal ? Number(totalVal).toFixed(0) : 0);
+};
+
+const returnRetroVal = (retroVal: number, totalVal: number) => {
+  return formatNumber(
+    retroVal + totalVal ? Number(retroVal + totalVal).toFixed(0) : 0
+  );
 };
 
 const SponsorCard = forwardRef<HTMLInputElement, Props>(
@@ -57,11 +89,11 @@ const SponsorCard = forwardRef<HTMLInputElement, Props>(
         style={{ ...style, position: "relative" }}
         {...props}
       >
-        <span style={{ position: "absolute", top: 0 }}>{`${
-          totalVal ? Number(totalVal).toFixed(0) : 0
-        } / ${
-          retroVal + totalVal ? Number(retroVal + totalVal).toFixed(0) : 0
-        }`}</span>
+        <span style={{ position: "absolute", top: 0 }}>
+          {returnTotalVal(totalVal)}{" "}
+          {(sponsor.isRetroActive === undefined || sponsor.isRetroActive) &&
+            `/ ${returnRetroVal(retroVal, totalVal)}`}
+        </span>
         <button
           style={{ position: "absolute", top: -2, left: -2 }}
           className="btn border-0 btn-transition btn-outline-info"
@@ -93,7 +125,15 @@ const SponsorCard = forwardRef<HTMLInputElement, Props>(
             </UncontrolledTooltip>
           </>
         )}
-        <span style={{ position: "absolute", bottom: 0 }}>{sponsor?.name}</span>
+        <span
+          className="d-flex justify-content-center flex-column text-center mb-1"
+          style={{ position: "absolute", bottom: 0 }}
+        >
+          <div>
+            {missingBadge(sponsor?.history)} {badQualityBadge(sponsor)}
+          </div>
+          <div>{sponsor?.name}</div>
+        </span>
       </div>
     );
   }

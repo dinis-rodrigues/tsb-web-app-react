@@ -31,6 +31,7 @@ const sponsorSkeleton: Sponsor = {
   level: "",
   svgPath: "",
   url: "",
+  isRetroActive: false,
 };
 
 const retroActivesSkeleton: SponsorRetroactives = {
@@ -438,17 +439,24 @@ const addNewSeason = (
       lastSeasonYear + "-" + (parseInt(lastSeasonYear) + 1).toString();
     const newSponsorInfo: Sponsor = {
       ...sponsorInfo,
-      history: { ...sponsorInfo.history, [newSeason]: 0 },
+      history: { ...sponsorInfo.history, [newSeason]: { value: 0 } },
     };
     setSponsorInfo(newSponsorInfo);
   } else {
-    const newSeason = "2014-2015";
+    const newSeason = getCurrentSeasonYear();
     const newSponsorInfo: Sponsor = {
       ...sponsorInfo,
-      history: { ...sponsorInfo.history, [newSeason]: 0 },
+      history: { ...sponsorInfo.history, [newSeason]: { value: 0 } },
     };
     setSponsorInfo(newSponsorInfo);
   }
+};
+
+const getCurrentSeasonYear = () => {
+  const year = new Date().getFullYear();
+  const month = new Date().getMonth() + 1;
+
+  return month < 10 ? `${year - 1}-${year}` : `${year}-${year + 1}`;
 };
 
 /**
@@ -467,7 +475,10 @@ const editSeasonValueHandler = (
   if (!value) value = 0;
   const newSponsorInfo: Sponsor = {
     ...sponsorInfo,
-    history: { ...sponsorInfo.history, [seasonToEdit]: value },
+    history: {
+      ...sponsorInfo.history,
+      [seasonToEdit]: { ...sponsorInfo.history![seasonToEdit], value: value },
+    },
   };
   setSponsorInfo(newSponsorInfo);
 };
@@ -481,32 +492,35 @@ const editSeasonValueHandler = (
  * @param setFocusInput
  */
 const editSeasonHandler = (
-  value: string,
+  season: string,
   seasonToEdit: string,
   sponsorInfo: Sponsor,
   setSponsorInfo: Function,
   setFocusInput: Function
 ) => {
-  value = value.replace("/", "-");
+  season = season.replace("/", "-");
 
   // Copy the old season value to the newly edited season
   let sponsorValue = 0;
   if (sponsorInfo.history && Object.keys(sponsorInfo.history)) {
-    if (sponsorInfo.history[value]) value = "____/____";
+    if (sponsorInfo.history[season]) season = "____/____";
     if (sponsorInfo.history[seasonToEdit])
-      sponsorValue = sponsorInfo.history[seasonToEdit];
+      sponsorValue = sponsorInfo.history[seasonToEdit].value;
   }
 
   const newSponsorInfo: Sponsor = {
     ...sponsorInfo,
-    history: { ...sponsorInfo.history, [value]: sponsorValue },
+    history: {
+      ...sponsorInfo.history,
+      [season]: { ...sponsorInfo.history![seasonToEdit], value: sponsorValue },
+    },
   };
 
   delete newSponsorInfo.history![seasonToEdit];
 
   setSponsorInfo(newSponsorInfo);
   // since we are deleting the input, we need to auto focus on the new one for typing
-  setFocusInput(value);
+  setFocusInput(season);
 };
 
 /**
@@ -727,6 +741,7 @@ const replaceLinearGradients = (s: string, toFind: string, expr = "linear") => {
 const buildSponsorGraph = (
   data: SponsorHistory | undefined,
   retroActives: SponsorRetroactives,
+  addRetroactives: boolean | undefined,
   setChartSeries: Function,
   setChartLabels: Function
 ) => {
@@ -739,10 +754,14 @@ const buildSponsorGraph = (
     retroActives
   );
 
-  setChartSeries([
-    { name: "Value", data: [...simpleValues] },
-    { name: "RetroActives", data: [...retroValues] },
-  ]);
+  if (addRetroactives || addRetroactives === undefined) {
+    setChartSeries([
+      { name: "Value", data: [...simpleValues] },
+      { name: "RetroActives", data: [...retroValues] },
+    ]);
+  } else {
+    setChartSeries([{ name: "Value", data: [...simpleValues] }]);
+  }
   setChartLabels([...labels]);
 };
 
@@ -757,7 +776,9 @@ const calculateRetroActives = (
   retroActives: SponsorRetroactives
 ) => {
   if (!data) return { simpleValues: [], retroValues: [] };
-  const simpleValues = Object.entries(data).map(([_, value]) => value);
+  const simpleValues = Object.entries(data).map(
+    ([_, seasonValue]) => seasonValue.value
+  );
   // Build retro-actives array
   const retroValues: number[] = new Array(simpleValues.length).fill(0);
 
@@ -1070,17 +1091,35 @@ const publishSponsorsToWebsite = async (
  */
 const filterSponsors = (
   searchTerm: string,
+  filterOutdatedValues: boolean,
+  filterNoLogo: boolean,
+  filterLowQualityLogo: boolean,
   sponsors: [string, Sponsor][],
   setInventorySponsors: Function
 ) => {
-  if (!searchTerm) {
+  const currSeason = getCurrentSeasonYear();
+  if (
+    !searchTerm &&
+    !filterOutdatedValues &&
+    !filterNoLogo &&
+    !filterLowQualityLogo
+  ) {
     setInventorySponsors(sponsors);
     return;
   }
   const filteredSponsors = sponsors.filter(([sponsorId, sponsor]) => {
-    return normalizedString(sponsor.name)
-      .toLowerCase()
-      .includes(normalizedString(searchTerm).toLowerCase());
+    return (
+      (searchTerm.length > 0
+        ? normalizedString(sponsor.name)
+            .toLowerCase()
+            .includes(normalizedString(searchTerm).toLowerCase())
+        : true) &&
+      (filterLowQualityLogo ? sponsor.isBadQualityLogo : true) &&
+      (filterOutdatedValues
+        ? !sponsor.history || !sponsor.history[currSeason]
+        : true) &&
+      (filterNoLogo ? !!!sponsor.svgPath : true)
+    );
   });
   setInventorySponsors(filteredSponsors);
 };
@@ -1174,6 +1213,42 @@ const saveRetroActives = (retroActives: SponsorRetroactives) => {
     });
 };
 
+const sponsorRetroHandler = (setSponsorInfo: Function) => {
+  setSponsorInfo((sponsor: Sponsor) => ({
+    ...sponsor,
+    isRetroActive:
+      sponsor.isRetroActive === undefined ? false : !sponsor.isRetroActive,
+  }));
+};
+
+const sponsorLogoQualityHandler = (setSponsorInfo: Function) => {
+  setSponsorInfo((sponsor: Sponsor) => ({
+    ...sponsor,
+    isBadQualityLogo:
+      sponsor.isBadQualityLogo === undefined ? true : !sponsor.isBadQualityLogo,
+  }));
+};
+
+const updateSponsorStatus = (
+  status: number,
+  season: string,
+  sponsorInfo: Sponsor,
+  setSponsorInfo: Function
+) => {
+  let newStatus: number | undefined = status;
+  sponsorInfo.history![season].status === status
+    ? (newStatus = undefined)
+    : (newStatus = status);
+  const newSponsorInfo: Sponsor = {
+    ...sponsorInfo,
+    history: {
+      ...sponsorInfo.history,
+      [season]: { ...sponsorInfo.history![season], status: newStatus },
+    },
+  };
+  setSponsorInfo(newSponsorInfo);
+};
+
 export {
   handleDragCancel,
   handleDragEnd,
@@ -1221,4 +1296,8 @@ export {
   retroThresholdHandler,
   retroSelectHandler,
   filterSponsors,
+  updateSponsorStatus,
+  getCurrentSeasonYear,
+  sponsorRetroHandler,
+  sponsorLogoQualityHandler,
 };

@@ -593,10 +593,15 @@ export interface Sponsor {
   url: string;
   value?: number;
   history?: SponsorHistory;
+  isRetroActive?: boolean;
+  isBadQualityLogo?: boolean;
 }
 
 export interface SponsorHistory {
-  [key: string]: number;
+  [key: string]: {
+    value: number;
+    status?: number;
+  };
 }
 
 export interface SponsorRetroactives {

@@ -12,9 +12,10 @@ type Props = {
   values: SponsorHistory | undefined;
   retroActives: SponsorRetroactives;
   refreshChart: boolean;
+  addRetroActives: boolean | undefined;
 };
 const SponsorChart = React.memo(
-  ({ values, retroActives, refreshChart }: Props) => {
+  ({ values, retroActives, refreshChart, addRetroActives }: Props) => {
     const { isDarkMode } = useAuth();
     const [chartLabels, setChartLabels] = useState<string[]>([]);
     const [chartSeries, setChartSeries] = useState<SponsorChartData[]>([]);
@@ -23,10 +24,11 @@ const SponsorChart = React.memo(
       buildSponsorGraph(
         !!values ? values : {},
         retroActives,
+        addRetroActives,
         setChartSeries,
         setChartLabels
       );
-    }, [values, retroActives, refreshChart]);
+    }, [values, retroActives, refreshChart, addRetroActives]);
     return (
       <div>
         <Chart
