@@ -259,7 +259,7 @@ body .app-theme-dark {
   }
 
   .dropdown-search {
-    background-color: $black-darker;
+    background-color: $black-darker !important;
     color: $white-darker;
   }
   .search-wrapper .input-holder .search-icon span {

@@ -1213,6 +1213,10 @@ const saveRetroActives = (retroActives: SponsorRetroactives) => {
     });
 };
 
+/**
+ * Toggle retro-actives for the sponsor
+ * @param setSponsorInfo
+ */
 const sponsorRetroHandler = (setSponsorInfo: Function) => {
   setSponsorInfo((sponsor: Sponsor) => ({
     ...sponsor,
@@ -1221,6 +1225,10 @@ const sponsorRetroHandler = (setSponsorInfo: Function) => {
   }));
 };
 
+/**
+ * Toggle low quality logo for the sponsor
+ * @param setSponsorInfo
+ */
 const sponsorLogoQualityHandler = (setSponsorInfo: Function) => {
   setSponsorInfo((sponsor: Sponsor) => ({
     ...sponsor,
@@ -1229,6 +1237,13 @@ const sponsorLogoQualityHandler = (setSponsorInfo: Function) => {
   }));
 };
 
+/**
+ * Updates the sponsor status for a respective season
+ * @param status
+ * @param season
+ * @param sponsorInfo
+ * @param setSponsorInfo
+ */
 const updateSponsorStatus = (
   status: number,
   season: string,
@@ -1249,6 +1264,52 @@ const updateSponsorStatus = (
   setSponsorInfo(newSponsorInfo);
 };
 
+/**
+ * AUXILIARY FUNCTION DO NOT USE - used to transform the database structure of sponsors
+ */
+const updateSponsorsHistory = () => {
+  get(ref(db, "private/sponsors/brackets")).then((snapshot) => {
+    const allBrackets: SponsorBracketsDB = snapshot.val();
+    if (!allBrackets) return;
+
+    Object.entries(allBrackets).forEach(([bracketId, bracket]) => {
+      const bracketSponsors = bracket.bracketSponsors;
+      Object.entries(bracketSponsors).forEach(([sponsorId, sponsor]) => {
+        if (!sponsorId) return;
+        const newHistory = { ...sponsor.history };
+        if (newHistory) {
+          Object.entries(newHistory).forEach(([year, seasonValue]) => {
+            newHistory[year] = {
+              // @ts-ignore: Unreachable code error
+              value: seasonValue ? seasonValue : 0,
+            };
+          });
+          allBrackets[bracketId].bracketSponsors[sponsorId].history =
+            newHistory;
+        }
+      });
+    });
+    set(ref(db, `private/sponsors/brackets/`), allBrackets);
+  });
+
+  get(ref(db, "private/sponsors/inventory")).then((snapshot) => {
+    const allSponsors: SponsorsOrder = snapshot.val();
+    Object.entries(allSponsors).forEach(([sponsorId, sponsor]) => {
+      const newHistory = { ...sponsor.history };
+      if (newHistory) {
+        Object.entries(newHistory).forEach(([year, seasonValue]) => {
+          newHistory[year] = {
+            // @ts-ignore: Unreachable code error
+            value: seasonValue ? seasonValue : 0,
+          };
+        });
+
+        allSponsors[sponsorId].history = newHistory;
+      }
+    });
+    set(ref(db, `private/sponsors/inventory/`), allSponsors);
+  });
+};
 export {
   handleDragCancel,
   handleDragEnd,
@@ -1296,6 +1357,7 @@ export {
   retroThresholdHandler,
   retroSelectHandler,
   filterSponsors,
+  updateSponsorsHistory,
   updateSponsorStatus,
   getCurrentSeasonYear,
   sponsorRetroHandler,

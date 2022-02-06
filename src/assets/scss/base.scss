@@ -4341,9 +4341,10 @@ select:-webkit-autofill {
   background-repeat: no-repeat;
   background-position: 14px 3px;
   font-size: 16px;
-  padding: 0px 20px 10px 20px;
+  padding: 10px 0px 10px 20px;
   border: none;
   color: #bbb;
+  border-bottom: 1px solid white;
   // border-bottom: 1px solid #ddd;
 
   &:focus {
