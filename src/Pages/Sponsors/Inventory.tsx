@@ -33,17 +33,6 @@ const Inventory = ({ retroActives, sponsors, existingBrackets }: Props) => {
     setInventorySponsors(sponsors);
   }, [sponsors]);
 
-  // useEffect(() => {
-  //   filterSponsors(
-  //     "",
-  //     filterOutdatedValues,
-  //     filterNoLogo,
-  //     filterLowQualityLogo,
-  //     sponsors,
-  //     setInventorySponsors
-  //   );
-  // }, [sponsors, filterNoLogo, filterLowQualityLogo, filterOutdatedValues]);
-
   return (
     <Fragment>
       <Input

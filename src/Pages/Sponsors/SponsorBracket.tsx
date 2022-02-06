@@ -129,11 +129,7 @@ const SponsorBracket = ({
                       Add
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu
-                    right
-                    className="rm-pointers dropdown-menu"
-                    style={{ overflow: "hidden" }}
-                  >
+                  <DropdownMenu right className="rm-pointers dropdown-menu">
                     <input
                       type="text"
                       className="dropdown-search"
@@ -148,25 +144,34 @@ const SponsorBracket = ({
                         setFilterSearch(e.target.value);
                       }}
                     />
-                    {dropdownResults.map(([sponId, sponsorVal]) => {
-                      return (
-                        <button
-                          key={sponId}
-                          type="button"
-                          className="dropdown-item"
-                          onClick={() =>
-                            addSponsorToBracket(
-                              sponId,
-                              sponsorVal,
-                              bracketId,
-                              bracket.name
-                            )
-                          }
-                        >
-                          {sponsorVal.name}
-                        </button>
-                      );
-                    })}
+                    <div
+                      style={{
+                        overflowY: "scroll",
+                        overflowX: "hidden",
+                        maxHeight: "400px",
+                        position: "relative",
+                      }}
+                    >
+                      {dropdownResults.map(([sponId, sponsorVal]) => {
+                        return (
+                          <button
+                            key={sponId}
+                            type="button"
+                            className="dropdown-item"
+                            onClick={() =>
+                              addSponsorToBracket(
+                                sponId,
+                                sponsorVal,
+                                bracketId,
+                                bracket.name
+                              )
+                            }
+                          >
+                            {sponsorVal.name}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </DropdownMenu>
                 </UncontrolledButtonDropdown>
               </>
