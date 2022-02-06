@@ -14,7 +14,9 @@ const SponsorModalInfo = ({ sponsorInfo, setSponsorInfo }: Props) => {
   const { isMarketingOrAdmin } = useAuth();
   let sponsorValue = 0;
   if (sponsorInfo?.history) {
-    let vals = Object.entries(sponsorInfo.history).map(([_, val]) => val);
+    let vals = Object.entries(sponsorInfo.history).map(
+      ([_, seasonVal]) => seasonVal.value
+    );
     sponsorValue = vals[vals.length - 1];
   }
   return (

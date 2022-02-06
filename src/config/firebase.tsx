@@ -34,8 +34,8 @@ if (
   process.env.REACT_APP_FIREBASE_API_KEY
 ) {
   if (
-    process.env.OVERRIDE_DEVELOPMENT &&
-    process.env.OVERRIDE_DEVELOPMENT === "TRUE"
+    process.env.REACT_APP_OVERRIDE_DEVELOPMENT &&
+    process.env.REACT_APP_OVERRIDE_DEVELOPMENT === "TRUE"
   ) {
     firebaseConfig = firebaseProductionConfig;
   } else {

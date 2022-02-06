@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 
 import { Button, Modal, FileSelector, Spinner } from "react-rainbow-components";
+import { CheckboxToggle } from "react-rainbow-components";
 import cx from "classnames";
 import { Nav, NavItem, NavLink } from "reactstrap";
 import { Sponsor, SponsorRetroactives } from "../../interfaces";
@@ -11,6 +12,8 @@ import {
   deleteSponsor,
   downloadSponsorFile,
   saveSponsor,
+  sponsorLogoQualityHandler,
+  sponsorRetroHandler,
   uploadSponsorSvgToServer,
 } from "./sponsorsUtils";
 import { useAuth } from "../../contexts/AuthContext";
@@ -36,7 +39,9 @@ const SponsorModal = ({
 }: Props) => {
   const { USER, isMarketingOrAdmin, isDarkMode } = useAuth();
 
-  const [sponsorInfo, setSponsorInfo] = useState(mockSponsorInfo);
+  const [sponsorInfo, setSponsorInfo] = useState<Sponsor | null>(
+    mockSponsorInfo
+  );
   const [refreshChart, setRefreshChart] = useState(false);
 
   useEffect(() => {
@@ -56,7 +61,7 @@ const SponsorModal = ({
         isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
       }
       isOpen={isModalOpen}
-      size="medium"
+      size="large"
       title={sponsorInfo?.name}
       onRequestClose={() => setIsModalOpen(false)}
       style={{ overflow: "hidden" }}
@@ -113,6 +118,14 @@ const SponsorModal = ({
               className={cx({ active: activeTab === "1" }, "card-title")}
               onClick={() => setActiveTab("1")}
             >
+              Sponsor Values
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={cx({ active: activeTab === "2" }, "card-title")}
+              onClick={() => setActiveTab("2")}
+            >
               Files
             </NavLink>
           </NavItem>
@@ -131,22 +144,39 @@ const SponsorModal = ({
                 values={sponsorInfo?.history ? sponsorInfo.history : {}}
                 retroActives={retroActives}
                 refreshChart={refreshChart}
+                addRetroActives={sponsorInfo?.isRetroActive}
+              />
+              <CheckboxToggle
+                label="Toggle Retro-actives:"
+                labelAlignment="left"
+                value={
+                  sponsorInfo?.isRetroActive === undefined
+                    ? true
+                    : sponsorInfo?.isRetroActive
+                }
+                onChange={() => sponsorRetroHandler(setSponsorInfo)}
+              />
+              <CheckboxToggle
+                label="Bad Quality Logo:"
+                labelAlignment="left"
+                value={sponsorInfo?.isBadQualityLogo}
+                onChange={() => sponsorLogoQualityHandler(setSponsorInfo)}
               />
             </div>
           </div>
-
-          <hr className="divider" />
-
-          <SponsorModalAddSeason
-            sponsorInfo={sponsorInfo}
-            setSponsorInfo={setSponsorInfo}
-            setRefreshChart={setRefreshChart}
-          />
         </Fragment>
       )}
 
-      {/* Sponsor files */}
       {activeTab === "1" && (
+        <SponsorModalAddSeason
+          sponsorInfo={sponsorInfo}
+          setSponsorInfo={setSponsorInfo}
+          setRefreshChart={setRefreshChart}
+        />
+      )}
+
+      {/* Sponsor files */}
+      {activeTab === "2" && (
         <Fragment>
           <div className="form-group row text-center">
             {isMarketingOrAdmin && (
