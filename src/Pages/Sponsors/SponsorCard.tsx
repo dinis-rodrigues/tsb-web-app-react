@@ -82,7 +82,7 @@ const SponsorCard = forwardRef<HTMLInputElement, Props>(
       totalVal = simpleValues[simpleValues.length - 1];
       retroVal = retroValues[retroValues.length - 1];
     }
-    return (
+    return sponsor ? (
       <div
         ref={ref}
         className="sponsor-card"
@@ -135,7 +135,7 @@ const SponsorCard = forwardRef<HTMLInputElement, Props>(
           <div>{sponsor?.name}</div>
         </span>
       </div>
-    );
+    ) : null;
   }
 );
 
