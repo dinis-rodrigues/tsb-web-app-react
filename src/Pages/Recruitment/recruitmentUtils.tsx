@@ -193,7 +193,11 @@ const toggleRegistration = (
   activeRecruitment: string | boolean
 ) => {
   if (activeRecruitment) set(ref(db, "public/recruitment/activeTable"), false);
-  else set(ref(db, "public/recruitment/activeTable"), tablesList[0]);
+  else
+    set(
+      ref(db, "public/recruitment/activeTable"),
+      tablesList[tablesList.length - 1]
+    );
 };
 
 /**
