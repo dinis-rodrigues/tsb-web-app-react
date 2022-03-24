@@ -228,6 +228,7 @@ const getMaterialStatusBadge = (toDo: taskShape & BomMaterial) => {
     else if (toDo.status === "In Progress")
       colors = ["bg-warning", "badge-warning"];
     else if (toDo.status === "Sponsor") colors = ["bg-info", "badge-info"];
+    else if (toDo.status === "To Buy") colors = ["bg-orange", "badge-orange"];
   }
   return colors;
 };
@@ -342,7 +343,8 @@ const getUserBomMaterials = (user: userContext | null) => {
       Object.entries(materials).forEach(([key, material]) => {
         if (
           material.status === "Required" ||
-          material.status === "In Progress"
+          material.status === "In Progress" ||
+          material.status === "To Buy"
         ) {
           todoMaterials[key] = material;
         }
