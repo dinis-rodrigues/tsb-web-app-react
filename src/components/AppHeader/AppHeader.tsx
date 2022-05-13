@@ -34,6 +34,9 @@ const Header = ({
           className={cx("app-header__content", {
             "header-mobile-open": displayMobileSearch,
           })}
+          style={{
+            overflow: "visible",
+          }}
         >
           <div className="app-header-left">
             <SearchBox />

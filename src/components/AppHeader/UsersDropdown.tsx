@@ -21,6 +21,11 @@ const UsersDropdown = ({
         "dropdown-menu-xl rm-pointers dropdown-menu dropdown-menu-right p-0",
         { "d-none": !dropdownOpen, "d-block": dropdownOpen }
       )}
+      style={{
+        overflow: "visible",
+        position: "absolute",
+        zIndex: "50",
+      }}
       role="menu"
       tabIndex={0} // this is required to hide the dropdown on blur
     >
@@ -28,7 +33,11 @@ const UsersDropdown = ({
         <div className={cx("tab-pane", { active: dropdownOpen })}>
           <ul
             className={"todo-list-wrapper list-group list-group-flush"}
-            style={{ maxHeight: "500px", overflow: "scroll" }} // scrollable users
+            style={{
+              maxHeight: "500px",
+              overflow: "scroll",
+              overflowX: "hidden",
+            }} // scrollable users
           >
             {searchedUsers.map(([userId, user]) => (
               <li

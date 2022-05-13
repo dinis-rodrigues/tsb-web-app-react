@@ -85,7 +85,13 @@ const UserBox = ({ userProfilePicture }: Props) => {
                     icon={faAngleDown}
                   />
                 </DropdownToggle>
-                <DropdownMenu right className="rm-pointers dropdown-menu-lg">
+                <DropdownMenu
+                  right
+                  className="rm-pointers dropdown-menu-lg"
+                  style={{
+                    paddingBottom: "10px",
+                  }}
+                >
                   <div className="grid-menu grid-menu-2col">
                     <div className="no-gutters row">
                       <div className="col-md-6">

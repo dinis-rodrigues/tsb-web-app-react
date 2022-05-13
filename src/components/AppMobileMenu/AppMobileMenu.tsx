@@ -43,6 +43,9 @@ const AppMobileMenu = ({
   });
   const toggleMobileSidebar = () => {
     setEnableMobileMenu(!enableMobileMenu);
+    if (displayMobileSearch) {
+      toggleMobileSmall();
+    }
   };
 
   const toggleMobileSmall = () => {
@@ -51,6 +54,9 @@ const AppMobileMenu = ({
       ...mobileState,
       activeSecondaryMenuMobile: !mobileState.activeSecondaryMenuMobile,
     });
+    if (enableMobileMenu) {
+      toggleMobileSidebar();
+    }
   };
   return (
     <Fragment>

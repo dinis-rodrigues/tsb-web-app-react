@@ -17269,7 +17269,7 @@ body .dropdown-menu.dropdown-menu-inline {
   }
 }
 
-@media (min-width: 576px) {
+@media (min-width: 768px) {
   .grid-menu [class*="col-"] {
     &:nth-last-child(-n + 2) {
       border-bottom-width: 0;

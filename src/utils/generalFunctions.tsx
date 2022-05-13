@@ -804,7 +804,6 @@ const isFeatureVisible = (
     if (applicationFeatures[featureName].public) return true;
     else if ((applicationFeatures[featureName].admin && isAdminUser) || isGod)
       return true;
-    else if (isGod) return true;
   }
   return false;
 };
