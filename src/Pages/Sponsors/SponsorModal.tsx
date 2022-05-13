@@ -110,7 +110,7 @@ const SponsorModal = ({
               className={cx({ active: activeTab === "0" }, "card-title")}
               onClick={() => setActiveTab("0")}
             >
-              Indormation
+              Information
             </NavLink>
           </NavItem>
           <NavItem>

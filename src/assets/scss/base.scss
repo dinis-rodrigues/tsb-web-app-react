@@ -1147,7 +1147,7 @@ template {
       transition: padding 300ms;
 
       &.visible {
-        padding: 0.5em 0 0 2rem;
+        padding: 1px 0 0 2rem;
 
         &:before {
           content: "";
@@ -1598,7 +1598,9 @@ scrollbar-container .app-sidebar.sidebar-text-light .vertical-nav-menu li a {
 
       ul {
         &::before {
-          display: none;
+          //display: none;
+          width: 1px !important;
+          left: 50% !important;
         }
 
         &.mm-show {
@@ -1627,6 +1629,8 @@ scrollbar-container .app-sidebar.sidebar-text-light .vertical-nav-menu li a {
         ul {
           &::before {
             display: block;
+            width: 3px !important;
+            left: 20px !important;
           }
 
           li a {
@@ -2916,9 +2920,15 @@ scrollbar-container .app-sidebar.sidebar-text-light .vertical-nav-menu li a {
           visibility: visible;
         }
 
+        .metismenu-link {
+          padding: 0 1.5rem 0 45px !important;
+        }
+
         ul {
           &::before {
             display: block;
+            width: 3px !important;
+            left: 20px !important;
           }
 
           ul li a {
@@ -3038,13 +3048,10 @@ scrollbar-container .app-sidebar.sidebar-text-light .vertical-nav-menu li a {
 
   .popover,
   .dropdown-menu {
-    position: fixed !important;
+    position: absolute !important;
     z-index: 50;
     left: 5% !important;
-    top: 30% !important;
-    width: 90% !important;
-    transform: translateY(-50%) !important;
-    min-width: 10px !important;
+    width: inherit !important;
   }
 
   .card > .dropdown-menu-header .dropdown-menu-header-inner {

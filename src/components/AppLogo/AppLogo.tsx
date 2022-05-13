@@ -10,6 +10,7 @@ import {
   setEnableMobileMenu,
   setEnableMobileMenuSmall,
 } from "../../reducers/ThemeOptions";
+import { NavLink } from "react-router-dom";
 
 type Props = {
   isMobileView?: boolean;
@@ -37,7 +38,7 @@ const AppLogo = ({
   };
   return (
     <Fragment>
-      <div className="app-header__logo">
+      <NavLink className="app-header__logo" to={"/dashboard"}>
         {!isMobileView && (
           <Hamburger
             active={!enableClosedSidebar}
@@ -46,7 +47,7 @@ const AppLogo = ({
           />
         )}
         <div className="logo-src ml-auto" />
-      </div>
+      </NavLink>
       <AppMobileMenu
         displayMobileSearch={displayMobileSearch}
         setDisplayMobileSearch={setDisplayMobileSearch}
