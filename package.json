@@ -4,8 +4,8 @@
   "private": true,
   "homepage": "https://tsb.tecnico.ulisboa.pt/",
   "scripts": {
-    "start": "GENERATE_SOURCEMAP=false PORT=3005 react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "start": "set \"GENERATE_SOURCEMAP=false\" PORT=5000 && react-scripts start",
+    "build": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build",
     "test": "react-scripts test",
     "analyze": "source-map-explorer './build/static/js/*.js'",
     "eject": "react-scripts eject"
@@ -48,7 +48,7 @@
     "classnames": "^2.3.1",
     "compress.js": "^1.1.2",
     "croppie": "^2.6.5",
-    "firebase": "^9.6.5",
+    "firebase": "^9.9.0",
     "html-react-parser": "^1.2.6",
     "iconv-lite": "^0.4.24",
     "js-file-download": "^0.4.12",
