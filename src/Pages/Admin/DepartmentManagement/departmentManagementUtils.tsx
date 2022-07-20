@@ -161,7 +161,6 @@ const addPosition = (
   let currPositions = [...departmentInfo.positions];
   if (adminPositions.includes(newPosition) || !newPosition) return;
   currPositions.push(newPosition);
-  if (!currPositions) return;
   setDepartmentInfo({ ...departmentInfo, positions: currPositions });
   setNewPosition("");
 };
