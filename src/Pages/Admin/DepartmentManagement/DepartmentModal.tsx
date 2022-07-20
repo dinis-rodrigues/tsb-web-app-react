@@ -253,12 +253,6 @@ const DepartmentModal = ({
                       setDepartmentInfo
                     );
                   }}
-                  // on finish change editPosition(
-                  //       position,
-                  //       idx,
-                  //       departmentInfo,
-                  //       setDepartmentInfo
-                  //     );
                   className="col-md-10 align-self-center"
                 >
                   {position}
