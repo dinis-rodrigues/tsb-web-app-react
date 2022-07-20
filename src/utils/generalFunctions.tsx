@@ -380,13 +380,15 @@ const remainingHours = (
 ) => {
   var now = new Date();
   let endDate = inputToDate(date);
+  let offset = now.getTimezoneOffset();
+  let diferentialoffsetmili = (offset + 60) * 60 * 1000;
   if (typeof hours === "string") hours = parseInt(hours);
   if (typeof minutes === "string") minutes = parseInt(minutes);
   endDate.setHours(hours);
   endDate.setMinutes(minutes);
 
   let endTime = endDate.getTime() / 1000; // ISO format
-  var elapsed = now.getTime() / 1000;
+  var elapsed = (now.getTime() - diferentialoffsetmili) / 1000;
   var totalSec = endTime - elapsed;
   var h = Math.round(totalSec / 3600);
   // var m = (totalSec / 60) % 60;
