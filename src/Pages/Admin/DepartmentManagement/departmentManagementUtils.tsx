@@ -145,26 +145,6 @@ const removePosition = (
 };
 
 /**
- * edits a position to the department
- * @param newPosition
- * @param idx
- * @param departmentInfo
- * @param setDepartmentInfo
- * @returns
- */
-const editPosition = (
-  newPosition: string,
-  idx: number,
-  departmentInfo: Department,
-  setDepartmentInfo: Function
-) => {
-  let currPositions = [...departmentInfo.positions];
-  if (!newPosition || adminPositions.includes(newPosition)) return;
-  currPositions[idx] = newPosition;
-  setDepartmentInfo({ ...departmentInfo, positions: currPositions });
-};
-
-/**
  * Adds a new position to the department
  * @param newPosition
  * @param departmentInfo
@@ -178,10 +158,7 @@ const addPosition = (
   setNewPosition: Function,
   setDepartmentInfo: Function
 ) => {
-  let currPositions: string[] = [];
-  if (departmentInfo.positions) {
-    currPositions = [...departmentInfo.positions];
-  }
+  let currPositions = [...departmentInfo.positions];
   if (adminPositions.includes(newPosition) || !newPosition) return;
   currPositions.push(newPosition);
   if (!currPositions) return;
@@ -590,7 +567,6 @@ export {
   saveDepartment,
   addPosition,
   removePosition,
-  editPosition,
   handleDepartmentSelect,
   departmentInputHandler,
   closeDepartmentModal,

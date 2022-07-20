@@ -13,7 +13,6 @@ import {
   departmentInputHandler,
   handleDepartmentSelect,
   removePosition,
-  editPosition,
   addPosition,
 } from "./departmentManagementUtils";
 import cx from "classnames";
@@ -237,34 +236,10 @@ const DepartmentModal = ({
           </span>
           {departmentInfo.positions &&
             departmentInfo.positions.map((position, idx) => (
-              <div key={idx} className=" form-inline form-control mb-2">
-                <div
-                  contentEditable="true"
-                  onInput={(e) => {
-                    if (e.currentTarget.textContent) {
-                      position = e.currentTarget.textContent;
-                    }
-                  }}
-                  onBlur={() => {
-                    editPosition(
-                      position,
-                      idx,
-                      departmentInfo,
-                      setDepartmentInfo
-                    );
-                  }}
-                  // on finish change editPosition(
-                  //       position,
-                  //       idx,
-                  //       departmentInfo,
-                  //       setDepartmentInfo
-                  //     );
-                  className="col-md-10 align-self-center"
-                >
-                  {position}
-                </div>
+              <div key={idx} className="form-control col mb-2">
+                {position}
                 <span
-                  className={"float-right cursor-pointer offset-0 text-danger"}
+                  className={"float-right cursor-pointer text-danger"}
                   onClick={() =>
                     removePosition(departmentInfo, position, setDepartmentInfo)
                   }
