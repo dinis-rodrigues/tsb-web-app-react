@@ -138,7 +138,7 @@ export function AuthProvider({ children }: Props) {
         // Checks if the user is admin or not
         let userAdmin = userHasAdminPermissions(userInfo);
         let userMarketing =
-          userInfo.position === "Management and Marketing" || userAdmin;
+          userInfo.department === "Management and Marketing" || userAdmin;
         setIsAdminUser(userAdmin);
         setIsGod(userInfo.position === "God");
         setIsMarketingOrAdmin(userMarketing);
