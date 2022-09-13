@@ -2008,6 +2008,10 @@ pre {
   order: 12;
 }
 
+.offset-0 {
+  margin-left: 5%;
+}
+
 .offset-1 {
   margin-left: 8.33333%;
 }
@@ -3874,6 +3878,7 @@ textarea.form-control.is-invalid {
   display: flex;
   flex-flow: row wrap;
   align-items: center;
+  justify-content: flex-end;
 
   .form-check {
     width: 100%;
@@ -17380,7 +17385,7 @@ a.badge-orange {
   &:hover,
   &:focus {
     color: #fff;
-    background-color: #D32F0C;
+    background-color: #d32f0c;
   }
 }
 
