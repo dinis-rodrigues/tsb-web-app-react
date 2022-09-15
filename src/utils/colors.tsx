@@ -26,7 +26,7 @@ const meetingIcons = {
   "Management and Marketing Meeting": `fa fa-chart-line bg-grow-early`,
   "Mechanical Systems Meeting": `fa fa-cogs bg-happy-itmeo`,
   "Design and Composites Meeting": `fa fa-anchor bg-happy-fisher`,
-  "Hydrogen Meeting": `fa fa-atom bg-mixed-hopes`,
+  "Hydrogen Fuel Cell Meeting": `fa fa-atom bg-mixed-hopes`,
 };
 
 const departmentColors: {
@@ -36,7 +36,7 @@ const departmentColors: {
   "Mechanical Systems Meeting": string;
   "Design and Composites Meeting": string;
   "Management and Marketing Meeting": string;
-  "Hydrogen Meeting": string;
+  "Hydrogen Fuel Cell Meeting": string;
   "Sponsor Meeting": string;
   Competition: string;
   Other: string;
@@ -47,7 +47,7 @@ const departmentColors: {
   "Management and Marketing Meeting": "bg-tempting-azure",
   "Mechanical Systems Meeting": "bg-happy-itmeo",
   "Design and Composites Meeting": "bg-happy-fisher",
-  "Hydrogen Meeting": "bg-mixed-hopes",
+  "Hydrogen Fuel Cell Meeting": "bg-mixed-hopes",
   "Sponsor Meeting": "bg-amy-crisp",
   Competition: "bg-amy-crisp",
   Other: "bg-premium-dark",

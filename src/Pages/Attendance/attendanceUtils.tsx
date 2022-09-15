@@ -171,7 +171,7 @@ const allowedMeetingType = (eventType: string) => {
     eventType === "Mechanical Systems Meeting" ||
     eventType === "Design and Composites Meeting" ||
     eventType === "Management and Marketing Meeting" ||
-    eventType === "Hydrogen Meeting" ||
+    eventType === "Hydrogen Fuel Cell Meeting" ||
     eventType === "General Meeting"
   )
     return true;
@@ -332,7 +332,7 @@ const meetingType = [
   "Management and Marketing Meeting",
   "Electrical Systems Meeting",
   "Mechanical Systems Meeting",
-  "Hydrogen Meeting",
+  "Hydrogen Fuel Cell Meeting",
   "Design and Composites Meeting",
 ];
 
@@ -357,8 +357,8 @@ const attendanceTitleIconColor = {
     icon: "fa fa-chart-line",
     color: "bg-tempting-azure",
   },
-  "Hydrogen Meeting": {
-    title: "Hydrogen Meeting",
+  "Hydrogen Fuel Cell Meeting": {
+    title: "Hydrogen Fuel Cell Meeting",
     icon: "fa fa-atom",
     color: "bg-mixed-hopes",
   },

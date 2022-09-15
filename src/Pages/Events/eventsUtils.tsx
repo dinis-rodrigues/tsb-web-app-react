@@ -62,7 +62,7 @@ var meetingCalendarColors: { [key: string]: string } = {
   "Management and Marketing Meeting": `#0ba360`,
   "Mechanical Systems Meeting": `#00D1BB`,
   "Design and Composites Meeting": `#0052D1`,
-  "Hydrogen Meeting": `#c471f5`,
+  "Hydrogen Fuel Cell Meeting": `#c471f5`,
   Other: `brown`,
   Competition: `red`,
   "Sponsor Meeting": `black`,
@@ -130,7 +130,7 @@ const eventOptions: {
     | "Mechanical Systems Meeting"
     | "Design and Composites Meeting"
     | "Management and Marketing Meeting"
-    | "Hydrogen Meeting"
+    | "Hydrogen Fuel Cell Meeting"
     | "Sponsor Meeting"
     | "Competition"
     | "Other";
@@ -141,7 +141,7 @@ const eventOptions: {
     | "Mechanical Systems Meeting"
     | "Design and Composites Meeting"
     | "Management and Marketing Meeting"
-    | "Hydrogen Meeting"
+    | "Hydrogen Fuel Cell Meeting"
     | "Sponsor Meeting"
     | "Competition"
     | "Other";
@@ -171,8 +171,8 @@ const eventOptions: {
     label: "Management and Marketing Meeting",
   },
   {
-    value: "Hydrogen Meeting",
-    label: "Hydrogen Meeting",
+    value: "Hydrogen Fuel Cell Meeting",
+    label: "Hydrogen Fuel Cell Meeting",
   },
   {
     value: "Sponsor Meeting",
