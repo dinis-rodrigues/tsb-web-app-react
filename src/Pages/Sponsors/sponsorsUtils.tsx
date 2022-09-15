@@ -696,7 +696,7 @@ const replaceSVGWidthAndHeight = (s: string, toReplace: string) => {
     // split the string into two substrings, to replace the width
     let initString = s.substring(0, 4);
     let restString = s.substring(4);
-    if (toReplace.indexOf("width") != -1) {
+    if (toReplace.indexOf("width") !== -1) {
       return initString + ` width="100%" ` + restString;
     }
     return initString + ` height="100%" ` + restString;
