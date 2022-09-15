@@ -356,7 +356,7 @@ const getEventsInFullCalendarType = (
     let eventCount = 1;
     let eventInterval = event.weeks;
     if (event.weeks > 0 && !event.isHistory) eventCount = 100; // replicate the event
-    if (event.weeks === 0) eventInterval = 1; // replicate the event
+    if (event.weeks === 0) eventInterval = 0; // replicate the event
     let calendarColor = calendarColors[currMeeting].color;
 
     // Full calendar Object
@@ -730,6 +730,7 @@ const saveEvent = (
       };
       push(ref(db, `private/events/history`), historyEvent);
     } else {
+      currEventInfo = { ...currEventInfo, isHistory: false };
       push(ref(db, `private/events/current`), currEventInfo);
     }
 
