@@ -672,17 +672,35 @@ const getSponsorsListFromBrackets = (
  * @returns
  */
 const replaceSVGWidthAndHeight = (s: string, toReplace: string) => {
-  let wIdx = s.indexOf(toReplace) + toReplace.length;
-  // split the string into two substrings, to replace the width
-  let wSubString = s.substring(0, wIdx);
-  let wRest = s.substring(wIdx);
-  // find the closing " of the width="..."
-  let wClosingIdx = wRest.indexOf(`"`);
-  let finalWSub = wRest.substring(wClosingIdx);
-  // add the width 100%
-  wSubString += `100%` + finalWSub;
-  // find the next "
-  return wSubString;
+  // The svg may come with junk html before inTopKAsync, prune all of that
+  s = s.substring(s.indexOf("<svg"));
+
+  // Check if the <svg ... > has existing width/height attribute
+  let svgParentString = s.substring(s.indexOf("<svg"), s.indexOf(">"));
+  let toReplaceExists = svgParentString.indexOf(toReplace) > -1;
+
+  if (toReplaceExists) {
+    let wIdx = s.indexOf(toReplace) + toReplace.length;
+    // split the string into two substrings, to replace the width
+    let wSubString = s.substring(0, wIdx);
+    let wRest = s.substring(wIdx);
+    // find the closing " of the width="..."
+    let wClosingIdx = wRest.indexOf(`"`);
+    let finalWSub = wRest.substring(wClosingIdx);
+    // add the width 100%
+    wSubString += `100%` + finalWSub;
+    // find the next "
+    return wSubString;
+  } else {
+    // Insert property into <svg toReplace >
+    // split the string into two substrings, to replace the width
+    let initString = s.substring(0, 4);
+    let restString = s.substring(4);
+    if (toReplace.indexOf("width") != -1) {
+      return initString + ` width="100%" ` + restString;
+    }
+    return initString + ` height="100%" ` + restString;
+  }
 };
 
 /**
