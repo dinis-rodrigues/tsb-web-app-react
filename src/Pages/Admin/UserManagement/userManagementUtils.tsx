@@ -1,5 +1,5 @@
 import { ColumnApi, GridApi, RowClickedEvent } from "ag-grid-community";
-import { child, get, onValue, ref, set, update } from "firebase/database";
+import { get, onValue, ref, update } from "firebase/database";
 import { db } from "../../../config/firebase";
 import {
   AllEvents,
@@ -10,7 +10,6 @@ import {
   RedirectedData,
   selectOption,
   userContext,
-  UsersDB,
 } from "../../../interfaces";
 import { dateToString } from "../../../utils/generalFunctions";
 import printDoc from "../../../utils/pdfExport/printDoc";
@@ -239,23 +238,6 @@ const toggleMaintenance = (maintenanceIsOpen: boolean) => {
   });
 };
 
-const moveEverythingInUsers = () => {
-  get(ref(db, "private/users")).then((snapshot) => {
-    let allusers: UsersDB = snapshot.val();
-    if (!allusers) return;
-    Object.entries(allusers).forEach(([userId, user]) => {
-      if (user.hasOwnProperty("statistics")) {
-        let statistics = user.statistics;
-        set(child(ref(db, "private/usersStatistics"), userId), statistics);
-      }
-      if (user.hasOwnProperty("notifications")) {
-        let statistics = user.statistics;
-        set(child(ref(db, "private/usersNotifications"), userId), statistics);
-      }
-    });
-  });
-};
-
 const replaceEventMeetingType = () => {
   get(ref(db, "private/events")).then((snapshot) => {
     const allEvents: AllEvents = snapshot.val();
@@ -324,7 +306,6 @@ export {
   getAndSetApplicationSettings,
   toggleMaintenance,
   toggleRegistration,
-  moveEverythingInUsers,
   replaceEventMeetingType,
   replaceUidFromAllNotifications,
   replaceUidFromAllTasks,

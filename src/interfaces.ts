@@ -501,15 +501,6 @@ export interface UsersDB {
 // User shape
 export interface User {
   pinfo: PersonalInformation;
-  tasks?: { [key: string]: taskShape };
-  statistics?: {
-    departmentStats?: { [key: string]: EventInformation };
-    generalStats?: { [key: string]: EventInformation };
-  };
-  notifications?: {
-    all?: Notification;
-    new?: Notification;
-  };
 }
 
 export interface All {

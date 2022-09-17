@@ -54,8 +54,15 @@ const UserAttendance = ({ userId }: Props) => {
       setGeneralOptions
     );
     return () => {
-      off(ref(db, `private/usersStatistics/${userId}/departmentStats`));
-      off(ref(db, `private/usersStatistics/${userId}/generalStats`));
+      off(
+        ref(
+          db,
+          `private/usersStatistics/${userId}/departmentStats/currentSeason`
+        )
+      );
+      off(
+        ref(db, `private/usersStatistics/${userId}/generalStats/currentSeason`)
+      );
     };
   }, [userId]); // eslint-disable-line react-hooks/exhaustive-deps
   return (

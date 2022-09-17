@@ -58,8 +58,15 @@ const OverallAttendanceRow = ({ userId, user, usersMetadata }: Props) => {
     );
 
     return () => {
-      off(ref(db, `private/usersStatistics/${userId}/departmentStats`));
-      off(ref(db, `private/usersStatistics/${userId}/generalStats`));
+      off(
+        ref(
+          db,
+          `private/usersStatistics/${userId}/departmentStats/currentSeason`
+        )
+      );
+      off(
+        ref(db, `private/usersStatistics/${userId}/generalStats/currentSeason`)
+      );
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (

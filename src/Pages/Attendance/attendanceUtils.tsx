@@ -7,14 +7,19 @@ import {
   Statistic,
   User,
   userContext,
+  UserMetadata,
   userStatus,
 } from "../../interfaces";
 import {
+  dateToString,
+  inputToDate,
   sendNotification,
   toastrMessage,
   userHasPermission,
 } from "../../utils/generalFunctions";
-import { onValue, ref, set } from "firebase/database";
+import { onValue, ref, set, get, update, remove } from "firebase/database";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
 
 /** Updates the user database with attended or missed evet of user
  * @param  {boolean} payload content of the tooltip
@@ -22,7 +27,12 @@ import { onValue, ref, set } from "firebase/database";
  */
 const customTooltip = ({ payload, content, active }: any) => {
   if (active) {
-    return <div className={"tooltip-inner"}>{payload[0].value}</div>;
+    return (
+      <div className={"tooltip-inner"}>
+        <p>Attended</p>
+        <strong>{`${Number(payload[0].value * 100).toFixed(0)}% `}</strong>
+      </div>
+    );
   }
   return null;
 };
@@ -251,7 +261,10 @@ const updateUserAttendance = (
     event = { ...event, attended: didAttend };
 
     set(
-      ref(db, `private/usersStatistics/${userId}/${statType}/${eventId}`),
+      ref(
+        db,
+        `private/usersStatistics/${userId}/${statType}/currentSeason/${eventId}`
+      ),
       event
     );
     if (userId !== user.id) {
@@ -304,7 +317,7 @@ const addStatisticListener = (
   setCurrStatus: Function
 ) => {
   onValue(
-    ref(db, `private/usersStatistics/${userId}/${statType}`),
+    ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason`),
     (snapshot) => {
       let statistic: Statistic = snapshot.val();
 
@@ -464,7 +477,7 @@ const addOverallStatisticListener = (
   setGraphOptions: Function
 ) => {
   onValue(
-    ref(db, `private/usersStatistics/${userId}/${statType}`),
+    ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason`),
     (snapshot) => {
       let statistic: Statistic = snapshot.val();
 
@@ -477,6 +490,131 @@ const addOverallStatisticListener = (
     }
   );
 };
+
+const addLastStatisticUpdateListener = (setLastUpdate: Function) => {
+  onValue(ref(db, `private/cache/userStatistics/lastUpdate`), (snapshot) => {
+    let lastUpdate: number = snapshot.val();
+    if (!lastUpdate) {
+      setLastUpdate("");
+      return;
+    }
+    const date = inputToDate(lastUpdate);
+    const dateString = dateToString(date, true);
+    setLastUpdate(dateString);
+  });
+};
+
+const resetUserSeason = (userId: string, statType: string) => {
+  get(
+    ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason`)
+  ).then((snapshot) => {
+    const currentSeason: Statistic = snapshot.val();
+
+    // Update historical statistics
+    update(
+      ref(db, `private/usersStatistics/${userId}/${statType}/history`),
+      currentSeason
+    );
+
+    // Delete currenSeason statistics
+    remove(
+      ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason`)
+    );
+  });
+};
+
+/**
+ * This function will move every current season statistic under history
+ * @param usersMetadata
+ */
+const resetSeason = (usersMetadata: UserMetadata) => {
+  try {
+    Object.entries(usersMetadata).forEach(([userId, _]) => {
+      // For each userId, get currentSeason, update history, and delete current
+      resetUserSeason(userId, "departmentStats");
+      resetUserSeason(userId, "generalStats");
+
+      // Update last season update date
+      let timestamp = new Date().getTime();
+      set(ref(db, `private/cache/userStatistics`), { lastUpdate: timestamp });
+    });
+    toastrMessage("Statistics were successfully reset", "success");
+  } catch (error) {
+    toastrMessage("There was an error resetting the season", "error");
+  }
+};
+
+const moveStatistics = (usersMetadata: UserMetadata) => {
+  Object.entries(usersMetadata).forEach(([userId, _]) => {
+    // For each userId, get currentSeason, update history, and delete current
+    get(ref(db, `private/usersStatistics/${userId}/departmentStats`)).then(
+      (snapshot) => {
+        const currentSeason: Statistic = snapshot.val();
+
+        // Delete currenSeason statistics
+        remove(ref(db, `private/usersStatistics/${userId}/departmentStats`));
+
+        // Update historical statistics
+        set(
+          ref(
+            db,
+            `private/usersStatistics/${userId}/departmentStats/currentSeason`
+          ),
+          currentSeason
+        );
+      }
+    );
+
+    // For each userId, get currentSeason, update history, and delete current
+    get(ref(db, `private/usersStatistics/${userId}/generalStats`)).then(
+      (snapshot) => {
+        const currentSeason: Statistic = snapshot.val();
+
+        // Delete currenSeason statistics
+        remove(ref(db, `private/usersStatistics/${userId}/generalStats`));
+
+        // Update historical statistics
+        set(
+          ref(
+            db,
+            `private/usersStatistics/${userId}/generalStats/currentSeason`
+          ),
+          currentSeason
+        );
+      }
+    );
+  });
+};
+
+/** Show a confirmation message to reset the season
+ * @param  {Function} resetSeason function to delete the board
+ */
+const swalResetSeason = (resetSeason: Function) => {
+  swalDeleteAlert
+    .fire({
+      target: ".app-container",
+      customClass: {
+        denyButton: "btn btn-shadow btn-danger",
+        confirmButton: "btn btn-shadow btn-info",
+        container: "zIndex-inf",
+      },
+      reverseButtons: true,
+      title: "Beware",
+      showDenyButton: true,
+      denyButtonText: "Yes, reset season!",
+      confirmButtonText: `Cancel`,
+      icon: "warning",
+      html: `<p>You are about to reset this season.</p> <p><h4>Are you sure?</h4></p>`,
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        return;
+      } else if (result.isDenied) {
+        resetSeason();
+      }
+    });
+};
+const swalDeleteAlert = withReactContent(Swal);
 
 export {
   isCorrectType,
@@ -494,4 +632,8 @@ export {
   addStatisticListener,
   updateUserAttendance,
   addOverallStatisticListener,
+  addLastStatisticUpdateListener,
+  resetSeason,
+  moveStatistics,
+  swalResetSeason,
 };

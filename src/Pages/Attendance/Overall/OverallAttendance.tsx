@@ -3,7 +3,12 @@ import { db } from "../../../config/firebase";
 import { User, UserMetadata, UsersDB } from "../../../interfaces";
 import cx from "classnames";
 import { v4 as uuid } from "uuid";
-import { sortUsersDb } from "../attendanceUtils";
+import {
+  addLastStatisticUpdateListener,
+  resetSeason,
+  sortUsersDb,
+  swalResetSeason,
+} from "../attendanceUtils";
 import OverallAttendanceRow from "./OverallAttendanceRow";
 import { useAuth } from "../../../contexts/AuthContext";
 import { off, ref } from "firebase/database";
@@ -20,13 +25,15 @@ const getRows = (sortedUsers: [string, User][], usersDb: UsersDB) => {
 };
 
 const OverallAttendance = () => {
-  const { usersMetadata, isDarkMode } = useAuth();
+  const { usersMetadata, isDarkMode, isAdminUser } = useAuth();
   const [usersDb, setUsersDb] = useState<UserMetadata>({});
   const [sortedUsers, setSortedUsers] = useState<[string, User][]>([]);
+  const [lastUpdate, setLastUpdate] = useState("");
 
   useEffect(() => {
     // Retrieve users metadata with statistics
     setUsersDb(usersMetadata);
+    addLastStatisticUpdateListener(setLastUpdate);
     // build list of users whose department match the meeting type
     const usersToSort: [string, User][] = [];
     Object.entries(usersMetadata).forEach(([userId, user]) => {
@@ -38,7 +45,7 @@ const OverallAttendance = () => {
     setSortedUsers(usersSorted);
 
     return () => {
-      off(ref(db, `private/users`));
+      off(ref(db, `private/cache/cache/userStatistics`));
     };
   }, [usersMetadata]);
   return (
@@ -56,6 +63,22 @@ const OverallAttendance = () => {
                 )}
               ></i>
               Overall Attendance Statistics
+              {isAdminUser && (
+                <div className="btn-actions-pane-right text-capitalize">
+                  <span className="badge badge-pill badge-secundary">
+                    {lastUpdate && `Latest Season Reset: ${lastUpdate}`}
+                  </span>
+                  <button
+                    className="btn-wide btn-info mr-md-2 btn btn-sm"
+                    onClick={() =>
+                      swalResetSeason(() => resetSeason(usersMetadata))
+                    }
+                  >
+                    <i className="fa fa-exclamation-triangle text-white btn-icon-wrapper"></i>{" "}
+                    Reset Season
+                  </button>
+                </div>
+              )}
             </div>
             <div className="card-body p-0">
               {/* Add table with users of the corresponding department */}
