@@ -106,8 +106,6 @@ const Tasks = (props: any) => {
           );
         }
       );
-      // Get users metadata and set the state of user options
-      setUserAssignmentOptions(setUserOptions, usersMetadata);
       // Update the list of existing boards in the department
       updateExistingBoards(departmentBoard, setExistingBoards);
     }
@@ -116,6 +114,13 @@ const Tasks = (props: any) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [departmentBoard, currBoard, openColId, openTaskId, usersMetadata]);
+
+  useEffect(() => {
+    if (department) {
+      // Get users metadata and set the state of user options
+      setUserAssignmentOptions(setUserOptions, usersMetadata, department);
+    }
+  }, [department]);
 
   return (
     <div className="app-main__outer">

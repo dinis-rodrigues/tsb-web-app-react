@@ -9,6 +9,7 @@ import withReactContent from "sweetalert2-react-content";
 import { toast, ToastPosition } from "react-toastify";
 import {
   ApplicationFeatures,
+  Department,
   Notification,
   PersonalInformation,
   selectOption,
@@ -660,12 +661,13 @@ const getUserAssignmentOptions = (
  */
 const setUserAssignmentOptions = (
   setUserOptions: Function,
-  usersMetadata: UserMetadata
+  usersMetadata: UserMetadata,
+  department: Department
 ) => {
   let sortableUsers: [string, PersonalInformation, boolean][] = [];
   Object.entries(usersMetadata).forEach(([userId, user]) => {
     let inTeam = user.pinfo.inTeam ? true : false;
-    if (userId) {
+    if (userId && user.pinfo.department === department.description) {
       sortableUsers.push([userId, user.pinfo, inTeam]);
     }
 
