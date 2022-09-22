@@ -662,13 +662,19 @@ const getUserAssignmentOptions = (
 const setUserAssignmentOptions = (
   setUserOptions: Function,
   usersMetadata: UserMetadata,
-  department: Department
+  department?: Department
 ) => {
   let sortableUsers: [string, PersonalInformation, boolean][] = [];
   Object.entries(usersMetadata).forEach(([userId, user]) => {
     let inTeam = user.pinfo.inTeam ? true : false;
-    if (userId && user.pinfo.department === department.description) {
-      sortableUsers.push([userId, user.pinfo, inTeam]);
+    if (userId) {
+      if (department) {
+        if (user.pinfo.department === department.description) {
+          sortableUsers.push([userId, user.pinfo, inTeam]);
+        }
+      } else {
+        sortableUsers.push([userId, user.pinfo, inTeam]);
+      }
     }
 
     let sortedUsers = sortUsers(sortableUsers);
