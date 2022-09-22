@@ -664,20 +664,25 @@ const setUserAssignmentOptions = (
   usersMetadata: UserMetadata,
   department?: Department
 ) => {
-  let sortableUsers: [string, PersonalInformation, boolean][] = [];
+  let sortableUsersStart: [string, PersonalInformation, boolean][] = [];
+  let sortableUsersEnd: [string, PersonalInformation, boolean][] = [];
   Object.entries(usersMetadata).forEach(([userId, user]) => {
     let inTeam = user.pinfo.inTeam ? true : false;
     if (userId) {
       if (department) {
         if (user.pinfo.department === department.description) {
-          sortableUsers.push([userId, user.pinfo, inTeam]);
+          sortableUsersStart.push([userId, user.pinfo, inTeam]);
+        } else {
+          sortableUsersEnd.push([userId, user.pinfo, inTeam]);
         }
       } else {
-        sortableUsers.push([userId, user.pinfo, inTeam]);
+        sortableUsersStart.push([userId, user.pinfo, inTeam]);
       }
     }
+    let sortedUsersStart = sortUsers(sortableUsersStart);
+    let sortedUsersEnd = sortUsers(sortableUsersEnd);
 
-    let sortedUsers = sortUsers(sortableUsers);
+    let sortedUsers = [...sortedUsersStart, ...sortedUsersEnd];
 
     let options = buildUserSelectOptions(sortedUsers);
     setUserOptions(options);
