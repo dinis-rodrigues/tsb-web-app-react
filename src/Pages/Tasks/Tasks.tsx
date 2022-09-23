@@ -106,16 +106,22 @@ const Tasks = (props: any) => {
           );
         }
       );
-      // Get users metadata and set the state of user options
-      setUserAssignmentOptions(setUserOptions, usersMetadata);
       // Update the list of existing boards in the department
       updateExistingBoards(departmentBoard, setExistingBoards);
     }
+
     return () => {
       off(ref(db, `private/${departmentBoard}/b/${currBoard}`));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [departmentBoard, currBoard, openColId, openTaskId, usersMetadata]);
+  }, [departmentBoard, currBoard, openColId, openTaskId]);
+
+  useEffect(() => {
+    if (department) {
+      // Get users metadata and set the state of user options
+      setUserAssignmentOptions(setUserOptions, usersMetadata, department);
+    }
+  }, [department, usersMetadata]);
 
   return (
     <div className="app-main__outer">
