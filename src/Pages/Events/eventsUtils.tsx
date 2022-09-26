@@ -356,8 +356,16 @@ const getEventsInFullCalendarType = (
     let eventCount = 1;
     let eventInterval = event.weeks;
     if (event.weeks > 0 && !event.isHistory) eventCount = 100; // replicate the event
-    if (event.weeks === 0) eventInterval = 0; // replicate the event
+    if (event.weeks === 0) eventInterval = 1; // replicate the event
     let calendarColor = calendarColors[currMeeting].color;
+
+    // periodic definition and start time
+    const periodicRule = {
+      freq: "weekly",
+      dtstart: `${date} ${event.hours}:${event.minutes}:00`,
+      interval: eventInterval,
+      count: eventCount,
+    };
 
     // Full calendar Object
     let calendarEvent = {
@@ -365,13 +373,7 @@ const getEventsInFullCalendarType = (
       title: event.title,
       duration: `${event.duration.replace("h", ":")}`,
       color: calendarColor,
-      rrule: {
-        // periodic definition and start time
-        freq: "weekly",
-        dtstart: `${date} ${event.hours}:${event.minutes}:00`,
-        interval: eventInterval,
-        count: eventCount,
-      },
+      rrule: periodicRule,
     };
     calendarEventsArray.push(calendarEvent);
   });

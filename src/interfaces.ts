@@ -437,12 +437,13 @@ export interface calendarEvent {
   title: string;
   duration: string;
   color: string;
-  rrule: {
-    freq: string;
-    dtstart: string;
-    interval: number;
-    count: number;
-  };
+  rrule: CalendarEventPeriodicRules;
+}
+export interface CalendarEventPeriodicRules {
+  freq: string;
+  dtstart: string;
+  interval: number;
+  count: number;
 }
 export interface EventColors {
   [key: string]: { description: string; gradientColor: string; icon: string };
