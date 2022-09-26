@@ -122,6 +122,18 @@ const getEventTitlesAndColors = (
 const getCalendarColors = (departmentsWDesc: DepartmentsWithDesc) => {
   return { ...departmentsWDesc, ...defaultCalendarColors };
 };
+
+const departmentFilter: { [name: string]: string[] } = {
+  ALL: ["ALL"],
+  DC: ["Design and Composites Meeting", "General Meeting"],
+  ES: ["Electrical Systems Meeting", "General Meeting"],
+  H2: ["Hydrogen Fuel Cell Meeting", "General Meeting"],
+  MM: ["Management and Marketing Meeting", "General Meeting"],
+  MS: ["Mechanical Systems Meeting", "General Meeting"],
+};
+
+const departmentFilterList = ["ALL", "DC", "ES", "H2", "MM", "MS"];
+
 const eventOptions: {
   value:
     | "General Meeting"
@@ -544,6 +556,27 @@ const calendarEventClickHandler = (
 };
 
 /**
+ * filters events based on current selection
+ * @param currentFilter
+ * @param eventList
+ * @param eventsDatabase
+ */
+const filteredEvents = (
+  currentFilter: string,
+  eventList: calendarEvent[],
+  eventsDatabase: EventDatabase
+) => {
+  if (currentFilter === "ALL") {
+    return eventList;
+  }
+  return eventList.filter((event) =>
+    departmentFilter[currentFilter].includes(
+      eventsDatabase[event.id.replace("-fullcalendar", "")].type
+    )
+  );
+};
+
+/**
  * Changes the event duration on event resizing
  * @param eventInfo
  */
@@ -661,6 +694,22 @@ const openClearModal = (
   setCurrEventKey("");
   setShowDeleteEvent(false);
 };
+
+/**
+ * Switch filter applied
+ * @param seteventFilter
+ * @param eventFilter
+ */
+
+const switchFilter = (seteventFilter: Function, eventFilter: string) => {
+  seteventFilter(
+    departmentFilterList[
+      (departmentFilterList.indexOf(eventFilter) + 1) %
+        departmentFilterList.length
+    ]
+  );
+};
+
 /**
  * Closes the modal
  * @param setCurrEventInfo
@@ -971,9 +1020,11 @@ export {
   checkEventPeriodicity,
   getAndSetEvents,
   calendarEventClickHandler,
+  filteredEvents,
   calendarEventResizeHandler,
   calendarEventDragHandler,
   openClearModal,
+  switchFilter,
   closeModal,
   saveEvent,
   deleteEvent,

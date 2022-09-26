@@ -24,6 +24,8 @@ import {
   defaultEventInfo,
   getAndSetEvents,
   openClearModal,
+  switchFilter,
+  filteredEvents,
   calendarEventDragHandler,
   eventListClickHandler,
   eventListDeleteHandler,
@@ -37,6 +39,7 @@ const Events = () => {
   const { USER, departmentsWDesc } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // open or close the modal
   const [modalTitle, setModalTitle] = useState<string>("Add Event"); // modal title lol
+  const [eventFilter, setEventFilter] = useState<string>("ALL");
   const [disabledInput, setDisabledInput] = useState<boolean>(false); // not in use
   const [showDeleteEvent, setShowDeleteEvent] = useState<boolean>(false); // show delete button
   // Event Related States
@@ -79,12 +82,17 @@ const Events = () => {
                   interactionPlugin,
                 ]}
                 editable={true}
-                events={calendarEvents}
+                events={filteredEvents(
+                  eventFilter,
+                  calendarEvents,
+                  eventsDatabase
+                )}
                 initialView="timeGridWeek"
                 headerToolbar={{
                   left: "prev,next today",
                   center: "title",
-                  right: "addEvent timeGridDay,timeGridWeek,dayGridMonth",
+                  right:
+                    "filter addEvent timeGridDay,timeGridWeek,dayGridMonth",
                 }}
                 views={{
                   timeGridWeek: {
@@ -130,6 +138,10 @@ const Events = () => {
                         setShowDeleteEvent,
                         setDisabledInput
                       ),
+                  },
+                  filter: {
+                    text: eventFilter,
+                    click: () => switchFilter(setEventFilter, eventFilter),
                   },
                 }}
                 eventClick={(eventInfoFC) =>

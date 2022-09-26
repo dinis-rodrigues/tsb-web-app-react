@@ -3620,6 +3620,23 @@ scrollbar-container .app-sidebar.sidebar-text-light .vertical-nav-menu li a {
     box-shadow: none;
   }
 }
+
+.fc .fc-toolbar-chunk {
+  flex: 1;
+}
+
+.fc-direction-ltr {
+  text-align: center !important;
+}
+
+.fc .fc-filter-button {
+  background-color: $info-color !important;
+  &:hover {
+    background-color: darken($info-color, 10%) !important;
+    border-color: darken($info-color, 10%) !important;
+  }
+}
+
 .fc .fc-button-primary:not(:disabled):active:focus,
 .fc .fc-button-primary:not(:disabled).fc-button-active:focus {
   box-shadow: none !important;
