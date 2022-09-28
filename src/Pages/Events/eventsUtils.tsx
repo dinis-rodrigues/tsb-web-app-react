@@ -127,12 +127,12 @@ const departmentFilter: { [name: string]: string[] } = {
   ALL: ["ALL"],
   DC: ["Design and Composites Meeting", "General Meeting"],
   ES: ["Electrical Systems Meeting", "General Meeting"],
-  H2: ["Hydrogen Fuel Cell Meeting", "General Meeting"],
+  HP: ["Hydrogen Fuel Cell Meeting", "General Meeting"],
   MM: ["Management and Marketing Meeting", "General Meeting"],
   MS: ["Mechanical Systems Meeting", "General Meeting"],
 };
 
-const departmentFilterList = ["ALL", "DC", "ES", "H2", "MM", "MS"];
+const departmentFilterList = ["ALL", "DC", "ES", "HP", "MM", "MS"];
 
 const eventOptions: {
   value:
@@ -1014,6 +1014,8 @@ export {
   eventTimeFormat,
   defaultEventInfo,
   eventOptions,
+  departmentFilterList,
+  departmentFilter,
   selectStyles,
   meetingCalendarColors,
   msToTime,
