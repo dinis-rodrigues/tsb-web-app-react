@@ -153,8 +153,8 @@ const TaskInfo = ({
             onClick={() => {
               saveTaskAsEvent(
                 user,
-                taskInfo,
-                defaultEventInfo,
+                modalTask,
+                structuredClone(defaultEventInfo),
                 saveEvent,
                 drawerOpenHandler
               );
