@@ -272,6 +272,7 @@ const saveTaskAsEvent = (
   eventInfo.date = taskInfo.date;
   eventInfo.description = taskInfo.description ? taskInfo.description : "";
   eventInfo.weeks = 0;
+  eventInfo.allDay = true;
   let department = taskInfo.departmentBoard.split("tasks")[1];
   if (departmentFilterList.indexOf(department)) {
     eventInfo.type = departmentFilter[department][0];

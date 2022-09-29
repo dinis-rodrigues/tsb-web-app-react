@@ -383,7 +383,8 @@ const getEventsInFullCalendarType = (
     let calendarEvent = {
       id: `${eventId}-fullcalendar`,
       title: event.title,
-      duration: `${event.duration.replace("h", ":")}`,
+      allDay: event.allDay,
+      duration: event.allDay ? "0" : `${event.duration.replace("h", ":")}`,
       color: calendarColor,
       rrule: periodicRule,
     };
