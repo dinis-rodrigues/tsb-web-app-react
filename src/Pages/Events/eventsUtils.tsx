@@ -35,6 +35,7 @@ const date = `${day}-${month}-${year}`;
 const defaultEventInfo: EventInformation = {
   createdBy: "",
   date: date,
+  allDay: false,
   description: "",
   duration: "1h30",
   hours: "12",
