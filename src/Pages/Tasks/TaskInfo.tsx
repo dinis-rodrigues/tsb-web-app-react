@@ -151,6 +151,16 @@ const TaskInfo = ({
             variant="neutral"
             label="create event"
             onClick={() => {
+              saveTask(
+                currTaskNum,
+                currTaskColumn,
+                taskInfo,
+                modalTask,
+                departmentBoard,
+                currBoard,
+                drawerOpenHandler,
+                user
+              );
               saveTaskAsEvent(
                 user,
                 modalTask,
