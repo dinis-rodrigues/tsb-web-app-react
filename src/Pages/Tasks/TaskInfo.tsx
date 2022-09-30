@@ -149,7 +149,7 @@ const TaskInfo = ({
           <Button
             className={"m-1"} // margin
             variant="neutral"
-            label="create event"
+            label="Create Event"
             onClick={() => {
               saveTask(
                 currTaskNum,
