@@ -14,6 +14,7 @@ import {
   descriptionHandler,
   saveTask,
   deleteTask,
+  saveTaskAsEvent,
 } from "./tasksUtils";
 import { inputToDate } from "../../utils/generalFunctions";
 import {
@@ -27,6 +28,7 @@ import {
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
 import AppModalComment from "../../components/AppModalComment/AppModalComment";
 import { useAuth } from "../../contexts/AuthContext";
+import { defaultEventInfo, saveEvent } from "../Events/eventsUtils";
 
 type Props = {
   isDrawerOpen: boolean;
@@ -143,6 +145,30 @@ const TaskInfo = ({
                 user
               )
             }
+          />
+          <Button
+            className={"m-1"} // margin
+            variant="neutral"
+            label="Create Event"
+            onClick={() => {
+              saveTask(
+                currTaskNum,
+                currTaskColumn,
+                taskInfo,
+                modalTask,
+                departmentBoard,
+                currBoard,
+                drawerOpenHandler,
+                user
+              );
+              saveTaskAsEvent(
+                user,
+                modalTask,
+                structuredClone(defaultEventInfo),
+                saveEvent,
+                drawerOpenHandler
+              );
+            }}
           />
         </div>
       }

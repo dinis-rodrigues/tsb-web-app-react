@@ -428,15 +428,16 @@ export interface EventInformation {
   minutes: string;
   title: string;
   type: string;
-
+  allDay?: boolean;
   weeks: number;
 }
 
 export interface calendarEvent {
   id: string;
   title: string;
-  duration: string;
+  duration?: string;
   color: string;
+  allDay?: boolean;
   rrule: CalendarEventPeriodicRules;
 }
 export interface CalendarEventPeriodicRules {

@@ -35,6 +35,7 @@ const date = `${day}-${month}-${year}`;
 const defaultEventInfo: EventInformation = {
   createdBy: "",
   date: date,
+  allDay: false,
   description: "",
   duration: "1h30",
   hours: "12",
@@ -127,12 +128,12 @@ const departmentFilter: { [name: string]: string[] } = {
   ALL: ["ALL"],
   DC: ["Design and Composites Meeting", "General Meeting"],
   ES: ["Electrical Systems Meeting", "General Meeting"],
-  H2: ["Hydrogen Fuel Cell Meeting", "General Meeting"],
+  HP: ["Hydrogen Fuel Cell Meeting", "General Meeting"],
   MM: ["Management and Marketing Meeting", "General Meeting"],
   MS: ["Mechanical Systems Meeting", "General Meeting"],
 };
 
-const departmentFilterList = ["ALL", "DC", "ES", "H2", "MM", "MS"];
+const departmentFilterList = ["ALL", "DC", "ES", "HP", "MM", "MS"];
 
 const eventOptions: {
   value:
@@ -383,7 +384,8 @@ const getEventsInFullCalendarType = (
     let calendarEvent = {
       id: `${eventId}-fullcalendar`,
       title: event.title,
-      duration: `${event.duration.replace("h", ":")}`,
+      allDay: event.allDay,
+      duration: event.allDay ? "0" : `${event.duration.replace("h", ":")}`,
       color: calendarColor,
       rrule: periodicRule,
     };
@@ -1014,6 +1016,8 @@ export {
   eventTimeFormat,
   defaultEventInfo,
   eventOptions,
+  departmentFilterList,
+  departmentFilter,
   selectStyles,
   meetingCalendarColors,
   msToTime,

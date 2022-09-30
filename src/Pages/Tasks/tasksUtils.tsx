@@ -6,6 +6,7 @@ import { db } from "../../config/firebase";
 import {
   columnsShape,
   Departments,
+  EventInformation,
   selectOption,
   taskShape,
   userContext,
@@ -15,7 +16,9 @@ import {
   getDecodedString,
   getEncodedString,
   sendNotification,
+  toastrMessage,
 } from "../../utils/generalFunctions";
+import { departmentFilter, departmentFilterList } from "../Events/eventsUtils";
 import { v4 as uuid } from "uuid";
 import {
   get,
@@ -246,6 +249,43 @@ const saveTask = (
   );
   drawerOpenHandler();
   addTaskToUsers(taskInfo, modalTask, departmentBoard, currBoard, USER);
+};
+
+/** creates an event based on current task
+ * @param  {userContext} user authenticated user
+ * @param  {taskShape} taskInfo task information
+ * @param  {EventInformation} eventInfo default event information
+ */
+const saveTaskAsEvent = (
+  user: userContext | null,
+  taskInfo: taskShape,
+  eventInfo: EventInformation,
+  saveEvent: Function,
+  drawerOpenHandler: Function
+) => {
+  if (!user) return;
+  if (!taskInfo.date) {
+    toastrMessage("Add date to task.", "error");
+    return;
+  }
+  eventInfo.title = taskInfo.title;
+  eventInfo.date = taskInfo.date;
+  eventInfo.description = taskInfo.description ? taskInfo.description : "";
+  eventInfo.weeks = 0;
+  eventInfo.allDay = true;
+  let department = taskInfo.departmentBoard.split("tasks")[1];
+  if (departmentFilterList.indexOf(department)) {
+    eventInfo.type = departmentFilter[department][0];
+  }
+  saveEvent(
+    user,
+    "",
+    eventInfo,
+    () => {},
+    () => {},
+    () => {}
+  );
+  drawerOpenHandler();
 };
 
 /** Handles the task title input state
@@ -960,6 +1000,7 @@ export {
   titleHandler,
   descriptionHandler,
   saveTask,
+  saveTaskAsEvent,
   countCompletedObjectives,
   addTaskToUsers,
   deleteTask,
