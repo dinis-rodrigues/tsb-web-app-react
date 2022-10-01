@@ -22,6 +22,8 @@ import {
   durationForTimePicker,
 } from "./eventsUtils";
 import { useAuth } from "../../contexts/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   isModalOpen: boolean;
@@ -78,10 +80,14 @@ const EventModal = ({
               placeholder=""
             />
           </div>
-          <div className="col-md-4">
+          <div className="col-md-4" title="Event repeats every __ weeks">
             <span className="text-dark small text-uppercase">
-              <strong>Periodic?</strong>
+              <strong>Periodic</strong>
             </span>
+            <FontAwesomeIcon
+              className="ml-2 opacity-8"
+              icon={faQuestionCircle}
+            />
             <CounterInput
               value={currEventInfo.weeks || 0}
               onChange={(e) =>
