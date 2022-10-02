@@ -7,13 +7,16 @@ on:
 
   workflow_dispatch:
 
+permissions:
+  # All other permissions are set to none
+  checks: write
+  contents: read
+  pull-requests: write
+
 jobs:
   assign-label-to-pr:
     name: Assign Labels to PR
     runs-on: ubuntu-latest
-    
-    permissions:
-      pull-requests: write
 
     steps:
       - uses: codelytv/pr-size-labeler@v1
