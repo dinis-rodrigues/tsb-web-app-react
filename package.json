@@ -76,7 +76,7 @@
     "react-textarea-autosize": "^8.3.3",
     "react-toastify": "^8.1.0",
     "reactstrap": "^8.9.0",
-    "recharts": "^2.0.9",
+    "recharts": "^2.1.14",
     "redux": "^3.7.2",
     "sass": "^1.49.0",
     "sweetalert2": "^10.16.4",
