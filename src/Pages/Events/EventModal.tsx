@@ -22,6 +22,9 @@ import {
   durationForTimePicker,
 } from "./eventsUtils";
 import { useAuth } from "../../contexts/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { UncontrolledTooltip } from "reactstrap";
 
 type Props = {
   isModalOpen: boolean;
@@ -80,8 +83,13 @@ const EventModal = ({
           </div>
           <div className="col-md-4">
             <span className="text-dark small text-uppercase">
-              <strong>Periodic?</strong>
+              <strong>Periodic</strong>
             </span>
+            <FontAwesomeIcon
+              className="ml-2 opacity-8"
+              icon={faQuestionCircle}
+              id="Tooltip-1"
+            />
             <CounterInput
               value={currEventInfo.weeks || 0}
               onChange={(e) =>
@@ -90,6 +98,9 @@ const EventModal = ({
               disabled={disabledInput}
               placeholder=""
             />
+            <UncontrolledTooltip placement="top" target="Tooltip-1">
+              Event repeats every X weeks
+            </UncontrolledTooltip>
           </div>
         </div>
         <div className="form-group row text-center">
