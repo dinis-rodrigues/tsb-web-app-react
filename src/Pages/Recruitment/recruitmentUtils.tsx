@@ -304,26 +304,11 @@ const createNewSqlAndDbTable = async (
 ) => {
   if (!userId) return;
   let tableName = generateRecruitmentTable();
-  var data = new FormData();
-  data.append("activeTable", tableName);
-  data.append("userId", userId);
 
   try {
-    const res = await fetch(
-      "https://tecnicosolarboat.tecnico.ulisboa.pt/api/createNewRecruitmentTable.php",
-      {
-        method: "POST",
-        body: data,
-      }
-    );
-    const resData = await res.json();
-    if (resData.success) {
-      // Send data to firebase database
-      createNewDbTable(tableName, tablesList);
-      toastrMessage("Table created successfully", "success", false);
-    } else {
-      toastrMessage(resData.msg, "success", false);
-    }
+    // Send data to firebase database
+    createNewDbTable(tableName, tablesList);
+    toastrMessage("Table created successfully", "success", false);
   } catch (error) {
     console.log("error");
     toastrMessage("An error as occurred, contact Dinis", "error", false);
