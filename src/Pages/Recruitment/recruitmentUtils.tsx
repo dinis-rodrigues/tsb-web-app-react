@@ -681,7 +681,7 @@ const buildUserNames = () => {
 
 const deleteTable = (tableName: string, tablesList: string[]) => {
   const newTableList = tablesList.filter((table) => table !== tableName);
-  remove(ref(db, `public/recruitment/activeTable/${tableName}`));
+  set(ref(db, "public/recruitment/activeTable"), false);
   set(ref(db, "public/recruitment/tablesList"), newTableList);
 };
 
