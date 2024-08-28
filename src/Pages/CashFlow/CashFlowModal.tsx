@@ -1,7 +1,6 @@
 import { push, ref, remove, set } from "firebase/database";
-import { Fragment } from "react";
 import NumberFormat, { NumberFormatValues } from "react-number-format";
-import { Modal, Button, DatePicker } from "react-rainbow-components";
+import { Button, DatePicker, Modal } from "react-rainbow-components";
 import Select from "react-select";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../contexts/AuthContext";
@@ -17,9 +16,9 @@ type Props = {
 };
 
 const saveFlow = (flowInfo: Flow, closeModal: Function) => {
-  let flowData = { ...flowInfo, id: "" };
+  const flowData = { ...flowInfo, id: "" };
   if (flowInfo.id) {
-    set(ref(db, "private/finances/flow/" + flowInfo.id), flowInfo);
+    set(ref(db, `private/finances/flow/${flowInfo.id}`), flowInfo);
   } else {
     push(ref(db, "private/finances/flow"), flowData);
   }
@@ -28,23 +27,23 @@ const saveFlow = (flowInfo: Flow, closeModal: Function) => {
 
 const deleteFlow = (flowInfo: Flow, closeModal: Function) => {
   if (!flowInfo.id) return;
-  remove(ref(db, "private/finances/flow/" + flowInfo.id));
+  remove(ref(db, `private/finances/flow/${flowInfo.id}`));
   closeModal();
 };
 const inputHandler = (
   e: React.ChangeEvent<HTMLInputElement>,
   key: string,
   flowInfoMask: Flow | null,
-  setFlowInfoMask: Function
+  setFlowInfoMask: Function,
 ) => {
-  let value = e.target.value;
+  const value = e.target.value;
   setFlowInfoMask({ ...flowInfoMask, [key]: value });
 };
 
 const valueHandler = (
   value: NumberFormatValues,
   flowInfoMask: Flow | null,
-  setFlowInfoMask: Function
+  setFlowInfoMask: Function,
 ) => {
   setFlowInfoMask({ ...flowInfoMask, value: value.formattedValue });
 };
@@ -53,18 +52,14 @@ const selectHandler = (
   value: string,
   key: string,
   flowInfoMask: Flow,
-  setFlowInfoMask: Function
+  setFlowInfoMask: Function,
 ) => {
   setFlowInfoMask({ ...flowInfoMask, [key]: value });
 };
 
-const dateHandler = (
-  date: Date,
-  flowInfoMask: Flow | null,
-  setFlowInfoMask: Function
-) => {
+const dateHandler = (date: Date, flowInfoMask: Flow | null, setFlowInfoMask: Function) => {
   // saves the date as a portuguese format string
-  let dateString = dateToString(date);
+  const dateString = dateToString(date);
   setFlowInfoMask({ ...flowInfoMask, date: dateString });
 };
 
@@ -87,11 +82,9 @@ const CashFlowModal = ({
   ];
 
   return (
-    <Fragment>
+    <>
       <Modal
-        className={
-          isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-        }
+        className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
         isOpen={isModalOpen}
         title="Flow"
         onRequestClose={() => {
@@ -105,9 +98,7 @@ const CashFlowModal = ({
             </span>
             <input
               value={flowInfo ? flowInfo.description : ""}
-              onChange={(e) =>
-                inputHandler(e, "description", flowInfo, setFlowInfo)
-              }
+              onChange={(e) => inputHandler(e, "description", flowInfo, setFlowInfo)}
               type="text"
               className="form-control m-0 text-center"
               placeholder=""
@@ -133,9 +124,7 @@ const CashFlowModal = ({
             </span>
             <NumberFormat
               value={flowInfo ? flowInfo.value : ""}
-              onValueChange={(value) =>
-                valueHandler(value, flowInfo, setFlowInfo)
-              }
+              onValueChange={(value) => valueHandler(value, flowInfo, setFlowInfo)}
               decimalScale={2}
               fixedDecimalScale={true}
               suffix={" €"}
@@ -163,9 +152,7 @@ const CashFlowModal = ({
             <Select
               classNamePrefix="react-select-container"
               className={"text-center"}
-              onChange={(option) =>
-                selectHandler(option!.value!, "type", flowInfo!, setFlowInfo)
-              }
+              onChange={(option) => selectHandler(option!.value!, "type", flowInfo!, setFlowInfo)}
               value={{
                 value: flowInfo && flowInfo.type ? flowInfo.type : "",
                 label: flowInfo && flowInfo.type ? flowInfo.type : "",
@@ -230,7 +217,7 @@ const CashFlowModal = ({
           </div>
         </div>
       </Modal>
-    </Fragment>
+    </>
   );
 };
 

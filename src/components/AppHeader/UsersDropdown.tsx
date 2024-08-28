@@ -1,8 +1,8 @@
-import { PersonalInformation, UserMetadata } from "../../interfaces";
-import AvatarOverlap from "../AppImage/AvatarOverlap";
 import cx from "classnames";
-import { getUserProfileLink } from "../../utils/generalFunctions";
 import { Link } from "react-router-dom";
+import { PersonalInformation, UserMetadata } from "../../interfaces";
+import { getUserProfileLink } from "../../utils/generalFunctions";
+import AvatarOverlap from "../AppImage/AvatarOverlap";
 
 type Props = {
   searchedUsers: [string, { pinfo: PersonalInformation }][];
@@ -10,24 +10,19 @@ type Props = {
   dropdownOpen: boolean;
 };
 
-const UsersDropdown = ({
-  searchedUsers,
-  usersMetadata,
-  dropdownOpen,
-}: Props) => {
+const UsersDropdown = ({ searchedUsers, usersMetadata, dropdownOpen }: Props) => {
   return (
     <div
-      className={cx(
-        "dropdown-menu-xl rm-pointers dropdown-menu dropdown-menu-right p-0",
-        { "d-none": !dropdownOpen, "d-block": dropdownOpen }
-      )}
+      className={cx("dropdown-menu-xl rm-pointers dropdown-menu dropdown-menu-right p-0", {
+        "d-none": !dropdownOpen,
+        "d-block": dropdownOpen,
+      })}
       style={{
         overflow: "visible",
         position: "absolute",
         zIndex: "50",
       }}
       role="menu"
-      tabIndex={0} // this is required to hide the dropdown on blur
     >
       <div className="tab-content">
         <div className={cx("tab-pane", { active: dropdownOpen })}>
@@ -40,12 +35,7 @@ const UsersDropdown = ({
             }} // scrollable users
           >
             {searchedUsers.map(([userId, user]) => (
-              <li
-                key={userId}
-                className={
-                  "list-group-item search-hover user-info cursor-pointer"
-                }
-              >
+              <li key={userId} className={"list-group-item search-hover user-info cursor-pointer"}>
                 <Link
                   to={getUserProfileLink(userId)}
                   className={"td-n"}
@@ -64,8 +54,7 @@ const UsersDropdown = ({
                           {user.pinfo.name} &nbsp;·&nbsp; {user.pinfo.position}
                         </div>
                         <div className={"widget-subheading"}>
-                          {user.pinfo.department} &nbsp;·&nbsp;{" "}
-                          {user.pinfo.phone}
+                          {user.pinfo.department} &nbsp;·&nbsp; {user.pinfo.phone}
                         </div>
                       </div>
                     </div>

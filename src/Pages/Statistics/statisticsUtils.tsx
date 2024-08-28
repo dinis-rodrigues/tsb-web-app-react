@@ -19,11 +19,11 @@ const apexBarOptions: ApexOptions = {
   },
   dataLabels: {
     enabled: true,
-    formatter: function (val: number, opts) {
-      let data: number[] = opts.w.config.series[0].data;
-      let sum = data.reduce((a, b) => a + b, 0);
+    formatter: (val: number, opts) => {
+      const data: number[] = opts.w.config.series[0].data;
+      const sum = data.reduce((a, b) => a + b, 0);
       const percent = (val / sum) * 100;
-      return percent.toFixed(0) + "%";
+      return `${percent.toFixed(0)}%`;
     },
     offsetY: 10,
     style: {
@@ -65,9 +65,7 @@ const apexBarOptions: ApexOptions = {
     },
     labels: {
       show: true,
-      formatter: function (val) {
-        return val.toString();
-      },
+      formatter: (val) => val.toString(),
     },
   },
 };
@@ -109,8 +107,8 @@ const apexPolarOptions: ApexOptions = {
     enabled: true,
     // @ts-ignore
     formatter: (value: number, { seriesIndex, dataPointIndex, w }) => {
-      let degree = w.config.labels[seriesIndex];
-      return [degree, Number(value).toFixed(1).toString() + " %"];
+      const degree = w.config.labels[seriesIndex];
+      return [degree, `${Number(value).toFixed(1).toString()} %`];
     },
   },
   markers: {
@@ -137,23 +135,23 @@ const apexPolarOptions: ApexOptions = {
 const buildDepartmentPolarSeries = (
   usersMetadata: UserMetadata,
   setChartSeries: Function,
-  setChartLables: Function
+  setChartLables: Function,
 ) => {
-  let degreeCounts: { [key: string]: number } = {};
-  let degreeNames: string[] = [];
+  const degreeCounts: { [key: string]: number } = {};
+  const degreeNames: string[] = [];
   Object.entries(usersMetadata).forEach(([userId, user]) => {
     if (user.pinfo.inTeam) {
-      let degree = user.pinfo.degree;
-      if (degree && degreeCounts.hasOwnProperty(degree)) {
+      const degree = user.pinfo.degree;
+      if (degree && Object.hasOwn(degreeCounts, degree)) {
         degreeCounts[degree] += 1;
-      } else if (degree && !degreeCounts.hasOwnProperty(degree)) {
+      } else if (degree && !Object.hasOwn(degreeCounts, degree)) {
         degreeCounts[degree] = 1;
         degreeNames.push(degree);
       }
     }
   });
   // build degree count array
-  let degreeCountArray: number[] = [];
+  const degreeCountArray: number[] = [];
   degreeNames.forEach((degreeName) => {
     degreeCountArray.push(degreeCounts[degreeName]);
   });
@@ -170,21 +168,21 @@ const buildDepartmentPolarSeries = (
 const buildRecruitmentPolarSeries = (
   tableData: RecruitmentTable,
   setChartSeries: Function,
-  setChartLables: Function
+  setChartLables: Function,
 ) => {
-  let degreeCounts: { [key: string]: number } = {};
+  const degreeCounts: { [key: string]: number } = {};
   let degreeNames: string[] = [];
   Object.entries(tableData).forEach(([userId, user]) => {
-    let degree = user.degree;
-    if (degree && degreeCounts.hasOwnProperty(degree)) {
+    const degree = user.degree;
+    if (degree && Object.hasOwn(degreeCounts, degree)) {
       degreeCounts[degree] += 1;
-    } else if (degree && !degreeCounts.hasOwnProperty(degree)) {
+    } else if (degree && !Object.hasOwn(degreeCounts, degree)) {
       degreeCounts[degree] = 1;
       degreeNames.push(degree);
     }
   });
   // build degree count array
-  let degreeCountArray: number[] = [];
+  const degreeCountArray: number[] = [];
   degreeNames.forEach((degreeName) => {
     degreeCountArray.push(degreeCounts[degreeName]);
   });
@@ -204,21 +202,21 @@ const buildRecruitmentPolarSeries = (
 const buildRecruitmentBarSeries = (
   tableData: RecruitmentTable,
   setChartSeries: Function,
-  setChartLables: Function
+  setChartLables: Function,
 ) => {
-  let yearCounts: { [key: string]: number } = {};
-  let yearNames: string[] = [];
+  const yearCounts: { [key: string]: number } = {};
+  const yearNames: string[] = [];
   Object.entries(tableData).forEach(([userId, user]) => {
-    let year = user.year;
-    if (year && yearCounts.hasOwnProperty(year)) {
+    const year = user.year;
+    if (year && Object.hasOwn(yearCounts, year)) {
       yearCounts[year] += 1;
-    } else if (year && !yearCounts.hasOwnProperty(year)) {
+    } else if (year && !Object.hasOwn(yearCounts, year)) {
       yearCounts[year] = 1;
       yearNames.push(year);
     }
   });
   // build degree count array
-  let degreeCountArray: number[] = [];
+  const degreeCountArray: number[] = [];
   yearNames.sort();
   yearNames.forEach((degreeName) => {
     degreeCountArray.push(yearCounts[degreeName]);
@@ -236,9 +234,9 @@ const buildRecruitmentBarSeries = (
 const buildRecruitmentBarDepartmentSeries = (
   tableData: RecruitmentTable,
   setChartSeries: Function,
-  setChartLables: Function
+  setChartLables: Function,
 ) => {
-  let departments: string[] = [];
+  const departments: string[] = [];
   if (!tableData) return;
   Object.entries(tableData).forEach(([key, user]) => {
     user.departments.forEach((dep) => {
@@ -247,13 +245,13 @@ const buildRecruitmentBarDepartmentSeries = (
   });
   departments.sort();
 
-  let departmentCounts: { [key: string]: number } = {};
-  let departmentNames: string[] = [];
+  const departmentCounts: { [key: string]: number } = {};
+  const departmentNames: string[] = [];
   Object.entries(tableData).forEach(([userId, user]) => {
-    let userDepartments = user.departments;
+    const userDepartments = user.departments;
     userDepartments &&
       userDepartments.forEach((dep) => {
-        if (dep && departmentCounts.hasOwnProperty(dep)) {
+        if (dep && Object.hasOwn(departmentCounts, dep)) {
           departmentCounts[dep] += 1;
         } else if (dep) {
           departmentCounts[dep] = 1;
@@ -262,7 +260,7 @@ const buildRecruitmentBarDepartmentSeries = (
       });
   });
   // build degree count array
-  let degreeCountArray: number[] = [];
+  const degreeCountArray: number[] = [];
   departmentNames.sort();
   departmentNames.forEach((degreeName) => {
     degreeCountArray.push(departmentCounts[degreeName]);
@@ -272,10 +270,10 @@ const buildRecruitmentBarDepartmentSeries = (
 };
 
 export {
-  apexPolarOptions,
   apexBarOptions,
+  apexPolarOptions,
   buildDepartmentPolarSeries,
-  buildRecruitmentPolarSeries,
-  buildRecruitmentBarSeries,
   buildRecruitmentBarDepartmentSeries,
+  buildRecruitmentBarSeries,
+  buildRecruitmentPolarSeries,
 };

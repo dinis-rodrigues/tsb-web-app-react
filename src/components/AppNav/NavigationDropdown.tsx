@@ -8,13 +8,7 @@ type Props = {
   icon: string;
 };
 
-const NavigationDropdown = ({
-  children,
-  title,
-  toggle,
-  icon,
-  isActive = false,
-}: Props) => {
+const NavigationDropdown = ({ children, title, toggle, icon, isActive = false }: Props) => {
   return (
     <li className="metismenu-item">
       <span

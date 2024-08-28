@@ -1,23 +1,23 @@
+import { v4 as uuid } from "uuid";
 // import firebase from "firebase/app";
 import { db } from "../config/firebase";
-import { v4 as uuid } from "uuid";
 
+import { get, push, ref } from "firebase/database";
+// Toastr Notification
+import { ToastPosition, toast } from "react-toastify";
 // Swal Notifications
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-// Toastr Notification
-import { toast, ToastPosition } from "react-toastify";
 import {
   ApplicationFeatures,
   Department,
   Notification,
   PersonalInformation,
-  selectOption,
   UrlObject,
-  userContext,
   UserMetadata,
+  selectOption,
+  userContext,
 } from "../interfaces";
-import { get, push, ref } from "firebase/database";
 
 /** Sends a Toastr Notification to the User
  * @param  {string} title Notification title
@@ -27,7 +27,7 @@ import { get, push, ref } from "firebase/database";
 const toastrMessage = (
   message: string = "",
   type: "error" | "success" | "info" | "warning" | "default" = "info",
-  autoclose: boolean = true
+  autoclose: boolean = true,
 ) => {
   const position: ToastPosition = "top-right";
   const config = {
@@ -71,7 +71,7 @@ const toastrMessage = (
 const swalMessage = (
   title: string,
   message: string,
-  type: "error" | "success" | "info" | "question"
+  type: "error" | "success" | "info" | "question",
 ) => {
   swalAlert.fire({
     target: ".app-container",
@@ -109,11 +109,7 @@ const getAndSetAllUsersMetadata = (setUsersMetadata: Function) => {
  * @param  {boolean} compressed returns the compressed image path or not
  * @return {string} image path
  */
-const getUserImgUrl = (
-  id: string,
-  firebaseStorage: any,
-  compressed: boolean
-) => {
+const getUserImgUrl = (id: string, firebaseStorage: any, compressed: boolean) => {
   if (firebaseStorage) {
     const st = firebaseStorage;
     try {
@@ -132,6 +128,7 @@ const getUserImgUrl = (
  * @returns normalized string
  */
 const normalizedString = (str: string) => {
+  // biome-ignore lint/suspicious/noMisleadingCharacterClass: <explanation>
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 };
 
@@ -140,11 +137,11 @@ const normalizedString = (str: string) => {
  * @return {string} xxx,xxx.xx €
  */
 const numberWithCommas = (x: number) => {
-  let n = Number(x)
+  const n = Number(x)
     .toFixed(2)
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return n + " €";
+  return `${n} €`;
 };
 /** Transforms the date object into a dd/mm/yyyy string
  * @param  {string} d DateObject
@@ -152,31 +149,30 @@ const numberWithCommas = (x: number) => {
  */
 const dateToString = (d: Date | number, withHours = false) => {
   if (d instanceof Date) {
-    let day = ("0" + d.getDate()).slice(-2);
-    let month = ("0" + String(d.getMonth() + 1)).slice(-2);
-    let year = d.getFullYear().toString();
+    const day = `0${d.getDate()}`.slice(-2);
+    const month = `0${String(d.getMonth() + 1)}`.slice(-2);
+    const year = d.getFullYear().toString();
     let dateString = `${day}/${month}/${year}`;
     if (withHours) {
       dateString += " ";
-      dateString += ("0" + d.getHours()).slice(-2);
+      dateString += `0${d.getHours()}`.slice(-2);
       dateString += "h";
-      dateString += ("0" + d.getMinutes()).slice(-2);
-    }
-    return dateString;
-  } else {
-    let newD = new Date(d);
-    let day = ("0" + newD.getDate()).slice(-2);
-    let month = ("0" + String(newD.getMonth() + 1)).slice(-2);
-    let year = newD.getFullYear().toString();
-    let dateString = `${day}/${month}/${year}`;
-    if (withHours) {
-      dateString += " ";
-      dateString += ("0" + newD.getHours()).slice(-2);
-      dateString += "h";
-      dateString += ("0" + newD.getMinutes()).slice(-2);
+      dateString += `0${d.getMinutes()}`.slice(-2);
     }
     return dateString;
   }
+  const newD = new Date(d);
+  const day = `0${newD.getDate()}`.slice(-2);
+  const month = `0${String(newD.getMonth() + 1)}`.slice(-2);
+  const year = newD.getFullYear().toString();
+  let dateString = `${day}/${month}/${year}`;
+  if (withHours) {
+    dateString += " ";
+    dateString += `0${newD.getHours()}`.slice(-2);
+    dateString += "h";
+    dateString += `0${newD.getMinutes()}`.slice(-2);
+  }
+  return dateString;
 };
 
 /** Transforms the date string into Date Object
@@ -205,12 +201,12 @@ const inputToDate = (date: string | number) => {
     const month = parseInt(arr[1]) - 1;
     const day = parseInt(arr[0]);
     return new Date(year, month, day);
-  } else if (typeof date === "number") {
+  }
+  if (typeof date === "number") {
     // then it is a timestamp
     return new Date(date);
-  } else {
-    return new Date();
   }
+  return new Date();
 };
 
 /** Extends a date input to a string format
@@ -239,7 +235,7 @@ const extendDate = (date: string | Date | number) => {
  * @returns  {number} hours of timestamp
  */
 const getHoursFromTimestamp = (date: number) => {
-  let newDate = new Date(date);
+  const newDate = new Date(date);
   return newDate.getHours();
 };
 
@@ -248,7 +244,7 @@ const getHoursFromTimestamp = (date: number) => {
  * @returns  {number} hours of timestamp
  */
 const getMinutesFromTimestamp = (date: number) => {
-  let newDate = new Date(date);
+  const newDate = new Date(date);
   return newDate.getMinutes();
 };
 /** Gets minutes of timestamp date in a string form "00"
@@ -256,9 +252,9 @@ const getMinutesFromTimestamp = (date: number) => {
  * @returns  {number} hours of timestamp
  */
 const getMinutesInStringFromTimestamp = (timestamp: number) => {
-  let date = new Date(timestamp);
-  let minutes = date.getMinutes();
-  return ("0" + minutes).slice(-2);
+  const date = new Date(timestamp);
+  const minutes = date.getMinutes();
+  return `0${minutes}`.slice(-2);
 };
 
 /** Gets hours of timestamp date in a string form "00"
@@ -266,9 +262,9 @@ const getMinutesInStringFromTimestamp = (timestamp: number) => {
  * @returns  {number} hours of timestamp
  */
 const getHoursInStringFromTimestamp = (timestamp: number) => {
-  let date = new Date(timestamp);
-  let hours = date.getHours();
-  return ("0" + hours).slice(-2);
+  const date = new Date(timestamp);
+  const hours = date.getHours();
+  return `0${hours}`.slice(-2);
 };
 
 /** Formats the text of the column header, inserting spaces and uppercases,
@@ -281,7 +277,7 @@ const setColumnText = (keyId: string) => {
   for (let i = 0; i < keyId.length; i++) {
     if (keyId.charAt(i) === keyId.charAt(i).toUpperCase()) {
       // insert space between the string
-      var newVal = keyId.substr(0, i) + " " + keyId.substr(i);
+      let newVal = `${keyId.substr(0, i)} ${keyId.substr(i)}`;
       newVal = newVal.charAt(0).toUpperCase() + newVal.slice(1);
       return newVal;
     }
@@ -295,8 +291,8 @@ const setColumnText = (keyId: string) => {
  * @returns  {number} difference
  */
 function dateComparator(date1: string, date2: string) {
-  var date1Number = dateStringComparableNumber(date1);
-  var date2Number = dateStringComparableNumber(date2);
+  const date1Number = dateStringComparableNumber(date1);
+  const date2Number = dateStringComparableNumber(date2);
 
   if (date1Number === null && date2Number === null) {
     return 0;
@@ -316,8 +312,8 @@ function dateComparator(date1: string, date2: string) {
  * @returns  {number} difference
  */
 const dateWithHoursComparator = (date1: string, date2: string) => {
-  var date1Number = dateWithHoursComparableNumber(date1);
-  var date2Number = dateWithHoursComparableNumber(date2);
+  const date1Number = dateWithHoursComparableNumber(date1);
+  const date2Number = dateWithHoursComparableNumber(date2);
 
   if (date1Number === null && date2Number === null) {
     return 0;
@@ -341,11 +337,11 @@ function dateStringComparableNumber(date: string) {
     return null;
   }
 
-  var yearNumber = parseInt(date.substring(6, 10));
-  var monthNumber = parseInt(date.substring(3, 5));
-  var dayNumber = parseInt(date.substring(0, 2));
+  const yearNumber = parseInt(date.substring(6, 10));
+  const monthNumber = parseInt(date.substring(3, 5));
+  const dayNumber = parseInt(date.substring(0, 2));
 
-  let newD = new Date(yearNumber, monthNumber - 1, dayNumber);
+  const newD = new Date(yearNumber, monthNumber - 1, dayNumber);
   return newD.getTime();
 }
 
@@ -357,13 +353,13 @@ function dateWithHoursComparableNumber(date: string) {
   if (date === undefined || date === null || date.length < 10) {
     return null;
   }
-  var yearNumber = parseInt(date.substring(6, 10));
-  var monthNumber = parseInt(date.substring(3, 5));
-  var dayNumber = parseInt(date.substring(0, 2));
-  var hours = parseInt(date.substring(11, 13));
-  var minutes = parseInt(date.substring(14));
+  const yearNumber = parseInt(date.substring(6, 10));
+  const monthNumber = parseInt(date.substring(3, 5));
+  const dayNumber = parseInt(date.substring(0, 2));
+  const hours = parseInt(date.substring(11, 13));
+  const minutes = parseInt(date.substring(14));
 
-  let newD = new Date(yearNumber, monthNumber - 1, dayNumber, hours, minutes);
+  const newD = new Date(yearNumber, monthNumber - 1, dayNumber, hours, minutes);
 
   return newD.getTime();
 }
@@ -374,24 +370,20 @@ function dateWithHoursComparableNumber(date: string) {
  * @param  {number} minutes
  * @returns  {number}remaining hours
  */
-const remainingHours = (
-  date: string,
-  hours: number | string,
-  minutes: number | string
-) => {
-  var now = new Date();
-  let endDate = inputToDate(date);
-  let offset = now.getTimezoneOffset();
-  let diferentialoffsetmili = (offset + 60) * 60 * 1000;
+const remainingHours = (date: string, hours: number | string, minutes: number | string) => {
+  const now = new Date();
+  const endDate = inputToDate(date);
+  const offset = now.getTimezoneOffset();
+  const diferentialoffsetmili = (offset + 60) * 60 * 1000;
   if (typeof hours === "string") hours = parseInt(hours);
   if (typeof minutes === "string") minutes = parseInt(minutes);
   endDate.setHours(hours);
   endDate.setMinutes(minutes);
 
-  let endTime = endDate.getTime() / 1000; // ISO format
-  var elapsed = (now.getTime() - diferentialoffsetmili) / 1000;
-  var totalSec = endTime - elapsed;
-  var h = Math.round(totalSec / 3600);
+  const endTime = endDate.getTime() / 1000; // ISO format
+  const elapsed = (now.getTime() - diferentialoffsetmili) / 1000;
+  const totalSec = endTime - elapsed;
+  const h = Math.round(totalSec / 3600);
   // var m = (totalSec / 60) % 60;
   // var s = totalSec % 60;
   //   var result = h + " hours, " + m + " minutes " + s + " seconds";
@@ -403,37 +395,28 @@ const remainingHours = (
  * @returns  {string}past week date, or the corresponding date
  */
 const isDateInPastWeek = (d: Date) => {
-  let last7Days = new Date();
-  var todayDay = last7Days.getDate();
+  const last7Days = new Date();
+  const todayDay = last7Days.getDate();
   last7Days.setDate(d.getDate() - 7);
-  var weekdays = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
+  const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
   // if the date is in the on the current week, then return the day of the week
   if (d > last7Days) {
-    var currDay = d.getDate();
+    const currDay = d.getDate();
     if (currDay === todayDay) {
       return "Today";
-    } else if (currDay === todayDay - 1) {
-      return "Yesterday";
-    } else {
-      var currWeekDay = d.getDay();
-      return weekdays[currWeekDay];
     }
-  } else {
-    var day = ("0" + d.getDate()).slice(-2);
-    var month = ("0" + String(d.getMonth() + 1)).slice(-2);
-    var year = d.getFullYear().toString();
-    var date = day + "/" + month + "/" + year;
-    return date;
+    if (currDay === todayDay - 1) {
+      return "Yesterday";
+    }
+    const currWeekDay = d.getDay();
+    return weekdays[currWeekDay];
   }
+  const day = `0${d.getDate()}`.slice(-2);
+  const month = `0${String(d.getMonth() + 1)}`.slice(-2);
+  const year = d.getFullYear().toString();
+  const date = `${day}/${month}/${year}`;
+  return date;
 };
 
 /** Object with multiple functions to calculate difference between dates, in
@@ -443,32 +426,31 @@ years, months, weeks and days
  * @returns {number} respctive difference
  */
 const DateDiff = {
-  inDays: function (d1: Date, d2: Date) {
-    var t2 = d2.getTime();
-    var t1 = d1.getTime();
+  inDays: (d1: Date, d2: Date) => {
+    const t2 = d2.getTime();
+    const t1 = d1.getTime();
 
     return parseInt(Number((t2 - t1) / (24 * 3600 * 1000)).toFixed(20));
   },
 
-  inWeeks: function (d1: Date, d2: Date) {
-    var t2 = d2.getTime();
-    var t1 = d1.getTime();
+  inWeeks: (d1: Date, d2: Date) => {
+    const t2 = d2.getTime();
+    const t1 = d1.getTime();
 
     return parseInt(Number((t2 - t1) / (24 * 3600 * 1000 * 7)).toFixed(20));
   },
 
-  inMonths: function (d1: Date, d2: Date) {
-    var d1Y = d1.getFullYear();
-    var d2Y = d2.getFullYear();
-    var d1M = d1.getMonth();
-    var d2M = d2.getMonth();
+  inMonths: (d1: Date, d2: Date) => {
+    const d1Y = d1.getFullYear();
+    const d2Y = d2.getFullYear();
+    const d1M = d1.getMonth();
+    const d2M = d2.getMonth();
 
     return parseInt(Number(d2M + 12 * d2Y - (d1M + 12 * d1Y)).toFixed(20));
   },
 
-  inYears: function (d1: Date, d2: Date) {
-    return parseInt(Number(d2.getFullYear() - d1.getFullYear()).toFixed(20));
-  },
+  inYears: (d1: Date, d2: Date) =>
+    parseInt(Number(d2.getFullYear() - d1.getFullYear()).toFixed(20)),
 };
 
 /** Returns a string indicanting the difference betewwn now and a previosu date
@@ -477,41 +459,43 @@ const DateDiff = {
  * @returns {string} respective difference in a string form
  */
 const dateDifference = (timestamp: number) => {
-  var d1 = new Date();
-  var d2 = new Date(timestamp);
-  var inYears = Math.abs(DateDiff.inYears(d1, d2));
-  var inMonths = Math.abs(DateDiff.inMonths(d1, d2));
-  var inWeeks = Math.abs(DateDiff.inWeeks(d1, d2));
-  var inDays = Math.abs(DateDiff.inDays(d1, d2));
-  var hoursMinutes = `${("0" + d2.getHours()).slice(-2)}:${(
-    "0" + d2.getMinutes()
-  ).slice(-2)}`;
+  const d1 = new Date();
+  const d2 = new Date(timestamp);
+  const inYears = Math.abs(DateDiff.inYears(d1, d2));
+  const inMonths = Math.abs(DateDiff.inMonths(d1, d2));
+  const inWeeks = Math.abs(DateDiff.inWeeks(d1, d2));
+  const inDays = Math.abs(DateDiff.inDays(d1, d2));
+  const hoursMinutes = `${`0${d2.getHours()}`.slice(-2)}:${`0${d2.getMinutes()}`.slice(-2)}`;
 
   if (inYears) {
     if (inYears > 1) {
-      return inYears + " years ago";
-    } else if (inYears === 1) {
-      return inYears + " year ago";
+      return `${inYears} years ago`;
+    }
+    if (inYears === 1) {
+      return `${inYears} year ago`;
     }
   }
   if (inMonths && inDays > 30) {
     if (inMonths > 1) {
-      return inMonths + " months ago";
-    } else if (inMonths === 1) {
-      return inMonths + " month ago";
+      return `${inMonths} months ago`;
+    }
+    if (inMonths === 1) {
+      return `${inMonths} month ago`;
     }
   }
   if (inWeeks) {
     if (inWeeks > 1) {
-      return inWeeks + " weeks ago";
-    } else if (inWeeks === 1) {
-      return inWeeks + " week ago";
+      return `${inWeeks} weeks ago`;
+    }
+    if (inWeeks === 1) {
+      return `${inWeeks} week ago`;
     }
   }
   if (inDays) {
     if (inDays > 1) {
-      return inDays + " days ago";
-    } else if (inDays === 1) {
+      return `${inDays} days ago`;
+    }
+    if (inDays === 1) {
       return `Yesterday`;
     }
   } else {
@@ -567,7 +551,7 @@ const decodeData = (s: string) => {
         .replace(/%2A/g, "*")
         .replace(/%27/g, "'")
         .replace(/%28/g, "(")
-        .replace(/%29/g, ")")
+        .replace(/%29/g, ")"),
     );
   } catch (e) {
     // this happens when the string is tottally decoded, so we return the
@@ -586,10 +570,7 @@ const decodeData = (s: string) => {
 const sortUsers = (sortableUsers: [string, PersonalInformation, boolean][]) => {
   if (sortableUsers) {
     sortableUsers.sort(
-      (
-        a: [string, PersonalInformation, boolean],
-        b: [string, PersonalInformation, boolean]
-      ) => {
+      (a: [string, PersonalInformation, boolean], b: [string, PersonalInformation, boolean]) => {
         if (a[1].name && b[1].name) {
           // Concatenate strings for sorting
           const nameA = a[1].name.replaceAll(" ", "");
@@ -599,7 +580,7 @@ const sortUsers = (sortableUsers: [string, PersonalInformation, boolean][]) => {
           return 0;
         }
         return 0;
-      }
+      },
     );
   }
   return sortableUsers;
@@ -609,15 +590,13 @@ const sortUsers = (sortableUsers: [string, PersonalInformation, boolean][]) => {
  * users to be sorted
  * @returns   extended string eg: "inTeam" -> "In Team"
  */
-const buildUserSelectOptions = (
-  sortableUsers: [string, PersonalInformation, boolean][]
-) => {
-  let selectUserOptions: selectOption[] = [];
+const buildUserSelectOptions = (sortableUsers: [string, PersonalInformation, boolean][]) => {
+  const selectUserOptions: selectOption[] = [];
   sortableUsers.forEach((user) => {
-    let userKey = user[0];
-    let userInfo = user[1];
-    let userLabel = `${userInfo.name}, ${userInfo.department}`;
-    let userOption = {
+    const userKey = user[0];
+    const userInfo = user[1];
+    const userLabel = `${userInfo.name}, ${userInfo.department}`;
+    const userOption = {
       value: userKey,
       label: userLabel,
     };
@@ -630,27 +609,20 @@ const buildUserSelectOptions = (
  * @param  {Function} setUserOptions update user options state
  * @param  {Function} setUsersMetadata update users metadata state
  */
-const getUserAssignmentOptions = (
-  setUserOptions: Function,
-  setUsersMetadata: Function
-) => {
+const getUserAssignmentOptions = (setUserOptions: Function, setUsersMetadata: Function) => {
   get(ref(db, "private/usersMetadata")).then((snapshot) => {
     const allUsers = snapshot.val();
     setUsersMetadata(allUsers);
 
-    let sortableUsers: [string, PersonalInformation, boolean][] = [];
+    const sortableUsers: [string, PersonalInformation, boolean][] = [];
     snapshot.forEach((user) => {
       if (user.key) {
-        sortableUsers.push([
-          user.key,
-          user.val().pinfo,
-          user.val().pinfo.inTeam,
-        ]);
+        sortableUsers.push([user.key, user.val().pinfo, user.val().pinfo.inTeam]);
       }
     });
-    let sortedUsers = sortUsers(sortableUsers);
+    const sortedUsers = sortUsers(sortableUsers);
 
-    let options = buildUserSelectOptions(sortedUsers);
+    const options = buildUserSelectOptions(sortedUsers);
     setUserOptions(options);
   });
 };
@@ -662,12 +634,12 @@ const getUserAssignmentOptions = (
 const setUserAssignmentOptions = (
   setUserOptions: Function,
   usersMetadata: UserMetadata,
-  department?: Department
+  department?: Department,
 ) => {
-  let sortableUsersStart: [string, PersonalInformation, boolean][] = [];
-  let sortableUsersEnd: [string, PersonalInformation, boolean][] = [];
+  const sortableUsersStart: [string, PersonalInformation, boolean][] = [];
+  const sortableUsersEnd: [string, PersonalInformation, boolean][] = [];
   Object.entries(usersMetadata).forEach(([userId, user]) => {
-    let inTeam = user.pinfo.inTeam ? true : false;
+    const inTeam = !!user.pinfo.inTeam;
     if (userId) {
       if (department) {
         if (user.pinfo.department === department.description) {
@@ -679,12 +651,12 @@ const setUserAssignmentOptions = (
         sortableUsersStart.push([userId, user.pinfo, inTeam]);
       }
     }
-    let sortedUsersStart = sortUsers(sortableUsersStart);
-    let sortedUsersEnd = sortUsers(sortableUsersEnd);
+    const sortedUsersStart = sortUsers(sortableUsersStart);
+    const sortedUsersEnd = sortUsers(sortableUsersEnd);
 
-    let sortedUsers = [...sortedUsersStart, ...sortedUsersEnd];
+    const sortedUsers = [...sortedUsersStart, ...sortedUsersEnd];
 
-    let options = buildUserSelectOptions(sortedUsers);
+    const options = buildUserSelectOptions(sortedUsers);
     setUserOptions(options);
   });
 };
@@ -706,7 +678,7 @@ const getUserProfileLink = (userId: string) => {
  */
 const getUserImg = (userId: string, compressed = false) => {
   if (!compressed) return `/db/users/${userId}/img/${userId}.png`;
-  else return `/db/users/${userId}/img/${userId}_comp.png`;
+  return `/db/users/${userId}/img/${userId}_comp.png`;
 };
 
 /**
@@ -728,10 +700,10 @@ const sendNotification = (
   urlPath: string,
   urlObject: UrlObject | null,
   notifType: string,
-  color: string
+  color: string,
 ) => {
   if (sendTo !== sentBy) {
-    let notification: Notification = {
+    const notification: Notification = {
       sentBy: sentBy,
       title: title,
       description: description,
@@ -813,51 +785,50 @@ const isFeatureVisible = (
   featureName: string,
   applicationFeatures: ApplicationFeatures,
   isAdminUser: boolean,
-  isGod: boolean
+  isGod: boolean,
 ) => {
-  if (applicationFeatures.hasOwnProperty(featureName)) {
+  if (Object.hasOwn(applicationFeatures, featureName)) {
     if (applicationFeatures[featureName].public) return true;
-    else if ((applicationFeatures[featureName].admin && isAdminUser) || isGod)
-      return true;
+    if ((applicationFeatures[featureName].admin && isAdminUser) || isGod) return true;
   }
   return false;
 };
 
 export {
-  inputToDate,
+  buildUserSelectOptions,
+  dateComparator,
+  dateDifference,
   dateToString,
-  numberWithCommas,
-  getUserImgUrl,
+  dateWithHoursComparator,
+  decodeData,
+  encodeData,
+  extendDate,
   getAllUsersMetadata,
   getAndSetAllUsersMetadata,
-  setColumnText,
-  dateComparator,
-  remainingHours,
-  extendDate,
-  getHoursFromTimestamp,
-  getMinutesFromTimestamp,
-  getMinutesInStringFromTimestamp,
-  getHoursInStringFromTimestamp,
-  swalMessage,
-  toastrMessage,
-  isDateInPastWeek,
-  encodeData,
-  decodeData,
-  getUserAssignmentOptions,
-  setUserAssignmentOptions,
-  sortUsers,
-  buildUserSelectOptions,
   getDecodedString,
   getEncodedString,
-  dateDifference,
-  normalizedString,
-  getUserProfileLink,
+  getHoursFromTimestamp,
+  getHoursInStringFromTimestamp,
+  getMinutesFromTimestamp,
+  getMinutesInStringFromTimestamp,
+  getUserAssignmentOptions,
   getUserImg,
-  sendNotification,
-  objectExists,
-  userHasPermission,
-  userHasAdminPermissions,
-  dateWithHoursComparator,
-  pascalStringToTitleCase,
+  getUserImgUrl,
+  getUserProfileLink,
+  inputToDate,
+  isDateInPastWeek,
   isFeatureVisible,
+  normalizedString,
+  numberWithCommas,
+  objectExists,
+  pascalStringToTitleCase,
+  remainingHours,
+  sendNotification,
+  setColumnText,
+  setUserAssignmentOptions,
+  sortUsers,
+  swalMessage,
+  toastrMessage,
+  userHasAdminPermissions,
+  userHasPermission,
 };

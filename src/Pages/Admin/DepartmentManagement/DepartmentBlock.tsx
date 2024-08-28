@@ -23,36 +23,26 @@ const DepartmentBlock = ({
     <div className={"main-card mb-3 card"}>
       <div className="card-header">
         <i
-          className={cx(
-            "header-icon icon-gradient fa",
-            department.icon,
-            department.gradientColor
-          )}
+          className={cx("header-icon icon-gradient fa", department.icon, department.gradientColor)}
         ></i>
         {department.description}
         <div className="btn-actions-pane-right text-capitalize">
           <button
+            type="button"
             onClick={() =>
-              editDepartment(
-                department,
-                setIsDepartmentModalOpen,
-                setDepartmentInfo,
-                setModalText
-              )
+              editDepartment(department, setIsDepartmentModalOpen, setDepartmentInfo, setModalText)
             }
             className="btn-wide btn-info mr-md-2 btn btn-sm"
           >
-            <i className="fa fa-hammer text-white btn-icon-wrapper"></i> Edit
-            Department
+            <i className="fa fa-hammer text-white btn-icon-wrapper"></i> Edit Department
           </button>
           <button
-            onClick={() =>
-              swalDeleteDepartmentMessage(() => deleteDepartment(department))
-            }
+            type="button"
+            onClick={() => swalDeleteDepartmentMessage(() => deleteDepartment(department))}
             className="btn-wide btn-danger mr-md-2 btn btn-sm"
           >
-            <i className="fa fa-exclamation-triangle text-white btn-icon-wrapper"></i>{" "}
-            Delete Department
+            <i className="fa fa-exclamation-triangle text-white btn-icon-wrapper"></i> Delete
+            Department
           </button>
         </div>
       </div>
@@ -111,11 +101,7 @@ const DepartmentBlock = ({
           <div className="col-10 float-left text-dark">
             <div className="p-2">
               {department.gradientColor}
-              <span
-                className={cx("p-1 department-color", department.gradientColor)}
-              >
-                {" "}
-              </span>
+              <span className={cx("p-1 department-color", department.gradientColor)}> </span>
             </div>
           </div>
         </div>

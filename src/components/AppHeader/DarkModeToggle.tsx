@@ -12,10 +12,7 @@ const DarkModeToggle = ({ isDarkMode, setIsDarkMode }: Props) => {
         setIsDarkMode(!isDarkMode);
       }}
     >
-      <span
-        id="notificationColorWrapper"
-        className={cx("icon-wrapper-bg ")}
-      ></span>
+      <span id="notificationColorWrapper" className={cx("icon-wrapper-bg ")}></span>
       <i
         id="notificationColor"
         className={cx("icon fas", {

@@ -1,39 +1,35 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { db } from "../../config/firebase";
-import { useAuth } from "../../contexts/AuthContext";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
 // Calendar Plugins
 import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
 import rrule from "@fullcalendar/rrule";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import { useEffect, useState } from "react";
+import { db } from "../../config/firebase";
+import { useAuth } from "../../contexts/AuthContext";
 
+import { off, ref } from "firebase/database";
+import { EventDatabase, EventInformation, calendarEvent } from "../../interfaces";
+import EventListItem from "./EventListItem";
 // Import event modal, interfaces and eventListItem
 import EventModal from "./EventModal";
-import {
-  EventInformation,
-  calendarEvent,
-  EventDatabase,
-} from "../../interfaces";
-import EventListItem from "./EventListItem";
 // Calendar setup variables and functions
 import {
   calendarEventClickHandler,
+  calendarEventDragHandler,
   calendarEventResizeHandler,
   checkEventPeriodicity,
+  closeModal,
   defaultEventInfo,
-  getAndSetEvents,
-  openClearModal,
-  switchFilter,
-  filteredEvents,
-  calendarEventDragHandler,
+  deleteEvent,
   eventListClickHandler,
   eventListDeleteHandler,
-  closeModal,
+  filteredEvents,
+  getAndSetEvents,
+  openClearModal,
   saveEvent,
-  deleteEvent,
+  switchFilter,
 } from "./eventsUtils";
-import { off, ref } from "firebase/database";
 
 const Events = () => {
   const { USER, departmentsWDesc } = useAuth();
@@ -44,22 +40,14 @@ const Events = () => {
   const [showDeleteEvent, setShowDeleteEvent] = useState<boolean>(false); // show delete button
   // Event Related States
   const [eventsDatabase, setEventsDatabase] = useState<EventDatabase>({}); // straight from the database
-  const [eventsSorted, setEventsSorted] = useState<
-    [string, EventInformation][]
-  >([]); // sorted events, for the final list
+  const [eventsSorted, setEventsSorted] = useState<[string, EventInformation][]>([]); // sorted events, for the final list
   const [currEventKey, setCurrEventKey] = useState<string>("");
-  const [currEventInfo, setCurrEventInfo] =
-    useState<EventInformation>(defaultEventInfo);
+  const [currEventInfo, setCurrEventInfo] = useState<EventInformation>(defaultEventInfo);
   const [calendarEvents, setCalendarEvents] = useState<calendarEvent[]>([]);
 
   useEffect(() => {
     setIsModalOpen(false);
-    getAndSetEvents(
-      setEventsDatabase,
-      setEventsSorted,
-      setCalendarEvents,
-      departmentsWDesc
-    );
+    getAndSetEvents(setEventsDatabase, setEventsSorted, setCalendarEvents, departmentsWDesc);
     // getAndSetHistoryEvents(setEventsDatabase, setCalendarEvents);
     checkEventPeriodicity();
 
@@ -68,31 +56,21 @@ const Events = () => {
     };
   }, [departmentsWDesc]);
   return (
-    <Fragment>
+    <>
       <div className="app-main__outer">
         <div className="app-main__inner">
           <div className="main-card mb-3 card">
             <div className="card-body">
               {/* Calendar configuration */}
               <FullCalendar
-                plugins={[
-                  timeGridPlugin,
-                  dayGridPlugin,
-                  rrule,
-                  interactionPlugin,
-                ]}
+                plugins={[timeGridPlugin, dayGridPlugin, rrule, interactionPlugin]}
                 editable={true}
-                events={filteredEvents(
-                  eventFilter,
-                  calendarEvents,
-                  eventsDatabase
-                )}
+                events={filteredEvents(eventFilter, calendarEvents, eventsDatabase)}
                 initialView="timeGridWeek"
                 headerToolbar={{
                   left: "prev,next today",
                   center: "title",
-                  right:
-                    "filter addEvent timeGridDay,timeGridWeek,dayGridMonth",
+                  right: "filter addEvent timeGridDay,timeGridWeek,dayGridMonth",
                 }}
                 views={{
                   timeGridWeek: {
@@ -136,7 +114,7 @@ const Events = () => {
                         setIsModalOpen,
                         setCurrEventKey,
                         setShowDeleteEvent,
-                        setDisabledInput
+                        setDisabledInput,
                       ),
                   },
                   filter: {
@@ -152,15 +130,13 @@ const Events = () => {
                     setCurrEventInfo,
                     setIsModalOpen,
                     setCurrEventKey,
-                    setShowDeleteEvent
+                    setShowDeleteEvent,
                   )
                 }
                 eventResize={(eventInfoFC) =>
                   calendarEventResizeHandler(eventInfoFC, eventsDatabase)
                 }
-                eventDrop={(eventInfoFC) =>
-                  calendarEventDragHandler(eventInfoFC, eventsDatabase)
-                }
+                eventDrop={(eventInfoFC) => calendarEventDragHandler(eventInfoFC, eventsDatabase)}
               />
             </div>
           </div>
@@ -189,12 +165,10 @@ const Events = () => {
                               setCurrEventInfo,
                               setIsModalOpen,
                               setCurrEventKey,
-                              setShowDeleteEvent
+                              setShowDeleteEvent,
                             )
                           }
-                          eventListDeleteHandler={() =>
-                            eventListDeleteHandler(eventId)
-                          }
+                          eventListDeleteHandler={() => eventListDeleteHandler(eventId)}
                           key={eventId}
                         ></EventListItem>
                       );
@@ -210,12 +184,7 @@ const Events = () => {
           isModalOpen={isModalOpen}
           modalTitle={modalTitle}
           closeModal={() =>
-            closeModal(
-              setCurrEventInfo,
-              setIsModalOpen,
-              setCurrEventKey,
-              setShowDeleteEvent
-            )
+            closeModal(setCurrEventInfo, setIsModalOpen, setCurrEventKey, setShowDeleteEvent)
           }
           saveEvent={() =>
             saveEvent(
@@ -224,19 +193,17 @@ const Events = () => {
               currEventInfo,
               setIsModalOpen,
               setCurrEventInfo,
-              setCurrEventKey
+              setCurrEventKey,
             )
           }
-          deleteEvent={() =>
-            deleteEvent(currEventInfo, currEventKey, setIsModalOpen)
-          }
+          deleteEvent={() => deleteEvent(currEventInfo, currEventKey, setIsModalOpen)}
           currEventInfo={currEventInfo}
           showDeleteEvent={showDeleteEvent}
           disabledInput={disabledInput}
           setCurrEventInfo={setCurrEventInfo}
         />
       </div>
-    </Fragment>
+    </>
   );
 };
 

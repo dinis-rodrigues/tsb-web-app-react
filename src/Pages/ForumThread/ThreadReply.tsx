@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
-import parse from "html-react-parser";
 import cx from "classnames";
+import parse from "html-react-parser";
+import { Link } from "react-router-dom";
+import { UncontrolledTooltip } from "reactstrap";
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
-import { ThreadReplyInfo, userContext, UserMetadata } from "../../interfaces";
+import { ThreadReplyInfo, UserMetadata, userContext } from "../../interfaces";
 import {
   extendDate,
   getHoursInStringFromTimestamp,
@@ -16,7 +17,6 @@ import {
   toggleCommentLikedBy,
   usersWhoLikedOrWatchedTooltipList,
 } from "./forumThreadUtils";
-import { UncontrolledTooltip } from "reactstrap";
 
 type Props = {
   threadReply: ThreadReplyInfo;
@@ -47,10 +47,7 @@ const ThreadReply = ({
     <div className="card mb-3">
       <div className="card-body pb-0">
         <div className="media">
-          <AvatarOverlap
-            users={[threadReply.replyBy]}
-            usersMetadata={usersMetadata}
-          />
+          <AvatarOverlap users={[threadReply.replyBy]} usersMetadata={usersMetadata} />
           <div className="media-body ml-4">
             <div className="float-right text-muted small">
               {extendDate(threadReply.replyTimestamp)} &nbsp;·&nbsp;
@@ -63,39 +60,25 @@ const ThreadReply = ({
             {" · "}
             {usersMetadata && usersMetadata[threadReply.replyBy].pinfo.position}
             <div className="text-muted small">
-              {usersMetadata[threadReply.replyBy].pinfo.department}{" "}
-              &nbsp;·&nbsp; Joined in{" "}
+              {usersMetadata[threadReply.replyBy].pinfo.department} &nbsp;·&nbsp; Joined in{" "}
               {usersMetadata[threadReply.replyBy].pinfo.joinedIn}
               <div className="float-right">
                 <span>
                   {threadReply.latestUpdateTimestamp &&
-                    threadReply.latestUpdateTimestamp !==
-                      threadReply.replyTimestamp &&
-                    "Edited: " +
-                      extendDate(threadReply.latestUpdateTimestamp) +
-                      " · " +
-                      getHoursInStringFromTimestamp(
-                        threadReply.latestUpdateTimestamp
-                      ) +
-                      ":" +
-                      getMinutesInStringFromTimestamp(
-                        threadReply.latestUpdateTimestamp
-                      )}
+                    threadReply.latestUpdateTimestamp !== threadReply.replyTimestamp &&
+                    `Edited: ${extendDate(threadReply.latestUpdateTimestamp)} · ${getHoursInStringFromTimestamp(
+                      threadReply.latestUpdateTimestamp,
+                    )}:${getMinutesInStringFromTimestamp(threadReply.latestUpdateTimestamp)}`}
                 </span>
               </div>
             </div>
-            <div className="mt-2 ql-editor wh-sp-inh">
-              {parse(threadReply.replyHtml)}
-            </div>
+            <div className="mt-2 ql-editor wh-sp-inh">{parse(threadReply.replyHtml)}</div>
             <div className="card-footer small d-flex flex-wrap justify-content-between align-items-center">
               <span className="text-muted d-inline-flex align-items-center align-middle">
                 <span className={"heart-parent mr-1"}>
                   <i
                     className={cx("fas fa-heart heart-thread fsize-1", {
-                      "heart-liked":
-                        threadReply.likedBy &&
-                        user &&
-                        threadReply.likedBy[user.id],
+                      "heart-liked": threadReply.likedBy && user && threadReply.likedBy[user.id],
                     })}
                     onClick={() =>
                       toggleCommentLikedBy(
@@ -104,18 +87,13 @@ const ThreadReply = ({
                         threadReply,
                         encodedSectionName,
                         encodedTopicName,
-                        encodedThreadName
+                        encodedThreadName,
                       )
                     }
                   ></i>
                 </span>
-                <span
-                  className="align-middle mr-1 cursor-pointer"
-                  id="numReplyLikes"
-                >
-                  {threadReply.likedBy
-                    ? Object.entries(threadReply.likedBy).length
-                    : "0"}
+                <span className="align-middle mr-1 cursor-pointer" id="numReplyLikes">
+                  {threadReply.likedBy ? Object.entries(threadReply.likedBy).length : "0"}
                 </span>
                 <UncontrolledTooltip target="numReplyLikes" placement="top">
                   {usersWhoLikedOrWatchedTooltipList(threadReply.likedBy)}
@@ -134,7 +112,7 @@ const ThreadReply = ({
                         threadReply,
                         replyId,
                         setIsEditCommentModalOpen,
-                        setEditComment
+                        setEditComment,
                       )
                     }
                   >
@@ -152,7 +130,7 @@ const ThreadReply = ({
                       user,
                       encodedSectionName,
                       encodedTopicName,
-                      encodedThreadName
+                      encodedThreadName,
                     )
                   }
                 >

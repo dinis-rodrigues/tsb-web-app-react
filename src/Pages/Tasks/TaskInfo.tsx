@@ -1,29 +1,23 @@
-import { Drawer, DatePicker, Button } from "react-rainbow-components";
 import { useState } from "react";
 import ReactQuill from "react-quill"; // Typescript
 import "react-quill/dist/quill.bubble.css";
+import { Button, DatePicker, Drawer } from "react-rainbow-components";
 
 import Select, { components } from "react-select";
-import {
-  taskPriorityOptions,
-  submitComment,
-  priorityHandler,
-  dateHandler,
-  assignToHandler,
-  titleHandler,
-  descriptionHandler,
-  saveTask,
-  deleteTask,
-  saveTaskAsEvent,
-} from "./tasksUtils";
+import { UserMetadata, columnsShape, selectOption, taskShape, userContext } from "../../interfaces";
 import { inputToDate } from "../../utils/generalFunctions";
 import {
-  selectOption,
-  UserMetadata,
-  taskShape,
-  userContext,
-  columnsShape,
-} from "../../interfaces";
+  assignToHandler,
+  dateHandler,
+  deleteTask,
+  descriptionHandler,
+  priorityHandler,
+  saveTask,
+  saveTaskAsEvent,
+  submitComment,
+  taskPriorityOptions,
+  titleHandler,
+} from "./tasksUtils";
 
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
 import AppModalComment from "../../components/AppModalComment/AppModalComment";
@@ -103,9 +97,7 @@ const TaskInfo = ({
   // }, []);
   return modalTask ? (
     <Drawer
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       id="drawer"
       size={"medium"}
       isOpen={isDrawerOpen}
@@ -125,7 +117,7 @@ const TaskInfo = ({
                 currBoard,
                 currTaskNum,
                 currTaskColumn,
-                drawerOpenHandler
+                drawerOpenHandler,
               )
             }
           />
@@ -142,7 +134,7 @@ const TaskInfo = ({
                 departmentBoard,
                 currBoard,
                 drawerOpenHandler,
-                user
+                user,
               )
             }
           />
@@ -159,14 +151,14 @@ const TaskInfo = ({
                 departmentBoard,
                 currBoard,
                 drawerOpenHandler,
-                user
+                user,
               );
               saveTaskAsEvent(
                 user,
                 modalTask,
                 structuredClone(defaultEventInfo),
                 saveEvent,
-                drawerOpenHandler
+                drawerOpenHandler,
               );
             }}
           />
@@ -194,9 +186,7 @@ const TaskInfo = ({
           value={modalTask.description || ""}
           modules={quillModules}
           bounds={"#bound"}
-          onChange={(value) =>
-            descriptionHandler(value, modalTask, setModalTask)
-          }
+          onChange={(value) => descriptionHandler(value, modalTask, setModalTask)}
         />
         <div className="col">
           {/* User assignment */}
@@ -255,9 +245,7 @@ const TaskInfo = ({
                 priorityHandler(selected, modalTask, setModalTask);
               }}
               value={
-                modalTask.priority
-                  ? { value: modalTask.priority, label: modalTask.priority }
-                  : {}
+                modalTask.priority ? { value: modalTask.priority, label: modalTask.priority } : {}
               }
               options={taskPriorityOptions}
             />
@@ -277,7 +265,7 @@ const TaskInfo = ({
         {taskInfo && taskInfo.comments && user ? (
           Object.keys(taskInfo.comments).map((key, idx) => {
             if (!taskInfo.comments) return "";
-            let currComment = taskInfo.comments[key];
+            const currComment = taskInfo.comments[key];
             return (
               <AppModalComment
                 key={key}
@@ -314,12 +302,13 @@ const TaskInfo = ({
                   departmentBoard,
                   currBoard,
                   user,
-                  setCommentText
+                  setCommentText,
                 );
               }
             }}
           />
           <button
+            type="button"
             className="send-icon"
             onClick={() =>
               submitComment(
@@ -332,7 +321,7 @@ const TaskInfo = ({
                 departmentBoard,
                 currBoard,
                 user,
-                setCommentText
+                setCommentText,
               )
             }
           >

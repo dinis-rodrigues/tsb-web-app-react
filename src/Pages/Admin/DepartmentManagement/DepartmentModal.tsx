@@ -1,25 +1,21 @@
-import { Button, Modal } from "react-rainbow-components";
-import {
-  Department,
-  DepartmentModalText,
-  Departments,
-} from "../../../interfaces";
-import DepartmentColorPicker from "./DepartmentColorPicker";
-import Select from "react-select";
-import {
-  gradientColorOptions,
-  closeDepartmentModal,
-  saveDepartment,
-  departmentInputHandler,
-  handleDepartmentSelect,
-  removePosition,
-  editPosition,
-  addPosition,
-} from "./departmentManagementUtils";
 import cx from "classnames";
 import { useState } from "react";
+import { Button, Modal } from "react-rainbow-components";
+import Select from "react-select";
 import { UncontrolledTooltip } from "reactstrap";
 import { useAuth } from "../../../contexts/AuthContext";
+import { Department, DepartmentModalText, Departments } from "../../../interfaces";
+import DepartmentColorPicker from "./DepartmentColorPicker";
+import {
+  addPosition,
+  closeDepartmentModal,
+  departmentInputHandler,
+  editPosition,
+  gradientColorOptions,
+  handleDepartmentSelect,
+  removePosition,
+  saveDepartment,
+} from "./departmentManagementUtils";
 
 type Props = {
   issDepartmentModalOpen: boolean;
@@ -42,9 +38,7 @@ const DepartmentModal = ({
   const { isDarkMode } = useAuth();
   return departmentInfo ? (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       isOpen={issDepartmentModalOpen}
       size="medium"
       title={modalText.title}
@@ -56,9 +50,7 @@ const DepartmentModal = ({
           <div className="mr-1">
             <Button
               label="Cancel"
-              onClick={() =>
-                closeDepartmentModal(setIsDepartmentModalOpen, setNewPosition)
-              }
+              onClick={() => closeDepartmentModal(setIsDepartmentModalOpen, setNewPosition)}
             />
           </div>
           <div className="mr-1">
@@ -71,7 +63,7 @@ const DepartmentModal = ({
                   departments,
                   modalText,
                   setIsDepartmentModalOpen,
-                  setNewPosition
+                  setNewPosition,
                 )
               }
             />
@@ -91,9 +83,7 @@ const DepartmentModal = ({
           </span>
           <input
             value={departmentInfo.description ? departmentInfo.description : ""}
-            onChange={(e) =>
-              departmentInputHandler(e, "description", setDepartmentInfo)
-            }
+            onChange={(e) => departmentInputHandler(e, "description", setDepartmentInfo)}
             type="text"
             className="form-control m-0 text-center"
             maxLength={30}
@@ -103,11 +93,7 @@ const DepartmentModal = ({
           <div className="col-md-3">
             <span className="text-dark small text-uppercase">
               <strong>
-                Acronym{" "}
-                <i
-                  id="depAcro"
-                  className={cx("fa fa-question-circle text-muted")}
-                ></i>
+                Acronym <i id="depAcro" className={cx("fa fa-question-circle text-muted")}></i>
                 <UncontrolledTooltip placement="top" target={"depAcro"}>
                   You will not be able to change this later
                 </UncontrolledTooltip>
@@ -116,9 +102,7 @@ const DepartmentModal = ({
 
             <input
               value={departmentInfo.acronym ? departmentInfo.acronym : ""}
-              onChange={(e) =>
-                departmentInputHandler(e, "acronym", setDepartmentInfo)
-              }
+              onChange={(e) => departmentInputHandler(e, "acronym", setDepartmentInfo)}
               maxLength={2}
               type="text"
               className="form-control m-0 text-center"
@@ -146,9 +130,7 @@ const DepartmentModal = ({
           </span>
           <input
             value={departmentInfo.icon ? departmentInfo.icon : ""}
-            onChange={(e) =>
-              departmentInputHandler(e, "icon", setDepartmentInfo)
-            }
+            onChange={(e) => departmentInputHandler(e, "icon", setDepartmentInfo)}
             type="text"
             className="form-control m-0 text-center"
             placeholder=""
@@ -163,7 +145,7 @@ const DepartmentModal = ({
               className={cx(
                 "header-icon icon-gradient fa",
                 departmentInfo.icon,
-                departmentInfo.gradientColor
+                departmentInfo.gradientColor,
               )}
             ></i>
           </span>
@@ -171,19 +153,13 @@ const DepartmentModal = ({
         <div className="col-md-3">
           <span className="text-dark small text-uppercase">
             <strong>
-              Color{" "}
-              <i
-                id="depColor"
-                className={cx("fa fa-question-circle text-muted")}
-              ></i>
+              Color <i id="depColor" className={cx("fa fa-question-circle text-muted")}></i>
               <UncontrolledTooltip placement="top" target={"depColor"}>
                 Primarily for the calendar events
               </UncontrolledTooltip>
             </strong>
           </span>
-          <span className="form-control text-center">
-            {departmentInfo.color}
-          </span>
+          <span className="form-control text-center">{departmentInfo.color}</span>
         </div>
         <div className="col-md-3">
           <span className="text-dark small text-uppercase ">
@@ -222,12 +198,7 @@ const DepartmentModal = ({
           <span className="text-dark small text-uppercase">
             <strong>Selected gradient</strong>
           </span>
-          <span
-            className={cx(
-              "form-control text-center",
-              departmentInfo.gradientColor
-            )}
-          ></span>
+          <span className={cx("form-control text-center", departmentInfo.gradientColor)}></span>
         </div>
       </div>
       <div className="form-group row text-center">
@@ -246,12 +217,7 @@ const DepartmentModal = ({
                     }
                   }}
                   onBlur={() => {
-                    editPosition(
-                      position,
-                      idx,
-                      departmentInfo,
-                      setDepartmentInfo
-                    );
+                    editPosition(position, idx, departmentInfo, setDepartmentInfo);
                   }}
                   className="col-md-10 align-self-center"
                 >
@@ -259,9 +225,7 @@ const DepartmentModal = ({
                 </div>
                 <span
                   className={"float-right cursor-pointer offset-0 text-danger"}
-                  onClick={() =>
-                    removePosition(departmentInfo, position, setDepartmentInfo)
-                  }
+                  onClick={() => removePosition(departmentInfo, position, setDepartmentInfo)}
                 >
                   <i className="fa fa-times"></i>
                 </span>
@@ -281,14 +245,10 @@ const DepartmentModal = ({
           />
           <div className="col" style={{ padding: 0 }}>
             <button
+              type="button"
               className="btn-icon btn-icon-only btn btn-outline-success w-100"
               onClick={() =>
-                addPosition(
-                  newPosition,
-                  departmentInfo,
-                  setNewPosition,
-                  setDepartmentInfo
-                )
+                addPosition(newPosition, departmentInfo, setNewPosition, setDepartmentInfo)
               }
             >
               <i className="fas fa-plus btn-icon-wrapper"> </i>

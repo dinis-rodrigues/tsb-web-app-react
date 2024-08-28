@@ -1,50 +1,36 @@
 import { ColumnApi, GridApi, RowClickedEvent } from "ag-grid-community";
+// Table
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
+import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import "ag-grid-enterprise";
+import { AgGridReact } from "ag-grid-react";
+import cx from "classnames";
 import { useEffect, useState } from "react";
+import { Input } from "react-rainbow-components";
+import Select from "react-select";
+import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
 import { useAuth } from "../../../contexts/AuthContext";
-import {
-  PersonalInformation,
-  selectOption,
-  tableColumns,
-  UserMetadata,
-} from "../../../interfaces";
+import { PersonalInformation, UserMetadata, selectOption, tableColumns } from "../../../interfaces";
 import { setColumnText } from "../../../utils/generalFunctions";
-import {
-  handleSelectOption,
-  onFirstDataRendered,
-  filterTable,
-} from "../../Team/TeamUtils";
+import { filterTable, handleSelectOption, onFirstDataRendered } from "../../Team/TeamUtils";
+import ApplicationSettings from "./ApplicationSettings";
+import UserManagementModal from "./UserManagementModal";
 import {
   clipboardAllExport,
+  defaultOptions,
   excelAllExport,
   getAllUserDataForTable,
   onRowUserClick,
   pdfAllExport,
-  defaultOptions,
 } from "./userManagementUtils";
-import Select from "react-select";
-// Table
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-enterprise";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
-import {
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledButtonDropdown,
-} from "reactstrap";
-import UserManagementModal from "./UserManagementModal";
-import ApplicationSettings from "./ApplicationSettings";
-import cx from "classnames";
-import { Input } from "react-rainbow-components";
 
 const UserManagement = () => {
   const { USER, isDarkMode } = useAuth();
   const [gridApi, setGridApi] = useState<GridApi>(); // Table API
   const [columnApi, setColumnApi] = useState<ColumnApi>(); // Column API
   const [infoOptions, setInfoOptions] = useState<selectOption[]>([]); // ALl select input options
-  const [selectedOptions, setSelectedOptions] =
-    useState<selectOption[]>(defaultOptions); // selected options
+  const [selectedOptions, setSelectedOptions] = useState<selectOption[]>(defaultOptions); // selected options
   const [usersMetadata, setUsersMetadata] = useState<UserMetadata>({});
 
   const [tableRowsData, setTableRowsData] = useState<PersonalInformation[]>([]); // row data
@@ -61,14 +47,7 @@ const UserManagement = () => {
     enableCellTextSelection: false,
     enableRangeSelection: true,
     onRowClicked: (e: RowClickedEvent) =>
-      onRowUserClick(
-        e,
-        USER,
-        setUserInfo,
-        setSelectPositions,
-        setModalOpen,
-        setModalTitle
-      ),
+      onRowUserClick(e, USER, setUserInfo, setSelectPositions, setModalOpen, setModalTitle),
   };
 
   useEffect(() => {
@@ -79,7 +58,7 @@ const UserManagement = () => {
       setInfoOptions,
       setColumnText,
       setUsersMetadata,
-      false
+      false,
     );
   }, [USER]);
   return (
@@ -94,8 +73,7 @@ const UserManagement = () => {
               <UncontrolledButtonDropdown>
                 <DropdownToggle color="btn" className="p-0 mr-2">
                   <span className="btn-wide btn-dark mr-md-2 btn btn-sm dropdown-toggle">
-                    <i className="fa fa-download text-white btn-icon-wrapper"></i>{" "}
-                    Download
+                    <i className="fa fa-download text-white btn-icon-wrapper"></i> Download
                   </span>
                 </DropdownToggle>
                 <DropdownMenu right className="rm-pointers dropdown-menu">
@@ -139,7 +117,7 @@ const UserManagement = () => {
                       usersMetadata,
                       setSelectedOptions,
                       setTableColumns,
-                      setTableRowsData
+                      setTableRowsData,
                     );
                   }}
                 />
@@ -153,7 +131,7 @@ const UserManagement = () => {
                   }}
                 />
               </div>
-              {/* <button onClick={excelExport}>export</button> */}
+              {/* <button type="button" onClick={excelExport}>export</button> */}
             </div>
             <div
               className={cx({
@@ -169,9 +147,7 @@ const UserManagement = () => {
                 onFirstDataRendered={(params) =>
                   onFirstDataRendered(params, setGridApi, setColumnApi)
                 }
-                onGridReady={(params) =>
-                  onFirstDataRendered(params, setGridApi, setColumnApi)
-                }
+                onGridReady={(params) => onFirstDataRendered(params, setGridApi, setColumnApi)}
               ></AgGridReact>
             </div>
           </div>

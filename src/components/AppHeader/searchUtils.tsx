@@ -1,9 +1,7 @@
 import { PersonalInformation, UserMetadata } from "../../interfaces";
 import { normalizedString } from "../../utils/generalFunctions";
 
-const sortSearchedUsers = (
-  searchResults: [string, { pinfo: PersonalInformation }][]
-) => {
+const sortSearchedUsers = (searchResults: [string, { pinfo: PersonalInformation }][]) => {
   return searchResults.sort((a, b) => {
     if (a[1].pinfo.name && b[1].pinfo.name) {
       // Concatenate strings for sorting
@@ -29,26 +27,26 @@ const getUsersSearchList = (
   usersMetadata: UserMetadata,
   searchText: string,
   setSearchText: Function,
-  setSearchedUsers: Function
+  setSearchedUsers: Function,
 ) => {
   setSearchText(searchText);
   // build array of objects
-  let searchResults = Object.entries(usersMetadata).filter(([userId, user]) => {
+  const searchResults = Object.entries(usersMetadata).filter(([userId, user]) => {
     return (
       normalizedString(user.pinfo.name!.toLowerCase()).includes(
-        normalizedString(searchText.toLowerCase())
+        normalizedString(searchText.toLowerCase()),
       ) ||
       normalizedString(user.pinfo.department!.toLowerCase()).includes(
-        normalizedString(searchText.toLowerCase())
+        normalizedString(searchText.toLowerCase()),
       ) ||
       normalizedString(user.pinfo.position!.toLowerCase()).includes(
-        normalizedString(searchText.toLowerCase())
+        normalizedString(searchText.toLowerCase()),
       )
     );
   });
 
   // sort search results by name
-  let sortedSearchedUsers = sortSearchedUsers(searchResults);
+  const sortedSearchedUsers = sortSearchedUsers(searchResults);
   setSearchedUsers(sortedSearchedUsers);
 };
 

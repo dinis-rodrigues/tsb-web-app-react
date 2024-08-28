@@ -1,12 +1,8 @@
-import { buildSponsorGraph, sponsorChartOptions } from "./sponsorsUtils";
-import Chart from "react-apexcharts";
 import React, { useEffect, useState } from "react";
-import {
-  SponsorChartData,
-  SponsorHistory,
-  SponsorRetroactives,
-} from "../../interfaces";
+import Chart from "react-apexcharts";
 import { useAuth } from "../../contexts/AuthContext";
+import { SponsorChartData, SponsorHistory, SponsorRetroactives } from "../../interfaces";
+import { buildSponsorGraph, sponsorChartOptions } from "./sponsorsUtils";
 
 type Props = {
   values: SponsorHistory | undefined;
@@ -22,11 +18,11 @@ const SponsorChart = React.memo(
 
     useEffect(() => {
       buildSponsorGraph(
-        !!values ? values : {},
+        values ? values : {},
         retroActives,
         addRetroActives,
         setChartSeries,
-        setChartLabels
+        setChartLabels,
       );
     }, [values, retroActives, refreshChart, addRetroActives]);
     return (
@@ -44,7 +40,7 @@ const SponsorChart = React.memo(
         />
       </div>
     );
-  }
+  },
 );
 
 export default SponsorChart;

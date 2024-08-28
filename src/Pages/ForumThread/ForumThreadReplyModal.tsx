@@ -40,9 +40,7 @@ const ForumThreadReplyModal = ({
   };
   return (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       title="Add Comment"
       size={"medium"}
       isOpen={isForumThreadReplyModalOpen}
@@ -50,10 +48,7 @@ const ForumThreadReplyModal = ({
       footer={
         <div className="row justify-content-sm-center">
           <div className="mr-1">
-            <Button
-              label="Cancel"
-              onClick={() => setIsForumThreadReplyModalOpen(false)}
-            />
+            <Button label="Cancel" onClick={() => setIsForumThreadReplyModalOpen(false)} />
           </div>
           <div className="mr-1">
             <Button
@@ -68,7 +63,7 @@ const ForumThreadReplyModal = ({
                   encodedThreadName,
                   threadInfo,
                   setIsForumThreadReplyModalOpen,
-                  setReplyText
+                  setReplyText,
                 )
               }
             />

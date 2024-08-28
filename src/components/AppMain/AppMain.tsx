@@ -1,14 +1,10 @@
-import { Route, Redirect, Switch } from "react-router-dom";
-import PrivateRoute from "../PrivateRoute/PrivateRoute";
-import { Suspense, lazy, Fragment } from "react";
+import { Suspense, lazy } from "react";
+import { Redirect, Route, Switch } from "react-router-dom";
 import AppLoading from "../AppLoading/AppLoading";
+import PrivateRoute from "../PrivateRoute/PrivateRoute";
 
-const Attendance = lazy(
-  () => import("../../Pages/Attendance/Meetings/Attendance")
-);
-const OverallAttendance = lazy(
-  () => import("../../Pages/Attendance/Overall/OverallAttendance")
-);
+const Attendance = lazy(() => import("../../Pages/Attendance/Meetings/Attendance"));
+const OverallAttendance = lazy(() => import("../../Pages/Attendance/Overall/OverallAttendance"));
 const Budget = lazy(() => import("../../Pages/Budget/Budget"));
 const CashFlow = lazy(() => import("../../Pages/CashFlow/CashFlow"));
 const Dashboard = lazy(() => import("../../Pages/Dashboard/Dashboard"));
@@ -19,9 +15,7 @@ const Login = lazy(() => import("../../Pages/Login/Login"));
 // const ResetPassword = lazy(
 //   () => import("../../Pages/ResetPassword/ResetPassword")
 // );
-const ResetPasswordEmail = lazy(
-  () => import("../../Pages/ResetPassword/ResetPasswordEmail")
-);
+const ResetPasswordEmail = lazy(() => import("../../Pages/ResetPassword/ResetPasswordEmail"));
 const Team = lazy(() => import("../../Pages/Team/Team"));
 const Recruitment = lazy(() => import("../../Pages/Recruitment/Recruitment"));
 const Profile = lazy(() => import("../../Pages/Profile/Profile"));
@@ -29,18 +23,14 @@ const VisitorProfile = lazy(() => import("../../Pages/Profile/VisitorProfile"));
 const Events = lazy(() => import("../../Pages/Events/Events"));
 const Tasks = lazy(() => import("../../Pages/Tasks/Tasks"));
 const Maintenance = lazy(() => import("../../Pages/Maintenance/Maintenance"));
-const UserManagement = lazy(
-  () => import("../../Pages/Admin/UserManagement/UserManagement")
-);
+const UserManagement = lazy(() => import("../../Pages/Admin/UserManagement/UserManagement"));
 const DepartmentManagement = lazy(
-  () => import("../../Pages/Admin/DepartmentManagement/DepartmentManagement")
+  () => import("../../Pages/Admin/DepartmentManagement/DepartmentManagement"),
 );
 const FeatureManagement = lazy(
-  () => import("../../Pages/Admin/FeatureManagement/FeatureManagement")
+  () => import("../../Pages/Admin/FeatureManagement/FeatureManagement"),
 );
-const NotificationsPage = lazy(
-  () => import("../../Pages/Notifications/NotificationsPage")
-);
+const NotificationsPage = lazy(() => import("../../Pages/Notifications/NotificationsPage"));
 
 const Register = lazy(() => import("../../Pages/Register/Register"));
 
@@ -49,7 +39,7 @@ const Gallery = lazy(() => import("../../Pages/Gallery/Gallery"));
 
 function App() {
   return (
-    <Fragment>
+    <>
       {/* Components */}
       <Suspense
         fallback={
@@ -63,18 +53,10 @@ function App() {
         <Switch>
           <Route exact path="/login" component={Login} />
           {/* <Route path="/resetPassword" component={ResetPassword} /> */}
-          <Route
-            exact
-            path="/resetPasswordEmail"
-            component={ResetPasswordEmail}
-          />
+          <Route exact path="/resetPasswordEmail" component={ResetPasswordEmail} />
           <Route exact path="/register" component={Register} />
           <Route path="/maintenance" component={Maintenance} />
-          <PrivateRoute
-            path="/dashboard"
-            featureName="dashboard"
-            component={Dashboard}
-          />
+          <PrivateRoute path="/dashboard" featureName="dashboard" component={Dashboard} />
           <PrivateRoute path="/team" featureName="members" component={Team} />
           <PrivateRoute
             exact
@@ -84,11 +66,7 @@ function App() {
           />
           <PrivateRoute path="/profile/u/:userId" component={VisitorProfile} />
           <PrivateRoute path="/profile" exact component={Profile} />
-          <PrivateRoute
-            path="/events"
-            featureName="events"
-            component={Events}
-          />
+          <PrivateRoute path="/events" featureName="events" component={Events} />
           <PrivateRoute
             path="/attendance/meetings"
             featureName="attendance"
@@ -104,17 +82,9 @@ function App() {
             featureName="tasks"
             component={Tasks}
           />
-          <PrivateRoute
-            path="/cashflow"
-            featureName="cashflow"
-            component={CashFlow}
-          />
+          <PrivateRoute path="/cashflow" featureName="cashflow" component={CashFlow} />
 
-          <PrivateRoute
-            path="/budget"
-            featureName="budget"
-            component={Budget}
-          />
+          <PrivateRoute path="/budget" featureName="budget" component={Budget} />
           <PrivateRoute
             path="/forum/s/:encodedSectionName/topic/:encodedTopicName/thread/:encodedThreadName"
             featureName="forum"
@@ -125,23 +95,10 @@ function App() {
             featureName="forum"
             component={ForumTopic}
           />
-          <PrivateRoute
-            exact
-            path="/forum"
-            featureName="forum"
-            component={Forum}
-          />
+          <PrivateRoute exact path="/forum" featureName="forum" component={Forum} />
           <PrivateRoute path="/notifications" component={NotificationsPage} />
-          <PrivateRoute
-            path="/sponsors"
-            featureName="sponsors"
-            component={Sponsors}
-          />
-          <PrivateRoute
-            path="/gallery"
-            featureName="gallery"
-            component={Gallery}
-          />
+          <PrivateRoute path="/sponsors" featureName="sponsors" component={Sponsors} />
+          <PrivateRoute path="/gallery" featureName="gallery" component={Gallery} />
           <PrivateRoute
             exact
             path="/userManagement"
@@ -164,7 +121,7 @@ function App() {
         </Switch>
       </Suspense>
       <Route exact path="/" render={() => <Redirect to="/dashboard" />} />
-    </Fragment>
+    </>
   );
 }
 

@@ -1,12 +1,8 @@
 import cx from "classnames";
 import { Link } from "react-router-dom";
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
-import { ThreadMetadata, userContext, UserMetadata } from "../../interfaces";
-import {
-  dateDifference,
-  getDecodedString,
-  getUserProfileLink,
-} from "../../utils/generalFunctions";
+import { ThreadMetadata, UserMetadata, userContext } from "../../interfaces";
+import { dateDifference, getDecodedString, getUserProfileLink } from "../../utils/generalFunctions";
 import { getThreadBadgeColor, hasUserSeenThread } from "./forumTopicUtils";
 
 type Props = {
@@ -26,14 +22,11 @@ const ForumThreadRow = ({
   user,
   usersMetadata,
 }: Props) => {
-  let userHasSeenThread = hasUserSeenThread(
-    threadInformation.recentUpdateViewedBy,
-    user
-  );
-  let threadUrl = `/forum/s/${encodedSectionName}/topic/${encodedTopicName}/thread/${encodedThreadName}`;
-  let createdDiff = dateDifference(threadInformation.createdAt);
-  let updateDiff = dateDifference(threadInformation.latestUpdateTimestamp);
-  let threadBadge = getThreadBadgeColor(threadInformation.threadLabel);
+  const userHasSeenThread = hasUserSeenThread(threadInformation.recentUpdateViewedBy, user);
+  const threadUrl = `/forum/s/${encodedSectionName}/topic/${encodedTopicName}/thread/${encodedThreadName}`;
+  const createdDiff = dateDifference(threadInformation.createdAt);
+  const updateDiff = dateDifference(threadInformation.latestUpdateTimestamp);
+  const threadBadge = getThreadBadgeColor(threadInformation.threadLabel);
 
   return (
     // Whether the user has seen the thread or not
@@ -51,21 +44,13 @@ const ForumThreadRow = ({
           </Link>
           {/* Thread badge label if any */}
           {threadBadge && (
-            <div
-              className={cx(
-                "mb-2 mr-2 ml-2 align-items-center badge",
-                threadBadge
-              )}
-            >
+            <div className={cx("mb-2 mr-2 ml-2 align-items-center badge", threadBadge)}>
               {threadInformation.threadLabel}
             </div>
           )}
           <div className="text-muted small mt-1">
             Started {createdDiff} &nbsp;·&nbsp;
-            <Link
-              to={getUserProfileLink(threadInformation.createdBy)}
-              className="text-muted"
-            >
+            <Link to={getUserProfileLink(threadInformation.createdBy)} className="text-muted">
               {" "}
               {threadInformation.createdByName}
             </Link>
@@ -87,8 +72,7 @@ const ForumThreadRow = ({
                   to={getUserProfileLink(threadInformation.latestUserUpdate)}
                   className="text-muted small text-truncate"
                 >
-                  by{" "}
-                  {usersMetadata[threadInformation.latestUserUpdate].pinfo.name}
+                  by {usersMetadata[threadInformation.latestUserUpdate].pinfo.name}
                 </Link>
               </div>
             </div>

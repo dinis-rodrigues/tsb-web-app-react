@@ -1,5 +1,5 @@
-import { Fragment, useEffect } from "react";
 import NProgress from "nprogress";
+import { Fragment, useEffect } from "react";
 import "nprogress/nprogress.css";
 
 const AppLoading = () => {

@@ -1,12 +1,13 @@
-import { Fragment, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import cx from "classnames";
+import { off, ref } from "firebase/database";
 import parse from "html-react-parser";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { UncontrolledTooltip } from "reactstrap";
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../contexts/AuthContext";
-import { getPinnedThreadInfo } from "./dashboardUtils";
+import { Thread } from "../../interfaces";
 import {
   extendDate,
   getHoursInStringFromTimestamp,
@@ -17,8 +18,7 @@ import {
   toggleThreadLikedBy,
   usersWhoLikedOrWatchedTooltipList,
 } from "../ForumThread/forumThreadUtils";
-import { Thread } from "../../interfaces";
-import { off, ref } from "firebase/database";
+import { getPinnedThreadInfo } from "./dashboardUtils";
 
 const DashForumThread = () => {
   const { usersMetadata, USER } = useAuth();
@@ -36,25 +36,19 @@ const DashForumThread = () => {
     };
   }, [USER]);
   return threadInformation ? (
-    <Fragment>
+    <>
       <div className="row">
         <div className="col-md mb-3">
-          <div
-            className="mr-3 btn bg-plum-plate w-100 cursor-auto"
-            style={{ border: "none" }}
-          >
+          <div className="mr-3 btn bg-plum-plate w-100 cursor-auto" style={{ border: "none" }}>
             <h5 className="my-2 font-size-xlg text-white">
               <div className="float-left">
                 <span className={"heart-parent"}>
                   <i
                     className={cx("fas fa-heart heart-thread fsize-2", {
                       "heart-liked":
-                        threadInformation.likedBy &&
-                        USER &&
-                        threadInformation.likedBy[USER.id],
+                        threadInformation.likedBy && USER && threadInformation.likedBy[USER.id],
                       "opacity-8":
-                        !threadInformation.likedBy ||
-                        (USER && !threadInformation.likedBy[USER.id]),
+                        !threadInformation.likedBy || (USER && !threadInformation.likedBy[USER.id]),
                     })}
                     onClick={() =>
                       toggleThreadLikedBy(
@@ -62,7 +56,7 @@ const DashForumThread = () => {
                         threadInformation,
                         forumPaths.encodedSectionName,
                         forumPaths.encodedTopicName,
-                        forumPaths.encodedThreadName
+                        forumPaths.encodedThreadName,
                       )
                     }
                   ></i>
@@ -99,9 +93,7 @@ const DashForumThread = () => {
                   </span>
                 </span>
                 <UncontrolledTooltip target="numWatches" placement="top">
-                  {usersWhoLikedOrWatchedTooltipList(
-                    threadInformation.viewedBy
-                  )}
+                  {usersWhoLikedOrWatchedTooltipList(threadInformation.viewedBy)}
                 </UncontrolledTooltip>
               </div>
             </h5>
@@ -126,43 +118,24 @@ const DashForumThread = () => {
                   <div className="text-muted small no-text-transform">
                     {/* Created at information */}
                     {extendDate(threadInformation.createdAt)} &nbsp;·&nbsp;
-                    {getHoursInStringFromTimestamp(threadInformation.createdAt)}
-                    :
-                    {getMinutesInStringFromTimestamp(
-                      threadInformation.createdAt
-                    )}
+                    {getHoursInStringFromTimestamp(threadInformation.createdAt)}:
+                    {getMinutesInStringFromTimestamp(threadInformation.createdAt)}
                     {/* Edited information, if edited */}
-                    {threadInformation.latestUpdateTimestamp !==
-                      threadInformation.createdAt &&
-                      " / Edited: " +
-                        extendDate(threadInformation.latestUpdateTimestamp) +
-                        " · " +
-                        getHoursInStringFromTimestamp(
-                          threadInformation.latestUpdateTimestamp
-                        ) +
-                        ":" +
-                        getMinutesInStringFromTimestamp(
-                          threadInformation.latestUpdateTimestamp
-                        )}
+                    {threadInformation.latestUpdateTimestamp !== threadInformation.createdAt &&
+                      ` / Edited: ${extendDate(threadInformation.latestUpdateTimestamp)} · ${getHoursInStringFromTimestamp(
+                        threadInformation.latestUpdateTimestamp,
+                      )}:${getMinutesInStringFromTimestamp(
+                        threadInformation.latestUpdateTimestamp,
+                      )}`}
                   </div>
                 </div>
                 <div className="text-muted small ml-3">
                   <div>
-                    <strong>
-                      {
-                        usersMetadata[threadInformation.createdBy].pinfo
-                          .department
-                      }
-                    </strong>
+                    <strong>{usersMetadata[threadInformation.createdBy].pinfo.department}</strong>
                   </div>
                   <div className="float-right">
                     Joined in{" "}
-                    <strong>
-                      {
-                        usersMetadata[threadInformation.createdBy].pinfo
-                          .joinedIn
-                      }
-                    </strong>
+                    <strong>{usersMetadata[threadInformation.createdBy].pinfo.joinedIn}</strong>
                   </div>
                 </div>
               </div>
@@ -174,7 +147,7 @@ const DashForumThread = () => {
           </div>
         </div>
       </div>
-    </Fragment>
+    </>
   ) : null;
 };
 

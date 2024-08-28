@@ -1,13 +1,12 @@
-import { connect } from "react-redux";
-import { Fragment } from "react";
-import { setEnableLoginPage } from "../../reducers/ThemeOptions";
 import cx from "classnames";
+import { useForm } from "react-hook-form";
+import { connect } from "react-redux";
+import { setEnableLoginPage } from "../../reducers/ThemeOptions";
 import ValidationError from "./ValidationError";
 import emailValidate from "./emailValidate";
-import { useForm } from "react-hook-form";
 
+import { Link, Redirect, withRouter } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { withRouter, Redirect, Link } from "react-router-dom";
 import { signUpUser } from "./registerUtils";
 type Props = {
   setEnableLoginPage: Function;
@@ -20,15 +19,10 @@ const Register = ({ setEnableLoginPage }: Props) => {
     formState: { errors },
     getValues,
   } = useForm({ mode: "onChange" });
-  const {
-    registerUser,
-    displayContent,
-    applicationSettings,
-    displayMaintenance,
-  } = useAuth();
+  const { registerUser, displayContent, applicationSettings, displayMaintenance } = useAuth();
 
   return (
-    <Fragment>
+    <>
       <div className="h-100 tsb-background">
         <div className="d-flex h-100 justify-content-center align-items-center">
           <div className="mx-auto app-login-box col-md-8">
@@ -42,21 +36,18 @@ const Register = ({ setEnableLoginPage }: Props) => {
                     <h4>
                       <div>Welcome!</div>
                       <span>
-                        It only takes a{" "}
-                        <span className="text-info">few seconds</span> to create
+                        It only takes a <span className="text-info">few seconds</span> to create
                         your account
                       </span>
                     </h4>
                     {displayMaintenance && (
-                      <div className="badge badge-danger ml-2">
-                        Under Maintenance
-                      </div>
+                      <div className="badge badge-danger ml-2">Under Maintenance</div>
                     )}
                   </div>
                   <form
                     className="mx-auto"
                     onSubmit={handleSubmit(() =>
-                      signUpUser(getValues, registerUser, applicationSettings)
+                      signUpUser(getValues, registerUser, applicationSettings),
                     )}
                   >
                     <div className="form-group text-white">
@@ -68,8 +59,7 @@ const Register = ({ setEnableLoginPage }: Props) => {
                           type="text"
                           className={cx("form-control-login glass-morph", {
                             "is-invalid": errors.fullName,
-                            "is-valid":
-                              !errors.fullName && getValues().fullName,
+                            "is-valid": !errors.fullName && getValues().fullName,
                           })}
                           placeholder="John The Greatest Doe"
                           {...register("fullName", {
@@ -82,9 +72,7 @@ const Register = ({ setEnableLoginPage }: Props) => {
                             required: "Please enter your full name",
                           })}
                         />
-                        {errors.fullName && (
-                          <ValidationError msg={errors.fullName.message} />
-                        )}
+                        {errors.fullName && <ValidationError msg={errors.fullName.message} />}
                       </div>
                     </div>
                     <div className="form-row">
@@ -104,15 +92,11 @@ const Register = ({ setEnableLoginPage }: Props) => {
                             {...register("email", {
                               required: "Please enter a valid email address.",
                               validate: (value) => {
-                                return (
-                                  emailValidate(value) || "Email is not valid"
-                                );
+                                return emailValidate(value) || "Email is not valid";
                               },
                             })}
                           />
-                          {errors.email && (
-                            <ValidationError msg={errors.email.message} />
-                          )}
+                          {errors.email && <ValidationError msg={errors.email.message} />}
                         </div>
                       </div>
                       <div className="col-md-6">
@@ -127,8 +111,7 @@ const Register = ({ setEnableLoginPage }: Props) => {
                             className={cx("form-control-login glass-morph", {
                               "is-invalid": errors.emailConfirmation,
                               "is-valid":
-                                !errors.emailConfirmation &&
-                                getValues().emailConfirmation,
+                                !errors.emailConfirmation && getValues().emailConfirmation,
                             })}
                             //   onPaste={(e) => {
                             //     e.preventDefault();
@@ -139,16 +122,13 @@ const Register = ({ setEnableLoginPage }: Props) => {
                               validate: (value) => {
                                 const values = getValues();
                                 return (
-                                  values.email === value ||
-                                  "Please enter the same email as before."
+                                  values.email === value || "Please enter the same email as before."
                                 );
                               },
                             })}
                           />
                           {errors.emailConfirmation && (
-                            <ValidationError
-                              msg={errors.emailConfirmation.message}
-                            />
+                            <ValidationError msg={errors.emailConfirmation.message} />
                           )}
                         </div>
                       </div>
@@ -164,23 +144,19 @@ const Register = ({ setEnableLoginPage }: Props) => {
                             type="password"
                             className={cx("form-control-login glass-morph", {
                               "is-invalid": errors.password,
-                              "is-valid":
-                                !errors.password && getValues().password,
+                              "is-valid": !errors.password && getValues().password,
                             })}
                             {...register("password", {
                               required: "Please enter a password.",
                               validate: (value) => {
                                 const values = getValues();
                                 return (
-                                  values.password.length >= 6 ||
-                                  "Must have at least 6 characters."
+                                  values.password.length >= 6 || "Must have at least 6 characters."
                                 );
                               },
                             })}
                           />
-                          {errors.password && (
-                            <ValidationError msg={errors.password.message} />
-                          )}
+                          {errors.password && <ValidationError msg={errors.password.message} />}
                           {/* {errors.password.type === "minLength" && (
                           <ValidationError msg={"Password must have at least 6 characters."} />
                         )} */}
@@ -197,8 +173,7 @@ const Register = ({ setEnableLoginPage }: Props) => {
                             className={cx("form-control-login glass-morph", {
                               "is-invalid": errors.passwordConfirmation,
                               "is-valid":
-                                !errors.passwordConfirmation &&
-                                getValues().passwordConfirmation,
+                                !errors.passwordConfirmation && getValues().passwordConfirmation,
                             })}
                             onPaste={(e) => {
                               e.preventDefault();
@@ -216,9 +191,7 @@ const Register = ({ setEnableLoginPage }: Props) => {
                             })}
                           />
                           {errors.passwordConfirmation && (
-                            <ValidationError
-                              msg={errors.passwordConfirmation.message}
-                            />
+                            <ValidationError msg={errors.passwordConfirmation.message} />
                           )}
                         </div>
                       </div>
@@ -252,7 +225,7 @@ const Register = ({ setEnableLoginPage }: Props) => {
       </div>
       {/* If the user is already logged in, send him to dashboard */}
       {displayContent && <Redirect to={"/dashboard"} />}
-    </Fragment>
+    </>
   );
 };
 
@@ -264,6 +237,4 @@ const mapDispatchToProps = (dispatch: Function) => ({
   setEnableLoginPage: (enable: boolean) => dispatch(setEnableLoginPage(enable)),
 });
 
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(Register)
-);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Register));

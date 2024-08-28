@@ -17,11 +17,7 @@ const NavItem = ({
 }: Props) => {
   return isVisible ? (
     <li className="metismenu-item">
-      <NavLink
-        className="metismenu-link"
-        to={to}
-        activeClassName={activeClassName}
-      >
+      <NavLink className="metismenu-link" to={to} activeClassName={activeClassName}>
         <i className={`metismenu-icon ${icon}`}></i>
         {pageName}
       </NavLink>

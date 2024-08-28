@@ -1,8 +1,8 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import { SponsorCard } from "./SponsorCard";
 import { Sponsor, SponsorRetroactives } from "../../interfaces";
+import { SponsorCard } from "./SponsorCard";
 
 type Props = {
   sponsor: Sponsor;

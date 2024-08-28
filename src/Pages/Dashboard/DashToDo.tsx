@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { DashTasksAndMaterials, userContext } from "../../interfaces";
-import { getTasksAndMaterials } from "./dashboardUtils";
 import DashToDoRow from "./DashToDoRow";
+import { getTasksAndMaterials } from "./dashboardUtils";
 
 type Props = {
   user: userContext | null;
@@ -26,14 +26,7 @@ const DashToDo = ({ user }: Props) => {
               <div className="">
                 <ul className="todo-list-wrapper list-group list-group-flush">
                   {Object.entries(toDos).map(([iD, toDo], idx) => {
-                    return (
-                      <DashToDoRow
-                        key={idx}
-                        toDoId={iD}
-                        toDo={toDo}
-                        user={user}
-                      />
-                    );
+                    return <DashToDoRow key={idx} toDoId={iD} toDo={toDo} user={user} />;
                   })}
                 </ul>
               </div>

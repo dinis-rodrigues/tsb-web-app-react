@@ -1,4 +1,7 @@
-import { Fragment, useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import Select from "react-select";
+import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   RecruitmentData,
   RecruitmentTable,
@@ -6,44 +9,37 @@ import {
   selectOption,
   tableColumns,
 } from "../../interfaces";
-import { useAuth } from "../../contexts/AuthContext";
-import Select from "react-select";
-import {
-  DropdownToggle,
-  DropdownMenu,
-  UncontrolledButtonDropdown,
-} from "reactstrap";
 
 import {
   clipboardExport,
-  excelExport,
-  pdfExport,
-  filterTable,
-  onFirstDataRendered,
-  getRecruitmentData,
-  onRowRecruitmentUserClick,
-  selectTableHandler,
-  selectDepartmentHandler,
   deleteTable,
+  excelExport,
+  filterTable,
+  getRecruitmentData,
+  onFirstDataRendered,
+  onRowRecruitmentUserClick,
+  pdfExport,
+  selectDepartmentHandler,
+  selectTableHandler,
   swalDeleteRecruitmentTable,
 } from "./recruitmentUtils";
 
 // Table
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-enterprise";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
 import { ColumnApi, GridApi, RowClickedEvent } from "ag-grid-community";
-import RecruitmentUserModal from "./RecruitmentUserModal";
-import RecruitmentSettings from "./RecruitmentSetting";
-import RecruitmentDegreeCount from "./RecruitmentDegreeCount";
-import RecruitmentYearCount from "./RecruitmentYearDepCount";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
+import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import "ag-grid-enterprise";
+import { AgGridReact } from "ag-grid-react";
 import { db } from "../../config/firebase";
+import RecruitmentDegreeCount from "./RecruitmentDegreeCount";
+import RecruitmentSettings from "./RecruitmentSetting";
+import RecruitmentUserModal from "./RecruitmentUserModal";
+import RecruitmentYearCount from "./RecruitmentYearDepCount";
 
-import { CheckboxGroup, Input } from "react-rainbow-components";
 import cx from "classnames";
 import { off, ref } from "firebase/database";
+import { CheckboxGroup, Input } from "react-rainbow-components";
 
 // Layout
 
@@ -53,8 +49,7 @@ const Recruitment = () => {
   const gridOptions = {
     enableCellTextSelection: false,
     enableRangeSelection: true,
-    onRowClicked: (e: RowClickedEvent) =>
-      onRowRecruitmentUserClick(e, setUserInfo, setModalOpen),
+    onRowClicked: (e: RowClickedEvent) => onRowRecruitmentUserClick(e, setUserInfo, setModalOpen),
   };
 
   const [gridApi, setGridApi] = useState<GridApi>(); // Table API
@@ -63,9 +58,7 @@ const Recruitment = () => {
   const [tableRows, setTableRows] = useState<RecruitmentUser[]>([]); // row data
   const [tableColumns, setTableColumns] = useState<tableColumns[]>([]); // column definitions
 
-  const [activeRecruitment, setActiveRecruitment] = useState<string | boolean>(
-    false
-  );
+  const [activeRecruitment, setActiveRecruitment] = useState<string | boolean>(false);
   const [currTableName, setCurrTableName] = useState<string | boolean>(false);
   const [currTableData, setCurrTableData] = useState<RecruitmentTable>();
   const [recruitmentData, setRecruitmentData] = useState<RecruitmentData>();
@@ -75,9 +68,7 @@ const Recruitment = () => {
   const [tableOptions, setTableOptions] = useState<selectOption[]>([]);
 
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
-  const [departmentOptions, setDepartmentOptions] = useState<selectOption[]>(
-    []
-  );
+  const [departmentOptions, setDepartmentOptions] = useState<selectOption[]>([]);
 
   // Select Options
   useEffect(() => {
@@ -95,7 +86,7 @@ const Recruitment = () => {
       setTableOptions,
       setActiveRecruitment,
       setDepartmentOptions,
-      setSelectedDepartments
+      setSelectedDepartments,
     );
     return () => {
       off(ref(db, "public/recruitment"));
@@ -104,7 +95,7 @@ const Recruitment = () => {
   }, [USER]);
 
   return (
-    <Fragment>
+    <>
       <div className="app-main__outer">
         <div className="app-main__inner">
           {isMarketingOrAdmin && (
@@ -135,20 +126,17 @@ const Recruitment = () => {
                       className="p-0 mr-2 btn btn-btn"
                       onClick={() =>
                         swalDeleteRecruitmentTable(() =>
-                          deleteTable(currTableName as string, tablesList)
+                          deleteTable(currTableName as string, tablesList),
                         )
                       }
                     >
-                      <span className="btn-wide btn-danger mr-md-2 btn btn-sm">
-                        Delete
-                      </span>
+                      <span className="btn-wide btn-danger mr-md-2 btn btn-sm">Delete</span>
                     </button>
                   )}
                   <UncontrolledButtonDropdown>
                     <DropdownToggle color="btn" className="p-0 mr-2">
                       <span className="btn-wide btn-dark mr-md-2 btn btn-sm dropdown-toggle">
-                        <i className="fa fa-download text-white btn-icon-wrapper"></i>{" "}
-                        Download
+                        <i className="fa fa-download text-white btn-icon-wrapper"></i> Download
                       </span>
                     </DropdownToggle>
                     <DropdownMenu right className="rm-pointers dropdown-menu">
@@ -169,9 +157,7 @@ const Recruitment = () => {
                       <button
                         type="button"
                         className="dropdown-item"
-                        onClick={() =>
-                          pdfExport(gridApi, columnApi, currTableName)
-                        }
+                        onClick={() => pdfExport(gridApi, columnApi, currTableName)}
                       >
                         PDF
                       </button>
@@ -190,14 +176,10 @@ const Recruitment = () => {
                         setTableRows,
                         setCurrTableData,
                         setDepartmentOptions,
-                        setSelectedDepartments
+                        setSelectedDepartments,
                       );
                     }}
-                    value={
-                      currTableName
-                        ? { value: currTableName, label: currTableName }
-                        : {}
-                    }
+                    value={currTableName ? { value: currTableName, label: currTableName } : {}}
                     options={tableOptions}
                   />
                 </div>
@@ -231,12 +213,12 @@ const Recruitment = () => {
                         setSelectedDepartments,
                         setCurrTableData,
                         setTableRows,
-                        setTableColumns
+                        setTableColumns,
                       )
                     }
                   />
                 </div>
-                {/* <button onClick={excelExport}>export</button> */}
+                {/* <button type="button" onClick={excelExport}>export</button> */}
               </div>
               <div
                 className={cx({
@@ -252,9 +234,7 @@ const Recruitment = () => {
                   onFirstDataRendered={(params) =>
                     onFirstDataRendered(params, setGridApi, setColumnApi)
                   }
-                  onGridReady={(params) =>
-                    onFirstDataRendered(params, setGridApi, setColumnApi)
-                  }
+                  onGridReady={(params) => onFirstDataRendered(params, setGridApi, setColumnApi)}
                   overlayNoRowsTemplate={"<span >No applications yet :(</span>"}
                   animateRows
                 ></AgGridReact>
@@ -271,7 +251,7 @@ const Recruitment = () => {
           info={userInfo}
         />
       )}
-    </Fragment>
+    </>
   );
 };
 

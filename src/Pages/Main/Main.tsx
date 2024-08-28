@@ -1,17 +1,17 @@
+import cx from "classnames";
 import { useState } from "react";
 // import { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import cx from "classnames";
 import { withRouter } from "react-router-dom";
 
 import ResizeDetector from "react-resize-detector";
 import { useAuth } from "../../contexts/AuthContext";
 
-import AppMain from "../../components/AppMain/AppMain";
-import AppHeader from "../../components/AppHeader/AppHeader";
-import AppSidebar from "../../components/AppSidebar/AppSidebar";
-import { ToastContainer } from "react-toastify";
 import { Application } from "react-rainbow-components";
+import { ToastContainer } from "react-toastify";
+import AppHeader from "../../components/AppHeader/AppHeader";
+import AppMain from "../../components/AppMain/AppMain";
+import AppSidebar from "../../components/AppSidebar/AppSidebar";
 import { rainbowDarkTheme, rainbowWhiteTheme } from "../../utils/colors";
 
 type Props = {
@@ -52,7 +52,7 @@ const Main = ({
               {
                 "closed-sidebar-mobile": closedSmallerSidebar || width < 1250,
               },
-              { "sidebar-mobile-open": enableMobileMenu }
+              { "sidebar-mobile-open": enableMobileMenu },
             )}
           >
             {/* Header of the application */}

@@ -12,8 +12,8 @@ import "./assets/scss/darkTheme.scss";
 
 import Main from "./Pages/Main/Main";
 
-import configureStore from "./config/configureStore";
 import { Provider } from "react-redux";
+import configureStore from "./config/configureStore";
 
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -29,7 +29,7 @@ const renderApp = () => {
         </AuthProvider>
       </BrowserRouter>
     </Provider>,
-    rootElement
+    rootElement,
   );
 };
 

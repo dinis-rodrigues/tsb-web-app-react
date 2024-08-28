@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import { connect } from "react-redux";
 
 import NavigationBar from "../AppNav/NavigationBar";
@@ -11,7 +10,7 @@ type Props = {
 };
 const AppSidebar = ({ enableMobileMenu }: Props) => {
   return (
-    <Fragment>
+    <>
       <div className="sidebar-mobile-overlay"></div>
       <div className="app-sidebar sidebar-shadow">
         <PerfectScrollbar>
@@ -20,7 +19,7 @@ const AppSidebar = ({ enableMobileMenu }: Props) => {
           </div>
         </PerfectScrollbar>
       </div>
-    </Fragment>
+    </>
   );
 };
 
@@ -29,8 +28,7 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: Function) => ({
-  setEnableMobileMenu: (enable: boolean) =>
-    dispatch(setEnableMobileMenu(enable)),
+  setEnableMobileMenu: (enable: boolean) => dispatch(setEnableMobileMenu(enable)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppSidebar);

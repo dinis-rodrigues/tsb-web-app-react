@@ -1,10 +1,6 @@
 import { setColumnText } from "../generalFunctions";
 
-export default function getDocDefinition(
-  printParams: any,
-  agGridApi: any,
-  agGridColumnApi: any
-) {
+export default function getDocDefinition(printParams: any, agGridApi: any, agGridColumnApi: any) {
   const {
     PDF_HEADER_COLOR,
     PDF_INNER_BORDER_COLOR,
@@ -21,7 +17,7 @@ export default function getDocDefinition(
     PDF_LOGO,
   } = printParams;
 
-  return (function () {
+  return (() => {
     const columnGroupsToExport = getColumnGroupsToExport();
 
     const columnsToExport = getColumnsToExport();
@@ -46,12 +42,10 @@ export default function getDocDefinition(
     //   : null;
 
     const footer = PDF_WITH_FOOTER_PAGE_COUNT
-      ? function (currentPage: any, pageCount: any) {
-          return {
-            text: currentPage.toString() + " of " + pageCount,
-            margin: [20],
-          };
-        }
+      ? (currentPage: any, pageCount: any) => ({
+          text: `${currentPage.toString()} of ${pageCount}`,
+          margin: [20],
+        })
       : null;
 
     // const pageMargins = [
@@ -62,8 +56,7 @@ export default function getDocDefinition(
     // ];
     const pageMargins = [10, 70, 10, 40];
 
-    const heights = (rowIndex: any) =>
-      rowIndex < headerRows ? PDF_HEADER_HEIGHT : PDF_ROW_HEIGHT;
+    const heights = (rowIndex: any) => (rowIndex < headerRows ? PDF_HEADER_HEIGHT : PDF_ROW_HEIGHT);
 
     const fillColor = (rowIndex: any, node: any, columnIndex: any) => {
       if (rowIndex < node.table.headerRows) {
@@ -72,21 +65,15 @@ export default function getDocDefinition(
       return rowIndex % 2 === 0 ? PDF_ODD_BKG_COLOR : PDF_EVEN_BKG_COLOR;
     };
 
-    const hLineWidth = (i: any, node: any) =>
-      i === 0 || i === node.table.body.length ? 1 : 1;
+    const hLineWidth = (i: any, node: any) => (i === 0 || i === node.table.body.length ? 1 : 1);
 
-    const vLineWidth = (i: any, node: any) =>
-      i === 0 || i === node.table.widths.length ? 1 : 0;
+    const vLineWidth = (i: any, node: any) => (i === 0 || i === node.table.widths.length ? 1 : 0);
 
     const hLineColor = (i: any, node: any) =>
-      i === 0 || i === node.table.body.length
-        ? PDF_OUTER_BORDER_COLOR
-        : PDF_INNER_BORDER_COLOR;
+      i === 0 || i === node.table.body.length ? PDF_OUTER_BORDER_COLOR : PDF_INNER_BORDER_COLOR;
 
     const vLineColor = (i: any, node: any) =>
-      i === 0 || i === node.table.widths.length
-        ? PDF_OUTER_BORDER_COLOR
-        : PDF_INNER_BORDER_COLOR;
+      i === 0 || i === node.table.widths.length ? PDF_OUTER_BORDER_COLOR : PDF_INNER_BORDER_COLOR;
 
     const docDefintiion = {
       pageOrientation: PDF_PAGE_ORITENTATION,
@@ -134,24 +121,24 @@ export default function getDocDefinition(
   })();
 
   function getColumnGroupsToExport() {
-    let displayedColumnGroups = agGridColumnApi.getAllDisplayedColumnGroups();
+    const displayedColumnGroups = agGridColumnApi.getAllDisplayedColumnGroups();
 
-    let isColumnGrouping = displayedColumnGroups.some((col: any) =>
-      col.hasOwnProperty("children")
+    const isColumnGrouping = displayedColumnGroups.some((col: any) =>
+      Object.hasOwn(col, "children"),
     );
 
     if (!isColumnGrouping) {
       return null;
     }
 
-    let columnGroupsToExport: any = [];
+    const columnGroupsToExport: any = [];
 
     displayedColumnGroups.forEach((colGroup: any) => {
-      let isColSpanning = colGroup.children.length > 1;
+      const isColSpanning = colGroup.children.length > 1;
       let numberOfEmptyHeaderCellsToAdd = 0;
 
       if (isColSpanning) {
-        let headerCell = createHeaderCell(colGroup);
+        const headerCell = createHeaderCell(colGroup);
         columnGroupsToExport.push(headerCell);
         // subtract 1 as the column group counts as a header
         numberOfEmptyHeaderCellsToAdd--;
@@ -159,7 +146,7 @@ export default function getDocDefinition(
 
       // add an empty header cell now for every column being spanned
       colGroup.displayedChildren.forEach((childCol: any) => {
-        let pdfExportOptions = getPdfExportOptions(childCol.getColId());
+        const pdfExportOptions = getPdfExportOptions(childCol.getColId());
         if (!pdfExportOptions || !pdfExportOptions.skipColumn) {
           numberOfEmptyHeaderCellsToAdd++;
         }
@@ -174,14 +161,14 @@ export default function getDocDefinition(
   }
 
   function getColumnsToExport() {
-    let columnsToExport: any = [];
+    const columnsToExport: any = [];
 
     agGridColumnApi.getAllDisplayedColumns().forEach((col: any) => {
-      let pdfExportOptions = getPdfExportOptions(col.getColId());
+      const pdfExportOptions = getPdfExportOptions(col.getColId());
       if (pdfExportOptions && pdfExportOptions.skipColumn) {
         return;
       }
-      let headerCell = createHeaderCell(col);
+      const headerCell = createHeaderCell(col);
       columnsToExport.push(headerCell);
     });
 
@@ -189,15 +176,15 @@ export default function getDocDefinition(
   }
 
   function getRowsToExport(columnsToExport: any) {
-    let rowsToExport: any = [];
+    const rowsToExport: any = [];
 
     agGridApi.forEachNodeAfterFilterAndSort((node: any) => {
       if (PDF_SELECTED_ROWS_ONLY && !node.isSelected()) {
         return;
       }
-      let rowToExport = columnsToExport.map(({ colId }: any) => {
-        let cellValue = agGridApi.getValue(colId, node);
-        let tableCell = createTableCell(cellValue, colId);
+      const rowToExport = columnsToExport.map(({ colId }: any) => {
+        const cellValue = agGridApi.getValue(colId, node);
+        const tableCell = createTableCell(cellValue, colId);
         return tableCell;
       });
       rowsToExport.push(rowToExport);
@@ -207,13 +194,13 @@ export default function getDocDefinition(
   }
 
   function getExportedColumnsWidths(columnsToExport: any) {
-    return columnsToExport.map(() => 100 / columnsToExport.length + "%");
+    return columnsToExport.map(() => `${100 / columnsToExport.length}%`);
   }
 
   function createHeaderCell(col: any) {
-    let headerCell = { text: "", colSpan: "", colId: "", style: "" };
+    const headerCell = { text: "", colSpan: "", colId: "", style: "" };
 
-    let isColGroup = col.hasOwnProperty("children");
+    const isColGroup = Object.hasOwn(col, "children");
 
     if (isColGroup) {
       headerCell.text = col.originalColumnGroup.colGroupDef.headerName;
@@ -233,7 +220,7 @@ export default function getDocDefinition(
       headerCell.colId = col.getColId();
     }
 
-    headerCell["style"] = "tableHeader";
+    headerCell.style = "tableHeader";
 
     return headerCell;
   }
@@ -255,14 +242,15 @@ export default function getDocDefinition(
       if (PDF_WITH_CELL_FORMATTING && styles) {
         Object.entries(styles).forEach(
           /* @ts-ignore */
-          ([key, value]) => (tableCell[key] = value)
+          // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+          ([key, value]) => (tableCell[key] = value),
         );
       }
 
       if (PDF_WITH_COLUMNS_AS_LINKS && createURL) {
-        tableCell["link"] = createURL(cellValue);
-        tableCell["color"] = "blue";
-        tableCell["decoration"] = "underline";
+        tableCell.link = createURL(cellValue);
+        tableCell.color = "blue";
+        tableCell.decoration = "underline";
       }
     }
 
@@ -270,7 +258,7 @@ export default function getDocDefinition(
   }
 
   function getPdfExportOptions(colId: any) {
-    let col = agGridColumnApi.getColumn(colId);
+    const col = agGridColumnApi.getColumn(colId);
     return col.colDef.pdfExportOptions;
   }
 }

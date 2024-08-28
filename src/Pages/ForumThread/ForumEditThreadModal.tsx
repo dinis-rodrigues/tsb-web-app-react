@@ -5,9 +5,9 @@ import Select from "react-select";
 import { useAuth } from "../../contexts/AuthContext";
 import { Thread, ThreadCreation, userContext } from "../../interfaces";
 import {
-  editThreadTitleHandler,
   editThreadDescriptionHandler,
   editThreadLabelHandler,
+  editThreadTitleHandler,
   saveThread,
 } from "./forumThreadUtils";
 
@@ -60,9 +60,7 @@ const ForumEditThreadModal = ({
   ];
   return (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       title="Edit Thread"
       size={"medium"}
       isOpen={isEditThreadModalOpen}
@@ -70,10 +68,7 @@ const ForumEditThreadModal = ({
       footer={
         <div className="row justify-content-sm-center">
           <div className="mr-1">
-            <Button
-              label="Cancel"
-              onClick={() => setIsEditThreadModalOpen(false)}
-            />
+            <Button label="Cancel" onClick={() => setIsEditThreadModalOpen(false)} />
           </div>
           <div className="mr-1">
             <Button
@@ -86,7 +81,7 @@ const ForumEditThreadModal = ({
                   encodedSectionName,
                   encodedTopicName,
                   encodedThreadName,
-                  setIsEditThreadModalOpen
+                  setIsEditThreadModalOpen,
                 )
               }
             />
@@ -105,9 +100,7 @@ const ForumEditThreadModal = ({
           <input
             className="form-control bdc-grey-200"
             value={newThreadInfo.title}
-            onChange={(e) =>
-              editThreadTitleHandler(e, newThreadInfo, setNewThreadInfo)
-            }
+            onChange={(e) => editThreadTitleHandler(e, newThreadInfo, setNewThreadInfo)}
           />
         </div>
         <div className="col-md-5 text-center">
@@ -126,9 +119,7 @@ const ForumEditThreadModal = ({
               // Fixes the overlapping problem of the component with the datepicker
               menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
             }}
-            onChange={(option) =>
-              editThreadLabelHandler(option, newThreadInfo, setNewThreadInfo)
-            }
+            onChange={(option) => editThreadLabelHandler(option, newThreadInfo, setNewThreadInfo)}
           />
         </div>
       </div>
@@ -140,9 +131,7 @@ const ForumEditThreadModal = ({
           bounds={"#bound"}
           modules={quillModules}
           placeholder={"What's on your mind today?"}
-          onChange={(value) =>
-            editThreadDescriptionHandler(value, newThreadInfo, setNewThreadInfo)
-          }
+          onChange={(value) => editThreadDescriptionHandler(value, newThreadInfo, setNewThreadInfo)}
         />
       </div>
     </Modal>

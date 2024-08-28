@@ -1,29 +1,29 @@
-import { useState, useEffect } from "react";
-import { setUserProfilePicture } from "../../reducers/ThemeOptions";
-import { connect } from "react-redux";
 import cx from "classnames";
+import Croppie from "croppie";
+import "croppie/croppie.css";
+import { useEffect, useState } from "react";
+import { connect } from "react-redux";
+import { PersonalInformation } from "../../interfaces";
+import { setUserProfilePicture } from "../../reducers/ThemeOptions";
+import CoursesTable from "./CoursesTable";
+import PersonalInformationOptions from "./PersonalInformationOptions";
 import {
   defaultInfo,
-  setDepartmentPositions,
-  editInformation,
-  saveInformation,
   discardInformation,
-  handleUpload,
-  sendImgToServer,
+  editInformation,
   getCoverBgColor,
   getCoverBorderColor,
+  handleUpload,
+  saveInformation,
+  sendImgToServer,
+  setDepartmentPositions,
 } from "./profileUtils";
-import PersonalInformationOptions from "./PersonalInformationOptions";
-import CoursesTable from "./CoursesTable";
-import { PersonalInformation } from "../../interfaces";
-import "croppie/croppie.css";
-import Croppie from "croppie";
 
-import { useAuth } from "../../contexts/AuthContext";
-import { db } from "../../config/firebase";
-import UserAttendance from "./UserAttendance";
-import ImageContainer from "../../components/AppImage/ImageContainer";
 import { get, off, ref } from "firebase/database";
+import ImageContainer from "../../components/AppImage/ImageContainer";
+import { db } from "../../config/firebase";
+import { useAuth } from "../../contexts/AuthContext";
+import UserAttendance from "./UserAttendance";
 
 type Props = {
   setUserProfilePicture: Function;
@@ -50,20 +50,18 @@ const Profile = ({ setUserProfilePicture }: Props) => {
       if (!USER) {
         return;
       }
-      get(ref(db, `private/usersMetadata/${USER.id}/pinfo`)).then(
-        (snapshot) => {
-          const data = snapshot.val();
-          const dataArr: any = {};
-          for (var key in data) {
-            if (data.hasOwnProperty(key)) {
-              dataArr[key] = data[key];
-            }
+      get(ref(db, `private/usersMetadata/${USER.id}/pinfo`)).then((snapshot) => {
+        const data = snapshot.val();
+        const dataArr: any = {};
+        for (const key in data) {
+          if (Object.hasOwn(data, key)) {
+            dataArr[key] = data[key];
           }
-          setDepartmentPositions(dataArr.department, USER, setSelectPositions);
-          setInfo(dataArr);
-          setPrevInfo(dataArr);
         }
-      );
+        setDepartmentPositions(dataArr.department, USER, setSelectPositions);
+        setInfo(dataArr);
+        setPrevInfo(dataArr);
+      });
     }
     getPersonalInfo();
     return () => {
@@ -115,14 +113,7 @@ const Profile = ({ setUserProfilePicture }: Props) => {
                             <span className="text">Upload</span>
                             <input
                               type="file"
-                              onChange={(e) =>
-                                handleUpload(
-                                  e,
-                                  croppie,
-                                  setShowSaveImg,
-                                  setCroppie
-                                )
-                              }
+                              onChange={(e) => handleUpload(e, croppie, setShowSaveImg, setCroppie)}
                               className="custom-file-input"
                               accept="image/*"
                               hidden
@@ -135,6 +126,7 @@ const Profile = ({ setUserProfilePicture }: Props) => {
                             })}
                           >
                             <button
+                              type="button"
                               onClick={() =>
                                 sendImgToServer(
                                   USER,
@@ -143,7 +135,7 @@ const Profile = ({ setUserProfilePicture }: Props) => {
                                   croppie!,
                                   setCroppie,
                                   setShowSaveImg,
-                                  setUSER
+                                  setUSER,
                                 )
                               }
                               className="btn btn-dark"
@@ -187,10 +179,7 @@ const Profile = ({ setUserProfilePicture }: Props) => {
             </div>
           </div>
         </div>
-        <CoursesTable
-          userId={USER ? USER.id : ""}
-          userName={USER ? USER.name : ""}
-        />
+        <CoursesTable userId={USER ? USER.id : ""} userName={USER ? USER.name : ""} />
       </div>
     </div>
   );

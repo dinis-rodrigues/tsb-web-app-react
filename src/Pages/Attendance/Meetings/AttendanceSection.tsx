@@ -1,12 +1,7 @@
 import cx from "classnames";
 import { v4 as uuid } from "uuid";
 import { useAuth } from "../../../contexts/AuthContext";
-import {
-  EventColors,
-  EventInformation,
-  User,
-  UsersDB,
-} from "../../../interfaces";
+import { EventColors, EventInformation, User, UsersDB } from "../../../interfaces";
 import { extendDate } from "../../../utils/generalFunctions";
 import { getEventTitlesAndColors } from "../../Events/eventsUtils";
 import { departmentMatchesEvent, sortUsersDb } from "../attendanceUtils";
@@ -22,15 +17,14 @@ const AttendanceSection = ({ eventId, event, usersDb }: Props) => {
   const { departmentsWDesc, isDarkMode } = useAuth();
   const currMeeting = event.type.replace(" Meeting", "");
 
-  const attendanceTitleIconColor: EventColors =
-    getEventTitlesAndColors(departmentsWDesc);
-  let extendedDate = extendDate(event.date);
+  const attendanceTitleIconColor: EventColors = getEventTitlesAndColors(departmentsWDesc);
+  const extendedDate = extendDate(event.date);
 
-  let title = attendanceTitleIconColor[currMeeting].description;
-  let icon = attendanceTitleIconColor[currMeeting].icon;
-  let color = attendanceTitleIconColor[currMeeting].gradientColor;
+  const title = attendanceTitleIconColor[currMeeting].description;
+  const icon = attendanceTitleIconColor[currMeeting].icon;
+  const color = attendanceTitleIconColor[currMeeting].gradientColor;
 
-  let boardTitle = {
+  const boardTitle = {
     title: title,
     icon: icon,
     color: color,
@@ -47,32 +41,23 @@ const AttendanceSection = ({ eventId, event, usersDb }: Props) => {
     }
   });
 
-  let sortedUsers = sortUsersDb(usersToSort);
+  const sortedUsers = sortUsersDb(usersToSort);
 
   return (
     <div className={"main-card mb-3 card"}>
       <div className="card-header">
-        <i
-          className={cx(
-            "header-icon icon-gradient fa",
-            boardTitle.icon,
-            boardTitle.color
-          )}
-        ></i>
+        <i className={cx("header-icon icon-gradient fa", boardTitle.icon, boardTitle.color)}></i>
         {`${event.type} - ${boardTitle.date} at ${event.hours}:${event.minutes} - Duration: ${event.duration}`}
         <div className="btn-actions-pane-right">
-          <span className="badge badge-pill badge-dark">
-            Members: {sortedUsers.length}
-          </span>
+          <span className="badge badge-pill badge-dark">Members: {sortedUsers.length}</span>
         </div>
       </div>
       <div className="card-body p-0">
         {/* Add table with users of the corresponding department */}
         <table
-          className={cx(
-            "table table-striped table-hover row-border align-middle text-truncate",
-            { "table-dark": isDarkMode }
-          )}
+          className={cx("table table-striped table-hover row-border align-middle text-truncate", {
+            "table-dark": isDarkMode,
+          })}
         >
           <thead>
             <tr>

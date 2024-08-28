@@ -1,8 +1,8 @@
+import { useState } from "react";
 import { connect } from "react-redux";
-import { useState, Fragment } from "react";
-import { setEnableLoginPage } from "../../reducers/ThemeOptions";
+import { Link, Redirect, withRouter } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { withRouter, Redirect, Link } from "react-router-dom";
+import { setEnableLoginPage } from "../../reducers/ThemeOptions";
 
 type Props = {
   setEnableLoginPage: Function;
@@ -32,7 +32,7 @@ const Login = ({ setEnableLoginPage }: Props) => {
   }
 
   return (
-    <Fragment>
+    <>
       <div className="h-100 tsb-background">
         <div className="d-flex h-100 justify-content-center align-items-center">
           <div className="mx-auto app-login-box col-md-8">
@@ -47,10 +47,7 @@ const Login = ({ setEnableLoginPage }: Props) => {
                       <div>Welcome back</div>
                       <span>Please sign in to your account below.</span>
                       {displayMaintenance && (
-                        <div
-                          className="badge badge-danger ml-2"
-                          style={{ opacity: 1 }}
-                        >
+                        <div className="badge badge-danger ml-2" style={{ opacity: 1 }}>
                           Maintenance: Login disabled
                         </div>
                       )}
@@ -95,20 +92,14 @@ const Login = ({ setEnableLoginPage }: Props) => {
                           checked={inputVal.rememberMe}
                           onChange={inputListener}
                         />
-                        <label
-                          htmlFor="exampleCheck"
-                          className="form-check-label"
-                        >
+                        <label htmlFor="exampleCheck" className="form-check-label">
                           Keep me logged in
                         </label>
                       </div>
                     </div>
                     <div className="col">
                       <div className="position-relative form-check float-right">
-                        <label
-                          htmlFor="exampleCheck"
-                          className="form-check-label"
-                        >
+                        <label htmlFor="exampleCheck" className="form-check-label">
                           <Link to="/resetPasswordEmail" className="text-white">
                             Recover Password
                           </Link>
@@ -126,6 +117,7 @@ const Login = ({ setEnableLoginPage }: Props) => {
                     </h5>
                     <div className="ml-auto">
                       <button
+                        type="button"
                         onClick={onLogin}
                         className="btn-wide btn-pill btn-shadow btn-hover-shine btn btn-info btn-lg"
                       >
@@ -144,7 +136,7 @@ const Login = ({ setEnableLoginPage }: Props) => {
       </div>
       {/* If the user is already logged in, send him to dashboard */}
       {displayContent && <Redirect to={"/dashboard"} />}
-    </Fragment>
+    </>
   );
 };
 

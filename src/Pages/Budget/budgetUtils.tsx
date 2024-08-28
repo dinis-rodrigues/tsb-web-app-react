@@ -1,9 +1,4 @@
-import {
-  ColumnApi,
-  GridApi,
-  GridReadyEvent,
-  RowClickedEvent,
-} from "ag-grid-community";
+import { ColumnApi, GridApi, GridReadyEvent, RowClickedEvent } from "ag-grid-community";
 import {
   child,
   off,
@@ -21,12 +16,12 @@ import withReactContent from "sweetalert2-react-content";
 import { db } from "../../config/firebase";
 import {
   BomDb,
-  bomDepartmentIconColorTitle,
   BomMaterial,
   BomTableData,
   Departments,
   DepartmentsWithDesc,
   RedirectedData,
+  bomDepartmentIconColorTitle,
   selectOption,
   userContext,
 } from "../../interfaces";
@@ -61,7 +56,8 @@ const swalBomDeleteMessage = (deleteFunction: Function) => {
     .then((result) => {
       if (result.isConfirmed) {
         return;
-      } else if (result.isDenied) {
+      }
+      if (result.isDenied) {
         deleteFunction();
       }
     });
@@ -73,8 +69,8 @@ const swalDeleteAlert = withReactContent(Swal);
  */
 const sortSeasonsArray = (seasonArray: string[]) => {
   return seasonArray.sort((a, b) => {
-    let seasonA = parseInt(a.replace("/", ""));
-    let seasonB = parseInt(b.replace("/", ""));
+    const seasonA = parseInt(a.replace("/", ""));
+    const seasonB = parseInt(b.replace("/", ""));
     if (seasonA > seasonB) return -1;
     if (seasonA < seasonB) return 1;
     return 0;
@@ -87,13 +83,11 @@ const sortSeasonsArray = (seasonArray: string[]) => {
  */
 const deleteSeason = (season: string, seasonOptions: selectOption[]) => {
   // season is in form yyyy-yyyy, we want in yyyy/yyyy for the list
-  let seasonOfList = season.replace("-", "/");
+  const seasonOfList = season.replace("-", "/");
   // crease season array from select options
-  let seasonArray = seasonOptions.map((obj) => obj.value);
+  const seasonArray = seasonOptions.map((obj) => obj.value);
   // remove season from the seasons list
-  let updatedSeasons = seasonArray.filter(function (item) {
-    return item !== seasonOfList;
-  });
+  const updatedSeasons = seasonArray.filter((item) => item !== seasonOfList);
   // remove all materials from season
   remove(child(ref(db, "private/bom"), season));
   // update seasons list database
@@ -108,19 +102,15 @@ const deleteSeason = (season: string, seasonOptions: selectOption[]) => {
 const buildBudgetRows = (
   tableData: [string, BomMaterial][],
   setTableRows: Function,
-  setMoney: Function
+  setMoney: Function,
 ) => {
   // Acquired and total budget, use this inseide map function
-  let money = { acquired: 0, total: 0 };
+  const money = { acquired: 0, total: 0 };
   // Build rows Array for table
-  let rows = tableData.map(([materialId, material]) => {
-    money.total += parseFloat(
-      material.totalValue.replaceAll(",", "").replace(" €", "")
-    );
+  const rows = tableData.map(([materialId, material]) => {
+    money.total += parseFloat(material.totalValue.replaceAll(",", "").replace(" €", ""));
     if (material.status === "Acquired") {
-      money.acquired += parseFloat(
-        material.totalValue.replaceAll(",", "").replace(" €", "")
-      );
+      money.acquired += parseFloat(material.totalValue.replaceAll(",", "").replace(" €", ""));
     }
     return {
       ...material,
@@ -129,8 +119,7 @@ const buildBudgetRows = (
     };
   }, money);
   let percentage = "0";
-  if (money.total !== 0)
-    percentage = Number(money.acquired / money.total).toFixed(2);
+  if (money.total !== 0) percentage = Number(money.acquired / money.total).toFixed(2);
   setMoney({
     acquired: money.acquired,
     total: money.total,
@@ -148,7 +137,7 @@ const closeMaterialModal = (
   setMaterialInfo: Function,
   setMaterialInfoMask: Function,
   commentListener: string,
-  setCommentListener: Function
+  setCommentListener: Function,
 ) => {
   setIsModalOpen(false);
   setMaterialInfo(defaultMaterial);
@@ -164,7 +153,7 @@ const closeMaterialModal = (
 const openCleanMaterialModal = (
   setIsModalOpen: Function,
   setMaterialInfo: Function,
-  setShowDeleteButton: Function
+  setShowDeleteButton: Function,
 ) => {
   setIsModalOpen(true);
   setShowDeleteButton(false);
@@ -182,17 +171,17 @@ const onRowBomClick = (
   setMaterialInfoMask: Function,
   setModalOpen: Function,
   setShowDeleteButton: Function,
-  setCommentListener: Function
+  setCommentListener: Function,
 ) => {
-  let materialData: BomMaterial = event.data;
+  const materialData: BomMaterial = event.data;
 
   // Get the season from the data, dynamic parameters here don't work
-  let season = materialData.season;
+  const season = materialData.season;
 
   // Add listener for the comments
   setCommentListener(`bom/${season}/${materialData.id}`);
   onValue(ref(db, `private/bom/${season}/${materialData.id}`), (snapshot) => {
-    let materialDataDb = snapshot.val();
+    const materialDataDb = snapshot.val();
 
     if (!materialDataDb) return;
     setMaterialInfo({ ...materialDataDb, id: materialData.id });
@@ -205,7 +194,7 @@ const onRowBomClick = (
  * @param  {string} department title of the table
  */
 const exportedFilename = (department: string) => {
-  const base = "TSB_Budget_" + department;
+  const base = `TSB_Budget_${department}`;
   const year = new Date().getFullYear();
   return base + year;
 };
@@ -218,7 +207,7 @@ const exportedFilename = (department: string) => {
 const excelExport = (gridApi: GridApi | null, department: string) => {
   if (!gridApi) return;
   gridApi.exportDataAsExcel({
-    fileName: exportedFilename(department) + ".xlsx",
+    fileName: `${exportedFilename(department)}.xlsx`,
   });
 };
 
@@ -237,11 +226,7 @@ const clipboardExport = (gridApi: GridApi | null) => {
  * @param  {GridApi} gridApi ag-grid grid Api
  * @param  {ColumnApi} columnApi ag-grid column Api
  */
-const pdfExport = (
-  department: string,
-  gridApi: GridApi | null,
-  columnApi: ColumnApi | null
-) => {
+const pdfExport = (department: string, gridApi: GridApi | null, columnApi: ColumnApi | null) => {
   printDoc(gridApi, columnApi, exportedFilename(department));
 };
 
@@ -249,10 +234,7 @@ const pdfExport = (
  * @param  {event} e on change event of the input text
  * @param  {GridApi} gridApi ag grid grid Api of the table
  */
-const filterTable = (
-  e: React.ChangeEvent<HTMLInputElement>,
-  gridApi: GridApi | null
-) => {
+const filterTable = (e: React.ChangeEvent<HTMLInputElement>, gridApi: GridApi | null) => {
   if (!gridApi) return;
   gridApi.setQuickFilter(e.target.value);
 };
@@ -265,7 +247,7 @@ const filterTable = (
 const onFirstDataRendered = (
   params: GridReadyEvent,
   setGridApi: Function,
-  setColumnApi: Function
+  setColumnApi: Function,
 ) => {
   if (!params.api) return;
 
@@ -288,19 +270,18 @@ const deleteMaterial = (
   materialInfo: BomMaterial,
   materialInfoMask: BomMaterial,
   closeModal: Function,
-  season: string
+  season: string,
 ) => {
-  let materialId = materialInfo.id;
+  const materialId = materialInfo.id;
   if (!materialId) {
     return;
-  } else {
-    // Update material
-    remove(ref(db, `private/bom/${season}/${materialId}`));
   }
+  // Update material
+  remove(ref(db, `private/bom/${season}/${materialId}`));
 
   if (materialInfoMask.assignedTo) {
     // delete material from user
-    let userKey = materialInfo.assignedTo.value;
+    const userKey = materialInfo.assignedTo.value;
     remove(ref(db, `private/usersBomMaterials/${userKey}/${materialInfo.id}`));
   }
 
@@ -316,17 +297,14 @@ const updateMaterialsForUsers = (
   materialInfo: BomMaterial,
   materialInfoMask: BomMaterial,
   materialId: string,
-  user: userContext | null
+  user: userContext | null,
 ) => {
   if (!user) return;
   if (materialInfo.assignedTo) {
-    let prevUserKey = materialInfoMask.assignedTo.value;
+    const prevUserKey = materialInfoMask.assignedTo.value;
     // update information on assigned user
-    let userKey = materialInfo.assignedTo.value;
-    update(
-      ref(db, `private/usersBomMaterials/${userKey}/${materialId}`),
-      materialInfo
-    );
+    const userKey = materialInfo.assignedTo.value;
+    update(ref(db, `private/usersBomMaterials/${userKey}/${materialId}`), materialInfo);
 
     if (userKey !== user.id && userKey !== prevUserKey) {
       sendNotification(
@@ -337,20 +315,12 @@ const updateMaterialsForUsers = (
         `/budget`,
         null,
         "material",
-        "info"
+        "info",
       );
 
       // delete from previously assigned user
-      if (
-        materialInfoMask.assignedTo &&
-        materialInfoMask.assignedTo !== materialInfo.assignedTo
-      ) {
-        remove(
-          ref(
-            db,
-            `private/usersBomMaterials/${prevUserKey}/${materialInfoMask.id}`
-          )
-        );
+      if (materialInfoMask.assignedTo && materialInfoMask.assignedTo !== materialInfo.assignedTo) {
+        remove(ref(db, `private/usersBomMaterials/${prevUserKey}/${materialInfoMask.id}`));
       }
     }
   }
@@ -381,10 +351,10 @@ const saveMaterial = (
   materialInfoMask: BomMaterial,
   user: userContext | null,
   closeModal: Function,
-  season: string
+  season: string,
 ) => {
   if (!user) return;
-  let materialId = materialInfoMask.id;
+  const materialId = materialInfoMask.id;
   let assignedBy = "";
   if (!materialInfo.assignedBy) assignedBy = user.id;
   else assignedBy = materialInfo.assignedBy;
@@ -396,19 +366,11 @@ const saveMaterial = (
   materialData = validateInputs(materialData);
   if (!materialId) {
     // Create new material
-    push(child(ref(db, "private/bom/"), season), materialData).then(
-      (snapshot) => {
-        // retrieve newly created Key of the DB
-        let materialKey = snapshot.key;
-        if (materialKey)
-          updateMaterialsForUsers(
-            materialData,
-            materialInfoMask,
-            materialKey,
-            user
-          );
-      }
-    );
+    push(child(ref(db, "private/bom/"), season), materialData).then((snapshot) => {
+      // retrieve newly created Key of the DB
+      const materialKey = snapshot.key;
+      if (materialKey) updateMaterialsForUsers(materialData, materialInfoMask, materialKey, user);
+    });
   } else {
     // Update material
     set(ref(db, `private/bom/${season}/${materialId}`), materialData);
@@ -431,21 +393,21 @@ const submitComment = (
   user: userContext | null,
   season: string,
   materialInfo: BomMaterial,
-  setCommentText: Function
+  setCommentText: Function,
 ) => {
   if (!user || !materialInfo.id) {
     return;
   }
-  let comment = {
+  const comment = {
     comment: commentText,
     timestamp: new Date().getTime(),
     createdBy: user.id,
     createdByName: user.name,
   };
   // Push the comment to DB
-  let commentRef = `private/bom/${season}/${materialInfo.id}/comments`;
+  const commentRef = `private/bom/${season}/${materialInfo.id}/comments`;
   push(ref(db, commentRef), comment);
-  let numCommentRef = `private/bom/${season}/${materialInfo.id}/numComments`;
+  const numCommentRef = `private/bom/${season}/${materialInfo.id}/numComments`;
   // Increment comment count on task db, and in state
   runTransaction(ref(db, numCommentRef), (num) => {
     return (num || 0) + 1;
@@ -453,8 +415,8 @@ const submitComment = (
   // Update number of comments on assigned users db (this is cheating because we
   // are not updating the comments themselves, no need)
   if (materialInfo.assignedTo) {
-    let userKey = materialInfo.assignedTo.value;
-    let userCommentRef = `usersBomMaterials/${userKey}/${materialInfo.id}`;
+    const userKey = materialInfo.assignedTo.value;
+    const userCommentRef = `usersBomMaterials/${userKey}/${materialInfo.id}`;
     // increment count users
     runTransaction(child(ref(db, userCommentRef), "numComments"), (num) => {
       return (num || 0) + 1;
@@ -468,7 +430,7 @@ const submitComment = (
         `/budget`,
         null,
         "material",
-        "info"
+        "info",
       );
     }
   }
@@ -489,9 +451,9 @@ const inputBudgetModalHandler = (
   e: React.ChangeEvent<HTMLInputElement>,
   key: string,
   materialInfo: BomMaterial,
-  setMaterialInfo: Function
+  setMaterialInfo: Function,
 ) => {
-  let value = e.target.value;
+  const value = e.target.value;
   setMaterialInfo({ ...materialInfo, [key]: value });
 };
 
@@ -500,11 +462,7 @@ const inputBudgetModalHandler = (
  * @param  {BomMaterial} materialInfo material info that get updated
  * @param  {Function} setMaterialInfo material info update state function
  */
-const assignToHandler = (
-  selected: any,
-  materialInfo: BomMaterial,
-  setMaterialInfo: Function
-) => {
+const assignToHandler = (selected: any, materialInfo: BomMaterial, setMaterialInfo: Function) => {
   setMaterialInfo({ ...materialInfo, assignedTo: selected });
 };
 
@@ -513,11 +471,7 @@ const assignToHandler = (
  * @param  {BomMaterial} materialInfo material info that get updated
  * @param  {Function} setMaterialInfo material info update state function
  */
-const statusHandler = (
-  selected: any,
-  materialInfo: BomMaterial,
-  setMaterialInfo: Function
-) => {
+const statusHandler = (selected: any, materialInfo: BomMaterial, setMaterialInfo: Function) => {
   setMaterialInfo({ ...materialInfo, status: selected.value });
 };
 
@@ -529,7 +483,7 @@ const statusHandler = (
 const forDepartmentHandler = (
   selected: any,
   materialInfo: BomMaterial,
-  setMaterialInfo: Function
+  setMaterialInfo: Function,
 ) => {
   setMaterialInfo({ ...materialInfo, toDepartment: selected.value });
 };
@@ -539,21 +493,15 @@ const forDepartmentHandler = (
  * @param  {BomMaterial} materialInfo material info that get updated
  * @param  {Function} setMaterialInfo material info update state function
  */
-const counterHandler = (
-  value: number,
-  setMaterialInfo: Function,
-  materialInfo: BomMaterial
-) => {
+const counterHandler = (value: number, setMaterialInfo: Function, materialInfo: BomMaterial) => {
   if (value < 0) {
     return false;
   }
   // multiply unitary value by quantity, to update total value
-  let quantity = value;
-  let floatUnitary = parseFloat(
-    materialInfo.unitaryValue.replaceAll(",", "").replace(" €", "")
-  );
-  let total = quantity ? floatUnitary * quantity : 0;
-  let totalString = numberWithCommas(total);
+  const quantity = value;
+  const floatUnitary = parseFloat(materialInfo.unitaryValue.replaceAll(",", "").replace(" €", ""));
+  const total = quantity ? floatUnitary * quantity : 0;
+  const totalString = numberWithCommas(total);
   setMaterialInfo({
     ...materialInfo,
     quantity: value,
@@ -572,16 +520,14 @@ const valueHandler = (
   value: NumberFormatValues,
   materialInfo: BomMaterial | null,
   setMaterialInfo: Function,
-  key: string
+  key: string,
 ) => {
-  let floatValue = parseFloat(
-    value.formattedValue.replaceAll(",", "").replace(" €", "")
-  );
-  let quantity = materialInfo!.quantity ? materialInfo!.quantity : 0;
+  const floatValue = parseFloat(value.formattedValue.replaceAll(",", "").replace(" €", ""));
+  const quantity = materialInfo!.quantity ? materialInfo!.quantity : 0;
   if (key === "totalValue") {
     // divide total value by quantity, to update unitary value
-    let unitary = quantity ? floatValue / quantity : 0;
-    let unitaryString = numberWithCommas(unitary);
+    const unitary = quantity ? floatValue / quantity : 0;
+    const unitaryString = numberWithCommas(unitary);
     setMaterialInfo({
       ...materialInfo,
       [key]: value.formattedValue,
@@ -589,8 +535,8 @@ const valueHandler = (
     });
   } else if (key === "unitaryValue") {
     // multiply unitary value by quantity, to update total value
-    let total = quantity ? floatValue * quantity : 0;
-    let totalString = numberWithCommas(total);
+    const total = quantity ? floatValue * quantity : 0;
+    const totalString = numberWithCommas(total);
     setMaterialInfo({
       ...materialInfo,
       [key]: value.formattedValue,
@@ -604,13 +550,9 @@ const valueHandler = (
  * @param  {BomMaterial} materialInfo material info that get updated
  * @param  {Function} setMaterialInfo material info update state function
  */
-const dateHandler = (
-  date: Date,
-  materialInfo: BomMaterial | null,
-  setMaterialInfo: Function
-) => {
+const dateHandler = (date: Date, materialInfo: BomMaterial | null, setMaterialInfo: Function) => {
   // saves the date as a portuguese format string
-  let dateString = dateToString(date);
+  const dateString = dateToString(date);
   setMaterialInfo({ ...materialInfo, date: dateString });
 };
 
@@ -618,19 +560,16 @@ const dateHandler = (
  * @param  {event} e input event
  * @param  {Function} setCommentText material info update state function
  */
-const commentTextHandler = (
-  e: React.ChangeEvent<HTMLInputElement>,
-  setCommentText: Function
-) => {
+const commentTextHandler = (e: React.ChangeEvent<HTMLInputElement>, setCommentText: Function) => {
   setCommentText(e.target.value);
 };
 
 const sortMaterialsByDate = (materials: [string, BomMaterial][]) => {
   materials.sort((a, b) => {
-    let matA = a[1];
-    let matB = b[1];
-    var dateA = inputToDate(matA.date);
-    var dateB = inputToDate(matB.date);
+    const matA = a[1];
+    const matB = b[1];
+    const dateA = inputToDate(matA.date);
+    const dateB = inputToDate(matB.date);
     if (dateA < dateB) return 1;
     if (dateA > dateB) return -1;
     return 0;
@@ -644,11 +583,11 @@ const sortMaterialsByDate = (materials: [string, BomMaterial][]) => {
  * @returns
  */
 const getEmptyTableDataObject = (departmentsWDesc: DepartmentsWithDesc) => {
-  let dataArray: BomTableData = {};
+  const dataArray: BomTableData = {};
   Object.entries(departmentsWDesc).forEach(([description, department]) => {
     dataArray[description] = [];
   });
-  dataArray["All"] = [];
+  dataArray.All = [];
   return dataArray;
 };
 const getSeasonBudgetData = (
@@ -666,7 +605,7 @@ const getSeasonBudgetData = (
   setMaterialInfoMask: Function,
   setModalOpen: Function,
   setShowDeleteButton: Function,
-  setCommentListener: Function
+  setCommentListener: Function,
 ) => {
   if (openSeasonId && openedFromRedirect && !season) {
     setSeason(openSeasonId); // e.g 2020-2021
@@ -674,9 +613,9 @@ const getSeasonBudgetData = (
     return;
   }
   onValue(ref(db, "private/bom/seasons"), (snapshot) => {
-    let seasonsFromDb: string[] = snapshot.val();
+    const seasonsFromDb: string[] = snapshot.val();
     if (!seasonsFromDb) return;
-    let selectSeasons = seasonsFromDb.map((season) => ({
+    const selectSeasons = seasonsFromDb.map((season) => ({
       value: season,
       label: season,
     }));
@@ -685,9 +624,9 @@ const getSeasonBudgetData = (
       setSeason(seasonsFromDb[0].replace("/", "-"));
       return;
     }
-    onValue(ref(db, "private/bom/" + season), (snapshot) => {
-      let bomDataHolder = getEmptyTableDataObject(departmentsWDesc);
-      let budgetSeasonData: BomDb = snapshot.val();
+    onValue(ref(db, `private/bom/${season}`), (snapshot) => {
+      const bomDataHolder = getEmptyTableDataObject(departmentsWDesc);
+      const budgetSeasonData: BomDb = snapshot.val();
       if (budgetSeasonData) {
         Object.entries(budgetSeasonData).forEach(([materialId, material]) => {
           // append material to respective department, and to all
@@ -697,7 +636,7 @@ const getSeasonBudgetData = (
             bomDataHolder[material.toDepartment] = [[materialId, material]];
           }
 
-          bomDataHolder["All"].push([materialId, material]);
+          bomDataHolder.All.push([materialId, material]);
           if (openMatId === materialId && openedFromRedirect) {
             onRowBomClick(
               { data: { ...material, id: materialId } }, // add id
@@ -705,13 +644,13 @@ const getSeasonBudgetData = (
               setMaterialInfoMask,
               setModalOpen,
               setShowDeleteButton,
-              setCommentListener
+              setCommentListener,
             );
           }
         });
         // sort by date all arrays
         Object.entries(bomDataHolder).forEach(([department, materials]) => {
-          let sortedMaterials = sortMaterialsByDate(materials);
+          const sortedMaterials = sortMaterialsByDate(materials);
           bomDataHolder[department] = sortedMaterials;
         });
       }
@@ -786,7 +725,7 @@ const departmentSelectOptions: depSelectOptions[] = [
  * @returns
  */
 const getBudgetDepartmentOptions = (departments: Departments) => {
-  let depOptions = Object.entries(departments).map(([acronym, department]) => ({
+  const depOptions = Object.entries(departments).map(([acronym, department]) => ({
     value: department.description,
     label: department.description,
   }));

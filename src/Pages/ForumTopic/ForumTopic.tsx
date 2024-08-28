@@ -1,11 +1,16 @@
-import { ThreadCreation, ThreadMetadata } from "../../interfaces";
+import { off, ref } from "firebase/database";
+import { useEffect, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
+import { db } from "../../config/firebase";
+import { useAuth } from "../../contexts/AuthContext";
+import { ThreadCreation, ThreadMetadata } from "../../interfaces";
 import {
   getDecodedString,
   getEncodedString,
   userHasPermission,
 } from "../../utils/generalFunctions";
-import { useEffect, useState } from "react";
+import ForumCreateThreadModal from "./ForumCreateThreadModal";
+import ForumThreadRow from "./ForumThreadRow";
 import {
   checkIfThreadExists,
   deleteTopic,
@@ -13,11 +18,6 @@ import {
   getForumTopicMetadata,
   swalDeleteTopicMessage,
 } from "./forumTopicUtils";
-import { useAuth } from "../../contexts/AuthContext";
-import ForumThreadRow from "./ForumThreadRow";
-import { db } from "../../config/firebase";
-import ForumCreateThreadModal from "./ForumCreateThreadModal";
-import { off, ref } from "firebase/database";
 
 const ForumTopic = (props: any) => {
   const { USER, usersMetadata } = useAuth();
@@ -29,14 +29,12 @@ const ForumTopic = (props: any) => {
   // get it directly from url path
   let [encodedSectionName, encodedTopicName] = getEncodedForumTopicPaths();
   // Encode and Decode from scratch
-  let decodedSectionName = getDecodedString(encodedSectionName);
-  let decodedTopicName = getDecodedString(encodedTopicName);
+  const decodedSectionName = getDecodedString(encodedSectionName);
+  const decodedTopicName = getDecodedString(encodedTopicName);
   encodedSectionName = getEncodedString(decodedSectionName);
   encodedTopicName = getEncodedString(decodedTopicName);
 
-  const [forumTopicMetadata, setForumTopicMetadata] = useState<
-    [string, ThreadMetadata][]
-  >([]);
+  const [forumTopicMetadata, setForumTopicMetadata] = useState<[string, ThreadMetadata][]>([]);
   const [isCreateThreadModalOpen, setIsCreateThreadModalOpen] = useState(false);
   const [newThreadInfo, setNewThreadInfo] = useState<ThreadCreation>({
     title: "",
@@ -47,26 +45,15 @@ const ForumTopic = (props: any) => {
 
   useEffect(() => {
     // check if topic exists, send the user to forum otherwise
-    checkIfThreadExists(encodedSectionName, encodedTopicName).then(
-      (snapshot) => {
-        if (!snapshot.val()) setRedirectTo(true);
-        // Get user metadata for pictures, names etc
-        // Now retrieve topic metadata with threads information of the topic if any
-        getForumTopicMetadata(
-          encodedSectionName,
-          encodedTopicName,
-          setForumTopicMetadata
-        );
-      }
-    );
+    checkIfThreadExists(encodedSectionName, encodedTopicName).then((snapshot) => {
+      if (!snapshot.val()) setRedirectTo(true);
+      // Get user metadata for pictures, names etc
+      // Now retrieve topic metadata with threads information of the topic if any
+      getForumTopicMetadata(encodedSectionName, encodedTopicName, setForumTopicMetadata);
+    });
 
     return () => {
-      off(
-        ref(
-          db,
-          `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}`
-        )
-      );
+      off(ref(db, `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}`));
     };
   }, [encodedTopicName, encodedSectionName]);
   return (
@@ -97,10 +84,7 @@ const ForumTopic = (props: any) => {
               </li>
             </ol>
           </div>
-          <div
-            className="col-md-3 p-0"
-            style={{ marginBottom: "auto", marginTop: "auto" }}
-          >
+          <div className="col-md-3 p-0" style={{ marginBottom: "auto", marginTop: "auto" }}>
             <button
               type="button"
               className="float-right mr-1 btn btn-shadow btn-wide btn-primary"
@@ -122,8 +106,8 @@ const ForumTopic = (props: any) => {
                       forumTopicMetadata,
                       encodedSectionName,
                       encodedTopicName,
-                      setRedirectTo
-                    )
+                      setRedirectTo,
+                    ),
                   )
                 }
               >
@@ -138,10 +122,7 @@ const ForumTopic = (props: any) => {
         <div className="card mb-3">
           <div className="card-header pr-0 pl-0">
             <div className="row no-gutters align-items-center w-100">
-              <div className="col font-weight-bold pl-3">
-                {" "}
-                {getDecodedString(encodedTopicName)}
-              </div>
+              <div className="col font-weight-bold pl-3"> {getDecodedString(encodedTopicName)}</div>
               <div className="col-4 text-muted">
                 <div className="row no-gutters align-items-center">
                   <div className="col-4">Replies</div>
@@ -153,19 +134,17 @@ const ForumTopic = (props: any) => {
           {/* Insert threads */}
           {usersMetadata &&
             USER &&
-            forumTopicMetadata.map(
-              ([encodedThreadName, threadInformation], idx) => (
-                <ForumThreadRow
-                  key={idx}
-                  user={USER}
-                  usersMetadata={usersMetadata}
-                  encodedSectionName={encodedSectionName}
-                  encodedTopicName={encodedTopicName}
-                  encodedThreadName={encodedThreadName}
-                  threadInformation={threadInformation}
-                />
-              )
-            )}
+            forumTopicMetadata.map(([encodedThreadName, threadInformation], idx) => (
+              <ForumThreadRow
+                key={idx}
+                user={USER}
+                usersMetadata={usersMetadata}
+                encodedSectionName={encodedSectionName}
+                encodedTopicName={encodedTopicName}
+                encodedThreadName={encodedThreadName}
+                threadInformation={threadInformation}
+              />
+            ))}
         </div>
         <ForumCreateThreadModal
           isCreateThreadModalOpen={isCreateThreadModalOpen}

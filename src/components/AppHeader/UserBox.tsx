@@ -1,24 +1,19 @@
-import { Fragment } from "react";
 import { Link } from "react-router-dom";
 
-import {
-  DropdownToggle,
-  DropdownMenu,
-  UncontrolledButtonDropdown,
-} from "reactstrap";
+import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
 
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { useAuth } from "../../contexts/AuthContext";
 import { connect } from "react-redux";
-import { setUserProfilePicture } from "../../reducers/ThemeOptions";
 import { useHistory } from "react-router-dom";
-import UserNotifications from "./UserNotifications";
-import ImageContainer from "../AppImage/ImageContainer";
+import { useAuth } from "../../contexts/AuthContext";
+import { setUserProfilePicture } from "../../reducers/ThemeOptions";
 import { isFeatureVisible } from "../../utils/generalFunctions";
+import ImageContainer from "../AppImage/ImageContainer";
 import DarkModeToggle from "./DarkModeToggle";
+import UserNotifications from "./UserNotifications";
 
 type Props = {
   userProfilePicture: string;
@@ -44,7 +39,7 @@ const UserBox = ({ userProfilePicture }: Props) => {
       .catch((error: string) => {});
   };
   return (
-    <Fragment>
+    <>
       {applicationSettings.maintenanceIsOpen && (
         <div className="badge badge-danger ml-2">Under Maintenance</div>
       )}
@@ -52,16 +47,8 @@ const UserBox = ({ userProfilePicture }: Props) => {
       <div className="dropdown">
         <div className="header-dots">
           <UserNotifications />
-          {isFeatureVisible(
-            "darkTheme",
-            applicationFeatures,
-            isAdminUser,
-            isGod
-          ) && (
-            <DarkModeToggle
-              isDarkMode={isDarkMode}
-              setIsDarkMode={setIsDarkMode}
-            />
+          {isFeatureVisible("darkTheme", applicationFeatures, isAdminUser, isGod) && (
+            <DarkModeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
           )}
         </div>
       </div>
@@ -80,10 +67,7 @@ const UserBox = ({ userProfilePicture }: Props) => {
                     classNames={"rounded-circle"}
                     imageSrc={USER!.usrImgComp}
                   />
-                  <FontAwesomeIcon
-                    className="ml-2 opacity-8"
-                    icon={faAngleDown}
-                  />
+                  <FontAwesomeIcon className="ml-2 opacity-8" icon={faAngleDown} />
                 </DropdownToggle>
                 <DropdownMenu
                   right
@@ -96,7 +80,10 @@ const UserBox = ({ userProfilePicture }: Props) => {
                     <div className="no-gutters row">
                       <div className="col-md-6">
                         <Link to="/profile">
-                          <button className="btn-icon-vertical btn-transition btn-transition-alt pt-2 pb-2 btn btn-outline-info">
+                          <button
+                            type="button"
+                            className="btn-icon-vertical btn-transition btn-transition-alt pt-2 pb-2 btn btn-outline-info"
+                          >
                             <i className="fas fa-user-alt icon-gradient bg-malibu-beach btn-icon-wrapper mb-2 "></i>
                             <b>Profile</b>
                           </button>
@@ -104,6 +91,7 @@ const UserBox = ({ userProfilePicture }: Props) => {
                       </div>
                       <div className="col-md-6">
                         <button
+                          type="button"
                           onClick={handleLogout}
                           className="btn-icon-vertical btn-transition btn-transition-alt pt-2 pb-2 btn btn-outline-danger"
                         >
@@ -138,7 +126,7 @@ const UserBox = ({ userProfilePicture }: Props) => {
           </div>
         </div>
       </div>
-    </Fragment>
+    </>
   );
 };
 
@@ -147,8 +135,7 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
-  setUserProfilePicture: (image: string) =>
-    dispatch(setUserProfilePicture(image)),
+  setUserProfilePicture: (image: string) => dispatch(setUserProfilePicture(image)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserBox);

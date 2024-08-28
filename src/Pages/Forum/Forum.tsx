@@ -1,12 +1,12 @@
+import { off, ref } from "firebase/database";
 import { useEffect, useState } from "react";
+import { withRouter } from "react-router-dom";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../contexts/AuthContext";
 import { ForumMetadata } from "../../interfaces";
 import ForumCreateModal from "./ForumCreateModal";
 import ForumSection from "./ForumSection";
 import { getForumMetadata } from "./forumUtils";
-import { withRouter } from "react-router-dom";
-import { off, ref } from "firebase/database";
 
 const Forum = () => {
   const { USER } = useAuth();

@@ -1,12 +1,12 @@
-import { dateComparator } from "../../utils/generalFunctions";
+import { ColumnApi, GridApi, GridReadyEvent } from "ag-grid-community";
 import {
   PersonalInformation,
+  UserMetadata,
   selectOption,
   tableColumns,
   userContext,
-  UserMetadata,
 } from "../../interfaces";
-import { ColumnApi, GridApi, GridReadyEvent } from "ag-grid-community";
+import { dateComparator } from "../../utils/generalFunctions";
 import printDoc from "../../utils/pdfExport/printDoc";
 
 // Default selected columns to display
@@ -34,10 +34,7 @@ const defaultOptions = [
  * @param selectedOptions
  * @param setTableColumns
  */
-const buildColumns = (
-  selectedOptions: selectOption[],
-  setTableColumns: Function
-) => {
+const buildColumns = (selectedOptions: selectOption[], setTableColumns: Function) => {
   // Build column definition
   const columnsDefs: tableColumns[] = [];
   for (const selected of selectedOptions) {
@@ -68,7 +65,7 @@ const buildTableRows = (
   usersMetadata: UserMetadata,
   selectedOptions: selectOption[],
   setTableRowsData: Function,
-  onlyInTeamUsers: boolean = true
+  onlyInTeamUsers: boolean = true,
 ) => {
   // loop selectedOptions value keys ->
   const rows: PersonalInformation[] = [];
@@ -114,7 +111,7 @@ const handleSelectOption = (
   usersInfo: UserMetadata,
   setSelectedOptions: Function,
   setTableColumns: Function,
-  setTableRowsData: Function
+  setTableRowsData: Function,
 ) => {
   setSelectedOptions(e);
   buildTableRows(usersInfo, e, setTableRowsData, false);
@@ -131,7 +128,7 @@ const handleSelectOption = (
 const onFirstDataRendered = (
   params: GridReadyEvent,
   setGridApi: Function,
-  setColumnApi: Function
+  setColumnApi: Function,
 ) => {
   params.api.sizeColumnsToFit();
   // Initial sort by name
@@ -159,7 +156,7 @@ const exportedFilename = () => {
  */
 const excelExport = (gridApi: GridApi | undefined) => {
   if (!gridApi) return;
-  gridApi.exportDataAsExcel({ fileName: exportedFilename() + ".xlsx" });
+  gridApi.exportDataAsExcel({ fileName: `${exportedFilename()}.xlsx` });
 };
 /**
  * Export table to clipboard
@@ -188,10 +185,7 @@ const filterTable = (e: any, gridApi: GridApi | undefined) => {
  * @param columnApi
  * @returns
  */
-const pdfExport = (
-  gridApi: GridApi | undefined,
-  columnApi: ColumnApi | undefined
-) => {
+const pdfExport = (gridApi: GridApi | undefined, columnApi: ColumnApi | undefined) => {
   if (!gridApi || !columnApi) return;
   printDoc(gridApi, columnApi, exportedFilename());
 };
@@ -214,7 +208,7 @@ const getTeamDataForTable = (
   setTableRowsData: Function,
   setInfoOptions: Function,
   setColumnText: Function,
-  onlyInTeamUsers: boolean = true
+  onlyInTeamUsers: boolean = true,
 ) => {
   if (!user) {
     return;
@@ -227,12 +221,7 @@ const getTeamDataForTable = (
   });
 
   // Build rows to fill the table WITH THE DEFAULT INFO
-  buildTableRows(
-    usersMetadata,
-    defaultOptions,
-    setTableRowsData,
-    onlyInTeamUsers
-  );
+  buildTableRows(usersMetadata, defaultOptions, setTableRowsData, onlyInTeamUsers);
   buildColumns(defaultOptions, setTableColumns);
 
   setInfoOptions(availableOptions);

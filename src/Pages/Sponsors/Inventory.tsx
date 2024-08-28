@@ -1,14 +1,10 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "react-rainbow-components";
-import {
-  Sponsor,
-  SponsorBracketsListDB,
-  SponsorRetroactives,
-} from "../../interfaces";
+import { CheckboxToggle } from "react-rainbow-components";
+import { Sponsor, SponsorBracketsListDB, SponsorRetroactives } from "../../interfaces";
 import InventorySponsorCard from "./InventorySponsorCard";
 import SponsorModal from "./SponsorModal";
 import { filterSponsors } from "./sponsorsUtils";
-import { CheckboxToggle } from "react-rainbow-components";
 
 type Props = {
   retroActives: SponsorRetroactives;
@@ -21,8 +17,7 @@ const Inventory = ({ retroActives, sponsors, existingBrackets }: Props) => {
   const [sponsorId, setSponsorId] = useState("");
   const [currBracketId, setCurrBracketId] = useState();
 
-  const [inventorySponsors, setInventorySponsors] =
-    useState<[string, Sponsor][]>(sponsors);
+  const [inventorySponsors, setInventorySponsors] = useState<[string, Sponsor][]>(sponsors);
 
   const [filterTerm, setFilterTerm] = useState("");
   const [filterNoLogo, setFilterNoLogo] = useState(false);
@@ -34,7 +29,7 @@ const Inventory = ({ retroActives, sponsors, existingBrackets }: Props) => {
   }, [sponsors]);
 
   return (
-    <Fragment>
+    <>
       <Input
         className="rainbow-p-around_medium"
         value={filterTerm}
@@ -48,7 +43,7 @@ const Inventory = ({ retroActives, sponsors, existingBrackets }: Props) => {
             filterNoLogo,
             filterLowQualityLogo,
             sponsors,
-            setInventorySponsors
+            setInventorySponsors,
           );
         }}
       />
@@ -65,7 +60,7 @@ const Inventory = ({ retroActives, sponsors, existingBrackets }: Props) => {
               filterNoLogo,
               filterLowQualityLogo,
               sponsors,
-              setInventorySponsors
+              setInventorySponsors,
             );
           }}
         />
@@ -81,7 +76,7 @@ const Inventory = ({ retroActives, sponsors, existingBrackets }: Props) => {
               !filterNoLogo,
               filterLowQualityLogo,
               sponsors,
-              setInventorySponsors
+              setInventorySponsors,
             );
           }}
         />
@@ -97,7 +92,7 @@ const Inventory = ({ retroActives, sponsors, existingBrackets }: Props) => {
               filterNoLogo,
               !filterLowQualityLogo,
               sponsors,
-              setInventorySponsors
+              setInventorySponsors,
             );
           }}
         />
@@ -129,7 +124,7 @@ const Inventory = ({ retroActives, sponsors, existingBrackets }: Props) => {
         setSponsorInfo={setSponsorInfo}
         sponsorId={sponsorId}
       />
-    </Fragment>
+    </>
   );
 };
 

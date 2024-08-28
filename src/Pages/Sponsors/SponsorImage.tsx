@@ -1,7 +1,7 @@
-import { getSvgStringFromPath } from "./sponsorsUtils";
 import parse from "html-react-parser";
-import { Spinner } from "react-rainbow-components";
 import { useEffect, useState } from "react";
+import { Spinner } from "react-rainbow-components";
+import { getSvgStringFromPath } from "./sponsorsUtils";
 type Props = {
   svgPath: string | undefined;
 };

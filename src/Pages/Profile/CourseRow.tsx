@@ -1,5 +1,5 @@
-import { Course } from "../../interfaces";
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
+import { Course } from "../../interfaces";
 import { UserMetadata } from "../../interfaces";
 
 type Props = {

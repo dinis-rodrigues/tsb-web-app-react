@@ -22,13 +22,11 @@ const taskPageObject = {
         name: "To do",
       },
       "1InProgress": {
-        classNames:
-          "kanban-board-header card text-center bg-warning text-white",
+        classNames: "kanban-board-header card text-center bg-warning text-white",
         name: "In Progress",
       },
       "2Completed": {
-        classNames:
-          "kanban-board-header card text-center bg-success text-white",
+        classNames: "kanban-board-header card text-center bg-success text-white",
         name: "Completed",
       },
     },
@@ -76,11 +74,7 @@ const departmentTemplate: Department = {
   color: "#000000",
 };
 
-const adminPositions = [
-  "Team Leader",
-  "Head of Department",
-  "Technical Director",
-];
+const adminPositions = ["Team Leader", "Head of Department", "Technical Director"];
 /**
  * Handles any input text for the department
  * @param e
@@ -90,7 +84,7 @@ const adminPositions = [
 const departmentInputHandler = (
   e: React.ChangeEvent<HTMLInputElement>,
   key: string,
-  setDepartmentInfo: Function
+  setDepartmentInfo: Function,
 ) => {
   // dont allow any funky characters
   let newVal = e.target.value;
@@ -117,10 +111,7 @@ const handleDepartmentSelect = (option: any, setDepartmentInfo: Function) => {
  * Closes the department modal
  * @param setIsDepartmentModalOpen
  */
-const closeDepartmentModal = (
-  setIsDepartmentModalOpen: Function,
-  setNewPosition: Function
-) => {
+const closeDepartmentModal = (setIsDepartmentModalOpen: Function, setNewPosition: Function) => {
   setIsDepartmentModalOpen(false);
   setNewPosition("");
 };
@@ -134,9 +125,9 @@ const closeDepartmentModal = (
 const removePosition = (
   departmentInfo: Department,
   positionToRemove: string,
-  setDepartmentInfo: Function
+  setDepartmentInfo: Function,
 ) => {
-  let currPositions = [...departmentInfo.positions];
+  const currPositions = [...departmentInfo.positions];
   const index = currPositions.indexOf(positionToRemove);
   if (index > -1) {
     currPositions.splice(index, 1);
@@ -156,9 +147,9 @@ const editPosition = (
   newPosition: string,
   idx: number,
   departmentInfo: Department,
-  setDepartmentInfo: Function
+  setDepartmentInfo: Function,
 ) => {
-  let currPositions = [...departmentInfo.positions];
+  const currPositions = [...departmentInfo.positions];
   if (!newPosition || adminPositions.includes(newPosition)) return;
   currPositions[idx] = newPosition;
   setDepartmentInfo({ ...departmentInfo, positions: currPositions });
@@ -176,7 +167,7 @@ const addPosition = (
   newPosition: string,
   departmentInfo: Department,
   setNewPosition: Function,
-  setDepartmentInfo: Function
+  setDepartmentInfo: Function,
 ) => {
   let currPositions: string[] = [];
   if (departmentInfo.positions) {
@@ -194,10 +185,7 @@ const addPosition = (
  * @param departmentInfo
  */
 const createTaskPage = (departmentInfo: Department) => {
-  set(
-    ref(db, `private/tasks${departmentInfo.acronym.toUpperCase()}`),
-    taskPageObject
-  );
+  set(ref(db, `private/tasks${departmentInfo.acronym.toUpperCase()}`), taskPageObject);
 };
 
 /**
@@ -206,7 +194,7 @@ const createTaskPage = (departmentInfo: Department) => {
  */
 const deleteAssignedUserMaterials = (departmentDescription: string) => {
   get(ref(db, "private/usersBomMaterials")).then((snapshot) => {
-    let assignedUsers: AssignedUserMaterials = snapshot.val();
+    const assignedUsers: AssignedUserMaterials = snapshot.val();
     if (!assignedUsers) return;
     Object.entries(assignedUsers).forEach(([userId, materials]) => {
       Object.entries(materials).forEach(([materialId, material]) => {
@@ -225,7 +213,7 @@ const deleteAssignedUserMaterials = (departmentDescription: string) => {
  */
 const deleteBudgetMetadata = (departmentDescription: string) => {
   get(ref(db, "private/bom")).then((snapshot) => {
-    let bomDb: EntireBom = snapshot.val();
+    const bomDb: EntireBom = snapshot.val();
     if (!bomDb) return;
     // loop all seasons
     Object.entries(bomDb).forEach(([season, seasonData]) => {
@@ -254,7 +242,7 @@ const deleteAllEventsMetadata = (departmentDescription: string) => {
     if (!allEvents) return;
     Object.entries(allEvents).forEach(([time, eventDb]) => {
       Object.entries(eventDb).forEach(([eventId, event]) => {
-        let eventDepartment = event.type.replace(" Meeting", "");
+        const eventDepartment = event.type.replace(" Meeting", "");
         if (eventDepartment === departmentDescription) {
           delete allEvents[time][eventId];
         }
@@ -270,14 +258,11 @@ const deleteAllEventsMetadata = (departmentDescription: string) => {
  */
 const deleteAssignedUserTasks = (departmentAcronym: string) => {
   get(ref(db, "private/usersTasks")).then((snapshot) => {
-    let allUsersTasks: AllUserTasks = snapshot.val();
+    const allUsersTasks: AllUserTasks = snapshot.val();
     if (!allUsersTasks) return;
     Object.entries(allUsersTasks).forEach(([userId, tasks]) => {
       Object.entries(tasks).forEach(([taskId, task]) => {
-        if (
-          task.departmentBoard.replace("tasks", "") ===
-          departmentAcronym.toUpperCase()
-        ) {
+        if (task.departmentBoard.replace("tasks", "") === departmentAcronym.toUpperCase()) {
           delete allUsersTasks[userId][taskId];
         }
       });
@@ -306,12 +291,9 @@ const removeAllDepartmentRelatedMetadata = (departmentInfo: Department) => {
  * @param previousDescription
  * @param currDescription
  */
-const changeUserMetadata = (
-  previousDescription: string,
-  currDescription: string
-) => {
+const changeUserMetadata = (previousDescription: string, currDescription: string) => {
   get(ref(db, "private/usersMetadata")).then((snapshot) => {
-    let usersMetadata: UserMetadata = snapshot.val();
+    const usersMetadata: UserMetadata = snapshot.val();
     if (!usersMetadata) return;
     Object.entries(usersMetadata).forEach(([userId, userInfo]) => {
       if (userInfo.pinfo.department === previousDescription) {
@@ -328,12 +310,9 @@ const changeUserMetadata = (
  * @param previousDescription
  * @param currDescription
  */
-const changePublicUserMetadata = (
-  previousDescription: string,
-  currDescription: string
-) => {
+const changePublicUserMetadata = (previousDescription: string, currDescription: string) => {
   get(ref(db, "public/officialWebsite/team")).then((snapshot) => {
-    let usersMetadata: PublicTeam = snapshot.val();
+    const usersMetadata: PublicTeam = snapshot.val();
     if (!usersMetadata) return;
     Object.entries(usersMetadata).forEach(([userId, userInfo]) => {
       if (userInfo.info.department === previousDescription) {
@@ -350,12 +329,9 @@ const changePublicUserMetadata = (
  * @param previousDescription
  * @param currDescription
  */
-const changeBudgetMetadata = (
-  previousDescription: string,
-  currDescription: string
-) => {
+const changeBudgetMetadata = (previousDescription: string, currDescription: string) => {
   get(ref(db, "private/bom")).then((snapshot) => {
-    let bomDb: EntireBom = snapshot.val();
+    const bomDb: EntireBom = snapshot.val();
     if (!bomDb) return;
     // loop all seasons
     Object.entries(bomDb).forEach(([season, seasonData]) => {
@@ -378,12 +354,9 @@ const changeBudgetMetadata = (
  * @param previousDescription
  * @param currDescription
  */
-const changeAssignedUserMaterials = (
-  previousDescription: string,
-  currDescription: string
-) => {
+const changeAssignedUserMaterials = (previousDescription: string, currDescription: string) => {
   get(ref(db, "private/usersBomMaterials")).then((snapshot) => {
-    let assignedUsers: AssignedUserMaterials = snapshot.val();
+    const assignedUsers: AssignedUserMaterials = snapshot.val();
     if (!assignedUsers) return;
     Object.entries(assignedUsers).forEach(([userId, materials]) => {
       Object.entries(materials).forEach(([materialId, material]) => {
@@ -401,19 +374,16 @@ const changeAssignedUserMaterials = (
  * @param previousDescription
  * @param currDescription
  */
-const changeAllEventsMetadata = (
-  previousDescription: string,
-  currDescription: string
-) => {
+const changeAllEventsMetadata = (previousDescription: string, currDescription: string) => {
   get(ref(db, "private/events")).then((snapshot) => {
     const allEvents: AllEvents = snapshot.val();
 
     if (!allEvents) return;
     Object.entries(allEvents).forEach(([time, eventDb]) => {
       Object.entries(eventDb).forEach(([eventId, event]) => {
-        let eventDepartment = event.type.replace(" Meeting", "");
+        const eventDepartment = event.type.replace(" Meeting", "");
         if (eventDepartment === previousDescription) {
-          allEvents[time][eventId].type = currDescription + " Meeting";
+          allEvents[time][eventId].type = `${currDescription} Meeting`;
         }
       });
     });
@@ -428,7 +398,7 @@ const changeAllEventsMetadata = (
  */
 const changeAllDepartmentRelatedMetadata = (
   previousDescription: string,
-  currDescription: string
+  currDescription: string,
 ) => {
   changeUserMetadata(previousDescription, currDescription);
   changePublicUserMetadata(previousDescription, currDescription);
@@ -447,9 +417,9 @@ const saveDepartment = (
   departments: Departments,
   modalText: DepartmentModalText,
   setIsDepartmentModalOpen: Function,
-  setNewPosition: Function
+  setNewPosition: Function,
 ) => {
-  let acronym = departmentInfo.acronym;
+  const acronym = departmentInfo.acronym;
   if (modalText.creatingNewDepartment) {
     // check if the acronym is equal to existing ones
     if (departments[acronym]) {
@@ -460,8 +430,8 @@ const saveDepartment = (
   } else {
     // Update all metadata in the database that relates to the changed
     // department description
-    let previousDescription = departments[acronym].description;
-    let currDescription = departmentInfo.description;
+    const previousDescription = departments[acronym].description;
+    const currDescription = departmentInfo.description;
     if (previousDescription !== currDescription) {
       changeAllDepartmentRelatedMetadata(previousDescription, currDescription);
     }
@@ -476,21 +446,13 @@ const saveDepartment = (
  * @param acronym
  * @param departmentInfo
  */
-const updateRecruitmentDepartments = (
-  acronym: string,
-  departmentInfo: Department
-) => {
-  get(child(ref(db, "public/recruitment/openDepartments"), acronym)).then(
-    (snapshot) => {
-      let recruitmentDepartment = snapshot.val();
-      if (!recruitmentDepartment) return;
-      else
-        set(
-          child(ref(db, "public/recruitment/openDepartments"), acronym),
-          departmentInfo
-        );
-    }
-  );
+const updateRecruitmentDepartments = (acronym: string, departmentInfo: Department) => {
+  get(child(ref(db, "public/recruitment/openDepartments"), acronym)).then((snapshot) => {
+    const recruitmentDepartment = snapshot.val();
+    if (!recruitmentDepartment) return;
+
+    set(child(ref(db, "public/recruitment/openDepartments"), acronym), departmentInfo);
+  });
 };
 
 /**
@@ -502,7 +464,7 @@ const updateRecruitmentDepartments = (
 const openModalToCreateDepartment = (
   setDepartmentInfo: Function,
   setIsDepartmentModalOpen: Function,
-  setModalText: Function
+  setModalText: Function,
 ) => {
   setDepartmentInfo({ ...departmentTemplate });
   setIsDepartmentModalOpen(true);
@@ -524,7 +486,7 @@ const editDepartment = (
   department: Department,
   setIsDepartmentModalOpen: Function,
   setDepartmentInfo: Function,
-  setModalText: Function
+  setModalText: Function,
 ) => {
   setModalText({
     saveButton: "Save",
@@ -567,7 +529,8 @@ const swalDeleteDepartmentMessage = (deleteFunction: Function) => {
     .then((result) => {
       if (result.isConfirmed) {
         return;
-      } else if (result.isDenied) {
+      }
+      if (result.isDenied) {
         deleteFunction();
       }
     });
@@ -579,7 +542,7 @@ const swalDeleteAlert = withReactContent(Swal);
  * @param departmentInfo
  */
 const deleteDepartment = (departmentInfo: Department) => {
-  let acronym = departmentInfo.acronym;
+  const acronym = departmentInfo.acronym;
   remove(child(ref(db, "private/departments"), acronym));
   remove(child(ref(db, "public/recruitment/openDepartments"), acronym));
   removeAllDepartmentRelatedMetadata(departmentInfo);

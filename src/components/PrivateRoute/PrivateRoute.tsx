@@ -1,6 +1,5 @@
-import { Route, Redirect } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { Fragment } from "react";
 import { isFeatureVisible } from "../../utils/generalFunctions";
 
 type Props = {
@@ -46,16 +45,10 @@ const PrivateRoute = ({
       path={path}
       render={(props) => {
         return currentUser && displayContent ? (
-          !featureName ||
-          isFeatureVisible(
-            featureName,
-            applicationFeatures,
-            isAdminUser,
-            isGod
-          ) ? (
-            <Fragment>
+          !featureName || isFeatureVisible(featureName, applicationFeatures, isAdminUser, isGod) ? (
+            <>
               <Component {...props} />
-            </Fragment>
+            </>
           ) : (
             <Redirect to="/dashboard" />
           )

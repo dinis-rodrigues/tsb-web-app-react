@@ -1,42 +1,30 @@
 // import sideBar6 from "../assets/utils/images/sidebar/city1.jpg";
 const sideBar6 = "";
-export const SET_USER_PROFILE_PICTURE =
-  "THEME_OPTIONS/SET_USER_PROFILE_PICTURE";
+export const SET_USER_PROFILE_PICTURE = "THEME_OPTIONS/SET_USER_PROFILE_PICTURE";
 export const SET_ENABLE_LOGIN_PAGE = "THEME_OPTIONS/SET_ENABLE_LOGIN_PAGE";
 
-export const SET_ENABLE_BACKGROUND_IMAGE =
-  "THEME_OPTIONS/SET_ENABLE_BACKGROUND_IMAGE";
+export const SET_ENABLE_BACKGROUND_IMAGE = "THEME_OPTIONS/SET_ENABLE_BACKGROUND_IMAGE";
 
 export const SET_ENABLE_MOBILE_MENU = "THEME_OPTIONS/SET_ENABLE_MOBILE_MENU";
-export const SET_ENABLE_MOBILE_MENU_SMALL =
-  "THEME_OPTIONS/SET_ENABLE_MOBILE_MENU_SMALL";
+export const SET_ENABLE_MOBILE_MENU_SMALL = "THEME_OPTIONS/SET_ENABLE_MOBILE_MENU_SMALL";
 
 export const SET_ENABLE_FIXED_HEADER = "THEME_OPTIONS/SET_ENABLE_FIXED_HEADER";
-export const SET_ENABLE_HEADER_SHADOW =
-  "THEME_OPTIONS/SET_ENABLE_HEADER_SHADOW";
-export const SET_ENABLE_SIDEBAR_SHADOW =
-  "THEME_OPTIONS/SET_ENABLE_SIDEBAR_SHADOW";
-export const SET_ENABLE_FIXED_SIDEBAR =
-  "THEME_OPTIONS/SET_ENABLE_FIXED_SIDEBAR";
-export const SET_ENABLE_CLOSED_SIDEBAR =
-  "THEME_OPTIONS/SET_ENABLE_CLOSED_SIDEBAR";
+export const SET_ENABLE_HEADER_SHADOW = "THEME_OPTIONS/SET_ENABLE_HEADER_SHADOW";
+export const SET_ENABLE_SIDEBAR_SHADOW = "THEME_OPTIONS/SET_ENABLE_SIDEBAR_SHADOW";
+export const SET_ENABLE_FIXED_SIDEBAR = "THEME_OPTIONS/SET_ENABLE_FIXED_SIDEBAR";
+export const SET_ENABLE_CLOSED_SIDEBAR = "THEME_OPTIONS/SET_ENABLE_CLOSED_SIDEBAR";
 export const SET_ENABLE_FIXED_FOOTER = "THEME_OPTIONS/SET_ENABLE_FIXED_FOOTER";
 
-export const SET_ENABLE_PAGETITLE_ICON =
-  "THEME_OPTIONS/SET_ENABLE_PAGETITLE_ICON";
-export const SET_ENABLE_PAGETITLE_SUBHEADING =
-  "THEME_OPTIONS/SET_ENABLE_PAGETITLE_SUBHEADING";
-export const SET_ENABLE_PAGE_TABS_ALT =
-  "THEME_OPTIONS/SET_ENABLE_PAGE_TABS_ALT";
+export const SET_ENABLE_PAGETITLE_ICON = "THEME_OPTIONS/SET_ENABLE_PAGETITLE_ICON";
+export const SET_ENABLE_PAGETITLE_SUBHEADING = "THEME_OPTIONS/SET_ENABLE_PAGETITLE_SUBHEADING";
+export const SET_ENABLE_PAGE_TABS_ALT = "THEME_OPTIONS/SET_ENABLE_PAGE_TABS_ALT";
 
 export const SET_BACKGROUND_IMAGE = "THEME_OPTIONS/SET_BACKGROUND_IMAGE";
 export const SET_BACKGROUND_COLOR = "THEME_OPTIONS/SET_BACKGROUND_COLOR";
 export const SET_COLOR_SCHEME = "THEME_OPTIONS/SET_COLOR_SCHEME";
-export const SET_BACKGROUND_IMAGE_OPACITY =
-  "THEME_OPTIONS/SET_BACKGROUND_IMAGE_OPACITY";
+export const SET_BACKGROUND_IMAGE_OPACITY = "THEME_OPTIONS/SET_BACKGROUND_IMAGE_OPACITY";
 
-export const SET_HEADER_BACKGROUND_COLOR =
-  "THEME_OPTIONS/SET_HEADER_BACKGROUND_COLOR";
+export const SET_HEADER_BACKGROUND_COLOR = "THEME_OPTIONS/SET_HEADER_BACKGROUND_COLOR";
 
 export const setUserProfilePicture = (userProfilePicture: string) => ({
   type: SET_USER_PROFILE_PICTURE,
@@ -72,9 +60,7 @@ export const setEnablePageTitleIcon = (enablePageTitleIcon: boolean) => ({
   enablePageTitleIcon,
 });
 
-export const setEnablePageTitleSubheading = (
-  enablePageTitleSubheading: boolean
-) => ({
+export const setEnablePageTitleSubheading = (enablePageTitleSubheading: boolean) => ({
   type: SET_ENABLE_PAGETITLE_SUBHEADING,
   enablePageTitleSubheading,
 });
@@ -134,30 +120,7 @@ export const setBackgroundImage = (backgroundImage: string) => ({
   backgroundImage,
 });
 
-export default function reducer(
-  state: object = {
-    backgroundColor: "bg-royal sidebar-text-light",
-    headerBackgroundColor: "bg-strong-bliss header-text-light",
-    enableMobileMenuSmall: false,
-    enableLoginPage: false,
-    userProfilePicture: "/assets/images/altUserImgComp.png",
-    enableMobileMenu: false,
-    enableBackgroundImage: true,
-    enableClosedSidebar: false,
-    enableFixedHeader: true,
-    enableHeaderShadow: true,
-    enableSidebarShadow: true,
-    enableFixedFooter: true,
-    enableFixedSidebar: true,
-    colorScheme: "white",
-    backgroundImage: sideBar6,
-    backgroundImageOpacity: "opacity-06",
-    enablePageTitleIcon: true,
-    enablePageTitleSubheading: true,
-    enablePageTabsAlt: false,
-  },
-  action: any
-) {
+export default function reducer(state: object, action: any) {
   switch (action.type) {
     case SET_USER_PROFILE_PICTURE:
       return {

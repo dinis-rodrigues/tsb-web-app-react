@@ -1,6 +1,6 @@
 import { useState } from "react";
-import altUserImgComp from "../../assets/images/altUserImgComp.png";
 import altUserImg from "../../assets/images/altUserImg.png";
+import altUserImgComp from "../../assets/images/altUserImgComp.png";
 
 type Props = {
   imageSrc: string;

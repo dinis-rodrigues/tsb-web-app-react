@@ -1,6 +1,4 @@
-// Modal components
-import { Fragment } from "react";
-import { Modal, Button } from "react-rainbow-components";
+import { Button, Modal } from "react-rainbow-components";
 import { EventInformation } from "../../interfaces";
 
 import { CounterInput, DatePicker, TimePicker } from "react-rainbow-components";
@@ -9,22 +7,22 @@ import Select from "react-select";
 
 import { inputToDate } from "../../utils/generalFunctions";
 
+import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { UncontrolledTooltip } from "reactstrap";
+import { useAuth } from "../../contexts/AuthContext";
 import {
-  selectStyles,
-  inputHandler,
   counterHandler,
   dateHandler,
-  timeHandler,
-  durationHandler,
-  selectHandler,
-  getEventTypeOptions,
-  timeForTimePicker,
   durationForTimePicker,
+  durationHandler,
+  getEventTypeOptions,
+  inputHandler,
+  selectHandler,
+  selectStyles,
+  timeForTimePicker,
+  timeHandler,
 } from "./eventsUtils";
-import { useAuth } from "../../contexts/AuthContext";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
-import { UncontrolledTooltip } from "reactstrap";
 
 type Props = {
   isModalOpen: boolean;
@@ -53,11 +51,9 @@ const EventModal = ({
 
   const eventTypeOptions = getEventTypeOptions(departments);
   return (
-    <Fragment>
+    <>
       <Modal
-        className={
-          isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-        }
+        className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
         isOpen={isModalOpen}
         title={modalTitle}
         onRequestClose={() => {
@@ -72,9 +68,7 @@ const EventModal = ({
             </span>
             <input
               value={currEventInfo.title || ""}
-              onChange={(e) =>
-                inputHandler(e, "title", currEventInfo, setCurrEventInfo)
-              }
+              onChange={(e) => inputHandler(e, "title", currEventInfo, setCurrEventInfo)}
               disabled={disabledInput}
               type="text"
               className="form-control m-0"
@@ -85,16 +79,10 @@ const EventModal = ({
             <span className="text-dark small text-uppercase">
               <strong>Periodic</strong>
             </span>
-            <FontAwesomeIcon
-              className="ml-2 opacity-8"
-              icon={faQuestionCircle}
-              id="Tooltip-1"
-            />
+            <FontAwesomeIcon className="ml-2 opacity-8" icon={faQuestionCircle} id="Tooltip-1" />
             <CounterInput
               value={currEventInfo.weeks || 0}
-              onChange={(e) =>
-                counterHandler(e, "weeks", currEventInfo, setCurrEventInfo)
-              }
+              onChange={(e) => counterHandler(e, "weeks", currEventInfo, setCurrEventInfo)}
               disabled={disabledInput}
               placeholder=""
             />
@@ -109,12 +97,8 @@ const EventModal = ({
               <strong>Date</strong>
             </span>
             <DatePicker
-              value={
-                currEventInfo.date ? inputToDate(currEventInfo.date) : today
-              }
-              onChange={(value) =>
-                dateHandler(value, "date", currEventInfo, setCurrEventInfo)
-              }
+              value={currEventInfo.date ? inputToDate(currEventInfo.date) : today}
+              onChange={(value) => dateHandler(value, "date", currEventInfo, setCurrEventInfo)}
               disabled={disabledInput}
               className={"datePicker"}
             />
@@ -127,15 +111,10 @@ const EventModal = ({
               disabled={disabledInput}
               value={
                 currEventInfo.hours && currEventInfo.minutes
-                  ? timeForTimePicker(
-                      currEventInfo.hours,
-                      currEventInfo.minutes
-                    )
+                  ? timeForTimePicker(currEventInfo.hours, currEventInfo.minutes)
                   : "12:00"
               }
-              onChange={(value) =>
-                timeHandler(value, currEventInfo, setCurrEventInfo)
-              }
+              onChange={(value) => timeHandler(value, currEventInfo, setCurrEventInfo)}
               okLabel={"Set"}
               className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
               hour24
@@ -148,13 +127,9 @@ const EventModal = ({
             <TimePicker
               disabled={disabledInput}
               value={
-                currEventInfo.duration
-                  ? durationForTimePicker(currEventInfo.duration)
-                  : "1:00"
+                currEventInfo.duration ? durationForTimePicker(currEventInfo.duration) : "1:00"
               }
-              onChange={(value) =>
-                durationHandler(value, currEventInfo, setCurrEventInfo)
-              }
+              onChange={(value) => durationHandler(value, currEventInfo, setCurrEventInfo)}
               okLabel={"Set"}
               className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
               hour24
@@ -168,9 +143,7 @@ const EventModal = ({
             </span>
             <Select
               classNamePrefix="react-select-container"
-              onChange={(e) =>
-                selectHandler(e, "type", currEventInfo, setCurrEventInfo)
-              }
+              onChange={(e) => selectHandler(e, "type", currEventInfo, setCurrEventInfo)}
               value={{
                 value: currEventInfo && currEventInfo.type,
                 label: currEventInfo && currEventInfo.type,
@@ -191,9 +164,7 @@ const EventModal = ({
             </span>
             <input
               value={currEventInfo.link || ""}
-              onChange={(e) =>
-                inputHandler(e, "link", currEventInfo, setCurrEventInfo)
-              }
+              onChange={(e) => inputHandler(e, "link", currEventInfo, setCurrEventInfo)}
               disabled={disabledInput}
               type="text"
               className="form-control m-0"
@@ -208,9 +179,7 @@ const EventModal = ({
             </span>
             <input
               value={currEventInfo.description || ""}
-              onChange={(e) =>
-                inputHandler(e, "description", currEventInfo, setCurrEventInfo)
-              }
+              onChange={(e) => inputHandler(e, "description", currEventInfo, setCurrEventInfo)}
               disabled={disabledInput}
               type="text"
               className="form-control m-0"
@@ -257,7 +226,7 @@ const EventModal = ({
           </div>
         </div>
       </Modal>
-    </Fragment>
+    </>
   );
 };
 

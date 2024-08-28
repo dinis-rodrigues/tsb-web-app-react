@@ -5,8 +5,8 @@ import { db } from "../../config/firebase";
 import {
   ForumMetadata,
   ForumTopicMetadata,
-  selectOption,
   TopicsMetadata,
+  selectOption,
   userContext,
 } from "../../interfaces";
 import { getEncodedString } from "../../utils/generalFunctions";
@@ -30,11 +30,11 @@ const createNewForumSection = (
   forumSectionOrder: string[],
   user: userContext | null,
   setTopicInputValue: Function,
-  setIsSectionModalOpen: Function
+  setIsSectionModalOpen: Function,
 ) => {
   if (!user || !topicInputValue || !radioOption) return;
   let sectionName = newSectionValue;
-  let topicName = topicInputValue;
+  const topicName = topicInputValue;
   let createNewSection = false;
   // Get existing section name
   if (radioOption === "AddTo" && sectionValue && sectionValue.label) {
@@ -43,21 +43,20 @@ const createNewForumSection = (
     createNewSection = true;
   }
   // encode the strings, ready for the database and URL
-  let encodedSectionName = getEncodedString(sectionName);
-  let encodedTopicName = getEncodedString(topicName);
+  const encodedSectionName = getEncodedString(sectionName);
+  const encodedTopicName = getEncodedString(topicName);
 
   if (!encodedSectionName || !encodedTopicName) return;
 
   // check if section and topic already exist, don't allow creation of equals
-  if (forumMetadata.hasOwnProperty(encodedSectionName) && createNewSection)
-    return;
+  if (Object.hasOwn(forumMetadata, encodedSectionName) && createNewSection) return;
   if (
-    forumMetadata.hasOwnProperty(encodedSectionName) &&
-    forumMetadata[encodedSectionName].hasOwnProperty(encodedTopicName)
+    Object.hasOwn(forumMetadata, encodedSectionName) &&
+    Object.hasOwn(forumMetadata[encodedSectionName], encodedSectionName)
   )
     return;
-  let now = new Date().getTime();
-  let topicToCreate = {
+  const now = new Date().getTime();
+  const topicToCreate = {
     sectionName: sectionName,
     topicName: topicInputValue,
     numberThreads: 0,
@@ -72,14 +71,11 @@ const createNewForumSection = (
     latestUpdateTimestamp: now,
   };
   // Create the topic in the database
-  set(
-    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`),
-    topicToCreate
-  );
+  set(ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`), topicToCreate);
 
   // Push new section into the forumOrder
   if (createNewSection) {
-    let newForumOrder = [...forumSectionOrder, encodedSectionName];
+    const newForumOrder = [...forumSectionOrder, encodedSectionName];
     set(ref(db, "private/forumOrder"), newForumOrder);
   }
   // Push
@@ -94,7 +90,7 @@ const createNewForumSection = (
 const radioHandler = (
   e: React.ChangeEvent<HTMLInputElement>,
   setRadioOption: Function,
-  setNewSectionValue: Function
+  setNewSectionValue: Function,
 ) => {
   setRadioOption(e.target.value);
   if (e.target.value === "AddTo") {
@@ -106,18 +102,15 @@ const radioHandler = (
 /** Retrieves forum metadata, containing section and topic information
  * @param  {Function} setForumMetadata forum metadata update state function
  */
-const getForumMetadata = async (
-  setForumMetadata: Function,
-  setForumSectionOrder: Function
-) => {
+const getForumMetadata = async (setForumMetadata: Function, setForumSectionOrder: Function) => {
   // Get order of the sections to display
   onValue(ref(db, "private/forumOrder"), (sectionOrder) => {
-    let forumOrder = sectionOrder.val() ? sectionOrder.val() : [];
+    const forumOrder = sectionOrder.val() ? sectionOrder.val() : [];
 
     setForumSectionOrder(forumOrder);
     // Get forum metadata
     onValue(ref(db, "private/forumMetadata"), (snapshot) => {
-      let forumMetadata: ForumMetadata = snapshot.val();
+      const forumMetadata: ForumMetadata = snapshot.val();
       if (!forumMetadata) return;
       // sort by timestamp creation
       setForumMetadata(forumMetadata);
@@ -134,37 +127,25 @@ const getForumMetadata = async (
 const deleteSection = (
   encodedSectionName: string,
   sectionOrder: string[],
-  topicsFromSection: TopicsMetadata
+  topicsFromSection: TopicsMetadata,
 ) => {
   // Remove section from the section order list
-  let newSectionOrder = sectionOrder.filter(
-    (item) => item !== encodedSectionName
-  );
+  const newSectionOrder = sectionOrder.filter((item) => item !== encodedSectionName);
 
   // For each topic of the section, check if any of the threads is pinned.
   // Remove it
   topicsFromSection &&
-    Object.entries(topicsFromSection).forEach(
-      ([encodedTopicName, topicMetadata]) => {
-        get(ref(db, `private/forumTopicMetadata/${encodedTopicName}`)).then(
-          (snapshot) => {
-            let allThreads: ForumTopicMetadata = snapshot.val();
-            if (allThreads) {
-              Object.entries(allThreads).forEach(
-                ([encodedThreadName, threadData]) => {
-                  //Remove Pinned Thread if equal
-                  removePinnedThreadIfEqual(
-                    encodedSectionName,
-                    encodedTopicName,
-                    encodedThreadName
-                  );
-                }
-              );
-            }
-          }
-        );
-      }
-    );
+    Object.entries(topicsFromSection).forEach(([encodedTopicName, topicMetadata]) => {
+      get(ref(db, `private/forumTopicMetadata/${encodedTopicName}`)).then((snapshot) => {
+        const allThreads: ForumTopicMetadata = snapshot.val();
+        if (allThreads) {
+          Object.entries(allThreads).forEach(([encodedThreadName, threadData]) => {
+            //Remove Pinned Thread if equal
+            removePinnedThreadIfEqual(encodedSectionName, encodedTopicName, encodedThreadName);
+          });
+        }
+      });
+    });
 
   // Now, remove section from forum metadata
   remove(ref(db, `private/forumMetadata/${encodedSectionName}`));
@@ -200,7 +181,8 @@ const swalDeleteSectionMessage = (deleteFunction: Function) => {
     .then((result) => {
       if (result.isConfirmed) {
         return;
-      } else if (result.isDenied) {
+      }
+      if (result.isDenied) {
         deleteFunction();
       }
     });
@@ -208,8 +190,8 @@ const swalDeleteSectionMessage = (deleteFunction: Function) => {
 const swalDeleteAlert = withReactContent(Swal);
 
 const moveElementTo = (arr: string[], fromIndex: number, toIndex: number) => {
-  let newArr = [...arr];
-  var element = newArr[fromIndex];
+  const newArr = [...arr];
+  const element = newArr[fromIndex];
   newArr.splice(fromIndex, 1);
   newArr.splice(toIndex, 0, element);
   return newArr;
@@ -220,14 +202,11 @@ const moveElementTo = (arr: string[], fromIndex: number, toIndex: number) => {
  * @param encodedSectionName
  * @param sectionOrder
  */
-const moveSectionDown = (
-  encodedSectionName: string,
-  sectionOrder: string[]
-) => {
-  let sectionIdx = sectionOrder.indexOf(encodedSectionName);
-  let newSectionIdx = sectionIdx + 1;
+const moveSectionDown = (encodedSectionName: string, sectionOrder: string[]) => {
+  const sectionIdx = sectionOrder.indexOf(encodedSectionName);
+  const newSectionIdx = sectionIdx + 1;
   if (newSectionIdx > sectionOrder.length - 1) return;
-  let newSectionOrder = moveElementTo(sectionOrder, sectionIdx, sectionIdx + 1);
+  const newSectionOrder = moveElementTo(sectionOrder, sectionIdx, sectionIdx + 1);
   set(ref(db, "private/forumOrder"), newSectionOrder);
 };
 
@@ -237,19 +216,19 @@ const moveSectionDown = (
  * @param sectionOrder
  */
 const moveSectionUp = (encodedSectionName: string, sectionOrder: string[]) => {
-  let sectionIdx = sectionOrder.indexOf(encodedSectionName);
-  let newSectionIdx = sectionIdx + 1;
+  const sectionIdx = sectionOrder.indexOf(encodedSectionName);
+  const newSectionIdx = sectionIdx + 1;
   if (newSectionIdx < 0) return;
-  let newSectionOrder = moveElementTo(sectionOrder, sectionIdx, sectionIdx - 1);
+  const newSectionOrder = moveElementTo(sectionOrder, sectionIdx, sectionIdx - 1);
   set(ref(db, "private/forumOrder"), newSectionOrder);
 };
 
 export {
-  getForumMetadata,
   createNewForumSection,
-  radioHandler,
   deleteSection,
-  swalDeleteSectionMessage,
+  getForumMetadata,
   moveSectionDown,
   moveSectionUp,
+  radioHandler,
+  swalDeleteSectionMessage,
 };

@@ -6,21 +6,22 @@ import {
   RowClickedEvent,
   ValueGetterParams,
 } from "ag-grid-community";
-import { useEffect, useState } from "react";
-import "ag-grid-enterprise";
 import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
+import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import "ag-grid-enterprise";
+import { AgGridReact } from "ag-grid-react";
 import cx from "classnames";
-import {
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledButtonDropdown,
-} from "reactstrap";
+import { useEffect, useState } from "react";
+import { Input } from "react-rainbow-components";
+import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
+import { useAuth } from "../../contexts/AuthContext";
 import { BomMaterial, UserMetadata } from "../../interfaces";
-import BadgeBomRender from "./badgeBomRender";
+import { dateComparator } from "../../utils/generalFunctions";
 import AssignedUserRender from "./assignedUserRender";
+import BadgeBomRender from "./badgeBomRender";
 import {
+  buildBudgetRows,
   clipboardExport,
   excelExport,
   filterTable,
@@ -28,12 +29,7 @@ import {
   onRowBomClick,
   openCleanMaterialModal,
   pdfExport,
-  buildBudgetRows,
 } from "./budgetUtils";
-import { dateComparator } from "../../utils/generalFunctions";
-import { AgGridReact } from "ag-grid-react";
-import { useAuth } from "../../contexts/AuthContext";
-import { Input } from "react-rainbow-components";
 
 type Props = {
   tableData: [string, BomMaterial][];
@@ -78,7 +74,7 @@ const BudgetTable = ({
         setMaterialInfoMask,
         setIsModalOpen,
         setShowDeleteButton,
-        setCommentListener
+        setCommentListener,
       ),
   };
 
@@ -97,9 +93,7 @@ const BudgetTable = ({
     {
       field: "status",
       sortable: true,
-      cellRendererFramework: (props: ICellRendererParams) => (
-        <BadgeBomRender {...props} />
-      ),
+      cellRendererFramework: (props: ICellRendererParams) => <BadgeBomRender {...props} />,
     },
     { field: "date", sortable: true, comparator: dateComparator },
     { field: "quantity", sortable: true },
@@ -118,42 +112,25 @@ const BudgetTable = ({
           className={cx(
             "header-icon icon-gradient fa",
             allTabs[department].icon,
-            allTabs[department].gradientColor
+            allTabs[department].gradientColor,
           )}
         ></i>
         Budget - {allTabs[department].description}
         <div className="btn-actions-pane-right text-capitalize">
-          {/* <input
-            onChange={(e) => {
-              filterTable(e, gridApi);
-            }}
-            className={"form-control mr-md-2"}
-            style={{
-              display: "inline-block",
-              width: "10rem",
-            }}
-            placeholder={"Search..."}
-            type="text"
-          /> */}
           <button
+            type="button"
             onClick={() =>
-              openCleanMaterialModal(
-                setIsModalOpen,
-                setMaterialInfo,
-                setShowDeleteButton
-              )
+              openCleanMaterialModal(setIsModalOpen, setMaterialInfo, setShowDeleteButton)
             }
             className="btn-wide btn-info mr-md-2 btn btn-sm"
           >
-            <i className="fa fa-hammer text-white btn-icon-wrapper"></i> Add
-            Material
+            <i className="fa fa-hammer text-white btn-icon-wrapper"></i> Add Material
           </button>
 
           <UncontrolledButtonDropdown>
             <DropdownToggle color="btn" className="p-0 mr-2">
               <span className="btn-wide btn-info mr-md-2 btn btn-sm dropdown-toggle">
-                <i className="fa fa-download text-white btn-icon-wrapper"></i>{" "}
-                Download
+                <i className="fa fa-download text-white btn-icon-wrapper"></i> Download
               </span>
             </DropdownToggle>
             <DropdownMenu right className="rm-pointers dropdown-menu">
@@ -209,9 +186,7 @@ const BudgetTable = ({
               onFirstDataRendered={(params) =>
                 onFirstDataRendered(params, setGridApi, setColumnApi)
               }
-              onGridReady={(params) =>
-                onFirstDataRendered(params, setGridApi, setColumnApi)
-              }
+              onGridReady={(params) => onFirstDataRendered(params, setGridApi, setColumnApi)}
               overlayNoRowsTemplate={"<span >I love you <3</span>"}
             ></AgGridReact>
           }

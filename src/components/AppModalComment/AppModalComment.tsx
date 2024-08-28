@@ -1,7 +1,6 @@
-import { Fragment } from "react";
-import { taskCommentInfo, userContext, UserMetadata } from "../../interfaces";
 import cx from "classnames";
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
+import { UserMetadata, taskCommentInfo, userContext } from "../../interfaces";
 import { isDateInPastWeek } from "../../utils/generalFunctions";
 
 type Props = {
@@ -23,10 +22,10 @@ const AppModalComment = ({ comment, USER, usersMetadata }: Props) => {
   } else {
     d = new Date(comment.timestamp);
   }
-  let dayOfTheComment = isDateInPastWeek(d);
+  const dayOfTheComment = isDateInPastWeek(d);
   // Get the time
-  let hours = ("0" + d.getHours()).slice(-2);
-  let minutes = ("0" + d.getMinutes()).slice(-2);
+  const hours = `0${d.getHours()}`.slice(-2);
+  const minutes = `0${d.getMinutes()}`.slice(-2);
 
   const insertImgSection = (
     <div className={cx({ "ml-1": selfComment })}>
@@ -42,7 +41,7 @@ const AppModalComment = ({ comment, USER, usersMetadata }: Props) => {
     </div>
   );
   return (
-    <Fragment>
+    <>
       <div className="invisible-divider"></div>
       <div
         className={cx("chat-box-wrapper", {
@@ -67,7 +66,7 @@ const AppModalComment = ({ comment, USER, usersMetadata }: Props) => {
         </div>
         {selfComment && insertImgSection}
       </div>
-    </Fragment>
+    </>
   );
 };
 

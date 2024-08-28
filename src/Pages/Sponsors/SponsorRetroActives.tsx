@@ -1,8 +1,8 @@
 import { Fragment, useEffect, useState } from "react";
 
-import Select from "react-select";
 import Chart from "react-apexcharts";
 import NumberFormat from "react-number-format";
+import Select from "react-select";
 import { useAuth } from "../../contexts/AuthContext";
 import { SponsorRetroactives } from "../../interfaces";
 import { selectStyles } from "../Profile/profileUtils";
@@ -24,9 +24,7 @@ type Props = {
 const SponsorRetroActives = ({ retroActives, setRetroActives }: Props) => {
   const { isDarkMode, isMarketingOrAdmin } = useAuth();
 
-  const [chartSeries, setChartSeries] = useState([
-    { name: "Values", data: retroActives.values },
-  ]);
+  const [chartSeries, setChartSeries] = useState([{ name: "Values", data: retroActives.values }]);
 
   useEffect(() => {
     setChartSeries([{ name: "Values", data: retroActives.values }]);
@@ -49,13 +47,12 @@ const SponsorRetroActives = ({ retroActives, setRetroActives }: Props) => {
         <div className="row">
           <div className="col text-center font-size-md">
             <p>
-              Sponsor retro-actives depend on the current year value. If the
-              value is below the threshold, then no retro-actives will be
-              calculated.
+              Sponsor retro-actives depend on the current year value. If the value is below the
+              threshold, then no retro-actives will be calculated.
             </p>
             <p>
-              In other words, the sponsor needs to give at least the value of
-              the threshold to have retro-actives.
+              In other words, the sponsor needs to give at least the value of the threshold to have
+              retro-actives.
             </p>
           </div>
         </div>
@@ -85,7 +82,7 @@ const SponsorRetroActives = ({ retroActives, setRetroActives }: Props) => {
                 retroThresholdHandler(
                   val.floatValue ? val.floatValue : 0,
                   retroActives,
-                  setRetroActives
+                  setRetroActives,
                 )
               }
             />
@@ -93,9 +90,7 @@ const SponsorRetroActives = ({ retroActives, setRetroActives }: Props) => {
           <div className="col-5">
             <Select
               classNamePrefix="react-select-container"
-              onChange={(e) =>
-                retroSelectHandler(e!.value, retroActives, setRetroActives)
-              }
+              onChange={(e) => retroSelectHandler(e!.value, retroActives, setRetroActives)}
               value={{
                 value: retroActives.isActive ? "Yes" : "No",
                 label: retroActives.isActive ? "Yes" : "No",
@@ -143,13 +138,13 @@ const SponsorRetroActives = ({ retroActives, setRetroActives }: Props) => {
                   <div className="col-5">
                     <NumberFormat
                       value={value}
-                      readOnly={isMarketingOrAdmin ? false : true}
+                      readOnly={!isMarketingOrAdmin}
                       onValueChange={(val) =>
                         editRetroValueHandler(
                           val.floatValue ? val.floatValue : 0,
                           idx,
                           retroActives,
-                          setRetroActives
+                          setRetroActives,
                         )
                       }
                       className="form-control text-center"
@@ -160,9 +155,7 @@ const SponsorRetroActives = ({ retroActives, setRetroActives }: Props) => {
                     {isMarketingOrAdmin && (
                       <span
                         className={"cursor-pointer text-danger"}
-                        onClick={() =>
-                          deleteRetroYear(idx, retroActives, setRetroActives)
-                        }
+                        onClick={() => deleteRetroYear(idx, retroActives, setRetroActives)}
                       >
                         <i className="fa fa-times"></i>
                       </span>
@@ -176,12 +169,14 @@ const SponsorRetroActives = ({ retroActives, setRetroActives }: Props) => {
           <div className="col-4"></div>
           <div className="col d-flex justify-content-center">
             <button
+              type="button"
               className="btn btn-outline-info"
               onClick={() => addRetroYear(retroActives, setRetroActives)}
             >
               Add Year
             </button>
             <button
+              type="button"
               className="btn btn-outline-success ml-2"
               onClick={() => saveRetroActives(retroActives)}
             >

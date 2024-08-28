@@ -7,11 +7,14 @@ const ToastrMessage = ({ title, msg, type }: Props) => {
   const toastrIcon = (type: string) => {
     if (type === "info") {
       return "fas fa-info-circle";
-    } else if (type === "success") {
+    }
+    if (type === "success") {
       return "fas fa-check";
-    } else if (type === "warning") {
+    }
+    if (type === "warning") {
       return "fas fa-exclamation-triangle";
-    } else if (type === "error") {
+    }
+    if (type === "error") {
       return "fas fa-times";
     }
   };

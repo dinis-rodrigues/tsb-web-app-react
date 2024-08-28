@@ -13,7 +13,7 @@ import { savePublicUser } from "../Profile/profileUtils";
 const swalAlert = withReactContent(Swal);
 
 const showAlert = (getValues: UseFormGetValues<FieldValues>) => {
-  var timerInterval: any = null;
+  let timerInterval: any = null;
   swalAlert.fire({
     customClass: {
       denyButton: "btn btn-shadow btn-danger",
@@ -50,7 +50,7 @@ const showAlert = (getValues: UseFormGetValues<FieldValues>) => {
 const signUpUser = async (
   getValues: UseFormGetValues<FieldValues>,
   registerUser: Function,
-  applicationSettings: ApplicationSettings
+  applicationSettings: ApplicationSettings,
 ) => {
   const { fullName, email, password } = getValues();
   const { registrationIsOpen } = applicationSettings;
@@ -61,13 +61,12 @@ const signUpUser = async (
       .then(async (data: any) => {
         const userId = data.user.uid;
 
-        let userName = await buildUserName(fullName);
-        var info = {
+        const userName = await buildUserName(fullName);
+        const info = {
           uid: data.user.uid,
           fullName: fullName,
           department: "Management and Marketing",
-          position:
-            process.env.NODE_ENV === "production" ? "Team Member" : "God",
+          position: process.env.NODE_ENV === "production" ? "Team Member" : "God",
           joinedIn: "",
           name: name,
           email: email,
@@ -123,15 +122,15 @@ const signUpUser = async (
 
 const getNameFromFullName = (fullName: string) => {
   const names = fullName.trim().split(" ");
-  let firstName = names[0];
-  let lastName = names[names.length - 1];
+  const firstName = names[0];
+  const lastName = names[names.length - 1];
   return `${firstName} ${lastName}`;
 };
 
 const buildUserNameFromFullName = (fullName: string) => {
   const names = fullName.trim().split(" ");
-  let firstName = normalizedString(names[0]);
-  let lastName = normalizedString(names[names.length - 1]);
+  const firstName = normalizedString(names[0]);
+  const lastName = normalizedString(names[names.length - 1]);
   return `${firstName}-${lastName}`.toLowerCase();
 };
 
@@ -141,7 +140,7 @@ const buildUserName = (fullName: string) => {
 
     const usersList = Object.entries(users);
 
-    let existingUserNames: string[] = [];
+    const existingUserNames: string[] = [];
     let currUserName = buildUserNameFromFullName(fullName);
 
     // Get existing user names
@@ -152,7 +151,7 @@ const buildUserName = (fullName: string) => {
     }
 
     // check if user name already exists
-    let equalUserNames: string[] = [];
+    const equalUserNames: string[] = [];
     for (const userName of existingUserNames) {
       if (userName.includes(currUserName)) {
         equalUserNames.push(userName);

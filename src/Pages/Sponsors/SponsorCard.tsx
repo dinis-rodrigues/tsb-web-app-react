@@ -1,13 +1,13 @@
 import { forwardRef } from "react";
+import { UncontrolledTooltip } from "reactstrap";
+import { useAuth } from "../../contexts/AuthContext";
 import { Sponsor, SponsorHistory, SponsorRetroactives } from "../../interfaces";
 import SponsorImage from "./SponsorImage";
-import { UncontrolledTooltip } from "reactstrap";
 import {
   calculateRetroActives,
-  removeSponsorFromBracket,
   getCurrentSeasonYear,
+  removeSponsorFromBracket,
 } from "./sponsorsUtils";
-import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   sponsor: Sponsor;
@@ -26,10 +26,8 @@ type Props = {
 const missingBadge = (history: SponsorHistory | undefined) => {
   const currSeason = getCurrentSeasonYear();
 
-  if (!history)
-    return <span className="badge badge-pill badge-danger">Missing</span>;
-  if (!history[currSeason])
-    return <span className="badge badge-pill badge-warning">Outdated</span>;
+  if (!history) return <span className="badge badge-pill badge-danger">Missing</span>;
+  if (!history[currSeason]) return <span className="badge badge-pill badge-warning">Outdated</span>;
   return null;
 };
 
@@ -49,9 +47,7 @@ const returnTotalVal = (totalVal: number) => {
 };
 
 const returnRetroVal = (retroVal: number, totalVal: number) => {
-  return formatNumber(
-    retroVal + totalVal ? Number(retroVal + totalVal).toFixed(0) : 0
-  );
+  return formatNumber(retroVal + totalVal ? Number(retroVal + totalVal).toFixed(0) : 0);
 };
 
 const SponsorCard = forwardRef<HTMLInputElement, Props>(
@@ -70,31 +66,24 @@ const SponsorCard = forwardRef<HTMLInputElement, Props>(
       retroActives,
       ...props
     },
-    ref
+    ref,
   ) => {
     const { isMarketingOrAdmin } = useAuth();
-    const { simpleValues, retroValues } = calculateRetroActives(
-      sponsor?.history,
-      retroActives
-    );
+    const { simpleValues, retroValues } = calculateRetroActives(sponsor?.history, retroActives);
     let [totalVal, retroVal] = [0, 0];
     if (simpleValues) {
       totalVal = simpleValues[simpleValues.length - 1];
       retroVal = retroValues[retroValues.length - 1];
     }
     return sponsor ? (
-      <div
-        ref={ref}
-        className="sponsor-card"
-        style={{ ...style, position: "relative" }}
-        {...props}
-      >
+      <div ref={ref} className="sponsor-card" style={{ ...style, position: "relative" }} {...props}>
         <span style={{ position: "absolute", top: 0 }}>
           {returnTotalVal(totalVal)}{" "}
           {(sponsor.isRetroActive === undefined || sponsor.isRetroActive) &&
             `/ ${returnRetroVal(retroVal, totalVal)}`}
         </span>
         <button
+          type="button"
           style={{ position: "absolute", top: -2, left: -2 }}
           className="btn border-0 btn-transition btn-outline-info"
           onClick={() => {
@@ -111,6 +100,7 @@ const SponsorCard = forwardRef<HTMLInputElement, Props>(
         {isMarketingOrAdmin && (
           <>
             <button
+              type="button"
               id={`${sponsorId}-del`}
               style={{ position: "absolute", top: -2, right: -2 }}
               className="btn border-0 btn-transition btn-outline-danger"
@@ -136,7 +126,7 @@ const SponsorCard = forwardRef<HTMLInputElement, Props>(
         </span>
       </div>
     ) : null;
-  }
+  },
 );
 
 export { SponsorCard };

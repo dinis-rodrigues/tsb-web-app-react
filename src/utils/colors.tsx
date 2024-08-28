@@ -62,10 +62,4 @@ const customInputs: { [key: string]: React.CSSProperties } = {
   },
 };
 
-export {
-  rainbowDarkTheme,
-  meetingIcons,
-  departmentColors,
-  customInputs,
-  rainbowWhiteTheme,
-};
+export { rainbowDarkTheme, meetingIcons, departmentColors, customInputs, rainbowWhiteTheme };

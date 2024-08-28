@@ -1,5 +1,5 @@
 import React from "react";
-import { AreaChart, Area, Tooltip, ResponsiveContainer } from "recharts";
+import { Area, AreaChart, ResponsiveContainer, Tooltip } from "recharts";
 import { attendanceArrayRechart, graphColor } from "../../interfaces";
 import { customTooltip } from "./attendanceUtils";
 
@@ -24,21 +24,9 @@ const AttendanceChart = React.memo(({ chartOptions, chartSeries }: Props) => {
       >
         <defs>
           <linearGradient id={chartOptions.name} x1="0" y1="0" x2="0" y2="1">
-            <stop
-              stopOpacity="0.65"
-              stopColor={chartOptions.gradient1}
-              offset="0"
-            ></stop>
-            <stop
-              stopOpacity="0.5"
-              stopColor={chartOptions.gradient2}
-              offset="1"
-            ></stop>
-            <stop
-              stopOpacity="0.5"
-              stopColor={chartOptions.gradient3}
-              offset="1"
-            ></stop>
+            <stop stopOpacity="0.65" stopColor={chartOptions.gradient1} offset="0"></stop>
+            <stop stopOpacity="0.5" stopColor={chartOptions.gradient2} offset="1"></stop>
+            <stop stopOpacity="0.5" stopColor={chartOptions.gradient3} offset="1"></stop>
           </linearGradient>
         </defs>
         <Tooltip content={customTooltip} />

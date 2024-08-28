@@ -15,10 +15,7 @@ import { toastrMessage } from "../../utils/generalFunctions";
  * @param setModalIsOpen
  * @param setEditGallery
  */
-const openCreateGalleryModal = (
-  setModalIsOpen: Function,
-  setEditGallery: Function
-) => {
+const openCreateGalleryModal = (setModalIsOpen: Function, setEditGallery: Function) => {
   setModalIsOpen(true);
   setEditGallery(false);
 };
@@ -28,10 +25,7 @@ const openCreateGalleryModal = (
  * @param setModalIsOpen
  * @param setEditGallery
  */
-const openEditGalleryModal = (
-  setModalIsOpen: Function,
-  setEditGallery: Function
-) => {
+const openEditGalleryModal = (setModalIsOpen: Function, setEditGallery: Function) => {
   setModalIsOpen(true);
   setEditGallery(true);
 };
@@ -49,7 +43,7 @@ const openEditPhotoModal = (
   imgId: string,
   setActivePhoto: Function,
   setImgInfo: Function,
-  setIsModalOpen: Function
+  setIsModalOpen: Function,
 ) => {
   setActivePhoto(imgId);
   setImgInfo(imgInfo);
@@ -71,7 +65,7 @@ const photoInputHandler = (value: string, setImgInfo: Function) => {
  * @param setGalleryInfo
  */
 const galleryDateInputHandler = (value: Date, setGalleryInfo: Function) => {
-  let dateTimestamp = value.getTime();
+  const dateTimestamp = value.getTime();
   setGalleryInfo((gallery: GalleryItem) => ({
     ...gallery,
     timestamp: dateTimestamp,
@@ -92,10 +86,7 @@ const galleryNameInputHandler = (value: string, setGalleryInfo: Function) => {
  * @param value
  * @param setGalleryInfo
  */
-const galleryDescriptionInputHandler = (
-  value: string,
-  setGalleryInfo: Function
-) => {
+const galleryDescriptionInputHandler = (value: string, setGalleryInfo: Function) => {
   setGalleryInfo((gallery: GalleryItem) => ({
     ...gallery,
     description: value,
@@ -109,8 +100,8 @@ const galleryDescriptionInputHandler = (
  */
 const sortPublicGallery = (publicGallery: PublicGallery) => {
   return Object.entries(publicGallery).sort((a, b) => {
-    let galleryA = a[1];
-    let galleryB = b[1];
+    const galleryA = a[1];
+    const galleryB = b[1];
 
     if (galleryA.timestamp > galleryB.timestamp) return -1;
     if (galleryA.timestamp < galleryB.timestamp) return 1;
@@ -126,7 +117,7 @@ const sortPublicGallery = (publicGallery: PublicGallery) => {
  */
 const getCorrespondingGalleryInfo = (
   activeGallery: string,
-  galleryList: [string, GalleryItem][]
+  galleryList: [string, GalleryItem][],
 ) => {
   for (const [galleryId, galInfo] of galleryList) {
     if (galleryId === activeGallery) return galInfo;
@@ -144,18 +135,17 @@ const getActiveGallery = (
   galleryList: [string, GalleryItem][],
   setGalleryInfo: Function,
   setActiveGallery: Function,
-  setActiveGalleryDbRef: Function
+  setActiveGalleryDbRef: Function,
 ) => {
   setActiveGallery((activeGallery: string) => {
     if (!activeGallery) {
       setGalleryInfo(galleryList[0][1]);
       setActiveGalleryDbRef(galleryList[0][0]);
       return galleryList[0][0];
-    } else {
-      setGalleryInfo(getCorrespondingGalleryInfo(activeGallery, galleryList));
-      setActiveGalleryDbRef(activeGallery);
-      return activeGallery;
     }
+    setGalleryInfo(getCorrespondingGalleryInfo(activeGallery, galleryList));
+    setActiveGalleryDbRef(activeGallery);
+    return activeGallery;
   });
 };
 
@@ -170,7 +160,7 @@ const getGalleryList = (
   setGalleryList: Function,
   setGalleryInfo: Function,
   setActiveGallery: Function,
-  setActiveGalleryDbRef: Function
+  setActiveGalleryDbRef: Function,
 ) => {
   onValue(ref(db, "public/officialWebsite/gallery/galleryList"), (snapshot) => {
     const publicGallery: PublicGallery = snapshot.val();
@@ -179,12 +169,7 @@ const getGalleryList = (
 
     setGalleryList(sortedGallery);
     // Get current gallery info and photos
-    getActiveGallery(
-      sortedGallery,
-      setGalleryInfo,
-      setActiveGallery,
-      setActiveGalleryDbRef
-    );
+    getActiveGallery(sortedGallery, setGalleryInfo, setActiveGallery, setActiveGalleryDbRef);
   });
 };
 
@@ -200,17 +185,12 @@ const createGallery = (
   galleryInfo: GalleryItem | undefined,
   activeGallery: string,
   editGallery: boolean,
-  setModalIsOpen: Function
+  setModalIsOpen: Function,
 ) => {
   if (!galleryInfo || galleryInfo.name.length <= 0) return;
 
-  if (!editGallery)
-    push(ref(db, "public/officialWebsite/gallery/galleryList"), galleryInfo);
-  else
-    set(
-      ref(db, `public/officialWebsite/gallery/galleryList/${activeGallery}`),
-      galleryInfo
-    );
+  if (!editGallery) push(ref(db, "public/officialWebsite/gallery/galleryList"), galleryInfo);
+  else set(ref(db, `public/officialWebsite/gallery/galleryList/${activeGallery}`), galleryInfo);
   setModalIsOpen(false);
 };
 
@@ -230,7 +210,7 @@ const getGalleryPhotos = (
   setActiveGallery: Function,
   setGalleryInfo: Function,
   setGalleryPhotos: Function,
-  setActiveGalleryDbRef: Function
+  setActiveGalleryDbRef: Function,
 ) => {
   if (!newActiveGallery) return;
   onValue(
@@ -242,21 +222,17 @@ const getGalleryPhotos = (
       setGalleryPhotos(allPhotos);
 
       // set new gallery info
-      setGalleryInfo(
-        getCorrespondingGalleryInfo(newActiveGallery, galleryList)
-      );
+      setGalleryInfo(getCorrespondingGalleryInfo(newActiveGallery, galleryList));
 
       // remove old reference
       setActiveGalleryDbRef((oldRef: string) => {
-        off(
-          ref(db, `"public/officialWebsite/gallery/galleryPhotos/${oldRef}"`)
-        );
+        off(ref(db, `"public/officialWebsite/gallery/galleryPhotos/${oldRef}"`));
         return newActiveGallery;
       });
 
       // Set new active gallery
       setActiveGallery(newActiveGallery);
-    }
+    },
   );
 };
 
@@ -272,13 +248,13 @@ const uploadLoop = async (
   activeGallery: string,
   imageFilesToUpload: [string, File][],
   userId: string,
-  setUploadingImgs: Function
+  setUploadingImgs: Function,
 ) => {
-  for (var i = 0; i < imageFilesToUpload.length; i++) {
+  for (let i = 0; i < imageFilesToUpload.length; i++) {
     // let headers = new Headers();
     // headers.append("Origin", "http://localhost:3005");
 
-    var data = new FormData();
+    const data = new FormData();
     data.append("galleryId", activeGallery);
     data.append("fileToUpload", imageFilesToUpload[i][1]);
     data.append("userId", userId);
@@ -288,27 +264,22 @@ const uploadLoop = async (
         {
           method: "POST",
           body: data,
-        }
+        },
       );
       const resData = await res.json();
 
       if (resData.success) {
-        let imgPath = resData.msg;
-        let rzImgPath = resData.rzImg;
+        const imgPath = resData.msg;
+        const rzImgPath = resData.rzImg;
         saveUploadedImg(activeGallery, imgPath, rzImgPath, galleryInfo.name);
       } else {
-        toastrMessage(
-          resData.msg + " File: " + imageFilesToUpload[i][1].name,
-          "error",
-          false
-        );
+        toastrMessage(`${resData.msg} File: ${imageFilesToUpload[i][1].name}`, "error", false);
       }
     } catch (error) {
       toastrMessage(
-        "Internal Server error while uploading file. " +
-          imageFilesToUpload[i][1].name,
+        `Internal Server error while uploading file. ${imageFilesToUpload[i][1].name}`,
         "error",
-        false
+        false,
       );
     }
     setUploadingImgs((uploadingImgs: UploadingImages) => {
@@ -317,7 +288,7 @@ const uploadLoop = async (
         stillUploading = false;
         toastrMessage("Operation completed.", "success");
       }
-      let newCurr = uploadingImgs.current + 1;
+      const newCurr = uploadingImgs.current + 1;
 
       return {
         ...uploadingImgs,
@@ -343,7 +314,7 @@ const uploadPhotosToServer = async (
   galleryInfo: GalleryItem | undefined,
   userId: string | undefined,
   setFileValue: Function,
-  setUploadingImgs: Function
+  setUploadingImgs: Function,
 ) => {
   if (!galleryInfo || !activeGallery || !filesList || !userId) {
     return;
@@ -356,13 +327,7 @@ const uploadPhotosToServer = async (
   });
 
   // imageFilesToUpload.forEach(([_, imgFile]) => {});
-  await uploadLoop(
-    galleryInfo,
-    activeGallery,
-    imageFilesToUpload,
-    userId,
-    setUploadingImgs
-  );
+  await uploadLoop(galleryInfo, activeGallery, imageFilesToUpload, userId, setUploadingImgs);
   setFileValue(null);
 };
 
@@ -377,7 +342,7 @@ const saveUploadedImg = (
   activeGallery: string,
   imgPath: string,
   rzImgPath: string,
-  desc: string | undefined
+  desc: string | undefined,
 ) => {
   const imgObj: GalleryPhoto = {
     imagePath: imgPath,
@@ -385,10 +350,7 @@ const saveUploadedImg = (
     description: desc,
     createdAt: new Date().getTime(),
   };
-  push(
-    ref(db, `public/officialWebsite/gallery/galleryPhotos/${activeGallery}`),
-    imgObj
-  );
+  push(ref(db, `public/officialWebsite/gallery/galleryPhotos/${activeGallery}`), imgObj);
 };
 
 /**
@@ -402,15 +364,12 @@ const saveEditedPhoto = (
   photoInfo: GalleryPhoto | undefined,
   activeGallery: string,
   imgId: string,
-  setModalIsOpen: Function
+  setModalIsOpen: Function,
 ) => {
   if (activeGallery && imgId && photoInfo) {
     set(
-      ref(
-        db,
-        `public/officialWebsite/gallery/galleryPhotos/${activeGallery}/${imgId}`
-      ),
-      photoInfo
+      ref(db, `public/officialWebsite/gallery/galleryPhotos/${activeGallery}/${imgId}`),
+      photoInfo,
     );
     setModalIsOpen(false);
   }
@@ -429,43 +388,32 @@ const deletePhoto = (
   imgFilePath: string | undefined,
   imgId: string,
   userId: string | undefined,
-  setModalIsOpen: Function
+  setModalIsOpen: Function,
 ) => {
   if (!userId) return;
   if (activeGallery && imgFilePath) {
     // Get the basename of the image
     let baseNameImg = imgFilePath.split(/[\\/]/).pop();
-    if (baseNameImg)
-      baseNameImg = baseNameImg.substring(0, baseNameImg.lastIndexOf("."));
+    if (baseNameImg) baseNameImg = baseNameImg.substring(0, baseNameImg.lastIndexOf("."));
     else return;
 
     // let headers = new Headers();
     // headers.append("Origin", "http://localhost:3005");
 
-    var data = new FormData();
+    const data = new FormData();
     data.append("galleryId", activeGallery);
     data.append("deleteGallery", "FALSE");
     data.append("imgId", baseNameImg);
     data.append("userId", userId);
 
-    fetch(
-      "https://tecnicosolarboat.tecnico.ulisboa.pt/api/deleteFromGallery.php",
-      {
-        method: "POST",
-        body: data,
-      }
-    )
-      .then(function (res) {
-        return res.json();
-      })
+    fetch("https://tecnicosolarboat.tecnico.ulisboa.pt/api/deleteFromGallery.php", {
+      method: "POST",
+      body: data,
+    })
+      .then((res) => res.json())
       .then((r: UploadedImgResponse) => {
         if (r.success) {
-          remove(
-            ref(
-              db,
-              `public/officialWebsite/gallery/galleryPhotos/${activeGallery}/${imgId}`
-            )
-          );
+          remove(ref(db, `public/officialWebsite/gallery/galleryPhotos/${activeGallery}/${imgId}`));
 
           setModalIsOpen(false);
           toastrMessage(r.msg, "success");
@@ -482,49 +430,33 @@ const deletePhoto = (
  * @param setModalIsOpen
  * @returns
  */
-const deleteAlbum = (
-  galleryId: string,
-  userId: string | undefined,
-  setModalIsOpen: Function
-) => {
+const deleteAlbum = (galleryId: string, userId: string | undefined, setModalIsOpen: Function) => {
   if (!galleryId || !userId) return;
   // let headers = new Headers();
   // headers.append("Origin", "http://localhost:3005");
 
-  var data = new FormData();
+  const data = new FormData();
   data.append("galleryId", galleryId);
   data.append("deleteGallery", "TRUE");
   data.append("imgId", "null");
   data.append("userId", userId);
 
-  fetch(
-    "https://tecnicosolarboat.tecnico.ulisboa.pt/api/deleteFromGallery.php",
-    {
-      method: "POST",
-      body: data,
-    }
-  )
-    .then(function (res) {
-      return res.json();
-    })
+  fetch("https://tecnicosolarboat.tecnico.ulisboa.pt/api/deleteFromGallery.php", {
+    method: "POST",
+    body: data,
+  })
+    .then((res) => res.json())
     .then((r: UploadedImgResponse) => {
       // Reload page -> Easy way :)
-      remove(
-        ref(db, `public/officialWebsite/gallery/galleryPhotos/${galleryId}`)
-      );
-      remove(
-        ref(db, `public/officialWebsite/gallery/galleryList/${galleryId}`)
-      );
+      remove(ref(db, `public/officialWebsite/gallery/galleryPhotos/${galleryId}`));
+      remove(ref(db, `public/officialWebsite/gallery/galleryList/${galleryId}`));
 
       if (r.success) {
         setModalIsOpen(false);
         toastrMessage("Album deleted successfully.", "success");
         window.location.reload();
       } else {
-        toastrMessage(
-          "Error deleting album from server. Please contact the admin",
-          "error"
-        );
+        toastrMessage("Error deleting album from server. Please contact the admin", "error");
       }
     });
 };

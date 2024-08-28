@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Modal, Button, DatePicker } from "react-rainbow-components";
+import { Button, DatePicker, Modal } from "react-rainbow-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { GalleryItem } from "../../interfaces";
 import { inputToDate } from "../../utils/generalFunctions";
@@ -44,9 +44,7 @@ const CreateGalleryModal = ({
   const today = new Date();
   return (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       isOpen={isModalOpen}
       size="medium"
       title={editGallery ? "Edit Album" : "Create Album"}
@@ -73,14 +71,7 @@ const CreateGalleryModal = ({
               <Button
                 variant="brand"
                 label={editGallery ? "Save" : "Create"}
-                onClick={() =>
-                  createGallery(
-                    modalInfo,
-                    activeGallery,
-                    editGallery,
-                    setIsModalOpen
-                  )
-                }
+                onClick={() => createGallery(modalInfo, activeGallery, editGallery, setIsModalOpen)}
               />
             </div>
           </div>
@@ -98,9 +89,7 @@ const CreateGalleryModal = ({
 
           <input
             value={modalInfo ? modalInfo.name : ""}
-            onChange={(e) =>
-              galleryNameInputHandler(e.target.value, setModalInfo)
-            }
+            onChange={(e) => galleryNameInputHandler(e.target.value, setModalInfo)}
             type="text"
             className="form-control m-0 text-center"
             placeholder=""
@@ -132,9 +121,7 @@ const CreateGalleryModal = ({
 
           <input
             value={modalInfo ? modalInfo.description : ""}
-            onChange={(e) =>
-              galleryDescriptionInputHandler(e.target.value, setModalInfo)
-            }
+            onChange={(e) => galleryDescriptionInputHandler(e.target.value, setModalInfo)}
             type="text"
             className="form-control m-0 text-center"
             placeholder="Optional"

@@ -1,21 +1,15 @@
 import { useState } from "react";
-import { ChromePicker, ColorResult, Color } from "react-color";
+import { ChromePicker, Color, ColorResult } from "react-color";
 import { Department } from "../../../interfaces";
 
-const handleClick = (
-  colorPicker: colorPickerState,
-  setColorPicker: Function
-) => {
+const handleClick = (colorPicker: colorPickerState, setColorPicker: Function) => {
   setColorPicker({
     ...colorPicker,
     displayColorPicker: !colorPicker.displayColorPicker,
   });
 };
 
-const handleClose = (
-  colorPicker: colorPickerState,
-  setColorPicker: Function
-) => {
+const handleClose = (colorPicker: colorPickerState, setColorPicker: Function) => {
   setColorPicker({ ...colorPicker, displayColorPicker: false });
 };
 
@@ -23,7 +17,7 @@ const handleChange = (
   color: ColorResult,
   colorPicker: colorPickerState,
   setColorPicker: Function,
-  setDepartmentInfo: Function
+  setDepartmentInfo: Function,
 ) => {
   setDepartmentInfo((materialInfo: Department) => ({
     ...materialInfo,
@@ -40,10 +34,7 @@ type Props = {
   setDepartmentInfo: Function;
   departmentColor: string;
 };
-const DepartmentColorPicker = ({
-  setDepartmentInfo,
-  departmentColor,
-}: Props) => {
+const DepartmentColorPicker = ({ setDepartmentInfo, departmentColor }: Props) => {
   const [colorPicker, setColorPicker] = useState<colorPickerState>({
     displayColorPicker: false,
     color: "#0052D1",
@@ -78,10 +69,7 @@ const DepartmentColorPicker = ({
 
   return (
     <div style={{ marginTop: ".5rem", zIndex: 99999 }}>
-      <div
-        style={styles.swatch}
-        onClick={() => handleClick(colorPicker, setColorPicker)}
-      >
+      <div style={styles.swatch} onClick={() => handleClick(colorPicker, setColorPicker)}>
         <div style={styles.color} />
       </div>
       {colorPicker.displayColorPicker ? (
@@ -94,12 +82,7 @@ const DepartmentColorPicker = ({
             color={colorPicker.color}
             disableAlpha
             onChange={(color) =>
-              handleChange(
-                color,
-                colorPicker,
-                setColorPicker,
-                setDepartmentInfo
-              )
+              handleChange(color, colorPicker, setColorPicker, setDepartmentInfo)
             }
           />
         </div>

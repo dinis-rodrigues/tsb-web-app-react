@@ -1,14 +1,8 @@
-import { Fragment } from "react";
 import cx from "classnames";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { BomMaterial, taskShape, userContext } from "../../interfaces";
-import {
-  getAssignedByString,
-  getLinkTo,
-  getStatusBadge,
-  getToDoTitle,
-} from "./dashboardUtils";
-import { Link } from "react-router-dom";
+import { getAssignedByString, getLinkTo, getStatusBadge, getToDoTitle } from "./dashboardUtils";
 
 type Props = {
   toDoId: string;
@@ -18,22 +12,18 @@ type Props = {
 const DashToDoRow = ({ toDoId, toDo, user }: Props) => {
   const { usersMetadata } = useAuth();
   let isTask = true;
-  if (toDo.hasOwnProperty("toDepartment")) isTask = false;
+  if (Object.hasOwn(toDo, "toDepartment")) isTask = false;
   // Task status badge if exists
-  let [leftColor, badgeColor] = getStatusBadge(toDo, isTask);
+  const [leftColor, badgeColor] = getStatusBadge(toDo, isTask);
   // Assigned by string
-  let assignedByString = getAssignedByString(
-    user,
-    usersMetadata,
-    toDo.assignedBy
-  );
+  const assignedByString = getAssignedByString(user, usersMetadata, toDo.assignedBy);
   // title
-  let toDoTitle = getToDoTitle(toDo, isTask);
+  const toDoTitle = getToDoTitle(toDo, isTask);
   // Link
   const linkTo = getLinkTo(toDoId, toDo, isTask);
 
   return (
-    <Fragment>
+    <>
       <li className="list-group-item todo-list">
         <Link to={linkTo} className="todo-link">
           <div className={cx("todo-indicator", { [leftColor]: leftColor })} />
@@ -43,9 +33,7 @@ const DashToDoRow = ({ toDoId, toDo, user }: Props) => {
                 <div className="widget-heading">
                   {toDoTitle}
                   {badgeColor && (
-                    <div
-                      className={cx("badge ml-2", { [badgeColor]: badgeColor })}
-                    >
+                    <div className={cx("badge ml-2", { [badgeColor]: badgeColor })}>
                       {toDo.status}
                     </div>
                   )}
@@ -57,7 +45,7 @@ const DashToDoRow = ({ toDoId, toDo, user }: Props) => {
           </div>
         </Link>
       </li>
-    </Fragment>
+    </>
   );
 };
 

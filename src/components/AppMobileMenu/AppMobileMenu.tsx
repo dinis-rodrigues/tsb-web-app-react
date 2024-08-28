@@ -1,7 +1,7 @@
-import React, { Fragment, useState } from "react";
-import { connect } from "react-redux";
+import { useState } from "react";
 // @ts-ignore
 import Hamburger from "react-hamburgers";
+import { connect } from "react-redux";
 
 import cx from "classnames";
 
@@ -11,10 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Button } from "reactstrap";
 
-import {
-  setEnableMobileMenu,
-  setEnableMobileMenuSmall,
-} from "../../reducers/ThemeOptions";
+import { setEnableMobileMenu, setEnableMobileMenuSmall } from "../../reducers/ThemeOptions";
 
 interface MobileState {
   active: boolean;
@@ -59,7 +56,7 @@ const AppMobileMenu = ({
     }
   };
   return (
-    <Fragment>
+    <>
       <div className="app-header__mobile-menu">
         <div onClick={toggleMobileSidebar}>
           <Hamburger
@@ -90,7 +87,7 @@ const AppMobileMenu = ({
           </Button>
         </span>
       </div>
-    </Fragment>
+    </>
   );
 };
 
@@ -101,10 +98,8 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: Function) => ({
-  setEnableMobileMenu: (enable: boolean) =>
-    dispatch(setEnableMobileMenu(enable)),
-  setEnableMobileMenuSmall: (enable: boolean) =>
-    dispatch(setEnableMobileMenuSmall(enable)),
+  setEnableMobileMenu: (enable: boolean) => dispatch(setEnableMobileMenu(enable)),
+  setEnableMobileMenuSmall: (enable: boolean) => dispatch(setEnableMobileMenuSmall(enable)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppMobileMenu);

@@ -1,6 +1,6 @@
 import cx from "classnames";
-import { toggleMaintenance, toggleRegistration } from "./userManagementUtils";
 import { useAuth } from "../../../contexts/AuthContext";
+import { toggleMaintenance, toggleRegistration } from "./userManagementUtils";
 
 const ApplicationSettings = () => {
   const { applicationSettings } = useAuth();
@@ -11,7 +11,7 @@ const ApplicationSettings = () => {
       <div className="card-header">
         <i className="header-icon lnr-cog icon-gradient bg-plum-plate"></i>
         Application Settings
-        {/* <button onClick={() => replaceUidFromAllTasks()}>
+        {/* <button type="button" onClick={() => replaceUidFromAllTasks()}>
           move everything
         </button> */}
       </div>

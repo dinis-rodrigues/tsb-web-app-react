@@ -1,3 +1,5 @@
+import { User } from "firebase/auth";
+import { get, off, onValue, ref } from "firebase/database";
 import React, { useContext, useState, useEffect } from "react";
 import { auth, db } from "../config/firebase";
 import {
@@ -5,21 +7,19 @@ import {
   ApplicationSettings,
   Departments,
   DepartmentsWithDesc,
-  userContext,
   UserMetadata,
+  userContext,
 } from "../interfaces";
 import { userHasAdminPermissions } from "../utils/generalFunctions";
 import {
-  registerUser,
+  getCurrentUser,
+  getDepartments,
   loginUser,
   logoutUser,
-  getCurrentUser,
+  registerUser,
   setDisplayApplication,
-  getDepartments,
   setUserInformation,
 } from "./contextUtils";
-import { get, off, onValue, ref } from "firebase/database";
-import { User } from "firebase/auth";
 
 interface ContextAuth {
   currentUser: User | null;
@@ -90,13 +90,11 @@ export function AuthProvider({ children }: Props) {
   });
   const [loading, setLoading] = useState(true);
   const [usersMetadata, setUsersMetadata] = useState<UserMetadata>({});
-  const [applicationSettings, setApplicationSettings] =
-    useState<ApplicationSettings>({
-      registrationIsOpen: false,
-      maintenanceIsOpen: false,
-    });
-  const [applicationFeatures, setApplicationFeatures] =
-    useState<ApplicationFeatures>({});
+  const [applicationSettings, setApplicationSettings] = useState<ApplicationSettings>({
+    registrationIsOpen: false,
+    maintenanceIsOpen: false,
+  });
+  const [applicationFeatures, setApplicationFeatures] = useState<ApplicationFeatures>({});
   const [isAdminUser, setIsAdminUser] = useState(false);
   const [isGod, setIsGod] = useState(false);
   const [isMarketingOrAdmin, setIsMarketingOrAdmin] = useState(false);
@@ -104,13 +102,9 @@ export function AuthProvider({ children }: Props) {
   const [displayMaintenance, setDisplayMaintenance] = useState(false);
   const [displayLogin, setDisplayLogin] = useState(true);
   const [departments, setDepartments] = useState<Departments>({});
-  const [departmentsWDesc, setDepartmentsWDesc] = useState<DepartmentsWithDesc>(
-    {}
-  );
+  const [departmentsWDesc, setDepartmentsWDesc] = useState<DepartmentsWithDesc>({});
 
-  const [isDarkMode, setIsDarkMode] = useState(
-    localStorage.getItem("tsbDarkTheme") === "true" ? true : false
-  );
+  const [isDarkMode, setIsDarkMode] = useState(localStorage.getItem("tsbDarkTheme") === "true");
 
   /**
    * Retrieves all essential data from the database in order to get the Website running
@@ -119,7 +113,7 @@ export function AuthProvider({ children }: Props) {
    */
   const getUserState = (userId: string) => {
     onValue(ref(db, "public/applicationSettings"), (snapshot) => {
-      let appSettings: ApplicationSettings = snapshot.val();
+      const appSettings: ApplicationSettings = snapshot.val();
       setApplicationSettings(appSettings);
 
       // Get Application Features
@@ -130,15 +124,14 @@ export function AuthProvider({ children }: Props) {
       });
 
       onValue(ref(db, `private/usersMetadata/${userId}/pinfo`), (snapshot) => {
-        var userInfo: userContext | null = snapshot.val();
+        const userInfo: userContext | null = snapshot.val();
         if (!userInfo) return;
 
         setUserInformation(userInfo, userId, setUSER);
 
         // Checks if the user is admin or not
-        let userAdmin = userHasAdminPermissions(userInfo);
-        let userMarketing =
-          userInfo.department === "Management and Marketing" || userAdmin;
+        const userAdmin = userHasAdminPermissions(userInfo);
+        const userMarketing = userInfo.department === "Management and Marketing" || userAdmin;
         setIsAdminUser(userAdmin);
         setIsGod(userInfo.position === "God");
         setIsMarketingOrAdmin(userMarketing);
@@ -149,7 +142,7 @@ export function AuthProvider({ children }: Props) {
           userAdmin,
           setDisplayContent,
           setDisplayMaintenance,
-          setDisplayLogin
+          setDisplayLogin,
         );
         // Get deparments
         getDepartments(setDepartments, setDepartmentsWDesc);
@@ -174,7 +167,7 @@ export function AuthProvider({ children }: Props) {
       } else {
         // sets loading to false, for the login/register page
         onValue(ref(db, "public/applicationSettings"), (snapshot) => {
-          let appSettings: ApplicationSettings = snapshot.val();
+          const appSettings: ApplicationSettings = snapshot.val();
           setApplicationSettings(appSettings);
           setDisplayApplication(
             null,
@@ -182,7 +175,7 @@ export function AuthProvider({ children }: Props) {
             null,
             setDisplayContent,
             setDisplayMaintenance,
-            setDisplayLogin
+            setDisplayLogin,
           );
 
           setLoading(false);
@@ -222,11 +215,7 @@ export function AuthProvider({ children }: Props) {
     setIsDarkMode,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 }
 
 // export default AuthProvider;

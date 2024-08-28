@@ -1,13 +1,15 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { Button, Modal, FileSelector, Spinner } from "react-rainbow-components";
-import { CheckboxToggle } from "react-rainbow-components";
 import cx from "classnames";
+import { Button, CheckboxToggle, FileSelector, Modal, Spinner } from "react-rainbow-components";
 import { Nav, NavItem, NavLink } from "reactstrap";
+import { useAuth } from "../../contexts/AuthContext";
 import { Sponsor, SponsorRetroactives } from "../../interfaces";
-import SponsorFileIcon from "./icons/SponsorFileIcon";
 import SponsorChart from "./SponsorChart";
 import SponsorImage from "./SponsorImage";
+import SponsorModalAddSeason from "./SponsorModalAddSeason";
+import SponsorModalInfo from "./SponsorModalInfo";
+import SponsorFileIcon from "./icons/SponsorFileIcon";
 import {
   deleteSponsor,
   downloadSponsorFile,
@@ -16,9 +18,6 @@ import {
   sponsorRetroHandler,
   uploadSponsorSvgToServer,
 } from "./sponsorsUtils";
-import { useAuth } from "../../contexts/AuthContext";
-import SponsorModalInfo from "./SponsorModalInfo";
-import SponsorModalAddSeason from "./SponsorModalAddSeason";
 
 type Props = {
   isModalOpen: boolean;
@@ -39,9 +38,7 @@ const SponsorModal = ({
 }: Props) => {
   const { USER, isMarketingOrAdmin, isDarkMode } = useAuth();
 
-  const [sponsorInfo, setSponsorInfo] = useState<Sponsor | null>(
-    mockSponsorInfo
-  );
+  const [sponsorInfo, setSponsorInfo] = useState<Sponsor | null>(mockSponsorInfo);
   const [refreshChart, setRefreshChart] = useState(false);
 
   useEffect(() => {
@@ -57,9 +54,7 @@ const SponsorModal = ({
 
   return (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       isOpen={isModalOpen}
       size="large"
       title={sponsorInfo?.name}
@@ -88,14 +83,7 @@ const SponsorModal = ({
                 <Button
                   variant="brand"
                   label={sponsorId !== "createNew" ? "Save" : "Create"}
-                  onClick={() =>
-                    saveSponsor(
-                      sponsorInfo,
-                      sponsorId,
-                      bracketId,
-                      setIsModalOpen
-                    )
-                  }
+                  onClick={() => saveSponsor(sponsorInfo, sponsorId, bracketId, setIsModalOpen)}
                 />
               )}
             </div>
@@ -132,11 +120,8 @@ const SponsorModal = ({
         </Nav>
       </div>
       {activeTab === "0" && (
-        <Fragment>
-          <SponsorModalInfo
-            sponsorInfo={sponsorInfo}
-            setSponsorInfo={setSponsorInfo}
-          />
+        <>
+          <SponsorModalInfo sponsorInfo={sponsorInfo} setSponsorInfo={setSponsorInfo} />
 
           <div className="row">
             <div className="col">
@@ -149,11 +134,7 @@ const SponsorModal = ({
               <CheckboxToggle
                 label="Toggle Retro-actives:"
                 labelAlignment="left"
-                value={
-                  sponsorInfo?.isRetroActive === undefined
-                    ? true
-                    : sponsorInfo?.isRetroActive
-                }
+                value={sponsorInfo?.isRetroActive === undefined ? true : sponsorInfo?.isRetroActive}
                 onChange={() => sponsorRetroHandler(setSponsorInfo)}
               />
               <CheckboxToggle
@@ -164,7 +145,7 @@ const SponsorModal = ({
               />
             </div>
           </div>
-        </Fragment>
+        </>
       )}
 
       {activeTab === "1" && (
@@ -177,7 +158,7 @@ const SponsorModal = ({
 
       {/* Sponsor files */}
       {activeTab === "2" && (
-        <Fragment>
+        <>
           <div className="form-group row text-center">
             {isMarketingOrAdmin && (
               <div className="col">
@@ -197,7 +178,7 @@ const SponsorModal = ({
                         : `Drop or Browse svg`
                     }
                     variant="multiline"
-                    disabled={sponsorId === "createNew" ? true : false}
+                    disabled={sponsorId === "createNew"}
                     onChange={(e) => {
                       setFileValue(e);
                       uploadSponsorSvgToServer(
@@ -209,7 +190,7 @@ const SponsorModal = ({
                         "svgPath",
                         USER?.id,
                         setFileValue,
-                        setSponsorInfo
+                        setSponsorInfo,
                       );
                     }}
                   />
@@ -225,26 +206,22 @@ const SponsorModal = ({
               </label>
 
               {sponsorInfo?.svgPath ? (
-                <Fragment>
+                <>
                   {!fileValue ? (
-                    <Fragment>
+                    <>
                       <SponsorImage svgPath={sponsorInfo?.svgPath} />
                       <button
+                        type="button"
                         className="btn btn-info"
-                        onClick={() =>
-                          downloadSponsorFile(
-                            sponsorInfo.svgPath,
-                            sponsorInfo.name
-                          )
-                        }
+                        onClick={() => downloadSponsorFile(sponsorInfo.svgPath, sponsorInfo.name)}
                       >
                         Download
                       </button>
-                    </Fragment>
+                    </>
                   ) : (
                     <Spinner size="large" type="arc" variant="brand" />
                   )}
-                </Fragment>
+                </>
               ) : (
                 <div>No file has been uploaded yet</div>
               )}
@@ -272,7 +249,7 @@ const SponsorModal = ({
                         : `Drop or Browse ai / eps / pdf / png / jpg`
                     }
                     variant="multiline"
-                    disabled={sponsorId === "createNew" ? true : false}
+                    disabled={sponsorId === "createNew"}
                     onChange={(e) => {
                       setFileValue(e);
                       uploadSponsorSvgToServer(
@@ -284,7 +261,7 @@ const SponsorModal = ({
                         "logoWhite",
                         USER?.id,
                         setFileValue,
-                        setSponsorInfo
+                        setSponsorInfo,
                       );
                     }}
                   />
@@ -300,26 +277,22 @@ const SponsorModal = ({
               </label>
 
               {sponsorInfo?.logoWhite ? (
-                <Fragment>
+                <>
                   {!fileValue ? (
-                    <Fragment>
+                    <>
                       <SponsorFileIcon url={sponsorInfo?.logoWhite} isFile />
                       <button
+                        type="button"
                         className="btn btn-info"
-                        onClick={() =>
-                          downloadSponsorFile(
-                            sponsorInfo.logoWhite,
-                            sponsorInfo.name
-                          )
-                        }
+                        onClick={() => downloadSponsorFile(sponsorInfo.logoWhite, sponsorInfo.name)}
                       >
                         Download
                       </button>
-                    </Fragment>
+                    </>
                   ) : (
                     <Spinner size="large" type="arc" variant="brand" />
                   )}
-                </Fragment>
+                </>
               ) : (
                 <div>No file has been uploaded yet</div>
               )}
@@ -346,7 +319,7 @@ const SponsorModal = ({
                         : `Drop or Browse ai / eps / pdf / png / jpg`
                     }
                     variant="multiline"
-                    disabled={sponsorId === "createNew" ? true : false}
+                    disabled={sponsorId === "createNew"}
                     onChange={(e) => {
                       setFileValue(e);
                       uploadSponsorSvgToServer(
@@ -358,7 +331,7 @@ const SponsorModal = ({
                         "logoBlack",
                         USER?.id,
                         setFileValue,
-                        setSponsorInfo
+                        setSponsorInfo,
                       );
                     }}
                   />
@@ -374,32 +347,28 @@ const SponsorModal = ({
               </label>
 
               {sponsorInfo?.logoBlack ? (
-                <Fragment>
+                <>
                   {!fileValue ? (
-                    <Fragment>
+                    <>
                       <SponsorFileIcon url={sponsorInfo?.logoBlack} isFile />
                       <button
+                        type="button"
                         className="btn btn-info"
-                        onClick={() =>
-                          downloadSponsorFile(
-                            sponsorInfo.logoBlack,
-                            sponsorInfo.name
-                          )
-                        }
+                        onClick={() => downloadSponsorFile(sponsorInfo.logoBlack, sponsorInfo.name)}
                       >
                         Download
                       </button>
-                    </Fragment>
+                    </>
                   ) : (
                     <Spinner size="large" type="arc" variant="brand" />
                   )}
-                </Fragment>
+                </>
               ) : (
                 <div>No file has been uploaded yet</div>
               )}
             </div>
           </div>
-        </Fragment>
+        </>
       )}
     </Modal>
   );

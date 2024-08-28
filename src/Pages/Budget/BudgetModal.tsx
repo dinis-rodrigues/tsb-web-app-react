@@ -1,37 +1,27 @@
 import { useState } from "react";
 import NumberFormat from "react-number-format";
-import {
-  Drawer,
-  DatePicker,
-  Button,
-  CounterInput,
-} from "react-rainbow-components";
+import { Button, CounterInput, DatePicker, Drawer } from "react-rainbow-components";
 import Select, { components } from "react-select";
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
 import AppModalComment from "../../components/AppModalComment/AppModalComment";
 import { useAuth } from "../../contexts/AuthContext";
-import {
-  BomMaterial,
-  selectOption,
-  userContext,
-  UserMetadata,
-} from "../../interfaces";
+import { BomMaterial, UserMetadata, selectOption, userContext } from "../../interfaces";
 import { inputToDate } from "../../utils/generalFunctions";
 import {
-  deleteMaterial,
-  saveMaterial,
-  statusSelectOptions,
-  inputBudgetModalHandler,
-  counterHandler,
-  valueHandler,
   assignToHandler,
-  dateHandler,
-  statusHandler,
-  forDepartmentHandler,
-  submitComment,
   commentTextHandler,
-  swalBomDeleteMessage,
+  counterHandler,
+  dateHandler,
+  deleteMaterial,
+  forDepartmentHandler,
   getBudgetDepartmentOptions,
+  inputBudgetModalHandler,
+  saveMaterial,
+  statusHandler,
+  statusSelectOptions,
+  submitComment,
+  swalBomDeleteMessage,
+  valueHandler,
 } from "./budgetUtils";
 
 type Props = {
@@ -92,9 +82,7 @@ const BudgetModal = ({
 
   return (
     <Drawer
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       header={"Material Information"}
       onRequestClose={() => closeModal()}
       size={"medium"}
@@ -109,12 +97,7 @@ const BudgetModal = ({
                 label="Delete"
                 onClick={() =>
                   swalBomDeleteMessage(() =>
-                    deleteMaterial(
-                      materialInfo,
-                      materialInfoMask,
-                      closeModal,
-                      season
-                    )
+                    deleteMaterial(materialInfo, materialInfoMask, closeModal, season),
                   )
                 }
               />
@@ -127,15 +110,7 @@ const BudgetModal = ({
             <Button
               variant="brand"
               label="Save"
-              onClick={() =>
-                saveMaterial(
-                  materialInfo,
-                  materialInfoMask,
-                  user,
-                  closeModal,
-                  season
-                )
-              }
+              onClick={() => saveMaterial(materialInfo, materialInfoMask, user, closeModal, season)}
             />
           </div>
         </div>
@@ -153,12 +128,7 @@ const BudgetModal = ({
           <input
             value={materialInfo ? materialInfo.description : ""}
             onChange={(e) =>
-              inputBudgetModalHandler(
-                e,
-                "description",
-                materialInfo,
-                setMaterialInfo
-              )
+              inputBudgetModalHandler(e, "description", materialInfo, setMaterialInfo)
             }
             type="text"
             className="form-control m-0 text-center"
@@ -175,9 +145,7 @@ const BudgetModal = ({
 
           <input
             value={materialInfo ? materialInfo.from : ""}
-            onChange={(e) =>
-              inputBudgetModalHandler(e, "from", materialInfo, setMaterialInfo)
-            }
+            onChange={(e) => inputBudgetModalHandler(e, "from", materialInfo, setMaterialInfo)}
             type="text"
             className="form-control m-0 text-center"
             placeholder="Company..."
@@ -276,9 +244,7 @@ const BudgetModal = ({
           <DatePicker
             value={materialInfo ? inputToDate(materialInfo.date) : today}
             isCentered={true}
-            onChange={(value) =>
-              dateHandler(value, materialInfo, setMaterialInfo)
-            }
+            onChange={(value) => dateHandler(value, materialInfo, setMaterialInfo)}
             className={"datePicker"}
           />
         </div>
@@ -346,7 +312,7 @@ const BudgetModal = ({
         {materialInfo && materialInfo.comments && user ? (
           Object.keys(materialInfo.comments).map((key, idx) => {
             if (!materialInfo.comments) return "";
-            let currComment = materialInfo.comments[key];
+            const currComment = materialInfo.comments[key];
             return (
               <AppModalComment
                 key={key}
@@ -371,27 +337,14 @@ const BudgetModal = ({
             onChange={(e) => commentTextHandler(e, setCommentText)}
             onKeyPress={(e) => {
               if (e.key === "Enter") {
-                submitComment(
-                  commentText,
-                  user,
-                  season,
-                  materialInfo,
-                  setCommentText
-                );
+                submitComment(commentText, user, season, materialInfo, setCommentText);
               }
             }}
           />
           <button
+            type="button"
             className="send-icon"
-            onClick={() =>
-              submitComment(
-                commentText,
-                user,
-                season,
-                materialInfo,
-                setCommentText
-              )
-            }
+            onClick={() => submitComment(commentText, user, season, materialInfo, setCommentText)}
           >
             <span></span>
           </button>

@@ -20,21 +20,21 @@ import { Notification, Notifications, userContext } from "../../interfaces";
 const fetchBatchNotifications = (
   user: userContext | null,
   setNotifications: Function,
-  setReferenceToOldestKey: Function
+  setReferenceToOldestKey: Function,
 ) => {
-  let notificationBatch = 10;
+  const notificationBatch = 10;
   if (!user) return;
   get(
     query(
       ref(db, `private/usersNotifications/${user.id}/all`),
       orderByKey(),
-      limitToLast(notificationBatch)
-    )
+      limitToLast(notificationBatch),
+    ),
   ).then((snapshot) => {
     if (snapshot.val()) {
-      let allNotifs = Object.entries(snapshot.val()).sort().reverse();
+      const allNotifs = Object.entries(snapshot.val()).sort().reverse();
       setNotifications(allNotifs);
-      let lastNotifKey = allNotifs[allNotifs.length - 1][0];
+      const lastNotifKey = allNotifs[allNotifs.length - 1][0];
       setReferenceToOldestKey(lastNotifKey);
     }
   });
@@ -45,9 +45,9 @@ const notificationsOnScroll = (
   referenceToOldestKey: string,
   notificationsRef: React.RefObject<HTMLDivElement>,
   setReferenceToOldestKey: Function,
-  setNotifications: Function
+  setNotifications: Function,
 ) => {
-  let notificationBatch = 10;
+  const notificationBatch = 10;
 
   if (!user) return;
   if (notificationsRef.current) {
@@ -59,15 +59,12 @@ const notificationsOnScroll = (
           ref(db, `private/usersNotifications/${user.id}/all`),
           orderByKey(),
           endAt(referenceToOldestKey),
-          limitToLast(notificationBatch + 1)
-        )
+          limitToLast(notificationBatch + 1),
+        ),
       )
         .then((snapshot) => {
-          let moreNotifications: Notifications = snapshot.val();
-          let arrayOfNotifications = Object.entries(moreNotifications)
-            .sort()
-            .reverse()
-            .slice(1); // remove the first element (duplicate)
+          const moreNotifications: Notifications = snapshot.val();
+          const arrayOfNotifications = Object.entries(moreNotifications).sort().reverse().slice(1); // remove the first element (duplicate)
           //   let notificationsReversed = arrayOfKeys.map(
           //     (key) => snapshot.val()[key]
           //   );
@@ -75,8 +72,7 @@ const notificationsOnScroll = (
             ...notifications,
             ...arrayOfNotifications,
           ]);
-          let lastKey =
-            arrayOfNotifications[arrayOfNotifications.length - 1][0];
+          const lastKey = arrayOfNotifications[arrayOfNotifications.length - 1][0];
           setReferenceToOldestKey(lastKey);
         })
         .catch((error) => {});
@@ -96,11 +92,11 @@ const newNotificationsListener = (
   user: userContext | null,
   notificationsMask: Notifications,
   setNotificationsMask: Function,
-  setUnreadNotifications: Function
+  setUnreadNotifications: Function,
 ) => {
   if (!user) return;
   onValue(ref(db, `private/usersNotifications/${user.id}/new`), (snapshot) => {
-    let notifications = snapshot.val();
+    const notifications = snapshot.val();
     if (notifications) {
       setNotificationsMask({ ...notificationsMask, ...notifications });
     }
@@ -118,10 +114,7 @@ const newNotificationsListener = (
  * @param user current authenticated user
  * @returns
  */
-const removeNewNotifications = (
-  user: userContext | null,
-  unreadNotifications: boolean
-) => {
+const removeNewNotifications = (user: userContext | null, unreadNotifications: boolean) => {
   if (!user || unreadNotifications) return;
   remove(ref(db, `private/usersNotifications/${user.id}/new`));
 };
@@ -131,18 +124,20 @@ const removeNewNotifications = (
  * @returns
  */
 const getNotificationBorderColor = (notification: Notification) => {
-  let color = notification.color;
+  const color = notification.color;
   if (color === "info") {
     return "border-info"; // "lnr-layers";
-  } else if (color === "warning") {
-    return "border-warning";
-  } else if (color === "danger") {
-    return "border-danger";
-  } else if (color === "success") {
-    return "border-success";
-  } else {
-    return "";
   }
+  if (color === "warning") {
+    return "border-warning";
+  }
+  if (color === "danger") {
+    return "border-danger";
+  }
+  if (color === "success") {
+    return "border-success";
+  }
+  return "";
 };
 
 /**
@@ -151,18 +146,20 @@ const getNotificationBorderColor = (notification: Notification) => {
  * @returns
  */
 const getNotificationIconColor = (notification: Notification) => {
-  let color = notification.color;
+  const color = notification.color;
   if (color === "info") {
     return "bg-happy-fisher"; // "lnr-layers";
-  } else if (color === "warning") {
-    return "bg-sunny-morning";
-  } else if (color === "danger") {
-    return "bg-love-kiss";
-  } else if (color === "success") {
-    return "bg-happy-itmeo";
-  } else {
-    return "";
   }
+  if (color === "warning") {
+    return "bg-sunny-morning";
+  }
+  if (color === "danger") {
+    return "bg-love-kiss";
+  }
+  if (color === "success") {
+    return "bg-happy-itmeo";
+  }
+  return "";
 };
 
 /**
@@ -171,26 +168,32 @@ const getNotificationIconColor = (notification: Notification) => {
  * @returns
  */
 const getNotificationIcon = (notification: Notification) => {
-  let type = notification.type;
+  const type = notification.type;
   if (type === "task") {
     // task icon
     return "lnr-layers";
-  } else if (type === "taskComment") {
+  }
+  if (type === "taskComment") {
     // Material icon
     return "fas fa-comments";
-  } else if (type === "material") {
+  }
+  if (type === "material") {
     // Material icon
     return "fas fa-hammer";
-  } else if (type === "attendedEvent") {
+  }
+  if (type === "attendedEvent") {
     // missed Event icon
     return "fas fa-check-circle";
-  } else if (type === "missedEvent") {
+  }
+  if (type === "missedEvent") {
     // missed Event icon
     return "fas fa-exclamation-triangle";
-  } else if (type === "generalThread") {
+  }
+  if (type === "generalThread") {
     // a new thread in the general topic
     return "fas fa-bullhorn";
-  } else if (type === "forumReply") {
+  }
+  if (type === "forumReply") {
     // a new reply in a thread you are following
     return "fas fa-comment-dots";
   }

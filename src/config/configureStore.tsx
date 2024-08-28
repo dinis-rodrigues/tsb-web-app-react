@@ -1,4 +1,4 @@
-import { createStore, combineReducers } from "redux";
+import { combineReducers, createStore } from "redux";
 import reducers from "../reducers";
 
 export default function configureStore() {
@@ -6,6 +6,6 @@ export default function configureStore() {
     combineReducers({
       ...reducers,
     }),
-    {}
+    {},
   );
 }

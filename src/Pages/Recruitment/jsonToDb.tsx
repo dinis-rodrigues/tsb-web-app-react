@@ -2,10 +2,10 @@ import { ref, set } from "firebase/database";
 import { v4 as uuid } from "uuid";
 import { db } from "../../config/firebase";
 import { RecruitmentTable, RecruitmentTableSQL } from "../../interfaces";
-var iconv = require("iconv-lite");
+const iconv = require("iconv-lite");
 
 const replaceString = (str: string) => {
-  let newStr = iconv.decode(str, "ISO-8859-1");
+  const newStr = iconv.decode(str, "ISO-8859-1");
   return newStr;
 };
 
@@ -19,9 +19,7 @@ const sentenceCase = (input: string) => {
   input = input.toLowerCase();
   return input
     .toString()
-    .replace(/(^|\. *)([a-z])/g, function (match, separator, char) {
-      return separator + char.toUpperCase();
-    });
+    .replace(/(^|\. *)([a-z])/g, (match, separator, char) => separator + char.toUpperCase());
 };
 
 /**
@@ -34,7 +32,7 @@ const toTitleCase = (str: string) => {
     .split(" ")
     .map((w) => {
       if (w.length > 0) return w[0].toUpperCase() + w.substr(1).toLowerCase();
-      else return "";
+      return "";
     })
     .join(" ");
 };
@@ -64,24 +62,24 @@ const jsonData: RecruitmentTableSQL = {
  * Firebase database
  */
 const sendJsonToDb = () => {
-  let data = jsonData.data;
-  let newData: RecruitmentTable = {};
+  const data = jsonData.data;
+  const newData: RecruitmentTable = {};
 
-  let tableName = "RecrutaSEP18";
+  const tableName = "RecrutaSEP18";
 
   data.forEach((userData) => {
     // change departments format
     let og = userData.Areas;
-    let toStopIdx = og.indexOf("->") - 2;
+    const toStopIdx = og.indexOf("->") - 2;
     og = og.substring(8, toStopIdx);
-    let departmentsList = og.split(" ");
+    const departmentsList = og.split(" ");
 
     // change time data stamp
-    let ogDate = userData.timedata ? new Date(userData.timedata) : null;
-    let newDate = ogDate ? ogDate.getTime() : null;
+    const ogDate = userData.timedata ? new Date(userData.timedata) : null;
+    const newDate = ogDate ? ogDate.getTime() : null;
 
     // year to string
-    let newYear = userData.Ano ? userData.Ano.toString() : "-";
+    const newYear = userData.Ano ? userData.Ano.toString() : "-";
 
     newData[uuid()] = {
       name: toTitleCase(replaceString(userData.Nome)),
@@ -95,7 +93,7 @@ const sendJsonToDb = () => {
       timestamp: newDate,
     };
   });
-  set(ref(db, "public/recruitment/tables/" + tableName), newData);
+  set(ref(db, `public/recruitment/tables/${tableName}`), newData);
 };
 
 export { sendJsonToDb };

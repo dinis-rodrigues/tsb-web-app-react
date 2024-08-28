@@ -1,5 +1,5 @@
 import NumberFormat from "react-number-format";
-import { Button, Modal, Slider, ColorPicker } from "react-rainbow-components";
+import { Button, ColorPicker, Modal, Slider } from "react-rainbow-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { SponsorBracketListItem } from "../../interfaces";
 import {
@@ -31,9 +31,7 @@ const BracketModal = ({
   const { isDarkMode } = useAuth();
   return (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       isOpen={isModalOpen}
       size="medium"
       title={bracketInfo?.name}
@@ -55,23 +53,12 @@ const BracketModal = ({
           </div>
           <div className="col">
             <div className="float-right">
-              <Button
-                label="Cancel"
-                onClick={() => setIsModalOpen(false)}
-                className={"m-1"}
-              />
+              <Button label="Cancel" onClick={() => setIsModalOpen(false)} className={"m-1"} />
               <Button
                 className={"m-1"}
                 variant="brand"
                 label={bracketId ? "Save" : "Create"}
-                onClick={() =>
-                  saveBracket(
-                    bracketId,
-                    bracketInfo,
-                    sponsorsItems,
-                    setIsModalOpen
-                  )
-                }
+                onClick={() => saveBracket(bracketId, bracketInfo, sponsorsItems, setIsModalOpen)}
               />
             </div>
           </div>
@@ -89,9 +76,7 @@ const BracketModal = ({
 
           <input
             value={bracketInfo ? bracketInfo.name : ""}
-            onChange={(e) =>
-              bracketInputHandler(e.target.value, setBracketInfo)
-            }
+            onChange={(e) => bracketInputHandler(e.target.value, setBracketInfo)}
             type="text"
             className="form-control m-0 text-center"
             placeholder=""
@@ -109,9 +94,7 @@ const BracketModal = ({
             value={bracketInfo?.numColumns}
             min={1}
             max={12}
-            onChange={(e) =>
-              bracketSliderHandler(e.target.value, setBracketInfo)
-            }
+            onChange={(e) => bracketSliderHandler(e.target.value, setBracketInfo)}
           />
         </div>
         <div className="col">
@@ -128,7 +111,7 @@ const BracketModal = ({
               bracketMarginHandler(
                 value.floatValue ? value.floatValue : 0,
                 "topMargin",
-                setBracketInfo
+                setBracketInfo,
               )
             }
             suffix={" €"}
@@ -151,7 +134,7 @@ const BracketModal = ({
               bracketMarginHandler(
                 value.floatValue ? value.floatValue : 0,
                 "bottomMargin",
-                setBracketInfo
+                setBracketInfo,
               )
             }
             suffix={" €"}

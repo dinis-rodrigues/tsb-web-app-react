@@ -1,16 +1,16 @@
-import React, { Fragment, useState } from "react";
-import { connect } from "react-redux";
+import { useState } from "react";
 // @ts-ignore
 import Hamburger from "react-hamburgers";
+import { connect } from "react-redux";
 
 import AppMobileMenu from "../AppMobileMenu/AppMobileMenu";
 
+import { NavLink } from "react-router-dom";
 import {
   setEnableClosedSidebar,
   setEnableMobileMenu,
   setEnableMobileMenuSmall,
 } from "../../reducers/ThemeOptions";
-import { NavLink } from "react-router-dom";
 
 type Props = {
   isMobileView?: boolean;
@@ -37,14 +37,10 @@ const AppLogo = ({
     setEnableClosedSidebar(!enableClosedSidebar);
   };
   return (
-    <Fragment>
+    <>
       <NavLink className="app-header__logo" to={"/dashboard"}>
         {!isMobileView && (
-          <Hamburger
-            active={!enableClosedSidebar}
-            type="slider"
-            onClick={hamburgerClick}
-          />
+          <Hamburger active={!enableClosedSidebar} type="slider" onClick={hamburgerClick} />
         )}
         <div className="logo-src ml-auto" />
       </NavLink>
@@ -52,7 +48,7 @@ const AppLogo = ({
         displayMobileSearch={displayMobileSearch}
         setDisplayMobileSearch={setDisplayMobileSearch}
       />
-    </Fragment>
+    </>
   );
 };
 
@@ -63,12 +59,9 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: Function) => ({
-  setEnableClosedSidebar: (enable: boolean) =>
-    dispatch(setEnableClosedSidebar(enable)),
-  setEnableMobileMenu: (enable: boolean) =>
-    dispatch(setEnableMobileMenu(enable)),
-  setEnableMobileMenuSmall: (enable: boolean) =>
-    dispatch(setEnableMobileMenuSmall(enable)),
+  setEnableClosedSidebar: (enable: boolean) => dispatch(setEnableClosedSidebar(enable)),
+  setEnableMobileMenu: (enable: boolean) => dispatch(setEnableMobileMenu(enable)),
+  setEnableMobileMenuSmall: (enable: boolean) => dispatch(setEnableMobileMenuSmall(enable)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppLogo);

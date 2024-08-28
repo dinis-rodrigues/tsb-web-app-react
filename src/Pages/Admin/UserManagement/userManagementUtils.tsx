@@ -13,10 +13,7 @@ import {
 } from "../../../interfaces";
 import { dateToString } from "../../../utils/generalFunctions";
 import printDoc from "../../../utils/pdfExport/printDoc";
-import {
-  setDepartmentPositions,
-  savePublicUser,
-} from "../../Profile/profileUtils";
+import { savePublicUser, setDepartmentPositions } from "../../Profile/profileUtils";
 import { buildColumns, buildTableRows } from "../../Team/TeamUtils";
 
 // Default selected columns to display
@@ -61,7 +58,7 @@ const getAllUserDataForTable = (
   setInfoOptions: Function,
   setColumnText: Function,
   setUsersMetadata: Function,
-  onlyInTeamUsers: boolean = false
+  onlyInTeamUsers: boolean = false,
 ) => {
   if (!user) {
     return;
@@ -78,12 +75,7 @@ const getAllUserDataForTable = (
     });
 
     // Build rows to fill the table WITH THE DEFAULT INFO
-    buildTableRows(
-      usersMetadata,
-      defaultOptions,
-      setTableRowsData,
-      onlyInTeamUsers
-    );
+    buildTableRows(usersMetadata, defaultOptions, setTableRowsData, onlyInTeamUsers);
     buildColumns(defaultOptions, setTableColumns);
 
     setInfoOptions(availableOptions);
@@ -109,7 +101,7 @@ const exportedAllFilename = () => {
  */
 const excelAllExport = (gridApi: GridApi | undefined) => {
   if (!gridApi) return;
-  gridApi.exportDataAsExcel({ fileName: exportedAllFilename() + ".xlsx" });
+  gridApi.exportDataAsExcel({ fileName: `${exportedAllFilename()}.xlsx` });
 };
 /**
  * Export table to clipboard
@@ -138,10 +130,7 @@ const filterAllTable = (e: any, gridApi: GridApi | undefined) => {
  * @param columnApi
  * @returns
  */
-const pdfAllExport = (
-  gridApi: GridApi | undefined,
-  columnApi: ColumnApi | undefined
-) => {
+const pdfAllExport = (gridApi: GridApi | undefined, columnApi: ColumnApi | undefined) => {
   if (!gridApi || !columnApi) return;
   printDoc(gridApi, columnApi, exportedAllFilename());
 };
@@ -160,14 +149,14 @@ const onRowUserClick = (
   setInfo: Function,
   setSelectPositions: Function,
   setModalOpen: Function,
-  setModalTitle: Function
+  setModalTitle: Function,
 ) => {
-  let userId = event.data.userId;
+  const userId = event.data.userId;
 
   // Retrieve user data
   get(ref(db, `private/usersMetadata/${userId}/pinfo`)).then((snapshot) => {
     if (!snapshot.val()) return;
-    let userInfo = snapshot.val();
+    const userInfo = snapshot.val();
     setInfo(userInfo);
     setDepartmentPositions(userInfo.department, user, setSelectPositions);
     setModalOpen(true);
@@ -182,7 +171,7 @@ const onRowUserClick = (
  * @returns
  */
 const saveUserInfo = (info: PersonalInformation, setModalOpen: Function) => {
-  let userId = info.uid;
+  const userId = info.uid;
   if (!userId) return;
   const newInfo = updateWithLeftInDate(info);
   update(ref(db, `private/usersMetadata/${userId}/pinfo`), newInfo);
@@ -209,10 +198,10 @@ const updateWithLeftInDate = (info: PersonalInformation) => {
  */
 const getAndSetApplicationSettings = (
   setRegistrationIsOpen: Function,
-  setMaintenanceIsOpen: Function
+  setMaintenanceIsOpen: Function,
 ) => {
   onValue(ref(db, "public/applicationSettings"), (snapshot) => {
-    let applicationSettings: ApplicationSettings = snapshot.val();
+    const applicationSettings: ApplicationSettings = snapshot.val();
     if (!applicationSettings) return;
     setMaintenanceIsOpen(applicationSettings.maintenanceIsOpen);
     setRegistrationIsOpen(applicationSettings.registrationIsOpen);
@@ -255,9 +244,9 @@ const replaceEventMeetingType = () => {
 };
 
 const replaceUidFromAllNotifications = () => {
-  let uuidToReplace = "bkYOlvmsz3hpoeEHQxzi6dYBaVC2";
+  const uuidToReplace = "bkYOlvmsz3hpoeEHQxzi6dYBaVC2";
   get(ref(db, "private/usersNotifications")).then((snapshot) => {
-    let allUserNotifications: {
+    const allUserNotifications: {
       [key: string]: { [key: string]: Notifications };
     } = snapshot.val();
     if (!allUserNotifications) return;
@@ -267,8 +256,7 @@ const replaceUidFromAllNotifications = () => {
         if (nameId === "all" || nameId === "new") {
           Object.entries(notifications).forEach(([notifId, notification]) => {
             if (notification.sentBy === "v9J2pDVMmvM4bS3qwdTcSScT6YR2") {
-              allUserNotifications[userId][nameId][notifId].sentBy =
-                uuidToReplace;
+              allUserNotifications[userId][nameId][notifId].sentBy = uuidToReplace;
             }
           });
         } else {
@@ -281,9 +269,9 @@ const replaceUidFromAllNotifications = () => {
 };
 
 const replaceUidFromAllTasks = () => {
-  let uuidToReplace = "bkYOlvmsz3hpoeEHQxzi6dYBaVC2";
+  const uuidToReplace = "bkYOlvmsz3hpoeEHQxzi6dYBaVC2";
   get(ref(db, "private/usersTasks")).then((snapshot) => {
-    let allUsersTasks: AllUserTasks = snapshot.val();
+    const allUsersTasks: AllUserTasks = snapshot.val();
     if (!allUsersTasks) return;
     Object.entries(allUsersTasks).forEach(([userId, tasks]) => {
       Object.entries(tasks).forEach(([taskId, task]) => {

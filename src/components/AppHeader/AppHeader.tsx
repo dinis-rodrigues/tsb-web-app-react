@@ -1,4 +1,3 @@
-import React, { Fragment } from "react";
 import cx from "classnames";
 
 import { connect } from "react-redux";
@@ -23,7 +22,7 @@ const Header = ({
 }: Props) => {
   return (
     <div className="app-header header-shadow">
-      <Fragment>
+      <>
         <AppLogo
           isMobileView={isMobileView}
           displayMobileSearch={displayMobileSearch}
@@ -45,7 +44,7 @@ const Header = ({
             <UserBox />
           </div>
         </div>
-      </Fragment>
+      </>
     </div>
   );
 };

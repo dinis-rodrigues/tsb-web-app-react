@@ -29,14 +29,10 @@ const RecruitmentSettings = ({
   const { departments, USER } = useAuth();
   const tableToCreate = generateRecruitmentTable();
   let allowToCreate = false;
-  tablesList && tableToCreate === tablesList[tablesList.length - 1]
-    ? (allowToCreate = false)
-    : (allowToCreate = true);
+  allowToCreate = !(tablesList && tableToCreate === tablesList[tablesList.length - 1]);
 
   const [openDepartments, setOpenDepartments] = useState<string[]>([]);
-  const [departmentOptions, setDepartmentOptions] = useState<selectOption[]>(
-    []
-  );
+  const [departmentOptions, setDepartmentOptions] = useState<selectOption[]>([]);
   useEffect(() => {
     getDepartmentOptions(departments, setDepartmentOptions);
     getOpenedDepartments(setOpenDepartments);
@@ -53,7 +49,7 @@ const RecruitmentSettings = ({
         {/* <span className={"badge badge-danger ml-2"}>
           MOCK SETTINGS FOR FUTURE IMPLEMENTATION
         </span> */}
-        {/* <button onClick={() => buildUserNames()}>Build usernames</button> */}
+        {/* <button type="button" onClick={() => buildUserNames()}>Build usernames</button> */}
       </div>
       <ul className="list-group list-group-flush">
         <li className="list-group-item">
@@ -67,9 +63,7 @@ const RecruitmentSettings = ({
                     -{" "}
                     {activeRecruitment
                       ? `Users are allowed to apply to "${activeRecruitment}"`
-                      : `Users are NOT allowed to apply to "${
-                          tablesList[tablesList.length - 1]
-                        }"`}
+                      : `Users are NOT allowed to apply to "${tablesList[tablesList.length - 1]}"`}
                   </span>
                 </div>
               </div>
@@ -80,9 +74,7 @@ const RecruitmentSettings = ({
                     "btn-danger": !activeRecruitment,
                     "btn-success": activeRecruitment,
                   })}
-                  onClick={() =>
-                    toggleRegistration(tablesList, activeRecruitment)
-                  }
+                  onClick={() => toggleRegistration(tablesList, activeRecruitment)}
                 >
                   {activeRecruitment ? "Opened" : "Closed"}
                 </button>
@@ -112,9 +104,7 @@ const RecruitmentSettings = ({
                     options={departmentOptions}
                     value={openDepartments}
                     orientation={"horizontal"}
-                    onChange={(values) =>
-                      openDepartmentsHandler(values, departments)
-                    }
+                    onChange={(values) => openDepartmentsHandler(values, departments)}
                   />
                 </span>
               </div>

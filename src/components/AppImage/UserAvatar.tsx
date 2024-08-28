@@ -1,14 +1,11 @@
 import { Link } from "react-router-dom";
 import { UncontrolledTooltip } from "reactstrap";
 
-import {
-  getUserImgUrl,
-  getUserProfileLink,
-} from "../../utils/generalFunctions";
-import ImageContainer from "./ImageContainer";
-import { useEffect, useRef, useState } from "react";
 import cx from "classnames";
+import { useEffect, useRef, useState } from "react";
 import { UserMetadata, UsersDB } from "../../interfaces";
+import { getUserImgUrl, getUserProfileLink } from "../../utils/generalFunctions";
+import ImageContainer from "./ImageContainer";
 
 type Props = {
   userId: string;
