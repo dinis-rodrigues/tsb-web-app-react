@@ -1,17 +1,13 @@
 import cx from "classnames";
 import { useForm } from "react-hook-form";
-import { connect } from "react-redux";
-import { setEnableLoginPage } from "../../reducers/ThemeOptions";
 import ValidationError from "./ValidationError";
 import emailValidate from "./emailValidate";
 
-import { Link, Redirect, withRouter } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { signUpUser } from "./registerUtils";
-type Props = {
-  setEnableLoginPage: Function;
-};
-const Register = ({ setEnableLoginPage }: Props) => {
+
+const Register = () => {
   //   Form Validation
   const {
     register,
@@ -72,7 +68,9 @@ const Register = ({ setEnableLoginPage }: Props) => {
                             required: "Please enter your full name",
                           })}
                         />
-                        {errors.fullName && <ValidationError msg={errors.fullName.message} />}
+                        {errors.fullName?.message && (
+                          <ValidationError msg={errors.fullName.message.toString()} />
+                        )}
                       </div>
                     </div>
                     <div className="form-row">
@@ -96,7 +94,9 @@ const Register = ({ setEnableLoginPage }: Props) => {
                               },
                             })}
                           />
-                          {errors.email && <ValidationError msg={errors.email.message} />}
+                          {errors.email?.message && (
+                            <ValidationError msg={errors.email.message.toString()} />
+                          )}
                         </div>
                       </div>
                       <div className="col-md-6">
@@ -127,8 +127,8 @@ const Register = ({ setEnableLoginPage }: Props) => {
                               },
                             })}
                           />
-                          {errors.emailConfirmation && (
-                            <ValidationError msg={errors.emailConfirmation.message} />
+                          {errors.emailConfirmation?.message && (
+                            <ValidationError msg={errors.emailConfirmation.message.toString()} />
                           )}
                         </div>
                       </div>
@@ -156,7 +156,9 @@ const Register = ({ setEnableLoginPage }: Props) => {
                               },
                             })}
                           />
-                          {errors.password && <ValidationError msg={errors.password.message} />}
+                          {errors.password?.message && (
+                            <ValidationError msg={errors.password.message?.toString()} />
+                          )}
                           {/* {errors.password.type === "minLength" && (
                           <ValidationError msg={"Password must have at least 6 characters."} />
                         )} */}
@@ -190,8 +192,8 @@ const Register = ({ setEnableLoginPage }: Props) => {
                               },
                             })}
                           />
-                          {errors.passwordConfirmation && (
-                            <ValidationError msg={errors.passwordConfirmation.message} />
+                          {errors.passwordConfirmation?.message && (
+                            <ValidationError msg={errors.passwordConfirmation.message.toString()} />
                           )}
                         </div>
                       </div>
@@ -224,17 +226,9 @@ const Register = ({ setEnableLoginPage }: Props) => {
         </div>
       </div>
       {/* If the user is already logged in, send him to dashboard */}
-      {displayContent && <Redirect to={"/dashboard"} />}
+      {displayContent && <Navigate to={"/dashboard"} />}
     </>
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  enableLoginPage: state.ThemeOptions.enableLoginPage,
-});
-
-const mapDispatchToProps = (dispatch: Function) => ({
-  setEnableLoginPage: (enable: boolean) => dispatch(setEnableLoginPage(enable)),
-});
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Register));
+export default Register;

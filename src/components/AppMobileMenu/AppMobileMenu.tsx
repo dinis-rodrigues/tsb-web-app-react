@@ -1,7 +1,6 @@
 import { useState } from "react";
 // @ts-ignore
 import Hamburger from "react-hamburgers";
-import { connect } from "react-redux";
 
 import cx from "classnames";
 
@@ -10,8 +9,7 @@ import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Button } from "reactstrap";
-
-import { setEnableMobileMenu, setEnableMobileMenuSmall } from "../../reducers/ThemeOptions";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface MobileState {
   active: boolean;
@@ -19,20 +17,12 @@ interface MobileState {
   activeSecondaryMenuMobile: boolean;
 }
 type Props = {
-  enableMobileMenu: boolean;
-  enableMobileMenuSmall: boolean;
-  setEnableMobileMenu: Function;
   displayMobileSearch: boolean;
   setDisplayMobileSearch: Function;
 };
 
-const AppMobileMenu = ({
-  enableMobileMenu,
-  enableMobileMenuSmall,
-  setEnableMobileMenu,
-  displayMobileSearch,
-  setDisplayMobileSearch,
-}: Props) => {
+const AppMobileMenu = ({ displayMobileSearch, setDisplayMobileSearch }: Props) => {
+  const { enableMobileMenu, setEnableMobileMenu } = useAuth();
   const [mobileState, setMobileState] = useState<MobileState>({
     active: false,
     activeMobile: false,
@@ -91,15 +81,4 @@ const AppMobileMenu = ({
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  closedSmallerSidebar: state.ThemeOptions.closedSmallerSidebar,
-  enableMobileMenu: state.ThemeOptions.enableMobileMenu,
-  enableMobileMenuSmall: state.ThemeOptions.enableMobileMenuSmall,
-});
-
-const mapDispatchToProps = (dispatch: Function) => ({
-  setEnableMobileMenu: (enable: boolean) => dispatch(setEnableMobileMenu(enable)),
-  setEnableMobileMenuSmall: (enable: boolean) => dispatch(setEnableMobileMenuSmall(enable)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(AppMobileMenu);
+export default AppMobileMenu;

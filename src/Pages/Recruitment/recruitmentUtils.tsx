@@ -1,7 +1,7 @@
 import {
   ColDef,
   ColGroupDef,
-  ColumnApi,
+  FirstDataRenderedEvent,
   GridApi,
   GridReadyEvent,
   RowClickedEvent,
@@ -322,7 +322,7 @@ const excelExport = (gridApi: GridApi | undefined, currActiveTable: string | boo
 const clipboardExport = (gridApi: GridApi | undefined) => {
   if (!gridApi) return;
   gridApi.selectAll();
-  gridApi.copySelectedRowsToClipboard(true);
+  gridApi.copySelectedRowsToClipboard();
   gridApi.deselectAll();
 };
 /**
@@ -333,7 +333,7 @@ const clipboardExport = (gridApi: GridApi | undefined) => {
  */
 const filterTable = (e: any, gridApi: GridApi | undefined) => {
   if (!gridApi) return;
-  gridApi.setQuickFilter(e.target.value);
+  gridApi.setGridOption("quickFilterText", e.target.value);
 };
 /**
  * Export table to pdf
@@ -343,7 +343,7 @@ const filterTable = (e: any, gridApi: GridApi | undefined) => {
  */
 const pdfExport = (
   gridApi: GridApi | undefined,
-  columnApi: ColumnApi | undefined,
+  columnApi: GridApi | undefined,
   currActiveTable: string | boolean,
 ) => {
   if (!gridApi || !columnApi || typeof currActiveTable === "boolean") return;
@@ -357,17 +357,17 @@ const pdfExport = (
  * @param setColumnApi
  */
 const onFirstDataRendered = (
-  params: GridReadyEvent,
+  params: GridReadyEvent | FirstDataRenderedEvent,
   setGridApi: Function,
   setColumnApi: Function,
 ) => {
   params.api.sizeColumnsToFit();
   // Initial sort by name
-  params.columnApi.applyColumnState({
+  params.api.applyColumnState({
     state: [{ colId: "timestamp", sort: "asc" }],
   });
   setGridApi(params.api);
-  setColumnApi(params.columnApi);
+  setColumnApi(params.api);
 };
 
 const onRowRecruitmentUserClick = (

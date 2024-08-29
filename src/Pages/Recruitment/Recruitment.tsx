@@ -2,13 +2,7 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
 import { useAuth } from "../../contexts/AuthContext";
-import {
-  RecruitmentData,
-  RecruitmentTable,
-  RecruitmentUser,
-  selectOption,
-  tableColumns,
-} from "../../interfaces";
+import { RecruitmentData, RecruitmentTable, RecruitmentUser, selectOption } from "../../interfaces";
 
 import {
   clipboardExport,
@@ -25,10 +19,10 @@ import {
 } from "./recruitmentUtils";
 
 // Table
-import { ColumnApi, GridApi, RowClickedEvent } from "ag-grid-community";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import { ColDef, GridApi, RowClickedEvent } from "ag-grid-community";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import "ag-grid-community/styles/ag-theme-alpine.min.css";
 import "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
 import { db } from "../../config/firebase";
@@ -53,10 +47,10 @@ const Recruitment = () => {
   };
 
   const [gridApi, setGridApi] = useState<GridApi>(); // Table API
-  const [columnApi, setColumnApi] = useState<ColumnApi>(); // Column API
+  const [columnApi, setColumnApi] = useState<GridApi>(); // Column API
   // const [usersInfo, setUsersInfo] = useState<UserMetadata>({}); // user metadata
   const [tableRows, setTableRows] = useState<RecruitmentUser[]>([]); // row data
-  const [tableColumns, setTableColumns] = useState<tableColumns[]>([]); // column definitions
+  const [tableColumns, setTableColumns] = useState<ColDef[]>([]); // column definitions
 
   const [activeRecruitment, setActiveRecruitment] = useState<string | boolean>(false);
   const [currTableName, setCurrTableName] = useState<string | boolean>(false);
@@ -139,7 +133,7 @@ const Recruitment = () => {
                         <i className="fa fa-download text-white btn-icon-wrapper"></i> Download
                       </span>
                     </DropdownToggle>
-                    <DropdownMenu right className="rm-pointers dropdown-menu">
+                    <DropdownMenu end className="rm-pointers dropdown-menu">
                       <button
                         type="button"
                         className="dropdown-item"

@@ -1,7 +1,7 @@
 import ReactQuill from "react-quill"; // Typescript
+import "react-quill/dist/quill.snow.css";
 import { Button, Modal } from "react-rainbow-components";
 import Select from "react-select";
-import "react-quill/dist/quill.snow.css";
 import { useAuth } from "../../contexts/AuthContext";
 import { ThreadCreation, ThreadMetadata, userContext } from "../../interfaces";
 import {

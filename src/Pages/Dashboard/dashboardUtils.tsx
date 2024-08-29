@@ -293,7 +293,7 @@ const getUserTasks = (user: userContext | null) => {
       if (!snapshot.val()) resolve(false);
       const tasks: UserTasks = snapshot.val();
       const toDoTasks: UserTasks = {};
-
+      if (!tasks) return { ...toDoTasks };
       Object.entries(tasks).forEach(([key, task]) => {
         if (task.status !== "Completed") {
           toDoTasks[key] = task;
@@ -318,7 +318,7 @@ const getUserBomMaterials = (user: userContext | null) => {
 
       const materials: UserBomMaterials = snapshot.val();
       const todoMaterials: UserBomMaterials = {};
-
+      if (!materials) return { ...todoMaterials };
       Object.entries(materials).forEach(([key, material]) => {
         if (
           material.status === "Required" ||

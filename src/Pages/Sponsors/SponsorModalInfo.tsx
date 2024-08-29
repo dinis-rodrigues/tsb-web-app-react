@@ -1,4 +1,4 @@
-import NumberFormat from "react-number-format";
+import { NumericFormat } from "react-number-format";
 import { useAuth } from "../../contexts/AuthContext";
 import { Sponsor } from "../../interfaces";
 import { sponsorInputHandler } from "./sponsorsUtils";
@@ -59,7 +59,7 @@ const SponsorModalInfo = ({ sponsorInfo, setSponsorInfo }: Props) => {
             </span>
           </label>
 
-          <NumberFormat
+          <NumericFormat
             value={sponsorValue}
             readOnly
             onValueChange={(value) =>

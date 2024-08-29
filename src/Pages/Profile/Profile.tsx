@@ -2,9 +2,7 @@ import cx from "classnames";
 import Croppie from "croppie";
 import "croppie/croppie.css";
 import { useEffect, useState } from "react";
-import { connect } from "react-redux";
 import { PersonalInformation } from "../../interfaces";
-import { setUserProfilePicture } from "../../reducers/ThemeOptions";
 import CoursesTable from "./CoursesTable";
 import PersonalInformationOptions from "./PersonalInformationOptions";
 import {
@@ -25,11 +23,7 @@ import { db } from "../../config/firebase";
 import { useAuth } from "../../contexts/AuthContext";
 import UserAttendance from "./UserAttendance";
 
-type Props = {
-  setUserProfilePicture: Function;
-};
-
-const Profile = ({ setUserProfilePicture }: Props) => {
+const Profile = () => {
   const { USER, setUSER, departmentsWDesc } = useAuth();
   const [info, setInfo] = useState<PersonalInformation>(defaultInfo); // current info
   const [prevInfo, setPrevInfo] = useState<PersonalInformation>(defaultInfo); // save info on edit (restore on discard)
@@ -185,12 +179,4 @@ const Profile = ({ setUserProfilePicture }: Props) => {
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  userProfilePicture: state.ThemeOptions.userProfilePicture,
-});
-
-const mapDispatchToProps = (dispatch: Function) => ({
-  setUserProfilePicture: (img: string) => dispatch(setUserProfilePicture(img)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Profile);
+export default Profile;

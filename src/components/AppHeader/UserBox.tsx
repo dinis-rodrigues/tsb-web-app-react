@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
 
@@ -6,19 +6,13 @@ import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { connect } from "react-redux";
-import { useHistory } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { setUserProfilePicture } from "../../reducers/ThemeOptions";
 import { isFeatureVisible } from "../../utils/generalFunctions";
 import ImageContainer from "../AppImage/ImageContainer";
 import DarkModeToggle from "./DarkModeToggle";
 import UserNotifications from "./UserNotifications";
 
-type Props = {
-  userProfilePicture: string;
-};
-const UserBox = ({ userProfilePicture }: Props) => {
+const UserBox = () => {
   const {
     USER,
     logoutUser,
@@ -30,11 +24,11 @@ const UserBox = ({ userProfilePicture }: Props) => {
     isAdminUser,
     isGod,
   } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
   const handleLogout = () => {
     logoutUser(setCurrentUser)
       .then(() => {
-        history.push("/login");
+        navigate("/login");
       })
       .catch((error: string) => {});
   };
@@ -70,7 +64,7 @@ const UserBox = ({ userProfilePicture }: Props) => {
                   <FontAwesomeIcon className="ml-2 opacity-8" icon={faAngleDown} />
                 </DropdownToggle>
                 <DropdownMenu
-                  right
+                  end
                   className="rm-pointers dropdown-menu-lg"
                   style={{
                     paddingBottom: "10px",
@@ -79,7 +73,7 @@ const UserBox = ({ userProfilePicture }: Props) => {
                   <div className="grid-menu grid-menu-2col">
                     <div className="no-gutters row">
                       <div className="col-md-6">
-                        <Link to="/profile">
+                        <Link to="/profile" style={{ textDecoration: "none" }}>
                           <button
                             type="button"
                             className="btn-icon-vertical btn-transition btn-transition-alt pt-2 pb-2 btn btn-outline-info"
@@ -130,12 +124,4 @@ const UserBox = ({ userProfilePicture }: Props) => {
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  userProfilePicture: state.ThemeOptions.userProfilePicture,
-});
-
-const mapDispatchToProps = (dispatch: any) => ({
-  setUserProfilePicture: (image: string) => dispatch(setUserProfilePicture(image)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserBox);
+export default UserBox;

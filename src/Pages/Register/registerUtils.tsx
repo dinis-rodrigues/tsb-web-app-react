@@ -27,7 +27,7 @@ const showAlert = (getValues: UseFormGetValues<FieldValues>) => {
     didOpen: () => {
       Swal.showLoading();
       timerInterval = setInterval(() => {
-        const content = Swal.getContent();
+        const content = Swal.getContainer();
         if (content) {
           const b = content.querySelector("b");
           if (b) {
@@ -169,4 +169,4 @@ const buildUserName = (fullName: string) => {
   });
 };
 
-export { signUpUser, showAlert, getNameFromFullName };
+export { getNameFromFullName, showAlert, signUpUser };

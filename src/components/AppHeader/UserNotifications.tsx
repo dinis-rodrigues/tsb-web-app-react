@@ -55,7 +55,7 @@ const UserNotifications = () => {
           ></i>
         </span>
       </DropdownToggle>
-      <DropdownMenu right className="rm-pointers dropdown-menu-xl">
+      <DropdownMenu end className="rm-pointers dropdown-menu-xl">
         <div className="tab-content">
           <div
             id="newNotificationPanel"

@@ -516,11 +516,11 @@ const handleDragEnd = (
 
   if (active.id !== over!.id) {
     setItems((items: string[]) => {
-      const oldIndex = items.indexOf(active.id);
-      const newIndex = items.indexOf(over!.id);
+      const oldIndex = items.indexOf(active.id.toString());
+      const newIndex = items.indexOf(over!.id.toString());
       const newOrder = arrayMove(items, oldIndex, newIndex);
       set(ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`), newOrder);
-      // return newOrder;
+      return newOrder;
     });
   }
 

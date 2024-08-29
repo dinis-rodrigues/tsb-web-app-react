@@ -1,4 +1,9 @@
-import { ColumnApi, GridApi, GridReadyEvent, RowClickedEvent } from "ag-grid-community";
+import {
+  FirstDataRenderedEvent,
+  GridApi,
+  GridReadyEvent,
+  RowClickedEvent,
+} from "ag-grid-community";
 import {
   child,
   off,
@@ -217,7 +222,7 @@ const excelExport = (gridApi: GridApi | null, department: string) => {
 const clipboardExport = (gridApi: GridApi | null) => {
   if (!gridApi) return;
   gridApi.selectAll();
-  gridApi.copySelectedRowsToClipboard(true);
+  gridApi.copySelectedRowsToClipboard();
   gridApi.deselectAll();
 };
 
@@ -226,7 +231,7 @@ const clipboardExport = (gridApi: GridApi | null) => {
  * @param  {GridApi} gridApi ag-grid grid Api
  * @param  {ColumnApi} columnApi ag-grid column Api
  */
-const pdfExport = (department: string, gridApi: GridApi | null, columnApi: ColumnApi | null) => {
+const pdfExport = (department: string, gridApi: GridApi | null, columnApi: GridApi | null) => {
   printDoc(gridApi, columnApi, exportedFilename(department));
 };
 
@@ -236,7 +241,7 @@ const pdfExport = (department: string, gridApi: GridApi | null, columnApi: Colum
  */
 const filterTable = (e: React.ChangeEvent<HTMLInputElement>, gridApi: GridApi | null) => {
   if (!gridApi) return;
-  gridApi.setQuickFilter(e.target.value);
+  gridApi.setGridOption("quickFilterText", e.target.value);
 };
 
 /** Resizes the table to fit the data, and saves the grid api states
@@ -245,7 +250,7 @@ const filterTable = (e: React.ChangeEvent<HTMLInputElement>, gridApi: GridApi | 
  * @param  {Function} setColumnApi
  */
 const onFirstDataRendered = (
-  params: GridReadyEvent,
+  params: GridReadyEvent | FirstDataRenderedEvent,
   setGridApi: Function,
   setColumnApi: Function,
 ) => {
@@ -253,7 +258,7 @@ const onFirstDataRendered = (
 
   params.api.sizeColumnsToFit();
   setGridApi(params.api);
-  setColumnApi(params.columnApi);
+  setColumnApi(params.api);
 };
 
 /**
@@ -766,35 +771,35 @@ const bomDepartmentTitleIconColor: bomDepartmentIconColorTitle = {
 };
 
 export {
-  closeMaterialModal,
-  openCleanMaterialModal,
-  onRowBomClick,
-  exportedFilename,
-  excelExport,
-  clipboardExport,
-  pdfExport,
-  filterTable,
-  bomDefaultData,
-  defaultMaterial,
-  onFirstDataRendered,
-  statusSelectOptions,
-  departmentSelectOptions,
-  submitComment,
-  inputBudgetModalHandler,
   assignToHandler,
-  dateHandler,
-  commentTextHandler,
-  valueHandler,
-  counterHandler,
-  forDepartmentHandler,
-  statusHandler,
-  deleteMaterial,
-  saveMaterial,
-  buildBudgetRows,
-  swalBomDeleteMessage,
-  deleteSeason,
-  sortSeasonsArray,
+  bomDefaultData,
   bomDepartmentTitleIconColor,
-  getSeasonBudgetData,
+  buildBudgetRows,
+  clipboardExport,
+  closeMaterialModal,
+  commentTextHandler,
+  counterHandler,
+  dateHandler,
+  defaultMaterial,
+  deleteMaterial,
+  deleteSeason,
+  departmentSelectOptions,
+  excelExport,
+  exportedFilename,
+  filterTable,
+  forDepartmentHandler,
   getBudgetDepartmentOptions,
+  getSeasonBudgetData,
+  inputBudgetModalHandler,
+  onFirstDataRendered,
+  onRowBomClick,
+  openCleanMaterialModal,
+  pdfExport,
+  saveMaterial,
+  sortSeasonsArray,
+  statusHandler,
+  statusSelectOptions,
+  submitComment,
+  swalBomDeleteMessage,
+  valueHandler,
 };

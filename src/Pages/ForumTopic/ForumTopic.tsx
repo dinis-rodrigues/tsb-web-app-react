@@ -1,6 +1,6 @@
 import { off, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../contexts/AuthContext";
 import { ThreadCreation, ThreadMetadata } from "../../interfaces";
@@ -157,7 +157,7 @@ const ForumTopic = (props: any) => {
           user={USER}
         />
       </div>
-      {redirectTo && <Redirect to="/forum" />}
+      {redirectTo && <Navigate to="/forum" />}
     </div>
   );
 };

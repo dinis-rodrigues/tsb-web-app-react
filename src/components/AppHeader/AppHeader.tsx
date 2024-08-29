@@ -1,7 +1,5 @@
 import cx from "classnames";
 
-import { connect } from "react-redux";
-
 import AppLogo from "../AppLogo/AppLogo";
 
 import SearchBox from "./SearchBox";
@@ -9,17 +7,11 @@ import UserBox from "./UserBox";
 
 type Props = {
   isMobileView?: boolean;
-  enableMobileMenuSmall: boolean;
   displayMobileSearch: boolean;
   setDisplayMobileSearch: Function;
 };
 
-const Header = ({
-  isMobileView = false,
-  enableMobileMenuSmall,
-  displayMobileSearch,
-  setDisplayMobileSearch,
-}: Props) => {
+const Header = ({ isMobileView = false, displayMobileSearch, setDisplayMobileSearch }: Props) => {
   return (
     <div className="app-header header-shadow">
       <>
@@ -49,8 +41,4 @@ const Header = ({
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  enableMobileMenuSmall: state.ThemeOptions.enableMobileMenuSmall,
-});
-
-export default connect(mapStateToProps)(Header);
+export default Header;

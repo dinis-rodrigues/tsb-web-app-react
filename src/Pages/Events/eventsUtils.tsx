@@ -1,5 +1,5 @@
+import { EventClickArg, EventDropArg } from "@fullcalendar/core";
 import { EventResizeDoneArg } from "@fullcalendar/interaction";
-import { EventClickArg, EventDropArg } from "@fullcalendar/react";
 import { child, get, onValue, push, ref, remove, set, update } from "firebase/database";
 import { db } from "../../config/firebase";
 import {

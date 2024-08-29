@@ -1,4 +1,3 @@
-import { Fragment } from "@fullcalendar/common";
 import { useAuth } from "../../contexts/AuthContext";
 import { EventColors } from "../../interfaces";
 import { extendDate } from "../../utils/generalFunctions";
@@ -38,7 +37,7 @@ const EventListItem = ({
   const eventTitleIconColor: EventColors = getEventTitlesAndColors(departmentsWDesc);
   const eventColorGradient = eventTitleIconColor[currMeeting].gradientColor;
   return (
-    <Fragment>
+    <>
       <li className="list-group-item">
         <div className="widget-content p-0">
           <div className="widget-content-wrapper">
@@ -92,7 +91,7 @@ const EventListItem = ({
           </div>
         </div>
       </li>
-    </Fragment>
+    </>
   );
 };
 

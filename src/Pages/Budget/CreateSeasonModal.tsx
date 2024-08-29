@@ -1,6 +1,6 @@
 import { ref, set } from "firebase/database";
 import { useState } from "react";
-import NumberFormat, { NumberFormatValues } from "react-number-format";
+import { NumberFormatValues, PatternFormat } from "react-number-format";
 import { Button, Modal } from "react-rainbow-components";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../contexts/AuthContext";
@@ -98,7 +98,7 @@ const CreateSeasonModal = ({ isSeasonModalOpen, setIsSeasonModalOpen, seasonsOpt
           </span>
         </label>
 
-        <NumberFormat
+        <PatternFormat
           value={seasonToCreate}
           onValueChange={(value) => seasonToCreateHandler(value, setSeasonToCreate)}
           format="####/####"

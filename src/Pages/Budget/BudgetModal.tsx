@@ -1,5 +1,5 @@
 import { useState } from "react";
-import NumberFormat from "react-number-format";
+import { NumericFormat } from "react-number-format";
 import { Button, CounterInput, DatePicker, Drawer } from "react-rainbow-components";
 import Select, { components } from "react-select";
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
@@ -175,7 +175,7 @@ const BudgetModal = ({
             </span>
           </label>
 
-          <NumberFormat
+          <NumericFormat
             value={materialInfo ? materialInfo.unitaryValue : ""}
             onValueChange={(value) =>
               valueHandler(value, materialInfo, setMaterialInfo, "unitaryValue")
@@ -195,7 +195,7 @@ const BudgetModal = ({
               <strong> Total</strong>
             </span>
           </label>
-          <NumberFormat
+          <NumericFormat
             value={materialInfo ? materialInfo.totalValue : ""}
             onValueChange={(value) =>
               valueHandler(value, materialInfo, setMaterialInfo, "totalValue")

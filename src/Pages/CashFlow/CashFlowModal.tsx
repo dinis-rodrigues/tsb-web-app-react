@@ -1,5 +1,5 @@
 import { push, ref, remove, set } from "firebase/database";
-import NumberFormat, { NumberFormatValues } from "react-number-format";
+import { NumberFormatValues, NumericFormat } from "react-number-format";
 import { Button, DatePicker, Modal } from "react-rainbow-components";
 import Select from "react-select";
 import { db } from "../../config/firebase";
@@ -122,7 +122,7 @@ const CashFlowModal = ({
             <span className="text-dark small text-uppercase">
               <strong>Value</strong>
             </span>
-            <NumberFormat
+            <NumericFormat
               value={flowInfo ? flowInfo.value : ""}
               onValueChange={(value) => valueHandler(value, flowInfo, setFlowInfo)}
               decimalScale={2}

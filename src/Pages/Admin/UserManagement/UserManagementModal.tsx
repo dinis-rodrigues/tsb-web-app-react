@@ -1,4 +1,4 @@
-import NumberFormat from "react-number-format";
+import { PatternFormat } from "react-number-format";
 import { Button, DatePicker, Modal } from "react-rainbow-components";
 import Select from "react-select";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -178,7 +178,7 @@ const UserManagementModal = ({
             <span className="text-dark small text-uppercase">
               <strong>Phone Number</strong>
             </span>
-            <NumberFormat
+            <PatternFormat
               value={info.phone || ""}
               onValueChange={(e) => handleInputMask(e, "phone", setInfo)}
               className="form-control text-center"
@@ -372,7 +372,7 @@ const UserManagementModal = ({
           <strong>IBAN</strong>
         </span>
         <div className="form-group">
-          <NumberFormat
+          <PatternFormat
             value={info.iban || ""}
             onValueChange={(e) => handleInputMask(e, "iban", setInfo)}
             className="form-control text-center"

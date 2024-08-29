@@ -1,35 +1,30 @@
 // import { Component } from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-
-import "react-toastify/dist/ReactToastify.css";
-import "./assets/scss/colors.scss";
+import "react-toastify/ReactToastify.css";
 import "./assets/scss/base.scss";
-import "./assets/scss/icons.scss";
-import "./assets/scss/customBootstrap.scss";
+import "./assets/scss/colors.scss";
 import "./assets/scss/custom.scss";
+import "./assets/scss/customBootstrap.scss";
 import "./assets/scss/darkTheme.scss";
+import "./assets/scss/icons.scss";
 
 import Main from "./Pages/Main/Main";
 
-import { Provider } from "react-redux";
-import configureStore from "./config/configureStore";
-
+import React from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 
-const store: any = configureStore();
 const rootElement = document.getElementById("root");
-
+const root = createRoot(rootElement!); // createRoot(container!) if you use TypeScript
 const renderApp = () => {
-  ReactDOM.render(
-    <Provider store={store}>
+  root.render(
+    <React.StrictMode>
       <BrowserRouter>
         <AuthProvider>
           <Main />
         </AuthProvider>
       </BrowserRouter>
-    </Provider>,
-    rootElement,
+    </React.StrictMode>,
   );
 };
 

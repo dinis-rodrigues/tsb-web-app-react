@@ -1,4 +1,4 @@
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Maintenance = () => {
@@ -33,12 +33,12 @@ const Maintenance = () => {
         </div>
       </div>
       {/* If the user is already logged in, send him to dashboard */}
-      {displayContent && <Redirect to={"/dashboard"} />}
+      {displayContent && <Navigate to={"/dashboard"} />}
     </>
   ) : displayContent ? (
-    <Redirect to={"/dashboard"} />
+    <Navigate to={"/dashboard"} />
   ) : displayLogin ? (
-    <Redirect to={"/dashboard"} />
+    <Navigate to={"/dashboard"} />
   ) : null;
 };
 

@@ -1,8 +1,8 @@
-import { ColumnApi, GridApi, RowClickedEvent } from "ag-grid-community";
+import { ColDef, ColGroupDef, GridApi, RowClickedEvent } from "ag-grid-community";
 // Table
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import "ag-grid-community/styles/ag-theme-alpine.min.css";
 import "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
 import cx from "classnames";
@@ -11,7 +11,7 @@ import { Input } from "react-rainbow-components";
 import Select from "react-select";
 import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
 import { useAuth } from "../../../contexts/AuthContext";
-import { PersonalInformation, UserMetadata, selectOption, tableColumns } from "../../../interfaces";
+import { PersonalInformation, UserMetadata, selectOption } from "../../../interfaces";
 import { setColumnText } from "../../../utils/generalFunctions";
 import { filterTable, handleSelectOption, onFirstDataRendered } from "../../Team/TeamUtils";
 import ApplicationSettings from "./ApplicationSettings";
@@ -28,13 +28,13 @@ import {
 const UserManagement = () => {
   const { USER, isDarkMode } = useAuth();
   const [gridApi, setGridApi] = useState<GridApi>(); // Table API
-  const [columnApi, setColumnApi] = useState<ColumnApi>(); // Column API
+  const [columnApi, setColumnApi] = useState<GridApi>(); // Column API
   const [infoOptions, setInfoOptions] = useState<selectOption[]>([]); // ALl select input options
   const [selectedOptions, setSelectedOptions] = useState<selectOption[]>(defaultOptions); // selected options
   const [usersMetadata, setUsersMetadata] = useState<UserMetadata>({});
 
   const [tableRowsData, setTableRowsData] = useState<PersonalInformation[]>([]); // row data
-  const [tableColumns, setTableColumns] = useState<tableColumns[]>([]); // column definitions
+  const [tableColumns, setTableColumns] = useState<(ColDef | ColGroupDef)[]>([]); // column definitions
 
   const [modalOpen, setModalOpen] = useState(false);
   const [userInfo, setUserInfo] = useState<PersonalInformation>();
@@ -76,7 +76,7 @@ const UserManagement = () => {
                     <i className="fa fa-download text-white btn-icon-wrapper"></i> Download
                   </span>
                 </DropdownToggle>
-                <DropdownMenu right className="rm-pointers dropdown-menu">
+                <DropdownMenu end className="rm-pointers dropdown-menu">
                   <button
                     type="button"
                     className="dropdown-item"

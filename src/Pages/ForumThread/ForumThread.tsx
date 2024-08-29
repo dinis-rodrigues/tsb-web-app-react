@@ -2,7 +2,7 @@ import cx from "classnames";
 import { off, ref } from "firebase/database";
 import parse from "html-react-parser";
 import { useEffect, useState } from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { UncontrolledTooltip } from "reactstrap";
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
 import { db } from "../../config/firebase";
@@ -382,7 +382,7 @@ const ForumThread = (props: any) => {
           </>
         )}
       </div>
-      {redirectTo && <Redirect to={redirectTo} />}
+      {redirectTo && <Navigate to={redirectTo} />}
     </div>
   );
 };

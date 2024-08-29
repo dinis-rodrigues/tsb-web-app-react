@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { Redirect, Route, Switch } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import AppLoading from "../AppLoading/AppLoading";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 
@@ -40,7 +40,7 @@ const Gallery = lazy(() => import("../../Pages/Gallery/Gallery"));
 function App() {
   return (
     <>
-      {/* Components */}
+      {/* elements <*/}
       <Suspense
         fallback={
           <div className="loader-container">
@@ -50,77 +50,185 @@ function App() {
           </div>
         }
       >
-        <Switch>
-          <Route exact path="/login" component={Login} />
-          {/* <Route path="/resetPassword" component={ResetPassword} /> */}
-          <Route exact path="/resetPasswordEmail" component={ResetPasswordEmail} />
-          <Route exact path="/register" component={Register} />
-          <Route path="/maintenance" component={Maintenance} />
-          <PrivateRoute path="/dashboard" featureName="dashboard" component={Dashboard} />
-          <PrivateRoute path="/team" featureName="members" component={Team} />
-          <PrivateRoute
-            exact
-            path="/recruitment"
-            featureName="recruitment"
-            component={Recruitment}
-          />
-          <PrivateRoute path="/profile/u/:userId" component={VisitorProfile} />
-          <PrivateRoute path="/profile" exact component={Profile} />
-          <PrivateRoute path="/events" featureName="events" component={Events} />
-          <PrivateRoute
-            path="/attendance/meetings"
-            featureName="attendance"
-            component={Attendance}
-          />
-          <PrivateRoute
-            path="/attendance/overall"
-            featureName="attendance"
-            component={OverallAttendance}
-          />
-          <PrivateRoute
-            path="/:departmentBoard/b/:encodedCurrBoard"
-            featureName="tasks"
-            component={Tasks}
-          />
-          <PrivateRoute path="/cashflow" featureName="cashflow" component={CashFlow} />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          {/* <Route path="/resetPassword" element={<ResetPassword/>} /> */}
+          <Route path="/resetPasswordEmail" element={<ResetPasswordEmail />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/maintenance" element={<Maintenance />} />
 
-          <PrivateRoute path="/budget" featureName="budget" component={Budget} />
-          <PrivateRoute
+          {/* Private routes */}
+          <Route
+            path="/"
+            element={
+              <PrivateRoute featureName="dashboard">
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute featureName="dashboard">
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/team"
+            element={
+              <PrivateRoute featureName="members">
+                <Team />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/recruitment"
+            element={
+              <PrivateRoute featureName="recruitment">
+                <Recruitment />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile/u/:userId"
+            element={
+              <PrivateRoute>
+                <VisitorProfile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/events"
+            element={
+              <PrivateRoute featureName="events">
+                <Events />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/attendance/meetings"
+            element={
+              <PrivateRoute featureName="attendance">
+                <Attendance />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/attendance/overall"
+            element={
+              <PrivateRoute featureName="attendance">
+                <OverallAttendance />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/:departmentBoard/b/:encodedCurrBoard"
+            element={
+              <PrivateRoute featureName="tasks">
+                <Tasks />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/cashflow"
+            element={
+              <PrivateRoute featureName="cashflow">
+                <CashFlow />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/budget"
+            element={
+              <PrivateRoute featureName="budget">
+                <Budget />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/forum/s/:encodedSectionName/topic/:encodedTopicName/thread/:encodedThreadName"
-            featureName="forum"
-            component={ForumThread}
+            element={
+              <PrivateRoute featureName="forum">
+                <ForumThread />
+              </PrivateRoute>
+            }
           />
-          <PrivateRoute
+          <Route
             path="/forum/s/:encodedSectionName/topic/:encodedTopicName"
-            featureName="forum"
-            component={ForumTopic}
+            element={
+              <PrivateRoute featureName="forum">
+                <ForumTopic />
+              </PrivateRoute>
+            }
           />
-          <PrivateRoute exact path="/forum" featureName="forum" component={Forum} />
-          <PrivateRoute path="/notifications" component={NotificationsPage} />
-          <PrivateRoute path="/sponsors" featureName="sponsors" component={Sponsors} />
-          <PrivateRoute path="/gallery" featureName="gallery" component={Gallery} />
-          <PrivateRoute
-            exact
+          <Route
+            path="/forum"
+            element={
+              <PrivateRoute featureName="forum">
+                <Forum />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <PrivateRoute>
+                <NotificationsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/sponsors"
+            element={
+              <PrivateRoute featureName="sponsors">
+                <Sponsors />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/gallery"
+            element={
+              <PrivateRoute featureName="gallery">
+                <Gallery />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/userManagement"
-            featureName="userManagement"
-            component={UserManagement}
+            element={
+              <PrivateRoute featureName="userManagement">
+                <UserManagement />
+              </PrivateRoute>
+            }
           />
-          <PrivateRoute
-            exact
+          <Route
             path="/departmentManagement"
-            featureName="departmentManagement"
-            component={DepartmentManagement}
+            element={
+              <PrivateRoute featureName="departmentManagement">
+                <DepartmentManagement />
+              </PrivateRoute>
+            }
           />
-          <PrivateRoute
-            exact
+          <Route
             path="/featureManagement"
-            featureName="featureManagement"
-            component={FeatureManagement}
+            element={
+              <PrivateRoute featureName="featureManagement">
+                <FeatureManagement />
+              </PrivateRoute>
+            }
           />
-          <Redirect to="/" />
-        </Switch>
+        </Routes>
       </Suspense>
-      <Route exact path="/" render={() => <Redirect to="/dashboard" />} />
     </>
   );
 }

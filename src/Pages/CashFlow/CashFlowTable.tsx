@@ -1,12 +1,6 @@
 import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
 
-import {
-  ColDef,
-  ColumnApi,
-  GridApi,
-  ICellRendererParams,
-  RowClickedEvent,
-} from "ag-grid-community";
+import { ColDef, GridApi, ICellRendererParams, RowClickedEvent } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import cx from "classnames";
 import { useEffect, useState } from "react";
@@ -53,7 +47,7 @@ const buildTableRows = (
   }));
   setTableRows(rows);
   if (gridApi && rows.length > 10) {
-    gridApi.setDomLayout("normal");
+    gridApi.setGridOption("domLayout", "normal");
   }
 };
 
@@ -78,14 +72,14 @@ const CashFlowTable = ({
     {
       field: "type",
       sortable: true,
-      cellRendererFramework: (props: ICellRendererParams) => <BadgeRender {...props} />,
+      cellRenderer: (props: ICellRendererParams) => <BadgeRender {...props} />,
     },
     { field: "value", sortable: true },
     { field: "total", sortable: true },
   ];
   const [tableRows, setTableRows] = useState([]);
   const [gridApi, setGridApi] = useState<GridApi | null>(null); // Table API
-  const [columnApi, setColumnApi] = useState<ColumnApi | null>(null); // Column API
+  const [columnApi, setColumnApi] = useState<GridApi | null>(null); // Column API
 
   useEffect(() => {
     buildTableRows(tableFlow, setTableRows, gridApi);
@@ -112,7 +106,7 @@ const CashFlowTable = ({
                 <i className="fa fa-download text-white btn-icon-wrapper"></i> Download
               </span>
             </DropdownToggle>
-            <DropdownMenu right className="rm-pointers dropdown-menu">
+            <DropdownMenu end className="rm-pointers dropdown-menu">
               <button
                 type="button"
                 className="dropdown-item"

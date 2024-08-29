@@ -1,4 +1,4 @@
-import { ColumnApi, GridApi, RowClickedEvent } from "ag-grid-community";
+import { GridApi, RowClickedEvent } from "ag-grid-community";
 import { get, onValue, ref, update } from "firebase/database";
 import { db } from "../../../config/firebase";
 import {
@@ -111,7 +111,7 @@ const excelAllExport = (gridApi: GridApi | undefined) => {
 const clipboardAllExport = (gridApi: GridApi | undefined) => {
   if (!gridApi) return;
   gridApi.selectAll();
-  gridApi.copySelectedRowsToClipboard(true);
+  gridApi.copySelectedRowsToClipboard();
   gridApi.deselectAll();
 };
 /**
@@ -122,7 +122,7 @@ const clipboardAllExport = (gridApi: GridApi | undefined) => {
  */
 const filterAllTable = (e: any, gridApi: GridApi | undefined) => {
   if (!gridApi) return;
-  gridApi.setQuickFilter(e.target.value);
+  gridApi.setGridOption("quickFilterText", e.target.value);
 };
 /**
  * Export table to pdf
@@ -130,7 +130,7 @@ const filterAllTable = (e: any, gridApi: GridApi | undefined) => {
  * @param columnApi
  * @returns
  */
-const pdfAllExport = (gridApi: GridApi | undefined, columnApi: ColumnApi | undefined) => {
+const pdfAllExport = (gridApi: GridApi | undefined, columnApi: GridApi | undefined) => {
   if (!gridApi || !columnApi) return;
   printDoc(gridApi, columnApi, exportedAllFilename());
 };
@@ -284,18 +284,18 @@ const replaceUidFromAllTasks = () => {
   });
 };
 export {
-  getAllUserDataForTable,
-  filterAllTable,
-  excelAllExport,
-  pdfAllExport,
   clipboardAllExport,
-  onRowUserClick,
-  saveUserInfo,
+  defaultOptions,
+  excelAllExport,
+  filterAllTable,
+  getAllUserDataForTable,
   getAndSetApplicationSettings,
-  toggleMaintenance,
-  toggleRegistration,
+  onRowUserClick,
+  pdfAllExport,
   replaceEventMeetingType,
   replaceUidFromAllNotifications,
   replaceUidFromAllTasks,
-  defaultOptions,
+  saveUserInfo,
+  toggleMaintenance,
+  toggleRegistration,
 };

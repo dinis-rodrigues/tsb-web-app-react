@@ -1,6 +1,5 @@
 import { off, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-import { withRouter } from "react-router-dom";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../contexts/AuthContext";
 import { ForumMetadata } from "../../interfaces";
@@ -63,4 +62,4 @@ const Forum = () => {
   );
 };
 
-export default withRouter(Forum);
+export default Forum;

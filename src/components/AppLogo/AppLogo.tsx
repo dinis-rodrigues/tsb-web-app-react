@@ -1,31 +1,19 @@
 import { useState } from "react";
 // @ts-ignore
 import Hamburger from "react-hamburgers";
-import { connect } from "react-redux";
 
 import AppMobileMenu from "../AppMobileMenu/AppMobileMenu";
 
 import { NavLink } from "react-router-dom";
-import {
-  setEnableClosedSidebar,
-  setEnableMobileMenu,
-  setEnableMobileMenuSmall,
-} from "../../reducers/ThemeOptions";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   isMobileView?: boolean;
-  enableClosedSidebar: boolean;
   displayMobileSearch: boolean;
-  setEnableClosedSidebar: Function;
   setDisplayMobileSearch: Function;
 };
-const AppLogo = ({
-  isMobileView = false,
-  enableClosedSidebar,
-  setEnableClosedSidebar,
-  displayMobileSearch,
-  setDisplayMobileSearch,
-}: Props) => {
+const AppLogo = ({ isMobileView = false, displayMobileSearch, setDisplayMobileSearch }: Props) => {
+  const { enableClosedSidebar, setEnableClosedSidebar } = useAuth();
   const [active, setActive] = useState(false);
 
   const hamburgerClick = () => {
@@ -52,16 +40,4 @@ const AppLogo = ({
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  enableClosedSidebar: state.ThemeOptions.enableClosedSidebar,
-  enableMobileMenu: state.ThemeOptions.enableMobileMenu,
-  enableMobileMenuSmall: state.ThemeOptions.enableMobileMenuSmall,
-});
-
-const mapDispatchToProps = (dispatch: Function) => ({
-  setEnableClosedSidebar: (enable: boolean) => dispatch(setEnableClosedSidebar(enable)),
-  setEnableMobileMenu: (enable: boolean) => dispatch(setEnableMobileMenu(enable)),
-  setEnableMobileMenuSmall: (enable: boolean) => dispatch(setEnableMobileMenuSmall(enable)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(AppLogo);
+export default AppLogo;

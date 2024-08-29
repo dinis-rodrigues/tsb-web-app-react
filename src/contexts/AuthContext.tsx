@@ -1,6 +1,6 @@
 import { User } from "firebase/auth";
 import { get, off, onValue, ref } from "firebase/database";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { auth, db } from "../config/firebase";
 import {
   ApplicationFeatures,
@@ -36,7 +36,14 @@ interface ContextAuth {
   displayMaintenance: boolean;
   displayLogin: boolean;
   isDarkMode: boolean;
+
+  enableFixedSidebar: boolean;
+  enableMobileMenu: boolean;
+  enableClosedSidebar: boolean;
+
   setIsDarkMode: Function;
+  setEnableMobileMenu: Function;
+  setEnableClosedSidebar: Function;
   registerUser: Function;
   loginUser: Function;
   logoutUser: Function;
@@ -61,12 +68,17 @@ const AuthContext = React.createContext<ContextAuth>({
   displayLogin: false,
   displayMaintenance: false,
   isDarkMode: false,
+  enableFixedSidebar: false,
+  enableMobileMenu: false,
+  enableClosedSidebar: false,
   registerUser: () => {},
   loginUser: () => {},
   logoutUser: () => {},
   setCurrentUser: () => {},
   setUSER: () => {},
   setIsDarkMode: () => {},
+  setEnableMobileMenu: () => {},
+  setEnableClosedSidebar: () => {},
 });
 
 export const useAuth = () => {
@@ -105,6 +117,9 @@ export function AuthProvider({ children }: Props) {
   const [departmentsWDesc, setDepartmentsWDesc] = useState<DepartmentsWithDesc>({});
 
   const [isDarkMode, setIsDarkMode] = useState(localStorage.getItem("tsbDarkTheme") === "true");
+  const [enableFixedSidebar, setEnableFixedSidebar] = useState(false);
+  const [enableMobileMenu, setEnableMobileMenu] = useState(false);
+  const [enableClosedSidebar, setEnableClosedSidebar] = useState(false);
 
   /**
    * Retrieves all essential data from the database in order to get the Website running
@@ -212,6 +227,12 @@ export function AuthProvider({ children }: Props) {
     setCurrentUser,
     setUSER,
     isDarkMode,
+    enableFixedSidebar,
+    enableMobileMenu,
+    enableClosedSidebar,
+    setEnableFixedSidebar,
+    setEnableMobileMenu,
+    setEnableClosedSidebar,
     setIsDarkMode,
   };
 

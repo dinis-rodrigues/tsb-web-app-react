@@ -63,8 +63,8 @@ const SponsorBracket = ({ bracketId, bracket, retroActives, sponsors }: Props) =
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        delay: 150,
-        tolerance: 100,
+        delay: 10,
+        tolerance: 10,
       },
     }),
     useSensor(TouchSensor),
@@ -106,7 +106,7 @@ const SponsorBracket = ({ bracketId, bracket, retroActives, sponsors }: Props) =
                   <DropdownToggle color="btn" className="p-0 mr-2">
                     <span className="btn-wide btn-outline-success btn dropdown-toggle">Add</span>
                   </DropdownToggle>
-                  <DropdownMenu right className="rm-pointers dropdown-menu">
+                  <DropdownMenu end className="rm-pointers dropdown-menu">
                     <input
                       type="text"
                       className="dropdown-search"
@@ -146,7 +146,7 @@ const SponsorBracket = ({ bracketId, bracket, retroActives, sponsors }: Props) =
             )}
           </div>
         </div>
-        {sponsorsItems && Object.entries(sponsorsObj).length > 0 && (
+        {sponsorsItems && (
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}

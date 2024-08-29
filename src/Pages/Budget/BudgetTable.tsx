@@ -1,14 +1,13 @@
 import {
   ColDef,
-  ColumnApi,
   GridApi,
   ICellRendererParams,
   RowClickedEvent,
   ValueGetterParams,
 } from "ag-grid-community";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import "ag-grid-community/styles/ag-theme-alpine.min.css";
 import "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
 import cx from "classnames";
@@ -62,7 +61,7 @@ const BudgetTable = ({
 }: Props) => {
   const { isDarkMode } = useAuth();
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
-  const [columnApi, setColumnApi] = useState<ColumnApi | null>(null); // Column API
+  const [columnApi, setColumnApi] = useState<GridApi | null>(null); // Column API
   const [tableRows, setTableRows] = useState([]);
   const tableOptions = {
     enableCellTextSelection: false,
@@ -83,7 +82,7 @@ const BudgetTable = ({
     {
       field: "assignedTo",
       sortable: true,
-      cellRendererFramework: (props: ICellRendererParams) => (
+      cellRenderer: (props: ICellRendererParams) => (
         <AssignedUserRender props={props} usersMetadata={usersMetadata} />
       ),
       valueGetter: (params: ValueGetterParams) => params.data.assignedTo.label, // for the pdf etc exports
@@ -93,7 +92,7 @@ const BudgetTable = ({
     {
       field: "status",
       sortable: true,
-      cellRendererFramework: (props: ICellRendererParams) => <BadgeBomRender {...props} />,
+      cellRenderer: (props: ICellRendererParams) => <BadgeBomRender {...props} />,
     },
     { field: "date", sortable: true, comparator: dateComparator },
     { field: "quantity", sortable: true },
@@ -133,7 +132,7 @@ const BudgetTable = ({
                 <i className="fa fa-download text-white btn-icon-wrapper"></i> Download
               </span>
             </DropdownToggle>
-            <DropdownMenu right className="rm-pointers dropdown-menu">
+            <DropdownMenu end className="rm-pointers dropdown-menu">
               <button
                 type="button"
                 className="dropdown-item"

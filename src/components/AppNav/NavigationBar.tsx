@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { withRouter } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { isFeatureVisible } from "../../utils/generalFunctions";
 import NavItem from "./NavItem";
@@ -86,6 +85,7 @@ const NavigationBar = () => {
               {Object.entries(departments).map(([acronym, department], idx) => (
                 <NavItem
                   key={idx}
+                  reloadDocument
                   pageName={department.description}
                   to={`/tasks${acronym.toUpperCase()}/b/General`}
                   isVisible={isFeatureVisible("tasks", applicationFeatures, isAdminUser, isGod)}
@@ -197,4 +197,4 @@ const NavigationBar = () => {
   );
 };
 
-export default withRouter(NavigationBar);
+export default NavigationBar;

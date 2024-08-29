@@ -1,9 +1,9 @@
 // Table
 
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import "ag-grid-community/styles/ag-theme-alpine.min.css";
 import "ag-grid-enterprise";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
 
 import { off, onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";

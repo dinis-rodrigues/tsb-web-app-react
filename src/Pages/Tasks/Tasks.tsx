@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { db } from "../../config/firebase";
 
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -52,16 +52,8 @@ const Tasks = (props: any) => {
   const [commentListener, setCommentListener] = useState<string | null>(null); // watch for new task comments
   const [department, setDepartment] = useState<Department>();
 
-  // Retrieve board information from url
-  // const { departmentBoard, encodedCurrBoard }: matchedRoute =
-  //   props.match.params;
-  const openTaskId = props.location.elId;
-  const openColId = props.location.colId;
-  // var currBoard = encodedCurrBoard;
-  // // URL related stuff, sometimes it's encoded, sometimes it's not
-  // if (getDecodedString(encodedCurrBoard) === currBoard) {
-  //   currBoard = encodeData(encodedCurrBoard);
-  // }
+  const openTaskId = props.location?.elId || null;
+  const openColId = props.location?.colId || null;
   const [departmentBoard, currBoard] = getEncodedBoardNames();
 
   // Add existing boards to select option
@@ -234,7 +226,7 @@ const Tasks = (props: any) => {
                                         return (
                                           <TaskCard
                                             draggableProps={provided.draggableProps}
-                                            dragHandleProps={provided.dragHandleProps}
+                                            dragHandleProps={provided.dragHandleProps!}
                                             innerRef={provided.innerRef}
                                             task={item}
                                             taskOnClick={() =>
@@ -290,7 +282,7 @@ const Tasks = (props: any) => {
         user={USER}
       />
       {/* Redirect to another board, when user clicks the board select input */}
-      {redirectToBoard && <Redirect to={redirectToBoard}></Redirect>}
+      {redirectToBoard && <Navigate to={redirectToBoard}></Navigate>}
     </div>
   );
 };

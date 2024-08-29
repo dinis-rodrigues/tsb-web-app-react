@@ -1,5 +1,5 @@
 import { useState } from "react";
-import NumberFormat from "react-number-format";
+import { NumericFormat, PatternFormat } from "react-number-format";
 import { Button, ButtonGroup } from "react-rainbow-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { Sponsor } from "../../interfaces";
@@ -34,7 +34,7 @@ const SponsorModalAddSeason = ({ sponsorInfo, setSponsorInfo, setRefreshChart }:
           return (
             <div className="row mt-2 justify-content-center text-center" key={season}>
               <div className="col-3">
-                <NumberFormat
+                <PatternFormat
                   value={season.replace("-", "/")}
                   readOnly={!isMarketingOrAdmin}
                   className="form-control text-center"
@@ -54,7 +54,7 @@ const SponsorModalAddSeason = ({ sponsorInfo, setSponsorInfo, setRefreshChart }:
                 />
               </div>
               <div className="col-3">
-                <NumberFormat
+                <NumericFormat
                   value={
                     seasonValue.value === 0 || seasonValue.status === 0 || seasonValue.status === 1
                       ? ""

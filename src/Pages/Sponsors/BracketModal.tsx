@@ -1,4 +1,4 @@
-import NumberFormat from "react-number-format";
+import { NumericFormat } from "react-number-format";
 import { Button, ColorPicker, Modal, Slider } from "react-rainbow-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { SponsorBracketListItem } from "../../interfaces";
@@ -105,7 +105,7 @@ const BracketModal = ({
             </span>
           </label>
 
-          <NumberFormat
+          <NumericFormat
             value={bracketInfo?.topMargin}
             onValueChange={(value) =>
               bracketMarginHandler(
@@ -128,7 +128,7 @@ const BracketModal = ({
             </span>
           </label>
 
-          <NumberFormat
+          <NumericFormat
             value={bracketInfo?.bottomMargin}
             onValueChange={(value) =>
               bracketMarginHandler(

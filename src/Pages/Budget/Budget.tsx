@@ -60,9 +60,9 @@ const Budget = (props: any) => {
 
   const [openedFromRedirect, setOpenedFromRedirect] = useState(true);
 
-  // if it was clicked from the To Do board in dashboard
-  const openMatId = props.location.elId;
-  const openSeasonId = props.location.colId;
+  // if it was clicked from the To Do board in dashboard, check if these elements exist
+  const openMatId = props.location?.elId;
+  const openSeasonId = props.location?.colId;
 
   useEffect(() => {
     setUserAssignmentOptions(setUserOptions, usersMetadata);

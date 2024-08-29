@@ -1,4 +1,4 @@
-import { ColumnApi, GridApi, GridReadyEvent } from "ag-grid-community";
+import { FirstDataRenderedEvent, GridApi, GridReadyEvent } from "ag-grid-community";
 import {
   PersonalInformation,
   UserMetadata,
@@ -126,17 +126,17 @@ const handleSelectOption = (
  * @param setColumnApi
  */
 const onFirstDataRendered = (
-  params: GridReadyEvent,
+  params: FirstDataRenderedEvent | GridReadyEvent,
   setGridApi: Function,
   setColumnApi: Function,
 ) => {
   params.api.sizeColumnsToFit();
   // Initial sort by name
-  params.columnApi.applyColumnState({
+  params.api.applyColumnState({
     state: [{ colId: "name", sort: "asc" }],
   });
   setGridApi(params.api);
-  setColumnApi(params.columnApi);
+  setColumnApi(params.api);
 };
 
 /**
@@ -166,7 +166,7 @@ const excelExport = (gridApi: GridApi | undefined) => {
 const clipboardExport = (gridApi: GridApi | undefined) => {
   if (!gridApi) return;
   gridApi.selectAll();
-  gridApi.copySelectedRowsToClipboard(true);
+  gridApi.copySelectedRowsToClipboard();
   gridApi.deselectAll();
 };
 /**
@@ -177,7 +177,7 @@ const clipboardExport = (gridApi: GridApi | undefined) => {
  */
 const filterTable = (e: any, gridApi: GridApi | undefined) => {
   if (!gridApi) return;
-  gridApi.setQuickFilter(e.target.value);
+  gridApi.setGridOption("quickFilterText", e.target.value);
 };
 /**
  * Export table to pdf
@@ -185,7 +185,7 @@ const filterTable = (e: any, gridApi: GridApi | undefined) => {
  * @param columnApi
  * @returns
  */
-const pdfExport = (gridApi: GridApi | undefined, columnApi: ColumnApi | undefined) => {
+const pdfExport = (gridApi: GridApi | undefined, columnApi: GridApi | undefined) => {
   if (!gridApi || !columnApi) return;
   printDoc(gridApi, columnApi, exportedFilename());
 };
@@ -228,14 +228,14 @@ const getTeamDataForTable = (
   // }
 };
 export {
-  defaultOptions,
   buildColumns,
   buildTableRows,
-  handleSelectOption,
-  onFirstDataRendered,
+  clipboardExport,
+  defaultOptions,
   excelExport,
   filterTable,
-  pdfExport,
-  clipboardExport,
   getTeamDataForTable,
+  handleSelectOption,
+  onFirstDataRendered,
+  pdfExport,
 };

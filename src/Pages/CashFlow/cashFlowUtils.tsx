@@ -1,4 +1,9 @@
-import { ColumnApi, GridApi, GridReadyEvent, RowClickedEvent } from "ag-grid-community";
+import {
+  FirstDataRenderedEvent,
+  GridApi,
+  GridReadyEvent,
+  RowClickedEvent,
+} from "ag-grid-community";
 import { ApexOptions } from "apexcharts";
 import { Flow } from "../../interfaces";
 import { dateToString, inputToDate } from "../../utils/generalFunctions";
@@ -10,7 +15,7 @@ import printDoc from "../../utils/pdfExport/printDoc";
  */
 const filterTable = (e: React.ChangeEvent<HTMLInputElement>, gridApi: GridApi | null) => {
   if (!gridApi) return;
-  gridApi.setQuickFilter(e.target.value);
+  gridApi.setGridOption("quickFilterText", e.target.value);
 };
 /** Creates a filename for the table
  * @param  {string} tableTitle title of the table
@@ -39,7 +44,7 @@ const excelExport = (gridApi: GridApi | null, tableTitle: string) => {
 const clipboardExport = (gridApi: GridApi | null) => {
   if (!gridApi) return;
   gridApi.selectAll();
-  gridApi.copySelectedRowsToClipboard(true);
+  gridApi.copySelectedRowsToClipboard();
   gridApi.deselectAll();
 };
 
@@ -48,7 +53,7 @@ const clipboardExport = (gridApi: GridApi | null) => {
  * @param  {GridApi} gridApi ag-grid grid Api
  * @param  {ColumnApi} columnApi ag-grid column Api
  */
-const pdfExport = (tableTitle: string, gridApi: GridApi | null, columnApi: ColumnApi | null) => {
+const pdfExport = (tableTitle: string, gridApi: GridApi | null, columnApi: GridApi | null) => {
   printDoc(gridApi, columnApi, exportedFilename(tableTitle));
 };
 
@@ -76,17 +81,17 @@ const onRowClick = (
  * @param  {Function} setColumnApi
  */
 const onFirstDataRendered = (
-  params: GridReadyEvent,
+  params: GridReadyEvent | FirstDataRenderedEvent,
   setGridApi: Function,
   setColumnApi: Function,
 ) => {
   params.api.sizeColumnsToFit();
   // Initial sort by name
-  params.columnApi.applyColumnState({
+  params.api.applyColumnState({
     state: [{ colId: "name", sort: "asc" }],
   });
   setGridApi(params.api);
-  setColumnApi(params.columnApi);
+  setColumnApi(params.api);
 };
 
 /** Closes the modal and resets the flow info
@@ -318,18 +323,18 @@ const apexChartOptions: ApexOptions = {
 };
 
 export {
-  filterTable,
-  excelExport,
-  clipboardExport,
-  pdfExport,
-  onRowClick,
-  onFirstDataRendered,
   apexChartOptions,
-  sortFlowsByDate,
-  createDateIntervals,
-  createArrayBetweenDates,
-  getCumSumAndTime,
-  cumulativeSum,
+  clipboardExport,
   closeFlowModal,
+  createArrayBetweenDates,
+  createDateIntervals,
+  cumulativeSum,
+  excelExport,
+  filterTable,
+  getCumSumAndTime,
+  onFirstDataRendered,
+  onRowClick,
   openFlowModal,
+  pdfExport,
+  sortFlowsByDate,
 };

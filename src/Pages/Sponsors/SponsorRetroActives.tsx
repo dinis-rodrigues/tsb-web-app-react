@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 
 import Chart from "react-apexcharts";
-import NumberFormat from "react-number-format";
+import { NumericFormat } from "react-number-format";
 import Select from "react-select";
 import { useAuth } from "../../contexts/AuthContext";
 import { SponsorRetroactives } from "../../interfaces";
@@ -74,10 +74,9 @@ const SponsorRetroActives = ({ retroActives, setRetroActives }: Props) => {
 
           <div className="col-1"></div>
           <div className="col-5">
-            <NumberFormat
+            <NumericFormat
               value={retroActives.threshold}
               className="form-control text-center"
-              allowEmptyFormatting
               onValueChange={(val) =>
                 retroThresholdHandler(
                   val.floatValue ? val.floatValue : 0,
@@ -127,16 +126,10 @@ const SponsorRetroActives = ({ retroActives, setRetroActives }: Props) => {
                 <Fragment key={idx}>
                   <div className="col-1"></div>
                   <div className="col-5">
-                    <NumberFormat
-                      value={idx + 1}
-                      readOnly
-                      className="form-control text-center"
-                      allowEmptyFormatting
-                      mask="_"
-                    />
+                    <NumericFormat value={idx + 1} readOnly className="form-control text-center" />
                   </div>
                   <div className="col-5">
-                    <NumberFormat
+                    <NumericFormat
                       value={value}
                       readOnly={!isMarketingOrAdmin}
                       onValueChange={(val) =>

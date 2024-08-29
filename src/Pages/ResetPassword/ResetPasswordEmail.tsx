@@ -1,18 +1,14 @@
 import cx from "classnames";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { connect } from "react-redux";
-import { setEnableLoginPage } from "../../reducers/ThemeOptions";
 import ValidationError from "../Register/ValidationError";
 import emailValidate from "../Register/emailValidate";
 
-import { Link, Redirect, withRouter } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { sendResetLink } from "./resetPasswordUtils";
-type Props = {
-  setEnableLoginPage: Function;
-};
-const ResetPasswordEmail = ({ setEnableLoginPage }: Props) => {
+
+const ResetPasswordEmail = () => {
   //   Form Validation
   const {
     register,
@@ -71,7 +67,9 @@ const ResetPasswordEmail = ({ setEnableLoginPage }: Props) => {
                               },
                             })}
                           />
-                          {errors.email && <ValidationError msg={errors.email.message} />}
+                          {errors.email?.message && (
+                            <ValidationError msg={errors.email.message.toString()} />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -114,17 +112,9 @@ const ResetPasswordEmail = ({ setEnableLoginPage }: Props) => {
         </div>
       </div>
       {/* If the user is already logged in, send him to dashboard */}
-      {displayContent && <Redirect to={"/dashboard"} />}
+      {displayContent && <Navigate to={"/dashboard"} />}
     </>
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  enableLoginPage: state.ThemeOptions.enableLoginPage,
-});
-
-const mapDispatchToProps = (dispatch: Function) => ({
-  setEnableLoginPage: (enable: boolean) => dispatch(setEnableLoginPage(enable)),
-});
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ResetPasswordEmail));
+export default ResetPasswordEmail;

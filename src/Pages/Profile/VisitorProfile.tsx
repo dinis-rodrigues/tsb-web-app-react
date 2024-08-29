@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import altUserImgLarge from "../../assets/images/altUserImg.png";
 import { useAuth } from "../../contexts/AuthContext";
 import { getUserImgUrl } from "../../utils/generalFunctions";
 import CoursesTable from "./CoursesTable";
 import UserAttendance from "./UserAttendance";
-import { getCoverBgColor, getCoverBorderColor, getUserIdFromUrl } from "./profileUtils";
+import { getCoverBgColor, getCoverBorderColor } from "./profileUtils";
 
 const VisitorProfile = () => {
   const { usersMetadata, departmentsWDesc } = useAuth();
   const [userImage, setUserImage] = useState(altUserImgLarge);
 
-  const userId = getUserIdFromUrl();
-  const userInfo = usersMetadata[userId].pinfo;
+  const { userId } = useParams();
+  // const userId = getUserIdFromUrl();
+  const userInfo = usersMetadata[userId!].pinfo;
 
   const coverBgColor = getCoverBgColor(userInfo, departmentsWDesc);
   const coverBorderColor = getCoverBorderColor(userInfo, departmentsWDesc);
   useEffect(() => {
-    const userImgUrl = getUserImgUrl(userId, null, false);
+    const userImgUrl = getUserImgUrl(userId!, null, false);
     setUserImage(userImgUrl);
   }, [userId]);
   return (
@@ -56,7 +58,7 @@ const VisitorProfile = () => {
                 </div>
               </div>
               {/* Statistics */}
-              <UserAttendance userId={userId} />
+              <UserAttendance userId={userId!} />
 
               {/* Personal Information */}
               <li className="list-group-item">
@@ -122,7 +124,9 @@ const VisitorProfile = () => {
                       <span className="text-dark small text-uppercase">
                         <strong>Curricular year</strong>
                       </span>
-                      <span className="form-control text-center">{userInfo.curricularYear}</span>
+                      <span className="form-control text-center">
+                        {userInfo.curricularYear?.toString()}
+                      </span>
                     </div>
                     <div className="col">
                       <span className="text-dark small text-uppercase">

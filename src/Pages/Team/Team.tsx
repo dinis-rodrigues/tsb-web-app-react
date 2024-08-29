@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
 import { useAuth } from "../../contexts/AuthContext";
-import { PersonalInformation, selectOption, tableColumns } from "../../interfaces";
+import { PersonalInformation, selectOption } from "../../interfaces";
 import { setColumnText } from "../../utils/generalFunctions";
 
 import {
@@ -18,10 +18,10 @@ import {
 } from "./TeamUtils";
 
 // Table
-import { ColumnApi, GridApi } from "ag-grid-community";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import { ColDef, ColGroupDef, GridApi } from "ag-grid-community";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import "ag-grid-community/styles/ag-theme-alpine.min.css";
 import "ag-grid-enterprise";
 import { AgGridReact } from "ag-grid-react";
 import { Input } from "react-rainbow-components";
@@ -37,12 +37,12 @@ const Team = () => {
   };
 
   const [gridApi, setGridApi] = useState<GridApi>(); // Table API
-  const [columnApi, setColumnApi] = useState<ColumnApi>(); // Column API
+  const [columnApi, setColumnApi] = useState<GridApi>(); // Column API
   const [infoOptions, setInfoOptions] = useState<selectOption[]>([]); // ALl select input options
   const [selectedOptions, setSelectedOptions] = useState<selectOption[]>(defaultOptions); // selected options
   // const [usersInfo, setUsersInfo] = useState<UserMetadata>({}); // user metadata
   const [tableRowsData, setTableRowsData] = useState<PersonalInformation[]>([]); // row data
-  const [tableColumns, setTableColumns] = useState<tableColumns[]>([]); // column definitions
+  const [tableColumns, setTableColumns] = useState<(ColDef | ColGroupDef)[]>([]); // column definitions
 
   // Select Options
   useEffect(() => {
@@ -72,7 +72,7 @@ const Team = () => {
                       <i className="fa fa-download text-white btn-icon-wrapper"></i> Download
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu right className="rm-pointers dropdown-menu">
+                  <DropdownMenu end className="rm-pointers dropdown-menu">
                     <button
                       type="button"
                       className="dropdown-item"

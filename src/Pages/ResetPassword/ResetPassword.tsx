@@ -1,15 +1,11 @@
 import cx from "classnames";
 import { useForm } from "react-hook-form";
-import { connect } from "react-redux";
-import { setEnableLoginPage } from "../../reducers/ThemeOptions";
 import ValidationError from "../Register/ValidationError";
 
-import { Redirect, withRouter } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-type Props = {
-  setEnableLoginPage: Function;
-};
-const ResetPassword = ({ setEnableLoginPage }: Props) => {
+
+const ResetPassword = () => {
   //   Form Validation
   const {
     register,
@@ -66,7 +62,9 @@ const ResetPassword = ({ setEnableLoginPage }: Props) => {
                               },
                             })}
                           />
-                          {errors.password && <ValidationError msg={errors.password.message} />}
+                          {errors.password?.message && (
+                            <ValidationError msg={errors.password.message?.toString()} />
+                          )}
                           {/* {errors.password.type === "minLength" && (
                           <ValidationError msg={"Password must have at least 6 characters."} />
                         )} */}
@@ -100,8 +98,10 @@ const ResetPassword = ({ setEnableLoginPage }: Props) => {
                               },
                             })}
                           />
-                          {errors.passwordConfirmation && (
-                            <ValidationError msg={errors.passwordConfirmation.message} />
+                          {errors.passwordConfirmation?.message && (
+                            <ValidationError
+                              msg={errors.passwordConfirmation.message?.toString()}
+                            />
                           )}
                         </div>
                       </div>
@@ -128,17 +128,9 @@ const ResetPassword = ({ setEnableLoginPage }: Props) => {
         </div>
       </div>
       {/* If the user is already logged in, send him to dashboard */}
-      {displayContent && <Redirect to={"/dashboard"} />}
+      {displayContent && <Navigate to={"/dashboard"} />}
     </>
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  enableLoginPage: state.ThemeOptions.enableLoginPage,
-});
-
-const mapDispatchToProps = (dispatch: Function) => ({
-  setEnableLoginPage: (enable: boolean) => dispatch(setEnableLoginPage(enable)),
-});
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ResetPassword));
+export default ResetPassword;
