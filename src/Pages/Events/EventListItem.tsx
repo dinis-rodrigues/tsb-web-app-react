@@ -1,7 +1,6 @@
-import { Fragment } from "@fullcalendar/common";
-import { extendDate } from "../../utils/generalFunctions";
 import { useAuth } from "../../contexts/AuthContext";
 import { EventColors } from "../../interfaces";
+import { extendDate } from "../../utils/generalFunctions";
 import { getEventTitlesAndColors } from "./eventsUtils";
 
 type Props = {
@@ -35,11 +34,10 @@ const EventListItem = ({
   const { departmentsWDesc } = useAuth();
   const currMeeting = eventType.replace(" Meeting", "");
 
-  const eventTitleIconColor: EventColors =
-    getEventTitlesAndColors(departmentsWDesc);
+  const eventTitleIconColor: EventColors = getEventTitlesAndColors(departmentsWDesc);
   const eventColorGradient = eventTitleIconColor[currMeeting].gradientColor;
   return (
-    <Fragment>
+    <>
       <li className="list-group-item">
         <div className="widget-content p-0">
           <div className="widget-content-wrapper">
@@ -49,11 +47,7 @@ const EventListItem = ({
                 onClick={() => eventListClickHandler()}
               >
                 <span className="icon-wrapper icon-wrapper-alt ">
-                  <i
-                    className={`fa fa-calendar icon-gradient ${eventColorGradient}`}
-                  >
-                    {" "}
-                  </i>
+                  <i className={`fa fa-calendar icon-gradient ${eventColorGradient}`}> </i>
                 </span>
               </span>
             </div>
@@ -66,16 +60,13 @@ const EventListItem = ({
                   {eventTitle}
                   <span className="widget-subheading">
                     {" "}
-                    {`${eventHours}:${eventMinutes} on ${extendDate(
-                      eventDate
-                    )}`}
+                    {`${eventHours}:${eventMinutes} on ${extendDate(eventDate)}`}
                     {/* Singular periodicity -> "Week" */}
                     {eventPeriodic > 0 &&
                       eventPeriodic < 2 &&
                       `- repeats every ${eventPeriodic} week`}
                     {/* Above 1 periodicity -> "Weeks" */}
-                    {eventPeriodic > 1 &&
-                      `- repeats every ${eventPeriodic} weeks`}
+                    {eventPeriodic > 1 && `- repeats every ${eventPeriodic} weeks`}
                   </span>
                 </div>
                 <div className="widget-subheading">{eventDescription}</div>
@@ -83,12 +74,14 @@ const EventListItem = ({
             </span>
             <div className="widget-content-right widget-content-actions">
               <button
+                type="button"
                 className="border-0 btn-transition btn btn-outline-primary"
                 onClick={() => eventListClickHandler()}
               >
                 <i className="fa fa-edit"></i>
               </button>
               <button
+                type="button"
                 className="border-0 btn-transition btn btn-outline-danger"
                 onClick={() => eventListDeleteHandler()}
               >
@@ -98,7 +91,7 @@ const EventListItem = ({
           </div>
         </div>
       </li>
-    </Fragment>
+    </>
   );
 };
 

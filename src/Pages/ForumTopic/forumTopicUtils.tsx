@@ -1,12 +1,4 @@
-import {
-  get,
-  onValue,
-  ref,
-  remove,
-  runTransaction,
-  set,
-  update,
-} from "firebase/database";
+import { get, onValue, ref, remove, runTransaction, set, update } from "firebase/database";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { db } from "../../config/firebase";
@@ -15,8 +7,8 @@ import {
   Thread,
   ThreadCreation,
   ThreadMetadata,
-  userContext,
   UserMetadata,
+  userContext,
 } from "../../interfaces";
 import {
   getDecodedString,
@@ -34,7 +26,7 @@ const getEncodedForumTopicPaths = () => {
   const pathName = window.location.pathname;
   // thread pathName
   // /forum/s/encodedSectionName/topic/encodedTopicName/thread/encodedThreadName
-  let splitted = pathName.split("/");
+  const splitted = pathName.split("/");
   let encodedSectionName = splitted[3];
   let encodedTopicName = splitted[5];
   // decode everything and encode everything (our encoding is different from
@@ -62,18 +54,23 @@ const errorCreatingThreadMessage = (msg: string) => {
  * @param  {string} label corresponding thread label
  */
 const getThreadBadgeColor = (label: string) => {
-  var bcolor = "";
+  const bcolor = "";
   if (label === "None") {
     return "";
-  } else if (label === "Important") {
+  }
+  if (label === "Important") {
     return "badge-danger";
-  } else if (label === "Solved") {
+  }
+  if (label === "Solved") {
     return "badge-success";
-  } else if (label === "Issue" || label === "Bug") {
+  }
+  if (label === "Issue" || label === "Bug") {
     return "badge-warning";
-  } else if (label === "Closed") {
+  }
+  if (label === "Closed") {
     return "badge-dark";
-  } else if (label === "Question") {
+  }
+  if (label === "Question") {
     return "badge-info";
   }
   return `<div class="mb-2 mr-2 ml-2 align-items-center badge ${bcolor}">${label.toUpperCase()}</div>`;
@@ -88,42 +85,33 @@ const updateForumMetadata = (
   newThreadInfo: ThreadCreation,
   encodedSectionName: string,
   encodedTopicName: string,
-  user: userContext
+  user: userContext,
 ) => {
-  let createdAtTimestamp = new Date().getTime();
-  let dataToUpdate = {
+  const createdAtTimestamp = new Date().getTime();
+  const dataToUpdate = {
     latestUpdate: newThreadInfo.title,
     latestUpdateUrl: `/forum/s/${encodedSectionName}/topic/${encodedTopicName}/thread/${getEncodedString(
-      newThreadInfo.title
+      newThreadInfo.title,
     )}`,
     latestUserUpdate: user.id,
     latestUserNameUpdate: user.name,
     latestUpdateTimestamp: createdAtTimestamp,
   };
   // update metadata
-  update(
-    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`),
-    dataToUpdate
-  );
+  update(ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`), dataToUpdate);
   // Increment number of threads
   runTransaction(
-    ref(
-      db,
-      `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberThreads`
-    ),
+    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberThreads`),
     (num) => {
       return (num || 0) + 1;
-    }
+    },
   );
   // Increment number of replies
   runTransaction(
-    ref(
-      db,
-      `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`
-    ),
+    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`),
     (num) => {
       return (num || 0) + 1;
-    }
+    },
   );
 };
 
@@ -137,13 +125,13 @@ const updateForumTopicMetadata = (
   newThreadInfo: ThreadCreation,
   encodedSectionName: string,
   encodedTopicName: string,
-  user: userContext
+  user: userContext,
 ) => {
-  let sectionName = getDecodedString(encodedSectionName);
-  let topicName = getDecodedString(encodedTopicName);
-  let encodedThreadName = getEncodedString(newThreadInfo.title);
-  let createdAtTimestamp = new Date().getTime();
-  let threadInTopicMetadata: ThreadMetadata = {
+  const sectionName = getDecodedString(encodedSectionName);
+  const topicName = getDecodedString(encodedTopicName);
+  const encodedThreadName = getEncodedString(newThreadInfo.title);
+  const createdAtTimestamp = new Date().getTime();
+  const threadInTopicMetadata: ThreadMetadata = {
     sectionName: sectionName,
     topicName: topicName,
     threadTitle: newThreadInfo.title,
@@ -164,9 +152,9 @@ const updateForumTopicMetadata = (
   set(
     ref(
       db,
-      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`,
     ),
-    threadInTopicMetadata
+    threadInTopicMetadata,
   );
 };
 
@@ -186,40 +174,32 @@ const createNewThread = (
   forumTopicMetadata: [string, ThreadMetadata][],
   usersMetadata: UserMetadata,
   setNewThreadInfo: Function,
-  setIsCreateThreadModalOpen: Function
+  setIsCreateThreadModalOpen: Function,
 ) => {
   // Check if thread to create is not null
-  if (
-    !newThreadInfo.title ||
-    !newThreadInfo.description ||
-    !newThreadInfo.label ||
-    !user
-  ) {
+  if (!newThreadInfo.title || !newThreadInfo.description || !newThreadInfo.label || !user) {
     errorCreatingThreadMessage("Please fill all the fields");
     setIsCreateThreadModalOpen(false);
     return;
   }
-  let sectionName = getDecodedString(encodedSectionName);
-  let topicName = getDecodedString(encodedTopicName);
-  let encodedThreadName = getEncodedString(newThreadInfo.title);
+  const sectionName = getDecodedString(encodedSectionName);
+  const topicName = getDecodedString(encodedTopicName);
+  const encodedThreadName = getEncodedString(newThreadInfo.title);
 
   // check if thread title is unique
-  var isThreadTitleUnique = true;
+  let isThreadTitleUnique = true;
   forumTopicMetadata.forEach(([existingEncodedThName, threadData]) => {
-    if (encodedThreadName === existingEncodedThName)
-      isThreadTitleUnique = false;
+    if (encodedThreadName === existingEncodedThName) isThreadTitleUnique = false;
   });
   if (!isThreadTitleUnique) {
-    errorCreatingThreadMessage(
-      "Thread title already exists. Please choose another."
-    );
+    errorCreatingThreadMessage("Thread title already exists. Please choose another.");
     setIsCreateThreadModalOpen(false);
     return;
   }
 
   // Create Thread entry
-  let createdAtTimestamp = new Date().getTime();
-  let newThreadTemplate: Thread = {
+  const createdAtTimestamp = new Date().getTime();
+  const newThreadTemplate: Thread = {
     sectionName: sectionName,
     topicName: topicName,
     htmlContent: newThreadInfo.description,
@@ -238,34 +218,21 @@ const createNewThread = (
     recentUpdateViewedBy: { [user.id]: user.name },
   };
   set(
-    ref(
-      db,
-      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-    ),
-    newThreadTemplate
+    ref(db, `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`),
+    newThreadTemplate,
   )
     .then(() => {
       // update forum metadata
-      updateForumMetadata(
-        newThreadInfo,
-        encodedSectionName,
-        encodedTopicName,
-        user
-      );
+      updateForumMetadata(newThreadInfo, encodedSectionName, encodedTopicName, user);
       // update forum topic metadata
-      updateForumTopicMetadata(
-        newThreadInfo,
-        encodedSectionName,
-        encodedTopicName,
-        user
-      );
+      updateForumTopicMetadata(newThreadInfo, encodedSectionName, encodedTopicName, user);
       successCreatingThreadMessage("You created a new thread!");
 
       // clear modal
       setNewThreadInfo({ title: "", label: {}, description: "" });
       setIsCreateThreadModalOpen(false);
       // Send notifications to all users in application
-      let threadUrl = `/forum/s/${encodedSectionName}/topic/${encodedTopicName}/thread/${encodedThreadName}`;
+      const threadUrl = `/forum/s/${encodedSectionName}/topic/${encodedTopicName}/thread/${encodedThreadName}`;
       Object.entries(usersMetadata).forEach(([userId, userInfo]) => {
         sendNotification(
           userId,
@@ -275,15 +242,13 @@ const createNewThread = (
           threadUrl,
           null,
           "generalThread",
-          "info"
+          "info",
         );
       });
     })
     .catch((error) => {
       if (error) {
-        errorCreatingThreadMessage(
-          "Error creating the thread. Contact the admin."
-        );
+        errorCreatingThreadMessage("Error creating the thread. Contact the admin.");
         setIsCreateThreadModalOpen(false);
         return;
       }
@@ -298,7 +263,7 @@ const createNewThread = (
 const newThreadLabelHandler = (
   selected: any,
   newThreadInfo: ThreadCreation,
-  setNewThreadInfo: Function
+  setNewThreadInfo: Function,
 ) => {
   setNewThreadInfo({ ...newThreadInfo, label: selected });
 };
@@ -311,7 +276,7 @@ const newThreadLabelHandler = (
 const newThreadTitleHandler = (
   e: React.ChangeEvent<HTMLInputElement>,
   newThreadInfo: ThreadCreation,
-  setNewThreadInfo: Function
+  setNewThreadInfo: Function,
 ) => {
   const value = e.target.value;
   setNewThreadInfo({ ...newThreadInfo, title: value });
@@ -325,7 +290,7 @@ const newThreadTitleHandler = (
 const newThreadDescriptionHandler = (
   value: string,
   newThreadInfo: ThreadCreation,
-  setNewThreadInfo: Function
+  setNewThreadInfo: Function,
 ) => {
   setNewThreadInfo({ ...newThreadInfo, description: value });
 };
@@ -334,10 +299,7 @@ const newThreadDescriptionHandler = (
  * @param  {string[]} viewedBy html string of the description
  * @param  {userContext} user new thread info to create
  */
-const hasUserSeenThread = (
-  viewedBy: { [key: string]: string },
-  user: userContext | null
-) => {
+const hasUserSeenThread = (viewedBy: { [key: string]: string }, user: userContext | null) => {
   if (!user) return false;
   if (viewedBy[user.id]) return true;
   return false;
@@ -349,8 +311,8 @@ const hasUserSeenThread = (
  */
 const sortThreadsByDate = (topicsMetadata: ForumTopicMetadata) => {
   return Object.entries(topicsMetadata).sort((a, b) => {
-    let topicA = a[1];
-    let topicB = b[1];
+    const topicA = a[1];
+    const topicB = b[1];
     if (topicA.latestUpdateTimestamp > topicB.latestUpdateTimestamp) return -1;
     if (topicA.latestUpdateTimestamp < topicB.latestUpdateTimestamp) return 1;
     return 0;
@@ -361,13 +323,8 @@ const sortThreadsByDate = (topicsMetadata: ForumTopicMetadata) => {
  * @param  {string} encodedSectionName encoded section name, db and url ready string
  * @param  {string} encodedTopicName encoded topic name, db and url ready string
  */
-const checkIfThreadExists = (
-  encodedSectionName: string,
-  encodedTopicName: string
-) => {
-  return get(
-    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`)
-  );
+const checkIfThreadExists = (encodedSectionName: string, encodedTopicName: string) => {
+  return get(ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`));
 };
 /** Retrieves topic metadata containing all the threadsHandles the on change input of the description
  * @param  {string} encodedSectionName encoded section name, db and url ready string
@@ -378,22 +335,19 @@ const checkIfThreadExists = (
 const getForumTopicMetadata = (
   encodedSectionName: string,
   encodedTopicName: string,
-  setForumTopicMetadata: Function
+  setForumTopicMetadata: Function,
 ) => {
   onValue(
-    ref(
-      db,
-      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}`
-    ),
+    ref(db, `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}`),
     (snapshot) => {
-      let topicMetadata: ForumTopicMetadata = snapshot.val();
+      const topicMetadata: ForumTopicMetadata = snapshot.val();
       if (!topicMetadata) {
         return;
       }
 
-      let sortedThreads = sortThreadsByDate(topicMetadata);
+      const sortedThreads = sortThreadsByDate(topicMetadata);
       setForumTopicMetadata(sortedThreads);
-    }
+    },
   );
 };
 
@@ -409,30 +363,19 @@ const deleteTopic = (
   forumTopicMetadata: [string, ThreadMetadata][],
   encodedSectionName: string,
   encodedTopicName: string,
-  setRedirectTo: Function
+  setRedirectTo: Function,
 ) => {
   if (!user || !userHasPermission(user)) return;
 
   forumTopicMetadata.forEach(([encodedThreadName, threadMetadata]) => {
     //Remove Pinned Thread if equal
-    removePinnedThreadIfEqual(
-      encodedSectionName,
-      encodedTopicName,
-      encodedThreadName
-    );
+    removePinnedThreadIfEqual(encodedSectionName, encodedTopicName, encodedThreadName);
   });
   // subtract number of replies to the forum metadata
-  remove(
-    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`)
-  );
+  remove(ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`));
 
   // remove from topic
-  remove(
-    ref(
-      db,
-      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}`
-    )
-  );
+  remove(ref(db, `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}`));
   setRedirectTo("/forum");
 };
 
@@ -459,7 +402,8 @@ const swalDeleteTopicMessage = (deleteFunction: Function) => {
     .then((result) => {
       if (result.isConfirmed) {
         return;
-      } else if (result.isDenied) {
+      }
+      if (result.isDenied) {
         deleteFunction();
       }
     });

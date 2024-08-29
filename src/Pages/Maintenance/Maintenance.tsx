@@ -1,11 +1,10 @@
-import { Fragment } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Maintenance = () => {
   const { displayContent, displayMaintenance, displayLogin } = useAuth();
   return displayMaintenance ? (
-    <Fragment>
+    <>
       <div className="h-100 tsb-background">
         <div className="d-flex h-100 justify-content-center align-items-center">
           <div className="mx-auto app-login-box col-md-8">
@@ -18,10 +17,7 @@ const Maintenance = () => {
                       <div>Sorry</div>
                       <span>The application is down for maintenance</span>
                       {displayMaintenance && (
-                        <div
-                          className="badge badge-danger ml-2"
-                          style={{ opacity: 1 }}
-                        >
+                        <div className="badge badge-danger ml-2" style={{ opacity: 1 }}>
                           ETA: Undefined
                         </div>
                       )}
@@ -37,12 +33,12 @@ const Maintenance = () => {
         </div>
       </div>
       {/* If the user is already logged in, send him to dashboard */}
-      {displayContent && <Redirect to={"/dashboard"} />}
-    </Fragment>
+      {displayContent && <Navigate to={"/dashboard"} />}
+    </>
   ) : displayContent ? (
-    <Redirect to={"/dashboard"} />
+    <Navigate to={"/dashboard"} />
   ) : displayLogin ? (
-    <Redirect to={"/dashboard"} />
+    <Navigate to={"/dashboard"} />
   ) : null;
 };
 

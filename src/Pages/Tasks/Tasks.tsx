@@ -1,45 +1,37 @@
-import { Fragment, useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 import { db } from "../../config/firebase";
-import { Redirect } from "react-router-dom";
 
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import CreatableSelect from "react-select/creatable";
 import { UncontrolledTooltip } from "reactstrap";
 
 import cx from "classnames";
 
+import { Department, columnsShape, selectOption, taskShape } from "../../interfaces";
 import {
-  initialColumns,
-  taskSkeleton,
-  boardSkeleton,
-  swalDeleteMessage,
-  createNewBoard,
-  updateExistingBoards,
   addTask,
-  goToBoard,
+  boardSkeleton,
+  createNewBoard,
   deleteBoard,
-  onDragEnd,
-  taskOnClick,
   drawerOpenHandler,
-  openMatchingTaskId,
-  getTaskBoardTitleAndColor,
   getEncodedBoardNames,
+  getTaskBoardTitleAndColor,
+  goToBoard,
+  initialColumns,
+  onDragEnd,
+  openMatchingTaskId,
+  swalDeleteMessage,
+  taskOnClick,
+  taskSkeleton,
+  updateExistingBoards,
 } from "./tasksUtils";
-import {
-  columnsShape,
-  selectOption,
-  taskShape,
-  Department,
-} from "../../interfaces";
 
-import TaskInfo from "./TaskInfo";
-import { useAuth } from "../../contexts/AuthContext";
-import TaskCard from "./TaskCard";
-import {
-  getDecodedString,
-  setUserAssignmentOptions,
-} from "../../utils/generalFunctions";
 import { off, onValue, ref } from "firebase/database";
+import { useAuth } from "../../contexts/AuthContext";
+import { getDecodedString, setUserAssignmentOptions } from "../../utils/generalFunctions";
+import TaskCard from "./TaskCard";
+import TaskInfo from "./TaskInfo";
 
 const Tasks = (props: any) => {
   const { USER, usersMetadata, departments } = useAuth();
@@ -60,16 +52,8 @@ const Tasks = (props: any) => {
   const [commentListener, setCommentListener] = useState<string | null>(null); // watch for new task comments
   const [department, setDepartment] = useState<Department>();
 
-  // Retrieve board information from url
-  // const { departmentBoard, encodedCurrBoard }: matchedRoute =
-  //   props.match.params;
-  const openTaskId = props.location.elId;
-  const openColId = props.location.colId;
-  // var currBoard = encodedCurrBoard;
-  // // URL related stuff, sometimes it's encoded, sometimes it's not
-  // if (getDecodedString(encodedCurrBoard) === currBoard) {
-  //   currBoard = encodeData(encodedCurrBoard);
-  // }
+  const openTaskId = props.location?.elId || null;
+  const openColId = props.location?.colId || null;
   const [departmentBoard, currBoard] = getEncodedBoardNames();
 
   // Add existing boards to select option
@@ -79,33 +63,26 @@ const Tasks = (props: any) => {
   useEffect(() => {
     // Update board state on every change
     if (departmentBoard && currBoard) {
-      onValue(
-        ref(db, `private/${departmentBoard}/b/${currBoard}`),
-        (snapshot) => {
-          if (!snapshot.val()) setRedirectToBoard(`/dashboard`);
-          setColumns(snapshot.val());
-          if (openTaskId && !openedFromUrl) {
-            openMatchingTaskId(
-              openTaskId,
-              openColId,
-              snapshot.val(),
-              departmentBoard,
-              currBoard,
-              setOpenedFromUrl,
-              setCurrTaskInfo,
-              setModalTask,
-              setCurrTaskColumn,
-              setCurrTaskNum,
-              setDrawerOpen
-            );
-          }
-          getTaskBoardTitleAndColor(
+      onValue(ref(db, `private/${departmentBoard}/b/${currBoard}`), (snapshot) => {
+        if (!snapshot.val()) setRedirectToBoard(`/dashboard`);
+        setColumns(snapshot.val());
+        if (openTaskId && !openedFromUrl) {
+          openMatchingTaskId(
+            openTaskId,
+            openColId,
+            snapshot.val(),
             departmentBoard,
-            departments,
-            setDepartment
+            currBoard,
+            setOpenedFromUrl,
+            setCurrTaskInfo,
+            setModalTask,
+            setCurrTaskColumn,
+            setCurrTaskNum,
+            setDrawerOpen,
           );
         }
-      );
+        getTaskBoardTitleAndColor(departmentBoard, departments, setDepartment);
+      });
       // Update the list of existing boards in the department
       updateExistingBoards(departmentBoard, setExistingBoards);
     }
@@ -131,7 +108,7 @@ const Tasks = (props: any) => {
             className={cx(
               "header-icon icon-gradient fa",
               department?.icon,
-              department?.gradientColor
+              department?.gradientColor,
             )}
           ></i>
           {department?.description}
@@ -140,6 +117,7 @@ const Tasks = (props: any) => {
             <div className="row mr-1">
               {/* Add task to current board */}
               <button
+                type="button"
                 className="btn-wide btn-dark mr-md-2 btn btn-sm"
                 onClick={() =>
                   addTask(
@@ -152,7 +130,7 @@ const Tasks = (props: any) => {
                     setCurrTaskColumn,
                     setCurrTaskNum,
                     setCommentListener,
-                    setDrawerOpen
+                    setDrawerOpen,
                   )
                 }
               >
@@ -169,7 +147,7 @@ const Tasks = (props: any) => {
                       setRedirectToBoard,
                       departmentBoard,
                       currBoard,
-                      setColumns
+                      setColumns,
                     );
                 }}
                 value={{
@@ -178,27 +156,18 @@ const Tasks = (props: any) => {
                 }}
                 options={existingBoards && existingBoards}
                 onCreateOption={(value) =>
-                  createNewBoard(
-                    value,
-                    departmentBoard,
-                    boardSkeleton,
-                    setRedirectToBoard
-                  )
+                  createNewBoard(value, departmentBoard, boardSkeleton, setRedirectToBoard)
                 }
               />
               {currBoard !== "General" && (
-                <Fragment>
+                <>
                   {/* Delete board and all it's tasks */}
                   <button
+                    type="button"
                     id={"removeBoard"}
                     onClick={() =>
                       swalDeleteMessage(() =>
-                        deleteBoard(
-                          columns,
-                          departmentBoard,
-                          currBoard,
-                          setRedirectToBoard
-                        )
+                        deleteBoard(columns, departmentBoard, currBoard, setRedirectToBoard),
                       )
                     }
                     className="ml-md-2 btn-icon btn-icon-only btn btn-outline-danger"
@@ -208,7 +177,7 @@ const Tasks = (props: any) => {
                   <UncontrolledTooltip placement="left" target={"removeBoard"}>
                     {"Remove Board"}
                   </UncontrolledTooltip>
-                </Fragment>
+                </>
               )}
             </div>
           </div>
@@ -225,9 +194,7 @@ const Tasks = (props: any) => {
         >
           {/* Where we can drag and drop */}
           <DragDropContext
-            onDragEnd={(result) =>
-              onDragEnd(result, columns, departmentBoard, currBoard)
-            }
+            onDragEnd={(result) => onDragEnd(result, columns, departmentBoard, currBoard)}
           >
             {columns &&
               Object.entries(columns).map(([colId, column]) => {
@@ -244,9 +211,7 @@ const Tasks = (props: any) => {
                             className={"kanban-drag"}
                             ref={provided.innerRef}
                             style={{
-                              backgroundColor: snapshot.isDraggingOver
-                                ? "lightblue"
-                                : "",
+                              backgroundColor: snapshot.isDraggingOver ? "lightblue" : "",
                             }}
                           >
                             {/* For each column, we have our tasks */}
@@ -256,20 +221,12 @@ const Tasks = (props: any) => {
                                 return (
                                   // Only render task card when the users metadata is set in state
                                   Object.keys(usersMetadata).length !== 0 && (
-                                    <Draggable
-                                      key={item.id}
-                                      draggableId={item.id}
-                                      index={idx}
-                                    >
+                                    <Draggable key={item.id} draggableId={item.id} index={idx}>
                                       {(provided, snapshot) => {
                                         return (
                                           <TaskCard
-                                            draggableProps={
-                                              provided.draggableProps
-                                            }
-                                            dragHandleProps={
-                                              provided.dragHandleProps
-                                            }
+                                            draggableProps={provided.draggableProps}
+                                            dragHandleProps={provided.dragHandleProps!}
                                             innerRef={provided.innerRef}
                                             task={item}
                                             taskOnClick={() =>
@@ -284,7 +241,7 @@ const Tasks = (props: any) => {
                                                 setCurrTaskNum,
                                                 setCommentListener,
                                                 departmentBoard,
-                                                currBoard
+                                                currBoard,
                                               )
                                             }
                                             usersMetadata={usersMetadata}
@@ -325,7 +282,7 @@ const Tasks = (props: any) => {
         user={USER}
       />
       {/* Redirect to another board, when user clicks the board select input */}
-      {redirectToBoard && <Redirect to={redirectToBoard}></Redirect>}
+      {redirectToBoard && <Navigate to={redirectToBoard}></Navigate>}
     </div>
   );
 };

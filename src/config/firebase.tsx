@@ -1,7 +1,7 @@
 import { FirebaseApp, initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
-import { getAuth } from "firebase/auth";
 
 let firebaseConfig = {};
 
@@ -29,10 +29,7 @@ const firebaseDevConfig = {
 };
 
 // Check if we are in development and if DEV api key exists
-if (
-  process.env.NODE_ENV === "development" &&
-  process.env.REACT_APP_FIREBASE_API_KEY
-) {
+if (process.env.NODE_ENV === "development" && process.env.REACT_APP_FIREBASE_API_KEY) {
   if (
     process.env.REACT_APP_OVERRIDE_DEVELOPMENT &&
     process.env.REACT_APP_OVERRIDE_DEVELOPMENT === "TRUE"

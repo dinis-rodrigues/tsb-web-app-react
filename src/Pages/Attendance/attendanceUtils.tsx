@@ -1,13 +1,16 @@
 import { ApexOptions } from "apexcharts";
-import { db } from "../../config/firebase";
+import { get, onValue, ref, remove, set, update } from "firebase/database";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import { v4 as uuid } from "uuid";
+import { db } from "../../config/firebase";
 import {
   EventInformation,
-  graphColor,
   Statistic,
   User,
-  userContext,
   UserMetadata,
+  graphColor,
+  userContext,
   userStatus,
 } from "../../interfaces";
 import {
@@ -17,9 +20,6 @@ import {
   toastrMessage,
   userHasPermission,
 } from "../../utils/generalFunctions";
-import { onValue, ref, set, get, update, remove } from "firebase/database";
-import withReactContent from "sweetalert2-react-content";
-import Swal from "sweetalert2";
 
 /** Updates the user database with attended or missed evet of user
  * @param  {boolean} payload content of the tooltip
@@ -49,7 +49,7 @@ const setUserEventStatusState = (
   statType: string,
   eventId: string,
   event: EventInformation,
-  setCurrStatus: Function
+  setCurrStatus: Function,
 ) => {
   if (!statistic) return;
 
@@ -58,8 +58,8 @@ const setUserEventStatusState = (
     (statType === "generalStats" && event.type.includes("General")) ||
     statType === "departmentStats"
   ) {
-    if (statistic.hasOwnProperty(eventId)) {
-      if (statistic[eventId].hasOwnProperty("attended")) {
+    if (Object.hasOwn(statistic, eventId)) {
+      if (Object.hasOwn(statistic[eventId], "attended")) {
         if (statistic[eventId].attended) {
           //   User attended the event
           setCurrStatus({
@@ -90,9 +90,8 @@ const setUserEventStatusState = (
 const getGraphOptions = (graphColor: string, currOptions: graphColor) => {
   if (graphColor === "red") {
     return graphRed;
-  } else {
-    return graphGreen;
   }
+  return graphGreen;
 };
 
 /** Retrieves the graph color based on a threshold
@@ -100,12 +99,11 @@ const getGraphOptions = (graphColor: string, currOptions: graphColor) => {
  * @returns graph color
  */
 const getGraphColor = (statMask: number[]) => {
-  var scoreThreshold = 0.85;
+  const scoreThreshold = 0.85;
   if (statMask[statMask.length - 1] < scoreThreshold) {
     return "red"; // red
-  } else {
-    return "green"; // green
   }
+  return "green"; // green
 };
 
 /** Build the attendance mean array for the graph
@@ -114,12 +112,8 @@ const getGraphColor = (statMask: number[]) => {
  * @param  {number} totalEvents calculate mean until certain point
  * @returns mean
  */
-const calcStatMean = (
-  statistic: Statistic,
-  keys: string[],
-  totalEvents: number
-) => {
-  var attendedNum = 0;
+const calcStatMean = (statistic: Statistic, keys: string[], totalEvents: number) => {
+  let attendedNum = 0;
 
   for (let j = 0; j < totalEvents + 1; j++) {
     if (statistic[keys[j]].attended) {
@@ -134,12 +128,12 @@ const calcStatMean = (
  * @returns   [statMask, graphColor] mean array and respective color
  */
 const buildStatisticArray = (statistic: Statistic | null) => {
-  let arrayLength = 10; // Graph will be the last 10 events
-  let statMask: number[] = new Array(arrayLength).fill(0);
+  const arrayLength = 10; // Graph will be the last 10 events
+  const statMask: number[] = new Array(arrayLength).fill(0);
   let graphColor = getGraphColor(statMask);
   if (!statistic) return { statSeries: statMask, graphColor: graphColor };
 
-  let statKeys = Object.keys(statistic);
+  const statKeys = Object.keys(statistic);
   let statLength = statKeys.length;
   if (statLength > arrayLength) {
     statLength = arrayLength;
@@ -151,7 +145,7 @@ const buildStatisticArray = (statistic: Statistic | null) => {
     if (index < arrayLength) {
       // Calculate the mean of attending a meeting based on the current index
       // Update event statistics mask, start from the begining
-      let pos = arrayLength - statLength + index;
+      const pos = arrayLength - statLength + index;
       statMask[pos] = calcStatMean(statistic, statKeys, index);
     }
   });
@@ -163,7 +157,7 @@ const buildStatisticArray = (statistic: Statistic | null) => {
  * @returns   {boolean}
  */
 const isCorrectType = (eventType: string) => {
-  for (let k in meetingType) {
+  for (const k in meetingType) {
     if (eventType === meetingType[k]) {
       return true;
     }
@@ -195,9 +189,7 @@ const allowedMeetingType = (eventType: string) => {
  */
 const departmentMatchesEvent = (department: string, eventType: string) => {
   if (
-    (department.length > 0 &&
-      department.includes("Hydrogen") &&
-      eventType.includes("Hydrogen")) ||
+    (department.length > 0 && department.includes("Hydrogen") && eventType.includes("Hydrogen")) ||
     (department.length > 0 && eventType.indexOf(department) !== -1) ||
     eventType === "General Meeting"
   )
@@ -240,7 +232,7 @@ const updateUserAttendance = (
   eventId: string,
   event: EventInformation,
   currStatus: userStatus,
-  user: userContext | null
+  user: userContext | null,
 ) => {
   if (!user) return;
   if (!userHasPermission(user)) {
@@ -253,20 +245,11 @@ const updateUserAttendance = (
 
   // Only update if we are not clicking the same button -> OPTIMIZATION LEVEL
   // 9000
-  if (
-    (didAttend && !currStatus.attended) ||
-    (!didAttend && !currStatus.missed)
-  ) {
+  if ((didAttend && !currStatus.attended) || (!didAttend && !currStatus.missed)) {
     // Set the event in the user statistics, with attendance update
     event = { ...event, attended: didAttend };
 
-    set(
-      ref(
-        db,
-        `private/usersStatistics/${userId}/${statType}/currentSeason/${eventId}`
-      ),
-      event
-    );
+    set(ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason/${eventId}`), event);
     if (userId !== user.id) {
       if (didAttend) {
         sendNotification(
@@ -277,7 +260,7 @@ const updateUserAttendance = (
           `/attendance/overall`,
           null,
           "missedEvent",
-          "danger"
+          "danger",
         );
       } else {
         sendNotification(
@@ -288,7 +271,7 @@ const updateUserAttendance = (
           `/attendance/overall`,
           null,
           "attendedEvent",
-          "success"
+          "success",
         );
       }
     }
@@ -314,30 +297,21 @@ const addStatisticListener = (
   graphOptions: graphColor,
   setGraphSeries: Function,
   setGraphOptions: Function,
-  setCurrStatus: Function
+  setCurrStatus: Function,
 ) => {
-  onValue(
-    ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason`),
-    (snapshot) => {
-      let statistic: Statistic = snapshot.val();
+  onValue(ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason`), (snapshot) => {
+    const statistic: Statistic = snapshot.val();
 
-      // Build array and options for the graph
-      let { statSeries, graphColor } = buildStatisticArray(statistic);
-      let graphData = statSeries.map((value, idx) => ({ x: idx, y: value }));
-      setGraphSeries(graphData);
-      let updatedOptions = getGraphOptions(graphColor, graphOptions);
-      setGraphOptions({ ...updatedOptions, name: uuid() });
+    // Build array and options for the graph
+    const { statSeries, graphColor } = buildStatisticArray(statistic);
+    const graphData = statSeries.map((value, idx) => ({ x: idx, y: value }));
+    setGraphSeries(graphData);
+    const updatedOptions = getGraphOptions(graphColor, graphOptions);
+    setGraphOptions({ ...updatedOptions, name: uuid() });
 
-      // Set the current status, only run once
-      setUserEventStatusState(
-        statistic,
-        statType,
-        eventId,
-        event,
-        setCurrStatus
-      );
-    }
-  );
+    // Set the current status, only run once
+    setUserEventStatusState(statistic, statType, eventId, event, setCurrStatus);
+  });
 };
 
 const meetingType = [
@@ -450,9 +424,7 @@ const graphOptionsStyle: ApexOptions = {
     },
     y: {
       title: {
-        formatter: function (t) {
-          return "";
-        },
+        formatter: (t) => "",
       },
     },
     marker: {
@@ -474,26 +446,23 @@ const addOverallStatisticListener = (
   userId: string,
   graphOptions: graphColor,
   setGraphSeries: Function,
-  setGraphOptions: Function
+  setGraphOptions: Function,
 ) => {
-  onValue(
-    ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason`),
-    (snapshot) => {
-      let statistic: Statistic = snapshot.val();
+  onValue(ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason`), (snapshot) => {
+    const statistic: Statistic = snapshot.val();
 
-      // Build array and options for the graph
-      let { statSeries, graphColor } = buildStatisticArray(statistic);
-      let graphData = statSeries.map((value, idx) => ({ x: idx, y: value }));
-      setGraphSeries(graphData);
-      let updatedOptions = getGraphOptions(graphColor, graphOptions);
-      setGraphOptions({ ...updatedOptions, name: uuid() });
-    }
-  );
+    // Build array and options for the graph
+    const { statSeries, graphColor } = buildStatisticArray(statistic);
+    const graphData = statSeries.map((value, idx) => ({ x: idx, y: value }));
+    setGraphSeries(graphData);
+    const updatedOptions = getGraphOptions(graphColor, graphOptions);
+    setGraphOptions({ ...updatedOptions, name: uuid() });
+  });
 };
 
 const addLastStatisticUpdateListener = (setLastUpdate: Function) => {
   onValue(ref(db, `private/cache/userStatistics/lastUpdate`), (snapshot) => {
-    let lastUpdate: number = snapshot.val();
+    const lastUpdate: number = snapshot.val();
     if (!lastUpdate) {
       setLastUpdate("");
       return;
@@ -505,21 +474,14 @@ const addLastStatisticUpdateListener = (setLastUpdate: Function) => {
 };
 
 const resetUserSeason = (userId: string, statType: string) => {
-  get(
-    ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason`)
-  ).then((snapshot) => {
+  get(ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason`)).then((snapshot) => {
     const currentSeason: Statistic = snapshot.val();
 
     // Update historical statistics
-    update(
-      ref(db, `private/usersStatistics/${userId}/${statType}/history`),
-      currentSeason
-    );
+    update(ref(db, `private/usersStatistics/${userId}/${statType}/history`), currentSeason);
 
     // Delete currenSeason statistics
-    remove(
-      ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason`)
-    );
+    remove(ref(db, `private/usersStatistics/${userId}/${statType}/currentSeason`));
   });
 };
 
@@ -535,7 +497,7 @@ const resetSeason = (usersMetadata: UserMetadata) => {
       resetUserSeason(userId, "generalStats");
 
       // Update last season update date
-      let timestamp = new Date().getTime();
+      const timestamp = new Date().getTime();
       set(ref(db, `private/cache/userStatistics`), { lastUpdate: timestamp });
     });
     toastrMessage("Statistics were successfully reset", "success");
@@ -547,42 +509,29 @@ const resetSeason = (usersMetadata: UserMetadata) => {
 const moveStatistics = (usersMetadata: UserMetadata) => {
   Object.entries(usersMetadata).forEach(([userId, _]) => {
     // For each userId, get currentSeason, update history, and delete current
-    get(ref(db, `private/usersStatistics/${userId}/departmentStats`)).then(
-      (snapshot) => {
-        const currentSeason: Statistic = snapshot.val();
+    get(ref(db, `private/usersStatistics/${userId}/departmentStats`)).then((snapshot) => {
+      const currentSeason: Statistic = snapshot.val();
 
-        // Delete currenSeason statistics
-        remove(ref(db, `private/usersStatistics/${userId}/departmentStats`));
+      // Delete currenSeason statistics
+      remove(ref(db, `private/usersStatistics/${userId}/departmentStats`));
 
-        // Update historical statistics
-        set(
-          ref(
-            db,
-            `private/usersStatistics/${userId}/departmentStats/currentSeason`
-          ),
-          currentSeason
-        );
-      }
-    );
+      // Update historical statistics
+      set(
+        ref(db, `private/usersStatistics/${userId}/departmentStats/currentSeason`),
+        currentSeason,
+      );
+    });
 
     // For each userId, get currentSeason, update history, and delete current
-    get(ref(db, `private/usersStatistics/${userId}/generalStats`)).then(
-      (snapshot) => {
-        const currentSeason: Statistic = snapshot.val();
+    get(ref(db, `private/usersStatistics/${userId}/generalStats`)).then((snapshot) => {
+      const currentSeason: Statistic = snapshot.val();
 
-        // Delete currenSeason statistics
-        remove(ref(db, `private/usersStatistics/${userId}/generalStats`));
+      // Delete currenSeason statistics
+      remove(ref(db, `private/usersStatistics/${userId}/generalStats`));
 
-        // Update historical statistics
-        set(
-          ref(
-            db,
-            `private/usersStatistics/${userId}/generalStats/currentSeason`
-          ),
-          currentSeason
-        );
-      }
-    );
+      // Update historical statistics
+      set(ref(db, `private/usersStatistics/${userId}/generalStats/currentSeason`), currentSeason);
+    });
   });
 };
 
@@ -609,7 +558,8 @@ const swalResetSeason = (resetSeason: Function) => {
     .then((result) => {
       if (result.isConfirmed) {
         return;
-      } else if (result.isDenied) {
+      }
+      if (result.isDenied) {
         resetSeason();
       }
     });
@@ -617,23 +567,23 @@ const swalResetSeason = (resetSeason: Function) => {
 const swalDeleteAlert = withReactContent(Swal);
 
 export {
-  isCorrectType,
-  attendanceTitleIconColor,
-  allowedMeetingType,
-  departmentMatchesEvent,
-  sortUsersDb,
-  graphOptionsStyle,
-  graphGreen,
-  graphRed,
-  customTooltip,
-  setUserEventStatusState,
-  getGraphOptions,
-  buildStatisticArray,
-  addStatisticListener,
-  updateUserAttendance,
-  addOverallStatisticListener,
   addLastStatisticUpdateListener,
-  resetSeason,
+  addOverallStatisticListener,
+  addStatisticListener,
+  allowedMeetingType,
+  attendanceTitleIconColor,
+  buildStatisticArray,
+  customTooltip,
+  departmentMatchesEvent,
+  getGraphOptions,
+  graphGreen,
+  graphOptionsStyle,
+  graphRed,
+  isCorrectType,
   moveStatistics,
+  resetSeason,
+  setUserEventStatusState,
+  sortUsersDb,
   swalResetSeason,
+  updateUserAttendance,
 };

@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { checkEventPeriodicity } from "../Events/eventsUtils";
 import DashBoardDegreeCount from "./DashBoardDegreeCount";
@@ -15,22 +15,16 @@ const Dashboard = () => {
     checkEventPeriodicity();
   }, []);
   return (
-    <Fragment>
+    <>
       <div className="app-main__outer">
         <div className="app-main__inner">
           <div className="row">
             {USER && (
-              <Fragment>
-                <DashEvent
-                  meetingType={USER.department}
-                  tooltipTarget="depMeeting"
-                />
+              <>
+                <DashEvent meetingType={USER.department} tooltipTarget="depMeeting" />
                 <DashEvent meetingType="General" tooltipTarget="genMeeting" />
-                <DashEvent
-                  meetingType="Competition"
-                  tooltipTarget="compMeeting"
-                />
-              </Fragment>
+                <DashEvent meetingType="Competition" tooltipTarget="compMeeting" />
+              </>
             )}
           </div>
 
@@ -42,7 +36,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </Fragment>
+    </>
   );
 };
 

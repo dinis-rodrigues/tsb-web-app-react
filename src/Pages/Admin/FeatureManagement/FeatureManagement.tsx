@@ -82,8 +82,8 @@ const FeatureManagement = () => {
 
   const sortFeatures = (features: ApplicationFeatures) => {
     return Object.entries(features).sort((a, b) => {
-      let nameA = a[0];
-      let nameB = a[0];
+      const nameA = a[0];
+      const nameB = a[0];
 
       if (nameA < nameB) return -1;
       if (nameA > nameB) return -1;
@@ -99,7 +99,7 @@ const FeatureManagement = () => {
             <i className="header-icon lnr-cog icon-gradient bg-plum-plate"></i>
             Enable Features for Users
           </div>
-          {/* <button
+          {/* <button type="button"
             onClick={() => {
               setFeatures();
             }}
@@ -108,15 +108,13 @@ const FeatureManagement = () => {
           </button> */}
           <ul className="list-group list-group-flush">
             {applicationFeatures &&
-              sortFeatures(applicationFeatures).map(
-                ([featureName, permissions]) => (
-                  <FeatureEnable
-                    key={featureName}
-                    featurePermissions={permissions}
-                    featureName={featureName}
-                  />
-                )
-              )}
+              sortFeatures(applicationFeatures).map(([featureName, permissions]) => (
+                <FeatureEnable
+                  key={featureName}
+                  featurePermissions={permissions}
+                  featureName={featureName}
+                />
+              ))}
           </ul>
         </div>
       </div>

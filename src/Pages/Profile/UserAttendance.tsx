@@ -3,10 +3,7 @@ import { useEffect, useState } from "react";
 import { db } from "../../config/firebase";
 import { attendanceArrayRechart, graphColor } from "../../interfaces";
 import AttendanceChart from "../Attendance/AttendanceChart";
-import {
-  graphGreen,
-  addOverallStatisticListener,
-} from "../Attendance/attendanceUtils";
+import { addOverallStatisticListener, graphGreen } from "../Attendance/attendanceUtils";
 
 type Props = {
   userId: string;
@@ -27,14 +24,11 @@ const UserAttendance = ({ userId }: Props) => {
     { x: 9, y: 1 },
   ];
   // Department default graph
-  const [departmentSeries, setDepartmentSeries] =
-    useState<attendanceArrayRechart[]>(defaultData);
-  const [departmentOptions, setDepartmentOptions] =
-    useState<graphColor>(graphGreen);
+  const [departmentSeries, setDepartmentSeries] = useState<attendanceArrayRechart[]>(defaultData);
+  const [departmentOptions, setDepartmentOptions] = useState<graphColor>(graphGreen);
 
   // Department default graph
-  const [generalSeries, setGeneralSeries] =
-    useState<attendanceArrayRechart[]>(defaultData);
+  const [generalSeries, setGeneralSeries] = useState<attendanceArrayRechart[]>(defaultData);
   const [generalOptions, setGeneralOptions] = useState<graphColor>(graphGreen);
 
   useEffect(() => {
@@ -44,25 +38,18 @@ const UserAttendance = ({ userId }: Props) => {
       userId,
       departmentOptions,
       setDepartmentSeries,
-      setDepartmentOptions
+      setDepartmentOptions,
     );
     addOverallStatisticListener(
       "generalStats",
       userId,
       generalOptions,
       setGeneralSeries,
-      setGeneralOptions
+      setGeneralOptions,
     );
     return () => {
-      off(
-        ref(
-          db,
-          `private/usersStatistics/${userId}/departmentStats/currentSeason`
-        )
-      );
-      off(
-        ref(db, `private/usersStatistics/${userId}/generalStats/currentSeason`)
-      );
+      off(ref(db, `private/usersStatistics/${userId}/departmentStats/currentSeason`));
+      off(ref(db, `private/usersStatistics/${userId}/generalStats/currentSeason`));
     };
   }, [userId]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
@@ -92,10 +79,7 @@ const UserAttendance = ({ userId }: Props) => {
               <div className="widget-content-wrapper justify-center">
                 <div className={"widget-content-right ml-3 mr-3"}>
                   <div style={{ width: 160, height: 50 }}>
-                    <AttendanceChart
-                      chartOptions={generalOptions}
-                      chartSeries={generalSeries}
-                    />
+                    <AttendanceChart chartOptions={generalOptions} chartSeries={generalSeries} />
                   </div>
                 </div>
                 <div className="widget-content-left">

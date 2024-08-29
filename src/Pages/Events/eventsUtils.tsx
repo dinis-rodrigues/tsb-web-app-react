@@ -1,30 +1,17 @@
+import { EventClickArg, EventDropArg } from "@fullcalendar/core";
 import { EventResizeDoneArg } from "@fullcalendar/interaction";
-import { EventClickArg, EventDropArg } from "@fullcalendar/react";
-import {
-  child,
-  get,
-  onValue,
-  push,
-  ref,
-  remove,
-  set,
-  update,
-} from "firebase/database";
+import { child, get, onValue, push, ref, remove, set, update } from "firebase/database";
 import { db } from "../../config/firebase";
 import {
-  calendarEvent,
   Departments,
   DepartmentsWithDesc,
   EventColors,
   EventDatabase,
   EventInformation,
+  calendarEvent,
   userContext,
 } from "../../interfaces";
-import {
-  dateToString,
-  inputToDate,
-  toastrMessage,
-} from "../../utils/generalFunctions";
+import { dateToString, inputToDate, toastrMessage } from "../../utils/generalFunctions";
 const today = new Date();
 const year = today.getFullYear();
 const month = today.getMonth() + 1;
@@ -48,16 +35,16 @@ const defaultEventInfo: EventInformation = {
 
 // Auxiliary functions
 const msToTime = (duration: number) => {
-  let minutes = Math.round(Math.floor((duration / (1000 * 60)) % 60));
-  let hours = Math.round(Math.floor((duration / (1000 * 60 * 60)) % 24));
+  const minutes = Math.round(Math.floor((duration / (1000 * 60)) % 60));
+  const hours = Math.round(Math.floor((duration / (1000 * 60 * 60)) % 24));
 
-  let shours = hours < 10 ? "0" + String(hours) : String(hours);
-  let sminutes = minutes < 10 ? "0" + String(minutes) : String(minutes);
+  const shours = hours < 10 ? `0${String(hours)}` : String(hours);
+  const sminutes = minutes < 10 ? `0${String(minutes)}` : String(minutes);
 
   return [shours, sminutes];
 };
 
-var meetingCalendarColors: { [key: string]: string } = {
+const meetingCalendarColors: { [key: string]: string } = {
   "General Meeting": `red`,
   "Electrical Systems Meeting": `gold`,
   "Management and Marketing Meeting": `#0ba360`,
@@ -110,9 +97,7 @@ const defaultTitlesAndColors: EventColors = {
  * @param departmentsWDesc
  * @returns
  */
-const getEventTitlesAndColors = (
-  departmentsWDesc: DepartmentsWithDesc
-): EventColors => {
+const getEventTitlesAndColors = (departmentsWDesc: DepartmentsWithDesc): EventColors => {
   return { ...departmentsWDesc, ...defaultTitlesAndColors };
 };
 /**
@@ -280,7 +265,7 @@ const selectStyles = (theme: any, isDisabled: boolean) => {
  * remove old ones
  */
 const checkEventPeriodicity = () => {
-  let hoursOffset = 2;
+  const hoursOffset = 2;
   // Loop through all events
   get(ref(db, "private/events/current")).then((snapshot) => {
     // Collection of nodes from the tree
@@ -290,28 +275,28 @@ const checkEventPeriodicity = () => {
     // Get the objects in a new list
     Object.entries(allEvents).forEach(([eventId, event]) => {
       // Current Event Date
-      var toChange = inputToDate(event.date);
+      const toChange = inputToDate(event.date);
       toChange.setHours(parseInt(event.hours));
       toChange.setMinutes(parseInt(event.minutes));
 
       // Only change event if it passes 2 hours from start, allows for late
       // arrivals at meetings
-      var today = new Date();
-      var todaysHours = today.getHours();
+      const today = new Date();
+      const todaysHours = today.getHours();
       today.setHours(todaysHours - hoursOffset);
 
       try {
         if (event.weeks && today.getTime() > toChange.getTime()) {
           // change the date, add more days if periodic
           toChange.setDate(toChange.getDate() + event.weeks * 7);
-          var newDate = dateToString(toChange);
+          const newDate = dateToString(toChange);
 
           // Send the event to history
           set(child(ref(db, "private/events/history"), eventId), event);
           // Remove the old event from "current events" (which was added to history)
           remove(child(ref(db, "private/events/current"), eventId));
           // Update the new event with the new date (based on peridiocity)
-          let newEvent = { ...event, date: newDate };
+          const newEvent = { ...event, date: newDate };
           // Create new event in current events
           push(ref(db, "private/events/current/"), newEvent);
         } else if (today.getTime() > toChange.getTime() && !event.weeks) {
@@ -333,11 +318,11 @@ const sortEvents = (eventsToSort: [string, EventInformation][]) => {
   return eventsToSort.sort((a, b) => {
     const eventA = a[1];
     const eventB = b[1];
-    let dateA = inputToDate(eventA.date);
+    const dateA = inputToDate(eventA.date);
     dateA.setHours(parseInt(eventA.hours));
     dateA.setMinutes(parseInt(eventA.minutes));
 
-    let dateB = inputToDate(eventB.date);
+    const dateB = inputToDate(eventB.date);
     dateB.setHours(parseInt(eventB.hours));
     dateB.setMinutes(parseInt(eventB.minutes));
     if (dateA < dateB) return -1;
@@ -353,24 +338,24 @@ const sortEvents = (eventsToSort: [string, EventInformation][]) => {
  */
 const getEventsInFullCalendarType = (
   sortedEvents: [string, EventInformation][],
-  departmentsWDesc: DepartmentsWithDesc
+  departmentsWDesc: DepartmentsWithDesc,
 ) => {
   const calendarEventsArray: calendarEvent[] = [];
   const calendarColors = getCalendarColors(departmentsWDesc);
   sortedEvents.forEach(([eventId, event]) => {
-    let currMeeting = event.type.replace(" Meeting", "");
+    const currMeeting = event.type.replace(" Meeting", "");
     // Start date
-    let newD = inputToDate(event.date);
-    let day = ("0" + newD.getDate()).slice(-2);
-    let month = ("0" + String(newD.getMonth() + 1)).slice(-2);
-    let year = newD.getFullYear().toString();
-    let date = `${year}-${month}-${day}`;
+    const newD = inputToDate(event.date);
+    const day = `0${newD.getDate()}`.slice(-2);
+    const month = `0${String(newD.getMonth() + 1)}`.slice(-2);
+    const year = newD.getFullYear().toString();
+    const date = `${year}-${month}-${day}`;
     // Repetition rules
     let eventCount = 1;
     let eventInterval = event.weeks;
     if (event.weeks > 0 && !event.isHistory) eventCount = 100; // replicate the event
     if (event.weeks === 0) eventInterval = 1; // replicate the event
-    let calendarColor = calendarColors[currMeeting].color;
+    const calendarColor = calendarColors[currMeeting].color;
 
     // periodic definition and start time
     const periodicRule = {
@@ -381,7 +366,7 @@ const getEventsInFullCalendarType = (
     };
 
     // Full calendar Object
-    let calendarEvent = {
+    const calendarEvent = {
       id: `${eventId}-fullcalendar`,
       title: event.title,
       allDay: event.allDay,
@@ -417,7 +402,7 @@ const addHistoryKeyToEachEvent = (events: EventDatabase) => {
 const getAndSetHistoryEvents = (
   setEventsDatabase: Function,
   setCalendarEvents: Function,
-  departmentsWDesc: DepartmentsWithDesc
+  departmentsWDesc: DepartmentsWithDesc,
 ) => {
   onValue(ref(db, "private/events/history"), (snapshot) => {
     if (!snapshot.val()) return false;
@@ -429,26 +414,16 @@ const getAndSetHistoryEvents = (
       ...historyEvents,
     }));
     // Sort events by date
-    let eventsList: [string, EventInformation][] =
-      Object.entries(historyEvents);
+    let eventsList: [string, EventInformation][] = Object.entries(historyEvents);
     // Add an history marker to the history events
-    eventsList = eventsList.map(([eventId, event]) => [
-      eventId,
-      { ...event, isHistory: true },
-    ]);
-    let sortedEvents = sortEvents(eventsList);
+    eventsList = eventsList.map(([eventId, event]) => [eventId, { ...event, isHistory: true }]);
+    const sortedEvents = sortEvents(eventsList);
 
     // Create the Event objects for the calendar
     // https://fullcalendar.io/docs/event-object
-    let calendarEvents = getEventsInFullCalendarType(
-      sortedEvents,
-      departmentsWDesc
-    );
+    const calendarEvents = getEventsInFullCalendarType(sortedEvents, departmentsWDesc);
 
-    setCalendarEvents((fcEvents: calendarEvent[]) => [
-      ...fcEvents,
-      ...calendarEvents,
-    ]);
+    setCalendarEvents((fcEvents: calendarEvent[]) => [...fcEvents, ...calendarEvents]);
   });
 };
 
@@ -456,7 +431,7 @@ const getAndSetEvents = (
   setEventsDatabase: Function,
   setEventsSorted: Function,
   setCalendarEvents: Function,
-  departmentsWDesc: DepartmentsWithDesc
+  departmentsWDesc: DepartmentsWithDesc,
 ) => {
   onValue(ref(db, "private/events"), (snapshot) => {
     if (!snapshot.val()) return false;
@@ -465,13 +440,13 @@ const getAndSetEvents = (
     let historyEvents = {};
     // Get current events
     try {
-      currEvents = events["current"];
+      currEvents = events.current;
     } catch (error) {
       currEvents = {};
     }
     // Get history events
     try {
-      historyEvents = events["history"];
+      historyEvents = events.history;
     } catch (error) {
       historyEvents = {};
     }
@@ -487,16 +462,13 @@ const getAndSetEvents = (
     } catch (error) {
       eventsList = [];
     }
-    let sortedEvents = sortEvents(eventsList);
+    const sortedEvents = sortEvents(eventsList);
     // Save in state
     setEventsSorted(sortedEvents);
 
     // Create the Event objects for the calendar
     // https://fullcalendar.io/docs/event-object
-    let calendarEvents = getEventsInFullCalendarType(
-      sortedEvents,
-      departmentsWDesc
-    );
+    const calendarEvents = getEventsInFullCalendarType(sortedEvents, departmentsWDesc);
     setCalendarEvents(calendarEvents);
 
     // Process history events
@@ -514,14 +486,11 @@ const getAndSetEvents = (
       historyList = [];
     }
 
-    let sortedHistory = sortEvents(historyList);
+    const sortedHistory = sortEvents(historyList);
 
     // Create the Event objects for the calendar
     // https://fullcalendar.io/docs/event-object
-    let calendarHistory = getEventsInFullCalendarType(
-      sortedHistory,
-      departmentsWDesc
-    );
+    const calendarHistory = getEventsInFullCalendarType(sortedHistory, departmentsWDesc);
 
     setCalendarEvents([...calendarEvents, ...calendarHistory]);
   });
@@ -544,7 +513,7 @@ const calendarEventClickHandler = (
   setCurrEventInfo: Function,
   setIsModalOpen: Function,
   setCurrEventKey: Function,
-  setShowDeleteEvent: Function
+  setShowDeleteEvent: Function,
 ) => {
   // get the event that was clicked
   const eventId = eventInfo.event.id.replace("-fullcalendar", "");
@@ -566,15 +535,15 @@ const calendarEventClickHandler = (
 const filteredEvents = (
   currentFilter: string,
   eventList: calendarEvent[],
-  eventsDatabase: EventDatabase
+  eventsDatabase: EventDatabase,
 ) => {
   if (currentFilter === "ALL") {
     return eventList;
   }
   return eventList.filter((event) =>
     departmentFilter[currentFilter].includes(
-      eventsDatabase[event.id.replace("-fullcalendar", "")].type
-    )
+      eventsDatabase[event.id.replace("-fullcalendar", "")].type,
+    ),
   );
 };
 
@@ -584,7 +553,7 @@ const filteredEvents = (
  */
 const calendarEventResizeHandler = (
   eventInfoFC: EventResizeDoneArg,
-  eventsDatabase: EventDatabase
+  eventsDatabase: EventDatabase,
 ) => {
   if (!eventInfoFC.oldEvent._def.recurringDef) return;
   if (!eventInfoFC.oldEvent._def.recurringDef.duration) return;
@@ -593,12 +562,11 @@ const calendarEventResizeHandler = (
   const eventId = eventInfoFC.event.id.replace("-fullcalendar", "");
   // Get the new time delta
   const milliDelta = eventInfoFC.endDelta.milliseconds;
-  const oldDuration =
-    eventInfoFC.oldEvent._def.recurringDef.duration.milliseconds;
+  const oldDuration = eventInfoFC.oldEvent._def.recurringDef.duration.milliseconds;
   const [newHours, newMinutes] = msToTime(oldDuration + milliDelta);
 
   // Get event from the database, to check if it's history or not
-  let dbEvent = eventsDatabase[eventId];
+  const dbEvent = eventsDatabase[eventId];
   if (!dbEvent.isHistory) {
     // Update the duration in the database
     update(child(ref(db, "private/events/current"), eventId), {
@@ -616,10 +584,7 @@ const calendarEventResizeHandler = (
  * @param eventInfo
  * @returns
  */
-const calendarEventDragHandler = (
-  eventInfo: EventDropArg,
-  eventsDatabase: EventDatabase
-) => {
+const calendarEventDragHandler = (eventInfo: EventDropArg, eventsDatabase: EventDatabase) => {
   // info.event.id, info.event.start, info;
   // Update the start time/date of the event
   const newDate = eventInfo.event.start;
@@ -628,12 +593,12 @@ const calendarEventDragHandler = (
   // Get the event that was resized
   const eventId = eventInfo.event.id.replace("-fullcalendar", "");
   // Get the new time delta
-  const hours = ("0" + String(newDate.getHours())).slice(-2);
-  const minutes = ("0" + String(newDate.getMinutes())).slice(-2);
+  const hours = `0${String(newDate.getHours())}`.slice(-2);
+  const minutes = `0${String(newDate.getMinutes())}`.slice(-2);
   const date = dateToString(newDate);
 
   // Get event from the database, to check if it's history or not
-  let dbEvent = eventsDatabase[eventId];
+  const dbEvent = eventsDatabase[eventId];
   let updatedEvent = {
     ...dbEvent,
     date: date,
@@ -655,19 +620,17 @@ const calendarEventDragHandler = (
       // Update the duration in the database
       update(ref(db, `private/events/current/${eventId}`), updatedEvent);
     }
-  } else {
+  } else if (newDate > today) {
     // if we are moving a "history" event
     // check if the event was moved to the future
-    if (newDate > today) {
-      updatedEvent = { ...updatedEvent, isHistory: false };
-      // if true, remove the event from history, and move it to current
-      remove(ref(db, `private/events/history/${eventId}`));
-      set(ref(db, `private/events/current/${eventId}`), updatedEvent);
-    } else {
-      updatedEvent = { ...updatedEvent, isHistory: true };
-      // Update the duration in the database
-      update(ref(db, `private/events/history/${eventId}`), updatedEvent);
-    }
+    updatedEvent = { ...updatedEvent, isHistory: false };
+    // if true, remove the event from history, and move it to current
+    remove(ref(db, `private/events/history/${eventId}`));
+    set(ref(db, `private/events/current/${eventId}`), updatedEvent);
+  } else {
+    updatedEvent = { ...updatedEvent, isHistory: true };
+    // Update the duration in the database
+    update(ref(db, `private/events/history/${eventId}`), updatedEvent);
   }
 
   toastrMessage("The event was successfully updated", "info");
@@ -687,7 +650,7 @@ const openClearModal = (
   setIsModalOpen: Function,
   setCurrEventKey: Function,
   setShowDeleteEvent: Function,
-  setDisabledInput: Function
+  setDisabledInput: Function,
 ) => {
   setModalTitle("Add Event");
   toggleDisabledInputs(false, setDisabledInput);
@@ -706,9 +669,8 @@ const openClearModal = (
 const switchFilter = (seteventFilter: Function, eventFilter: string) => {
   seteventFilter(
     departmentFilterList[
-      (departmentFilterList.indexOf(eventFilter) + 1) %
-        departmentFilterList.length
-    ]
+      (departmentFilterList.indexOf(eventFilter) + 1) % departmentFilterList.length
+    ],
   );
 };
 
@@ -723,7 +685,7 @@ const closeModal = (
   setCurrEventInfo: Function,
   setIsModalOpen: Function,
   setCurrEventKey: Function,
-  setShowDeleteEvent: Function
+  setShowDeleteEvent: Function,
 ) => {
   setIsModalOpen(false);
   setCurrEventInfo(defaultEventInfo);
@@ -734,10 +696,7 @@ const closeModal = (
  *
  * @param isDisabled
  */
-const toggleDisabledInputs = (
-  isDisabled: boolean,
-  setDisabledInput: Function
-) => {
+const toggleDisabledInputs = (isDisabled: boolean, setDisabledInput: Function) => {
   setDisabledInput(isDisabled);
 };
 
@@ -757,13 +716,13 @@ const saveEvent = (
   currEventInfo: EventInformation,
   setIsModalOpen: Function,
   setCurrEventInfo: Function,
-  setCurrEventKey: Function
+  setCurrEventKey: Function,
 ) => {
   if (!user) return;
   // update the event in the database
   if (currEventKey) {
     if (isEventInPast(currEventInfo)) {
-      let historyEvent: EventInformation = {
+      const historyEvent: EventInformation = {
         ...currEventInfo,
         isHistory: true,
       };
@@ -777,7 +736,7 @@ const saveEvent = (
     // If we are creating a new event
     currEventInfo.createdBy = user.id;
     if (isEventInPast(currEventInfo)) {
-      let historyEvent: EventInformation = {
+      const historyEvent: EventInformation = {
         ...currEventInfo,
         isHistory: true,
       };
@@ -801,24 +760,23 @@ const saveEvent = (
  * @returns
  */
 const isEventInPast = (event: EventInformation) => {
-  let hoursOffset = 2;
+  const hoursOffset = 2;
   // Current Event Date
-  var toChange = inputToDate(event.date);
+  const toChange = inputToDate(event.date);
   toChange.setHours(parseInt(event.hours));
   toChange.setMinutes(parseInt(event.minutes));
 
   // Only change event if it passes 2 hours from start, allows for late
   // arrivals at meetings
-  var today = new Date();
-  var todaysHours = today.getHours();
+  const today = new Date();
+  const todaysHours = today.getHours();
   today.setHours(todaysHours - hoursOffset);
 
   try {
     if (event.weeks && today.getTime() > toChange.getTime()) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   } catch {
     return false;
   }
@@ -829,11 +787,7 @@ const isEventInPast = (event: EventInformation) => {
  * @param currEventKey
  * @param setIsModalOpen
  */
-const deleteEvent = (
-  event: EventInformation,
-  currEventKey: string,
-  setIsModalOpen: Function
-) => {
+const deleteEvent = (event: EventInformation, currEventKey: string, setIsModalOpen: Function) => {
   if (event.isHistory) {
     remove(ref(db, `private/events/history/${currEventKey}`));
   } else {
@@ -854,7 +808,7 @@ const inputHandler = (
   e: React.ChangeEvent<HTMLInputElement>,
   key: string,
   currEventInfo: EventInformation,
-  setCurrEventInfo: Function
+  setCurrEventInfo: Function,
 ) => {
   const value = e.target.value;
   setCurrEventInfo({ ...currEventInfo, [key]: value });
@@ -871,7 +825,7 @@ const selectHandler = (
   option: any,
   key: string,
   currEventInfo: EventInformation,
-  setCurrEventInfo: Function
+  setCurrEventInfo: Function,
 ) => {
   setCurrEventInfo({ ...currEventInfo, [key]: option.value });
 };
@@ -888,7 +842,7 @@ const counterHandler = (
   value: number,
   key: string,
   currEventInfo: EventInformation,
-  setCurrEventInfo: Function
+  setCurrEventInfo: Function,
 ) => {
   if (value < 0) {
     return false;
@@ -906,10 +860,10 @@ const dateHandler = (
   date: Date,
   key: string,
   currEventInfo: EventInformation,
-  setCurrEventInfo: Function
+  setCurrEventInfo: Function,
 ) => {
   // saves the date as a portuguese format string
-  let dateString = dateToString(date);
+  const dateString = dateToString(date);
   setCurrEventInfo({ ...currEventInfo, [key]: dateString });
 };
 /**
@@ -921,7 +875,7 @@ const dateHandler = (
 const timeHandler = (
   value: string,
   currEventInfo: EventInformation,
-  setCurrEventInfo: Function
+  setCurrEventInfo: Function,
 ) => {
   const [hours, minutes] = value.split(":");
   setCurrEventInfo({ ...currEventInfo, hours: hours, minutes: minutes });
@@ -935,7 +889,7 @@ const timeHandler = (
 const durationHandler = (
   value: string,
   currEventInfo: EventInformation,
-  setCurrEventInfo: Function
+  setCurrEventInfo: Function,
 ) => {
   const duration = value.replace(":", "h");
   setCurrEventInfo({ ...currEventInfo, duration: duration });
@@ -958,7 +912,7 @@ const eventListClickHandler = (
   setCurrEventInfo: Function,
   setIsModalOpen: Function,
   setCurrEventKey: Function,
-  setShowDeleteEvent: Function
+  setShowDeleteEvent: Function,
 ) => {
   // get the event that was clicked
   const event = eventsDatabase[eventId];
@@ -1002,48 +956,48 @@ const durationForTimePicker = (duration: string) => {
  * @param departments
  */
 const getEventTypeOptions = (departments: Departments) => {
-  let eventTypes = Object.entries(departments).map(([acronym, department]) => ({
-    value: department.description + " Meeting",
-    label: department.description + " Meeting",
+  const eventTypes = Object.entries(departments).map(([acronym, department]) => ({
+    value: `${department.description} Meeting`,
+    label: `${department.description} Meeting`,
   }));
   // Add default event types to the array
   return [...eventTypes, ...defaultEventTypes];
 };
 
 export {
-  headerToolbar,
+  calendarEventClickHandler,
+  calendarEventDragHandler,
+  calendarEventResizeHandler,
   calendarViews,
-  eventTimeFormat,
+  checkEventPeriodicity,
+  closeModal,
+  counterHandler,
+  dateHandler,
   defaultEventInfo,
-  eventOptions,
-  departmentFilterList,
+  deleteEvent,
   departmentFilter,
-  selectStyles,
+  departmentFilterList,
+  durationForTimePicker,
+  durationHandler,
+  eventListClickHandler,
+  eventListDeleteHandler,
+  eventOptions,
+  eventTimeFormat,
+  filteredEvents,
+  getAndSetEvents,
+  getAndSetHistoryEvents,
+  getEventTitlesAndColors,
+  getEventTypeOptions,
+  headerToolbar,
+  inputHandler,
   meetingCalendarColors,
   msToTime,
-  checkEventPeriodicity,
-  getAndSetEvents,
-  calendarEventClickHandler,
-  filteredEvents,
-  calendarEventResizeHandler,
-  calendarEventDragHandler,
   openClearModal,
-  switchFilter,
-  closeModal,
   saveEvent,
-  deleteEvent,
-  inputHandler,
-  timeHandler,
-  dateHandler,
-  counterHandler,
   selectHandler,
-  durationHandler,
-  eventListDeleteHandler,
-  eventListClickHandler,
-  toggleDisabledInputs,
-  getAndSetHistoryEvents,
-  getEventTypeOptions,
+  selectStyles,
+  switchFilter,
   timeForTimePicker,
-  durationForTimePicker,
-  getEventTitlesAndColors,
+  timeHandler,
+  toggleDisabledInputs,
 };

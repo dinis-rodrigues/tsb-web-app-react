@@ -1,18 +1,14 @@
-import { connect } from "react-redux";
-import { Fragment, useState } from "react";
-import { setEnableLoginPage } from "../../reducers/ThemeOptions";
 import cx from "classnames";
-import ValidationError from "../Register/ValidationError";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import ValidationError from "../Register/ValidationError";
 import emailValidate from "../Register/emailValidate";
 
+import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { withRouter, Redirect, Link } from "react-router-dom";
 import { sendResetLink } from "./resetPasswordUtils";
-type Props = {
-  setEnableLoginPage: Function;
-};
-const ResetPasswordEmail = ({ setEnableLoginPage }: Props) => {
+
+const ResetPasswordEmail = () => {
   //   Form Validation
   const {
     register,
@@ -26,7 +22,7 @@ const ResetPasswordEmail = ({ setEnableLoginPage }: Props) => {
   const [errorMsg, setErrorMsg] = useState("");
 
   return (
-    <Fragment>
+    <>
       <div className="h-100 tsb-background">
         <div className="d-flex h-100 justify-content-center align-items-center">
           <div className="mx-auto app-login-box col-md-8">
@@ -41,15 +37,13 @@ const ResetPasswordEmail = ({ setEnableLoginPage }: Props) => {
                       <div>Reset Password</div>
                     </h4>
                     {displayMaintenance && (
-                      <div className="badge badge-danger ml-2">
-                        Under Maintenance
-                      </div>
+                      <div className="badge badge-danger ml-2">Under Maintenance</div>
                     )}
                   </div>
                   <form
                     className="mx-auto"
                     onSubmit={handleSubmit(() =>
-                      sendResetLink(getValues, setEmailSent, setErrorMsg)
+                      sendResetLink(getValues, setEmailSent, setErrorMsg),
                     )}
                   >
                     <div className="form-row">
@@ -69,14 +63,12 @@ const ResetPasswordEmail = ({ setEnableLoginPage }: Props) => {
                             {...register("email", {
                               required: "Please enter a valid email address.",
                               validate: (value) => {
-                                return (
-                                  emailValidate(value) || "Email is not valid"
-                                );
+                                return emailValidate(value) || "Email is not valid";
                               },
                             })}
                           />
-                          {errors.email && (
-                            <ValidationError msg={errors.email.message} />
+                          {errors.email?.message && (
+                            <ValidationError msg={errors.email.message.toString()} />
                           )}
                         </div>
                       </div>
@@ -86,9 +78,7 @@ const ResetPasswordEmail = ({ setEnableLoginPage }: Props) => {
                     {errorMsg && !emailSent && (
                       <div className="mt-4 d-flex align-items-center text-white">
                         <div className="ml-auto mr-auto">
-                          <div className="badge badge-danger ml-2">
-                            {errorMsg}
-                          </div>
+                          <div className="badge badge-danger ml-2">{errorMsg}</div>
                         </div>
                       </div>
                     )}
@@ -106,8 +96,7 @@ const ResetPasswordEmail = ({ setEnableLoginPage }: Props) => {
                       {emailSent && (
                         <div className="ml-auto mr-auto">
                           <div className="badge badge-success ml-2">
-                            Email sent, please check your email and follow the
-                            link
+                            Email sent, please check your email and follow the link
                           </div>
                         </div>
                       )}
@@ -123,19 +112,9 @@ const ResetPasswordEmail = ({ setEnableLoginPage }: Props) => {
         </div>
       </div>
       {/* If the user is already logged in, send him to dashboard */}
-      {displayContent && <Redirect to={"/dashboard"} />}
-    </Fragment>
+      {displayContent && <Navigate to={"/dashboard"} />}
+    </>
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  enableLoginPage: state.ThemeOptions.enableLoginPage,
-});
-
-const mapDispatchToProps = (dispatch: Function) => ({
-  setEnableLoginPage: (enable: boolean) => dispatch(setEnableLoginPage(enable)),
-});
-
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(ResetPasswordEmail)
-);
+export default ResetPasswordEmail;

@@ -1,7 +1,8 @@
+import { get, onValue, push, ref, remove, runTransaction, set, update } from "firebase/database";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { db } from "../../config/firebase";
 import { v4 as uuid } from "uuid";
+import { db } from "../../config/firebase";
 import {
   Thread,
   ThreadCreation,
@@ -9,21 +10,7 @@ import {
   ThreadReplyInfo,
   userContext,
 } from "../../interfaces";
-import {
-  getDecodedString,
-  getEncodedString,
-  sendNotification,
-} from "../../utils/generalFunctions";
-import {
-  get,
-  onValue,
-  push,
-  ref,
-  remove,
-  runTransaction,
-  set,
-  update,
-} from "firebase/database";
+import { getDecodedString, getEncodedString, sendNotification } from "../../utils/generalFunctions";
 
 /** Show a confirmation message to delete the thread
  * @param  {Function} deleteFunction function to delete the board
@@ -48,7 +35,8 @@ const swalDeleteThreadMessage = (deleteFunction: Function) => {
     .then((result) => {
       if (result.isConfirmed) {
         return;
-      } else if (result.isDenied) {
+      }
+      if (result.isDenied) {
         deleteFunction();
       }
     });
@@ -59,16 +47,10 @@ const swalDeleteAlert = withReactContent(Swal);
  * @param  {userContext} user select option of the select input
  * @param  {Thread} threadInformation new thread info to create
  */
-const userWatchesThread = (
-  user: userContext | null,
-  threadInformation: Thread | undefined
-) => {
+const userWatchesThread = (user: userContext | null, threadInformation: Thread | undefined) => {
   if (!user || !threadInformation) return false;
-  if (threadInformation.hasOwnProperty("watchList")) {
-    if (
-      threadInformation.watchList &&
-      threadInformation.watchList.hasOwnProperty(user.id)
-    )
+  if (Object.hasOwn(threadInformation, "watchList")) {
+    if (threadInformation.watchList && Object.hasOwn(threadInformation.watchList, user.id))
       return true;
     return false;
   }
@@ -79,13 +61,10 @@ const userWatchesThread = (
  * @param  {userContext} user select option of the select input
  * @param  {Thread} threadInformation new thread info to create
  */
-const userLikesThread = (
-  user: userContext | null,
-  threadInformation: Thread | undefined
-) => {
+const userLikesThread = (user: userContext | null, threadInformation: Thread | undefined) => {
   if (!user || !threadInformation) return false;
-  if (threadInformation.hasOwnProperty("likedBy")) {
-    if (threadInformation.likedBy!.hasOwnProperty(user.id)) return true;
+  if (Object.hasOwn(threadInformation, "likedBy")) {
+    if (Object.hasOwn(threadInformation.likedBy!, user.id)) return true;
     return false;
   }
   return false;
@@ -100,20 +79,17 @@ const isThreadPinnedListener = (
   setIsPinned: Function,
   encodedSectionName: string,
   encodedTopicName: string,
-  encodedThreadName: string
+  encodedThreadName: string,
 ) => {
   onValue(
-    ref(
-      db,
-      `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-    ),
+    ref(db, `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`),
     (snapshot) => {
       if (snapshot.val()) {
         setIsPinned(true);
         return;
       }
       setIsPinned(false);
-    }
+    },
   );
 };
 /** Checks if the current thread is pinned or not
@@ -124,14 +100,11 @@ const isThreadPinnedListener = (
 const isThreadPinned = (
   encodedSectionName: string,
   encodedTopicName: string,
-  encodedThreadName: string
+  encodedThreadName: string,
 ) => {
   return new Promise((resolve) => {
     get(
-      ref(
-        db,
-        `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-      )
+      ref(db, `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`),
     ).then((snapshot) => {
       if (snapshot.val()) resolve(true);
       resolve(false);
@@ -151,7 +124,7 @@ const toggleWatchList = (
   threadInformation: Thread | undefined,
   encodedSectionName: string,
   encodedTopicName: string,
-  encodedThreadName: string
+  encodedThreadName: string,
 ) => {
   if (!user || !threadInformation) return;
   let watchList = { ...threadInformation.watchList };
@@ -160,7 +133,7 @@ const toggleWatchList = (
   if (!userWatchesThread(user, threadInformation)) {
     // Like Action -> add it to the object
     watchList[user.id] = user.name;
-  } else if (!threadInformation.hasOwnProperty("watchList")) {
+  } else if (!Object.hasOwn(threadInformation, "watchList")) {
     // First like in the thread, create it
     watchList = { [user.id]: user.name };
   } else {
@@ -172,35 +145,33 @@ const toggleWatchList = (
   set(
     ref(
       db,
-      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/watchList`
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/watchList`,
     ),
-    watchList
+    watchList,
   );
   // Update topic metadata
   set(
     ref(
       db,
-      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/watchList`
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/watchList`,
     ),
-    watchList
+    watchList,
   );
   // }
 
   // Update who watches the thread on the pinned db as well
-  isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then(
-    (isPinned) => {
-      if (isPinned) {
-        // Update pinned thread as well
-        set(
-          ref(
-            db,
-            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/watchList`
-          ),
-          watchList
-        );
-      }
+  isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then((isPinned) => {
+    if (isPinned) {
+      // Update pinned thread as well
+      set(
+        ref(
+          db,
+          `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/watchList`,
+        ),
+        watchList,
+      );
     }
-  );
+  });
 };
 
 /** Toggles the current thread as pinned or not
@@ -213,33 +184,31 @@ const togglePinnedThread = (
   threadInformation: Thread | undefined,
   encodedSectionName: string,
   encodedTopicName: string,
-  encodedThreadName: string
+  encodedThreadName: string,
 ) => {
   if (!threadInformation) return;
-  isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then(
-    (isPinned) => {
-      if (isPinned) {
-        // remove pinned thread
-        remove(
+  isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then((isPinned) => {
+    if (isPinned) {
+      // remove pinned thread
+      remove(
+        ref(
+          db,
+          `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`,
+        ),
+      );
+    } else {
+      // thread is not pinned, so remove existing one, and add it
+      remove(ref(db, "private/forumPinned")).then(() => {
+        set(
           ref(
             db,
-            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-          )
+            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`,
+          ),
+          threadInformation,
         );
-      } else {
-        // thread is not pinned, so remove existing one, and add it
-        remove(ref(db, "private/forumPinned")).then(() => {
-          set(
-            ref(
-              db,
-              `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-            ),
-            threadInformation
-          );
-        });
-      }
+      });
     }
-  );
+  });
 };
 
 /** If the pinned thread is the one we are deleting, remove it
@@ -250,20 +219,18 @@ const togglePinnedThread = (
 const removePinnedThreadIfEqual = (
   encodedSectionName: string,
   encodedTopicName: string,
-  encodedThreadName: string
+  encodedThreadName: string,
 ) => {
-  isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then(
-    (isPinned) => {
-      if (isPinned) {
-        remove(
-          ref(
-            db,
-            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-          )
-        );
-      }
+  isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then((isPinned) => {
+    if (isPinned) {
+      remove(
+        ref(
+          db,
+          `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`,
+        ),
+      );
     }
-  );
+  });
 };
 
 /** Deletes the thread and all envolved metadatas
@@ -279,57 +246,43 @@ const deleteThread = (
   threadInformation: Thread | undefined,
   encodedSectionName: string,
   encodedTopicName: string,
-  encodedThreadName: string
+  encodedThreadName: string,
 ) => {
   if (!threadInformation) return;
-  if (!user || (user.id !== threadInformation.createdBy && !isMarketingOrAdmin))
-    return;
+  if (!user || (user.id !== threadInformation.createdBy && !isMarketingOrAdmin)) return;
   let totalReplies = 1; // the original post is a reply
   if (threadInformation.replies) {
-    let numReplies = Object.entries(threadInformation.replies).length;
-    totalReplies = totalReplies + numReplies;
+    const numReplies = Object.entries(threadInformation.replies).length;
+    totalReplies += numReplies;
   }
   // subtract number of replies to the forum metadata
   runTransaction(
-    ref(
-      db,
-      `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`
-    ),
+    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`),
     (currentValue) => {
       return (currentValue || 0) - totalReplies;
-    }
+    },
   );
   // subtract number of threads to the forum metadata
   runTransaction(
-    ref(
-      db,
-      `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberThreads`
-    ),
+    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberThreads`),
     (currentValue) => {
       return (currentValue || 0) - totalReplies;
-    }
+    },
   );
 
   // remove from topic metadata
   remove(
     ref(
       db,
-      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-    )
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`,
+    ),
   );
   //Remove Pinned Thread if equal
-  removePinnedThreadIfEqual(
-    encodedSectionName,
-    encodedTopicName,
-    encodedThreadName
-  );
+  removePinnedThreadIfEqual(encodedSectionName, encodedTopicName, encodedThreadName);
 
   // Remove thread
   remove(
-    ref(
-      db,
-      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-    )
+    ref(db, `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`),
   );
 };
 
@@ -347,7 +300,7 @@ const toggleCommentLikedBy = (
   threadReply: ThreadReplyInfo,
   encodedSectionName: string,
   encodedTopicName: string,
-  encodedThreadName: string
+  encodedThreadName: string,
 ) => {
   if (!user) return;
   let likedBy = { ...threadReply.likedBy };
@@ -369,9 +322,9 @@ const toggleCommentLikedBy = (
   set(
     ref(
       db,
-      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/replies/${replyId}/likedBy`
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/replies/${replyId}/likedBy`,
     ),
-    likedBy
+    likedBy,
   );
 };
 
@@ -387,7 +340,7 @@ const toggleThreadLikedBy = (
   threadInformation: Thread,
   encodedSectionName: string,
   encodedTopicName: string,
-  encodedThreadName: string
+  encodedThreadName: string,
 ) => {
   if (!user) return;
   let likedBy = { ...threadInformation.likedBy };
@@ -396,7 +349,7 @@ const toggleThreadLikedBy = (
   if (!userLikesThread(user, threadInformation)) {
     // Like Action -> add it to the object
     likedBy[user.id] = user.name;
-  } else if (!threadInformation.hasOwnProperty("likedBy")) {
+  } else if (!Object.hasOwn(threadInformation, "likedBy")) {
     // First like in the thread, create it
     likedBy = { [user.id]: user.name };
   } else {
@@ -408,34 +361,32 @@ const toggleThreadLikedBy = (
   set(
     ref(
       db,
-      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/likedBy`
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/likedBy`,
     ),
-    likedBy
+    likedBy,
   );
   // Update topic metadata
   set(
     ref(
       db,
-      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/likedBy`
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/likedBy`,
     ),
-    likedBy
+    likedBy,
   );
 
   // Update who liked the thread on the pinned db sa well
-  isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then(
-    (isPinned) => {
-      if (isPinned) {
-        // Update pinned thread as well
-        set(
-          ref(
-            db,
-            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/likedBy`
-          ),
-          likedBy
-        );
-      }
+  isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then((isPinned) => {
+    if (isPinned) {
+      // Update pinned thread as well
+      set(
+        ref(
+          db,
+          `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/likedBy`,
+        ),
+        likedBy,
+      );
     }
-  );
+  });
 };
 
 /** Handles the on change event of the select label input
@@ -446,7 +397,7 @@ const toggleThreadLikedBy = (
 const editThreadLabelHandler = (
   selected: any,
   newThreadInfo: ThreadCreation,
-  setNewThreadInfo: Function
+  setNewThreadInfo: Function,
 ) => {
   setNewThreadInfo({ ...newThreadInfo, label: selected });
 };
@@ -459,7 +410,7 @@ const editThreadLabelHandler = (
 const editThreadTitleHandler = (
   e: React.ChangeEvent<HTMLInputElement>,
   newThreadInfo: ThreadCreation,
-  setNewThreadInfo: Function
+  setNewThreadInfo: Function,
 ) => {
   const value = e.target.value;
   setNewThreadInfo({ ...newThreadInfo, title: value });
@@ -473,7 +424,7 @@ const editThreadTitleHandler = (
 const editThreadDescriptionHandler = (
   value: string,
   newThreadInfo: ThreadCreation,
-  setNewThreadInfo: Function
+  setNewThreadInfo: Function,
 ) => {
   setNewThreadInfo({ ...newThreadInfo, description: value });
 };
@@ -491,13 +442,13 @@ const saveThread = (
   encodedSectionName: string,
   encodedTopicName: string,
   encodedThreadName: string,
-  setIsEditThreadModalOpen: Function
+  setIsEditThreadModalOpen: Function,
 ) => {
   if (!user) {
     setIsEditThreadModalOpen(false);
     return;
   }
-  var dataToUpdate: ThreadEdited = {
+  const dataToUpdate: ThreadEdited = {
     threadTitle: newThreadInfo.title,
     htmlContent: newThreadInfo.description,
     threadLabel: newThreadInfo.label.value,
@@ -507,11 +458,8 @@ const saveThread = (
   };
   // Update thread
   update(
-    ref(
-      db,
-      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-    ),
-    dataToUpdate
+    ref(db, `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`),
+    dataToUpdate,
   );
 
   //   Update forum topic metadata
@@ -521,32 +469,24 @@ const saveThread = (
     encodedTopicName,
     encodedThreadName,
     dataToUpdate,
-    false
+    false,
   );
   //   Update Forum metadata
-  newReplyUpdateForumMetadata(
-    user,
-    encodedSectionName,
-    encodedTopicName,
-    encodedThreadName,
-    false
-  );
+  newReplyUpdateForumMetadata(user, encodedSectionName, encodedTopicName, encodedThreadName, false);
 
   // save thread in pinned thread if exists
-  isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then(
-    (isPinned) => {
-      if (isPinned) {
-        // Update pinned thread as well
-        update(
-          ref(
-            db,
-            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-          ),
-          dataToUpdate
-        );
-      }
+  isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then((isPinned) => {
+    if (isPinned) {
+      // Update pinned thread as well
+      update(
+        ref(
+          db,
+          `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`,
+        ),
+        dataToUpdate,
+      );
     }
-  );
+  });
 
   setIsEditThreadModalOpen(false);
 };
@@ -566,13 +506,13 @@ const saveComment = (
   encodedSectionName: string,
   encodedTopicName: string,
   encodedThreadName: string,
-  setIsCommentModalOpen: Function
+  setIsCommentModalOpen: Function,
 ) => {
   if (!user) {
     setIsCommentModalOpen(false);
     return;
   }
-  let dataToUpdate = {
+  const dataToUpdate = {
     replyHtml: commentText,
     latestUpdateTimestamp: new Date().getTime(),
   };
@@ -581,9 +521,9 @@ const saveComment = (
   update(
     ref(
       db,
-      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/replies/${threadId}`
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/replies/${threadId}`,
     ),
-    dataToUpdate
+    dataToUpdate,
   );
 
   setIsCommentModalOpen(false);
@@ -603,7 +543,7 @@ const deleteComment = (
   user: userContext | null,
   encodedSectionName: string,
   encodedTopicName: string,
-  encodedThreadName: string
+  encodedThreadName: string,
 ) => {
   if (!user || user.id !== threadComment.replyBy) {
     return;
@@ -613,27 +553,24 @@ const deleteComment = (
   runTransaction(
     ref(
       db,
-      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/numberReplies`
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/numberReplies`,
     ),
     (num) => {
       return (num || 0) - 1;
-    }
+    },
   );
   runTransaction(
-    ref(
-      db,
-      `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`
-    ),
+    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`),
     (num) => {
       return (num || 0) - 1;
-    }
+    },
   );
   // Update thread with the removed comment
   remove(
     ref(
       db,
-      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/replies/${threadId}`
-    )
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/replies/${threadId}`,
+    ),
   );
 };
 
@@ -652,10 +589,10 @@ const submitThreadReply = (
   encodedThreadName: string,
   threadInfo: Thread,
   setIsForumThreadReplyModalOpen: Function,
-  setReplyText: Function
+  setReplyText: Function,
 ) => {
   if (!user) return;
-  let reply: ThreadReplyInfo = {
+  const reply: ThreadReplyInfo = {
     replyHtml: replyText,
     replyBy: user.id,
     replyTimestamp: new Date().getTime(),
@@ -665,25 +602,15 @@ const submitThreadReply = (
   push(
     ref(
       db,
-      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/replies`
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/replies`,
     ),
-    reply
+    reply,
   );
   //   Update topic metadata
-  newReplyUpdateTopicMetadata(
-    user,
-    encodedSectionName,
-    encodedTopicName,
-    encodedThreadName
-  );
+  newReplyUpdateTopicMetadata(user, encodedSectionName, encodedTopicName, encodedThreadName);
 
   // Update forum metadata
-  newReplyUpdateForumMetadata(
-    user,
-    encodedSectionName,
-    encodedTopicName,
-    encodedThreadName
-  );
+  newReplyUpdateForumMetadata(user, encodedSectionName, encodedTopicName, encodedThreadName);
   // clear who viewed the most recent update
   updateWhoViewedMostRecentUpdate(
     user,
@@ -692,7 +619,7 @@ const submitThreadReply = (
     encodedThreadName,
     true,
     "recentUpdateViewedBy",
-    null
+    null,
   );
   setIsForumThreadReplyModalOpen(false);
   setReplyText("");
@@ -705,7 +632,7 @@ const submitThreadReply = (
       encodedTopicName,
       encodedThreadName,
       user,
-      sendTo
+      sendTo,
     );
   });
 };
@@ -726,11 +653,11 @@ const sendThreadReplyNotification = (
   encodedTopicName: string,
   encodedThreadName: string,
   user: userContext,
-  sendTo: string
+  sendTo: string,
 ) => {
   if (!user) return;
-  let description = `${user.name} replied to this thread.`;
-  let urlPath = `/forum/s/${encodedSectionName}/topic/${encodedTopicName}/thread/${encodedThreadName}`;
+  const description = `${user.name} replied to this thread.`;
+  const urlPath = `/forum/s/${encodedSectionName}/topic/${encodedTopicName}/thread/${encodedThreadName}`;
   sendNotification(
     sendTo,
     user.id,
@@ -739,7 +666,7 @@ const sendThreadReplyNotification = (
     urlPath,
     null,
     "forumReply",
-    "info"
+    "info",
   );
 };
 
@@ -757,9 +684,9 @@ const updateWhoViewedMostRecentUpdate = (
   encodedSectionName: string,
   encodedTopicName: string,
   encodedThreadName: string,
-  onlyMe = false,
+  onlyMe: boolean,
   viewedByKey: string,
-  viewedByObject: { [key: string]: string } | null = null
+  viewedByObject: { [key: string]: string } | null = null,
 ) => {
   if (!user) return;
   if (!viewedByObject) {
@@ -770,47 +697,45 @@ const updateWhoViewedMostRecentUpdate = (
     // Update only the current user, who has viewed the most recent Update
     // A reply was submitted by the user, so only the current user has viewed it
     viewedByObject = { [user.id]: user.name };
-  } else {
+  } else if (!viewedByObject[user.id]) {
     // Update the entire array
     // check if user is NOT there
-    if (!viewedByObject[user.id]) {
-      viewedByObject[user.id] = user.name;
-    } else {
-      // if the user is there, do not update the database
-      return true;
-    }
+
+    viewedByObject[user.id] = user.name;
+  } else {
+    // if the user is there, do not update the database
+    return true;
   }
+
   // Update thread
   set(
     ref(
       db,
-      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/${viewedByKey}`
+      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/${viewedByKey}`,
     ),
-    viewedByObject
+    viewedByObject,
   );
   // Update topic thread Metadata
   set(
     ref(
       db,
-      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/${viewedByKey}`
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/${viewedByKey}`,
     ),
-    viewedByObject
+    viewedByObject,
   );
   // Update who viewed the thread on the pinned db as well
-  isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then(
-    (isPinned) => {
-      if (isPinned) {
-        // Update pinned thread as well
-        set(
-          ref(
-            db,
-            `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/${viewedByKey}`
-          ),
-          viewedByObject
-        );
-      }
+  isThreadPinned(encodedSectionName, encodedTopicName, encodedThreadName).then((isPinned) => {
+    if (isPinned) {
+      // Update pinned thread as well
+      set(
+        ref(
+          db,
+          `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/${viewedByKey}`,
+        ),
+        viewedByObject,
+      );
     }
-  );
+  });
 };
 
 /** Updates forum metadata after a reply has been submitted
@@ -825,11 +750,11 @@ const newReplyUpdateForumMetadata = (
   encodedSectionName: string,
   encodedTopicName: string,
   encodedThreadName: string,
-  increment = true
+  increment = true,
 ) => {
-  var threadUrl = `/forum/s/${encodedSectionName}/topic/${encodedTopicName}/thread/${encodedThreadName}`;
-  let threadName = getDecodedString(encodedThreadName);
-  var dataToUpdate = {
+  const threadUrl = `/forum/s/${encodedSectionName}/topic/${encodedTopicName}/thread/${encodedThreadName}`;
+  const threadName = getDecodedString(encodedThreadName);
+  const dataToUpdate = {
     latestUpdate: threadName,
     latestUserNameUpdate: user.name,
     latestUserUpdate: user.id,
@@ -838,20 +763,14 @@ const newReplyUpdateForumMetadata = (
     // numberOfReplies:
   };
   // Update metadata
-  update(
-    ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`),
-    dataToUpdate
-  );
+  update(ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}`), dataToUpdate);
   // Increment number of replies
   if (increment) {
     runTransaction(
-      ref(
-        db,
-        `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`
-      ),
+      ref(db, `private/forumMetadata/${encodedSectionName}/${encodedTopicName}/numberReplies`),
       (num) => {
         return (num || 0) + 1;
-      }
+      },
     );
   }
 };
@@ -869,7 +788,7 @@ const newReplyUpdateTopicMetadata = (
   encodedTopicName: string,
   encodedThreadName: string,
   extraInformation: ThreadEdited | null = null,
-  increment = true
+  increment = true,
 ) => {
   let dataToUpdate = { ...extraInformation };
   delete dataToUpdate.htmlContent;
@@ -886,20 +805,20 @@ const newReplyUpdateTopicMetadata = (
   update(
     ref(
       db,
-      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
+      `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`,
     ),
-    dataToUpdate
+    dataToUpdate,
   );
   // Increment number of replies
   if (increment) {
     runTransaction(
       ref(
         db,
-        `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/numberReplies`
+        `private/forumTopicMetadata/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}/numberReplies`,
       ),
       (num) => {
         return (num || 0) + 1;
-      }
+      },
     );
   }
 };
@@ -910,7 +829,7 @@ const getEncodedForumThreadPaths = () => {
   const pathName = window.location.pathname;
   // thread pathName
   // /forum/s/encodedSectionName/topic/encodedTopicName/thread/encodedThreadName
-  let splitted = pathName.split("/");
+  const splitted = pathName.split("/");
   let encodedSectionName = splitted[3];
   let encodedTopicName = splitted[5];
   let encodedThreadName = splitted[7];
@@ -929,7 +848,7 @@ const getEncodedForumThreadPaths = () => {
 const getDecodedForumThreadPaths = (
   encodedSectionName: string,
   encodedTopicName: string,
-  encodedThreadName: string
+  encodedThreadName: string,
 ) => {
   return [
     getDecodedString(encodedSectionName),
@@ -952,21 +871,16 @@ const getAndSetThreadInformation = (
   encodedThreadName: string,
   user: userContext | null,
   setThreadInformation: Function,
-  setRedirectTo: Function
+  setRedirectTo: Function,
 ) => {
   onValue(
-    ref(
-      db,
-      `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-    ),
+    ref(db, `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`),
     (snapshot) => {
       if (!snapshot.val()) {
-        setRedirectTo(
-          `/forum/s/${encodedSectionName}/topic/${encodedTopicName}`
-        );
+        setRedirectTo(`/forum/s/${encodedSectionName}/topic/${encodedTopicName}`);
         return;
       }
-      let threadInfo: Thread = snapshot.val();
+      const threadInfo: Thread = snapshot.val();
       setThreadInformation(threadInfo);
       // Update who viewed the recent update of thread on page entry
       updateWhoViewedMostRecentUpdate(
@@ -976,7 +890,7 @@ const getAndSetThreadInformation = (
         encodedThreadName,
         false,
         "recentUpdateViewedBy",
-        threadInfo.recentUpdateViewedBy
+        threadInfo.recentUpdateViewedBy,
       );
       // Update who viewed the thread on page entry
       updateWhoViewedMostRecentUpdate(
@@ -986,9 +900,9 @@ const getAndSetThreadInformation = (
         encodedThreadName,
         false,
         "viewedBy",
-        threadInfo.viewedBy
+        threadInfo.viewedBy,
       );
-    }
+    },
   );
 };
 
@@ -1000,7 +914,7 @@ const openEditCommentModal = (
   threadComment: ThreadReplyInfo,
   threadId: string,
   setIsEditCommentModalOpen: Function,
-  setEditComment: Function
+  setEditComment: Function,
 ) => {
   setEditComment({
     id: threadId,
@@ -1014,7 +928,7 @@ const usersWhoLikedOrWatchedTooltipList = (
     | {
         [key: string]: string;
       }
-    | undefined
+    | undefined,
 ) => {
   // Create a facebook like string array for the tooltip
   let tooltipStr = [
@@ -1023,8 +937,8 @@ const usersWhoLikedOrWatchedTooltipList = (
     </p>,
   ];
   if (!usersObject) return tooltipStr;
-  let usersList = Object.entries(usersObject);
-  let usersLength = usersList.length;
+  const usersList = Object.entries(usersObject);
+  const usersLength = usersList.length;
 
   // Limit to 19 users on the tooltip
   if (usersLength > 19) {
@@ -1036,39 +950,38 @@ const usersWhoLikedOrWatchedTooltipList = (
     tooltipStr.push(
       <p key={uuid()} className="tooltip-break">
         And {usersLength - 19} more
-      </p>
+      </p>,
     );
     return tooltipStr;
-  } else {
-    return usersList.map(([userId, userName]) => (
-      <p key={uuid()} className="tooltip-break">
-        {userName}
-      </p>
-    ));
   }
+  return usersList.map(([userId, userName]) => (
+    <p key={uuid()} className="tooltip-break">
+      {userName}
+    </p>
+  ));
 };
 export {
-  getEncodedForumThreadPaths,
-  getDecodedForumThreadPaths,
-  getAndSetThreadInformation,
-  submitThreadReply,
-  editThreadDescriptionHandler,
-  editThreadTitleHandler,
-  editThreadLabelHandler,
-  saveThread,
-  toggleThreadLikedBy,
-  toggleCommentLikedBy,
-  swalDeleteThreadMessage,
-  deleteThread,
-  toggleWatchList,
-  togglePinnedThread,
-  isThreadPinnedListener,
-  userWatchesThread,
-  userLikesThread,
-  saveComment,
   deleteComment,
+  deleteThread,
+  editThreadDescriptionHandler,
+  editThreadLabelHandler,
+  editThreadTitleHandler,
+  getAndSetThreadInformation,
+  getDecodedForumThreadPaths,
+  getEncodedForumThreadPaths,
+  isThreadPinnedListener,
   openEditCommentModal,
-  usersWhoLikedOrWatchedTooltipList,
-  updateWhoViewedMostRecentUpdate,
   removePinnedThreadIfEqual,
+  saveComment,
+  saveThread,
+  submitThreadReply,
+  swalDeleteThreadMessage,
+  toggleCommentLikedBy,
+  togglePinnedThread,
+  toggleThreadLikedBy,
+  toggleWatchList,
+  updateWhoViewedMostRecentUpdate,
+  userLikesThread,
+  usersWhoLikedOrWatchedTooltipList,
+  userWatchesThread,
 };

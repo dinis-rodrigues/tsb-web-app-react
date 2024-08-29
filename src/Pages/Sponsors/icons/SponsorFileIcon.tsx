@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import cx from "classnames";
 import { ReactComponent as AiIcon } from "./aiIcon.svg";
 import { ReactComponent as EpsIcon } from "./epsIcon.svg";
@@ -12,7 +11,7 @@ type Props = {
 };
 
 const SponsorFileIcon = ({ url, isFile = false }: Props) => {
-  let errMsg = <span>Error retrieving file extension</span>;
+  const errMsg = <span>Error retrieving file extension</span>;
   let filename = "";
   let fileExt = "";
   // @ts-ignore
@@ -21,12 +20,10 @@ const SponsorFileIcon = ({ url, isFile = false }: Props) => {
   if (filename) fileExt = filename.split(".").pop();
 
   return (
-    <Fragment>
+    <>
       <div className="col">
         <span>{filename ? filename : errMsg}</span>
-        <div
-          className={cx({ "sponsor-content": !isFile, "file-content": isFile })}
-        >
+        <div className={cx({ "sponsor-content": !isFile, "file-content": isFile })}>
           {fileExt === "ai" ? (
             <AiIcon />
           ) : fileExt === "eps" ? (
@@ -44,7 +41,7 @@ const SponsorFileIcon = ({ url, isFile = false }: Props) => {
           )}
         </div>
       </div>
-    </Fragment>
+    </>
   );
 };
 

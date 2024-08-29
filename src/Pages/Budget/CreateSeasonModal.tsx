@@ -1,6 +1,6 @@
 import { ref, set } from "firebase/database";
 import { useState } from "react";
-import NumberFormat, { NumberFormatValues } from "react-number-format";
+import { NumberFormatValues, PatternFormat } from "react-number-format";
 import { Button, Modal } from "react-rainbow-components";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../contexts/AuthContext";
@@ -17,10 +17,7 @@ type Props = {
  * @param  {NumberFormatValues} value season to create
  * @param  {Function} setSeasonToCreate season to create state function
  */
-const seasonToCreateHandler = (
-  value: NumberFormatValues,
-  setSeasonToCreate: Function
-) => {
+const seasonToCreateHandler = (value: NumberFormatValues, setSeasonToCreate: Function) => {
   setSeasonToCreate(value.formattedValue);
 };
 
@@ -29,11 +26,8 @@ const seasonToCreateHandler = (
  * @param  {string[]} array existing seasons
  * @returns  {boolean} all good or not
  */
-const validateSeasonToCreate = (
-  seasonToCreate: string,
-  seasonArray: string[]
-) => {
-  let [firstYear, secondYear] = seasonToCreate.split("/");
+const validateSeasonToCreate = (seasonToCreate: string, seasonArray: string[]) => {
+  const [firstYear, secondYear] = seasonToCreate.split("/");
 
   if (seasonArray.includes(seasonToCreate)) return false;
   if (!firstYear || !secondYear) return false;
@@ -51,42 +45,33 @@ const createNewSeason = (
   seasonToCreate: string,
   seasonsOptions: selectOption[],
   setIsSeasonModalOpen: Function,
-  setSeasonToCreate: Function
+  setSeasonToCreate: Function,
 ) => {
   // season options is an array of objects, we want it in a simple array
-  let seasonArray = seasonsOptions.map((obj) => obj.value);
+  const seasonArray = seasonsOptions.map((obj) => obj.value);
   if (!validateSeasonToCreate(seasonToCreate, seasonArray)) return;
   // push new season to the list
   seasonArray.push(seasonToCreate);
   // sort the list
-  let sortedSeasons = sortSeasonsArray(seasonArray);
+  const sortedSeasons = sortSeasonsArray(seasonArray);
   //   Push the array to the DB
   set(ref(db, "private/bom/seasons"), sortedSeasons);
   setIsSeasonModalOpen(false);
   setSeasonToCreate("");
 };
 
-const CreateSeasonModal = ({
-  isSeasonModalOpen,
-  setIsSeasonModalOpen,
-  seasonsOptions,
-}: Props) => {
+const CreateSeasonModal = ({ isSeasonModalOpen, setIsSeasonModalOpen, seasonsOptions }: Props) => {
   const [seasonToCreate, setSeasonToCreate] = useState("");
   const { isDarkMode } = useAuth();
   return (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       isOpen={isSeasonModalOpen}
       onRequestClose={() => setIsSeasonModalOpen(false)}
       footer={
         <div className="row justify-content-sm-center">
           <div className="mr-1">
-            <Button
-              label="Cancel"
-              onClick={() => setIsSeasonModalOpen(false)}
-            />
+            <Button label="Cancel" onClick={() => setIsSeasonModalOpen(false)} />
           </div>
           <div className="mr-1">
             <Button
@@ -97,7 +82,7 @@ const CreateSeasonModal = ({
                   seasonToCreate,
                   seasonsOptions,
                   setIsSeasonModalOpen,
-                  setSeasonToCreate
+                  setSeasonToCreate,
                 )
               }
             />
@@ -113,11 +98,9 @@ const CreateSeasonModal = ({
           </span>
         </label>
 
-        <NumberFormat
+        <PatternFormat
           value={seasonToCreate}
-          onValueChange={(value) =>
-            seasonToCreateHandler(value, setSeasonToCreate)
-          }
+          onValueChange={(value) => seasonToCreateHandler(value, setSeasonToCreate)}
           format="####/####"
           mask="_"
           className="form-control text-center"

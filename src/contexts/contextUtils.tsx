@@ -1,22 +1,17 @@
-import { auth, db } from "../config/firebase";
 import {
-  ApplicationSettings,
-  Departments,
-  DepartmentsWithDesc,
-  userContext,
-} from "../interfaces";
-import withReactContent from "sweetalert2-react-content";
-import Swal from "sweetalert2";
-import { getUserImgUrl } from "../utils/generalFunctions";
-import { onValue, ref } from "firebase/database";
-import {
-  createUserWithEmailAndPassword,
-  setPersistence,
-  signInWithEmailAndPassword,
   User,
   browserLocalPersistence,
   browserSessionPersistence,
+  createUserWithEmailAndPassword,
+  setPersistence,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
+import { onValue, ref } from "firebase/database";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import { auth, db } from "../config/firebase";
+import { ApplicationSettings, Departments, DepartmentsWithDesc, userContext } from "../interfaces";
+import { getUserImgUrl } from "../utils/generalFunctions";
 
 /**
  * Get and set application settings state
@@ -25,7 +20,7 @@ import {
  */
 const getAndSetApplicationSettings = (setApplicationSettings: Function) => {
   onValue(ref(db, "public/applicationSettings"), (snapshot) => {
-    let applicationSettings: ApplicationSettings = snapshot.val();
+    const applicationSettings: ApplicationSettings = snapshot.val();
     if (!applicationSettings) return;
     setApplicationSettings(applicationSettings);
   });
@@ -63,10 +58,7 @@ const swalAlert = withReactContent(Swal);
  * @returns
  */
 const loginUser = (email: string, password: string, rememberMe: boolean) => {
-  setPersistence(
-    auth,
-    rememberMe ? browserLocalPersistence : browserSessionPersistence
-  )
+  setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence)
     .then(() => {
       return signInWithEmailAndPassword(auth, email, password);
     })
@@ -105,7 +97,7 @@ const setDisplayApplication = (
   isAdminUser: boolean | null,
   setDisplayContent: Function,
   setDisplayMaintenance: Function,
-  setDisplayLogin: Function
+  setDisplayLogin: Function,
 ) => {
   return new Promise<void>((resolve, reject) => {
     // Used for maintenance purposes and authenticated users
@@ -124,16 +116,13 @@ const setDisplayApplication = (
  * Retrieve departments from database
  * @param setDepartments
  */
-const getDepartments = (
-  setDepartments: Function,
-  setDepartmentsWDesc: Function
-) => {
+const getDepartments = (setDepartments: Function, setDepartmentsWDesc: Function) => {
   onValue(ref(db, "private/departments"), (snapshot) => {
-    let departments: Departments = snapshot.val();
+    const departments: Departments = snapshot.val();
     if (!departments) return;
     setDepartments(departments);
     // Build the departments object with the description as key of the object
-    let departmentsWithDescription: DepartmentsWithDesc = {};
+    const departmentsWithDescription: DepartmentsWithDesc = {};
     Object.entries(departments).forEach(([acronym, department]) => {
       departmentsWithDescription[department.description] = department;
     });
@@ -147,13 +136,9 @@ const getDepartments = (
  * @param userId
  * @param setUSER
  */
-const setUserInformation = (
-  userInfo: userContext,
-  userId: string,
-  setUSER: Function
-) => {
-  let usrImgUrlComp = getUserImgUrl(userId, null, true);
-  let usrImgUrl = getUserImgUrl(userId, null, false);
+const setUserInformation = (userInfo: userContext, userId: string, setUSER: Function) => {
+  const usrImgUrlComp = getUserImgUrl(userId, null, true);
+  const usrImgUrl = getUserImgUrl(userId, null, false);
   setUSER({
     id: userId,
     name: userInfo.name,

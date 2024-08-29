@@ -1,7 +1,7 @@
 import {
   ColDef,
   ColGroupDef,
-  ColumnApi,
+  FirstDataRenderedEvent,
   GridApi,
   GridReadyEvent,
   RowClickedEvent,
@@ -16,8 +16,8 @@ import {
   RecruitmentTable,
   RecruitmentTables,
   RecruitmentUser,
-  selectOption,
   UserMetadata,
+  selectOption,
 } from "../../interfaces";
 import {
   dateToString,
@@ -84,7 +84,8 @@ const swalDeleteRecruitmentTable = (deleteFunction: Function) => {
     .then((result) => {
       if (result.isConfirmed) {
         return;
-      } else if (result.isDenied) {
+      }
+      if (result.isDenied) {
         deleteFunction();
       }
     });
@@ -114,7 +115,8 @@ const swalDeleteApplication = (deleteFunction: Function) => {
     .then((result) => {
       if (result.isConfirmed) {
         return;
-      } else if (result.isDenied) {
+      }
+      if (result.isDenied) {
         deleteFunction();
       }
     });
@@ -125,16 +127,13 @@ const openDepartmentsHandler = (value: string[], departments: Departments) => {
   const openedDepartments: Departments = {};
   value.forEach((acronym) => {
     acronym = acronym.toLowerCase();
-    let depToOpen = departments[acronym];
+    const depToOpen = departments[acronym];
     openedDepartments[acronym] = depToOpen;
   });
   set(ref(db, "public/recruitment/openDepartments"), openedDepartments);
 };
-const getDepartmentOptions = (
-  departments: Departments,
-  setDepartmentOptions: Function
-) => {
-  let depOptions: selectOption[] = [];
+const getDepartmentOptions = (departments: Departments, setDepartmentOptions: Function) => {
+  const depOptions: selectOption[] = [];
   Object.entries(departments).forEach(([key, dep]) => {
     depOptions.push({
       value: dep.acronym.toUpperCase(),
@@ -152,7 +151,7 @@ const getOpenedDepartments = (setOpenDepartments: Function) => {
       setOpenDepartments([]);
       return;
     }
-    let depList = Object.entries(openDepartments).map(([key, dep]) => {
+    const depList = Object.entries(openDepartments).map(([key, dep]) => {
       return dep.acronym.toUpperCase();
     });
     setOpenDepartments(depList);
@@ -175,11 +174,10 @@ const switchBarChart = (
   tableData: RecruitmentTable,
   setSeries: Function,
   setLabels: Function,
-  setActiveTab: Function
+  setActiveTab: Function,
 ) => {
   if (newTab && newTab === activeTab) return;
-  if (newTab === "1")
-    buildRecruitmentBarSeries(tableData, setSeries, setLabels);
+  if (newTab === "1") buildRecruitmentBarSeries(tableData, setSeries, setLabels);
   else buildRecruitmentBarDepartmentSeries(tableData, setSeries, setLabels);
   setActiveTab(newTab);
 };
@@ -188,16 +186,9 @@ const switchBarChart = (
  * @param tablesList
  * @param activeRecruitment
  */
-const toggleRegistration = (
-  tablesList: string[],
-  activeRecruitment: string | boolean
-) => {
+const toggleRegistration = (tablesList: string[], activeRecruitment: string | boolean) => {
   if (activeRecruitment) set(ref(db, "public/recruitment/activeTable"), false);
-  else
-    set(
-      ref(db, "public/recruitment/activeTable"),
-      tablesList[tablesList.length - 1]
-    );
+  else set(ref(db, "public/recruitment/activeTable"), tablesList[tablesList.length - 1]);
 };
 
 /**
@@ -218,7 +209,7 @@ const selectDepartmentHandler = (
   setSelectedDepartments: Function,
   setCurrTableData: Function,
   setTableRows: Function,
-  setTableColumns: Function
+  setTableColumns: Function,
 ) => {
   if (
     !recruitmentData ||
@@ -227,10 +218,8 @@ const selectDepartmentHandler = (
     selectedDepartments.length <= 0
   )
     return;
-  let auxTable = JSON.parse(
-    JSON.stringify(recruitmentData.tables[currTableName])
-  );
-  let newTableData = filterTableByDepartments(auxTable, selectedDepartments);
+  const auxTable = JSON.parse(JSON.stringify(recruitmentData.tables[currTableName]));
+  const newTableData = filterTableByDepartments(auxTable, selectedDepartments);
   setCurrTableData(newTableData);
   buildTableRows(newTableData, setTableRows);
   buildColumns(newTableData, setTableColumns);
@@ -257,35 +246,29 @@ const selectTableHandler = (
   setTableRows: Function,
   setCurrTableData: Function,
   setDepartmentOptions: Function,
-  setSelectedDepartments: Function
+  setSelectedDepartments: Function,
 ) => {
-  let tableName = selected.value;
+  const tableName = selected.value;
   if (!recruitmentData) return;
 
   let newTableData: RecruitmentTable = {};
-  if (recruitmentData.tables.hasOwnProperty(tableName)) {
-    newTableData = JSON.parse(
-      JSON.stringify(recruitmentData.tables[tableName])
-    );
+  if (Object.hasOwn(recruitmentData.tables, tableName)) {
+    newTableData = JSON.parse(JSON.stringify(recruitmentData.tables[tableName]));
   }
   setCurrTableName(tableName);
   setCurrTableData(newTableData);
   buildTableRows(newTableData, setTableRows);
   buildColumns(newTableData, setTableColumns);
-  getExistingDepartmentsOptions(
-    newTableData,
-    setDepartmentOptions,
-    setSelectedDepartments
-  );
+  getExistingDepartmentsOptions(newTableData, setDepartmentOptions, setSelectedDepartments);
 };
 /**
  * Generates the tale name based on month and year
  * @returns table string
  */
 const generateRecruitmentTable = () => {
-  let d = new Date();
-  let monthNum = d.getMonth().toString();
-  let month = numberToMonths[monthNum];
+  const d = new Date();
+  const monthNum = d.getMonth().toString();
+  const month = numberToMonths[monthNum];
   let yearNum = d.getFullYear().toString();
   yearNum = yearNum.substring(2);
 
@@ -298,12 +281,9 @@ const createNewDbTable = (tableName: string, tablesList: string[]) => {
   set(ref(db, "public/recruitment/tablesList"), newTableList);
 };
 
-const createNewSqlAndDbTable = async (
-  tablesList: string[],
-  userId: string | undefined
-) => {
+const createNewSqlAndDbTable = async (tablesList: string[], userId: string | undefined) => {
   if (!userId) return;
-  let tableName = generateRecruitmentTable();
+  const tableName = generateRecruitmentTable();
 
   try {
     // Send data to firebase database
@@ -319,7 +299,7 @@ const createNewSqlAndDbTable = async (
  * @returns
  */
 const exportedFilename = (currActiveTable: string) => {
-  const base = "TSB_Recruitment_" + currActiveTable;
+  const base = `TSB_Recruitment_${currActiveTable}`;
   return base;
 };
 
@@ -328,13 +308,10 @@ const exportedFilename = (currActiveTable: string) => {
  * @param gridApi
  * @returns
  */
-const excelExport = (
-  gridApi: GridApi | undefined,
-  currActiveTable: string | boolean
-) => {
+const excelExport = (gridApi: GridApi | undefined, currActiveTable: string | boolean) => {
   if (!gridApi || typeof currActiveTable === "boolean") return;
   gridApi.exportDataAsExcel({
-    fileName: exportedFilename(currActiveTable) + ".xlsx",
+    fileName: `${exportedFilename(currActiveTable)}.xlsx`,
   });
 };
 /**
@@ -345,7 +322,7 @@ const excelExport = (
 const clipboardExport = (gridApi: GridApi | undefined) => {
   if (!gridApi) return;
   gridApi.selectAll();
-  gridApi.copySelectedRowsToClipboard(true);
+  gridApi.copySelectedRowsToClipboard();
   gridApi.deselectAll();
 };
 /**
@@ -356,7 +333,7 @@ const clipboardExport = (gridApi: GridApi | undefined) => {
  */
 const filterTable = (e: any, gridApi: GridApi | undefined) => {
   if (!gridApi) return;
-  gridApi.setQuickFilter(e.target.value);
+  gridApi.setGridOption("quickFilterText", e.target.value);
 };
 /**
  * Export table to pdf
@@ -366,8 +343,8 @@ const filterTable = (e: any, gridApi: GridApi | undefined) => {
  */
 const pdfExport = (
   gridApi: GridApi | undefined,
-  columnApi: ColumnApi | undefined,
-  currActiveTable: string | boolean
+  columnApi: GridApi | undefined,
+  currActiveTable: string | boolean,
 ) => {
   if (!gridApi || !columnApi || typeof currActiveTable === "boolean") return;
   printDoc(gridApi, columnApi, exportedFilename(currActiveTable));
@@ -380,23 +357,23 @@ const pdfExport = (
  * @param setColumnApi
  */
 const onFirstDataRendered = (
-  params: GridReadyEvent,
+  params: GridReadyEvent | FirstDataRenderedEvent,
   setGridApi: Function,
-  setColumnApi: Function
+  setColumnApi: Function,
 ) => {
   params.api.sizeColumnsToFit();
   // Initial sort by name
-  params.columnApi.applyColumnState({
+  params.api.applyColumnState({
     state: [{ colId: "timestamp", sort: "asc" }],
   });
   setGridApi(params.api);
-  setColumnApi(params.columnApi);
+  setColumnApi(params.api);
 };
 
 const onRowRecruitmentUserClick = (
   e: RowClickedEvent,
   setUserInfo: Function,
-  setModalOpen: Function
+  setModalOpen: Function,
 ) => {
   setUserInfo(e.data);
   setModalOpen(true);
@@ -414,13 +391,13 @@ const getTableNames = (tables: RecruitmentTables) => {
   });
   // sort
   tableNames.sort((a, b) => {
-    let monthA = a.substring(7, 10); //RecrutaSET21
-    let yearA = parseInt("20" + a.substring(10));
-    let monthB = b.substring(7, 10); //RecrutaSET21
-    let yearB = parseInt("20" + b.substring(10));
+    const monthA = a.substring(7, 10); //RecrutaSET21
+    const yearA = parseInt(`20${a.substring(10)}`);
+    const monthB = b.substring(7, 10); //RecrutaSET21
+    const yearB = parseInt(`20${b.substring(10)}`);
 
-    let dateA = new Date(yearA, recruitmentMonths[monthA], 1);
-    let dateB = new Date(yearB, recruitmentMonths[monthB], 1);
+    const dateA = new Date(yearA, recruitmentMonths[monthA], 1);
+    const dateB = new Date(yearB, recruitmentMonths[monthB], 1);
 
     if (dateA.getTime() > dateB.getTime()) return 1;
     if (dateA.getTime() > dateB.getTime()) return -1;
@@ -434,10 +411,7 @@ const getTableNames = (tables: RecruitmentTables) => {
  * @param selectedOptions
  * @param setTableColumns
  */
-const buildColumns = (
-  currTableData: RecruitmentTable | undefined,
-  setTableColumns: Function
-) => {
+const buildColumns = (currTableData: RecruitmentTable | undefined, setTableColumns: Function) => {
   if (!currTableData) return;
   if (Object.keys(currTableData).length <= 0) return;
   // Build column definition
@@ -488,18 +462,15 @@ const buildColumns = (
  * @param setTableRows
  * @returns
  */
-const buildTableRows = (
-  currTableData: RecruitmentTable | undefined,
-  setTableRows: Function
-) => {
+const buildTableRows = (currTableData: RecruitmentTable | undefined, setTableRows: Function) => {
   if (!currTableData) {
     currTableData = {};
   }
   const rows: RecruitmentUser[] = [];
   Object.entries(currTableData).forEach(([key, user]) => {
-    let time = user.timestamp;
-    let date = time ? dateToString(new Date(time), true) : "-";
-    let userData = { ...user, timestamp: date, applicationId: key };
+    const time = user.timestamp;
+    const date = time ? dateToString(new Date(time), true) : "-";
+    const userData = { ...user, timestamp: date, applicationId: key };
 
     rows.push(userData);
   });
@@ -509,9 +480,9 @@ const buildTableRows = (
 const getExistingDepartmentsOptions = (
   tableData: RecruitmentTable | undefined,
   setDepartmentOptions: Function,
-  setSelectedDepartments: Function
+  setSelectedDepartments: Function,
 ) => {
-  let departments: string[] = [];
+  const departments: string[] = [];
   if (!tableData) return;
   Object.entries(tableData).forEach(([key, user]) => {
     user.departments.forEach((dep) => {
@@ -519,21 +490,17 @@ const getExistingDepartmentsOptions = (
     });
   });
   departments.sort();
-  let options = departments.map((dep) => ({ value: dep, label: dep }));
+  const options = departments.map((dep) => ({ value: dep, label: dep }));
   setSelectedDepartments(departments);
   setDepartmentOptions(options);
 };
 
-const filterTableByDepartments = (
-  tableData: RecruitmentTable,
-  selectedDepartments: string[]
-) => {
+const filterTableByDepartments = (tableData: RecruitmentTable, selectedDepartments: string[]) => {
   if (selectedDepartments.length <= 0) return tableData;
   const newTableData: RecruitmentTable = {};
   Object.entries(tableData).forEach(([key, user]) => {
-    let userDepartments = user.departments;
-    if (selectedDepartments.some((dep) => userDepartments.includes(dep)))
-      newTableData[key] = user;
+    const userDepartments = user.departments;
+    if (selectedDepartments.some((dep) => userDepartments.includes(dep))) newTableData[key] = user;
   });
   return newTableData;
 };
@@ -551,7 +518,7 @@ const getRecruitmentData = (
   setTableOptions: Function,
   setActiveRecruitment: Function,
   setDepartmentOptions: Function,
-  setSelectedDepartments: Function
+  setSelectedDepartments: Function,
 ) => {
   onValue(ref(db, "public/recruitment"), (snapshot) => {
     const recruitmentData: RecruitmentData = snapshot.val();
@@ -560,7 +527,7 @@ const getRecruitmentData = (
     setRecruitmentData(recruitmentData);
 
     // Create table options to select from
-    let tableOptionsObj = recruitmentData.tablesList.map((table) => ({
+    const tableOptionsObj = recruitmentData.tablesList.map((table) => ({
       value: table,
       label: table,
     }));
@@ -582,53 +549,35 @@ const getRecruitmentData = (
       // if no table is selected or recruitment is not open
       // if (typeof currTableName === "boolean") {
       setCurrTableName(tableNames[tableNames.length - 1]);
-      if (tables.hasOwnProperty(tableNames[tableNames.length - 1])) {
-        let auxTable = JSON.parse(
-          JSON.stringify(tables[tableNames[tableNames.length - 1]])
-        );
-        let newTableData = filterTableByDepartments(
-          auxTable,
-          selectedDepartments
-        );
+      if (Object.hasOwn(tables, tableNames[tableNames.length - 1])) {
+        const auxTable = JSON.parse(JSON.stringify(tables[tableNames[tableNames.length - 1]]));
+        const newTableData = filterTableByDepartments(auxTable, selectedDepartments);
 
         setCurrTableData(newTableData);
         buildTableRows(newTableData, setTableRows);
         buildColumns(newTableData, setTableColumns);
-        getExistingDepartmentsOptions(
-          newTableData,
-          setDepartmentOptions,
-          setSelectedDepartments
-        );
+        getExistingDepartmentsOptions(newTableData, setDepartmentOptions, setSelectedDepartments);
       }
-    } else {
-      if (typeof currTableName !== "boolean") {
-        let newTableData: RecruitmentTable = {};
-        if (tables.hasOwnProperty(currTableName)) {
-          let auxTable = JSON.parse(JSON.stringify(tables[currTableName]));
-          newTableData = filterTableByDepartments(
-            auxTable,
-            selectedDepartments
-          );
-        }
+    } else if (typeof currTableName !== "boolean") {
+      let newTableData: RecruitmentTable = {};
+      if (Object.hasOwn(tables, currTableName)) {
+        const auxTable = JSON.parse(JSON.stringify(tables[currTableName]));
+        newTableData = filterTableByDepartments(auxTable, selectedDepartments);
+      }
 
-        setCurrTableData(newTableData);
-        setCurrTableName(activeTableName);
-        buildTableRows(newTableData, setTableRows);
-        buildColumns(newTableData, setTableColumns);
-        getExistingDepartmentsOptions(
-          newTableData,
-          setDepartmentOptions,
-          setSelectedDepartments
-        );
-      }
+      setCurrTableData(newTableData);
+      setCurrTableName(activeTableName);
+      buildTableRows(newTableData, setTableRows);
+      buildColumns(newTableData, setTableColumns);
+      getExistingDepartmentsOptions(newTableData, setDepartmentOptions, setSelectedDepartments);
     }
   });
 };
 
 const buildUserNameFromFullName = (fullName: string) => {
   const names = fullName.trim().split(" ");
-  let firstName = normalizedString(names[0]);
-  let lastName = normalizedString(names[names.length - 1]);
+  const firstName = normalizedString(names[0]);
+  const lastName = normalizedString(names[names.length - 1]);
   return `${firstName}-${lastName}`.toLowerCase();
 };
 
@@ -638,7 +587,7 @@ const buildUserNames = () => {
 
     const usersList = Object.entries(users);
 
-    let existingUserNames: string[] = [];
+    const existingUserNames: string[] = [];
 
     for (let i = 0; i < usersList.length; i++) {
       const userId = usersList[i][0];
@@ -647,7 +596,7 @@ const buildUserNames = () => {
       let currUserName = buildUserNameFromFullName(userInfo.fullName!);
 
       // check if user name already exists
-      let equalUserNames: string[] = [];
+      const equalUserNames: string[] = [];
       for (const userName of existingUserNames) {
         if (userName.includes(currUserName)) {
           equalUserNames.push(userName);
@@ -665,16 +614,10 @@ const buildUserNames = () => {
       existingUserNames.push(currUserName);
 
       // Add user name to user metadata
-      set(
-        ref(db, `private/usersMetadata/${userId}/pinfo/userName`),
-        currUserName
-      );
+      set(ref(db, `private/usersMetadata/${userId}/pinfo/userName`), currUserName);
 
       // Add user name public official website team
-      set(
-        ref(db, `public/officialWebsite/team/${userId}/info/userName`),
-        currUserName
-      );
+      set(ref(db, `public/officialWebsite/team/${userId}/info/userName`), currUserName);
     }
   });
 };
@@ -688,10 +631,9 @@ const deleteTable = (tableName: string, tablesList: string[]) => {
 const deleteRecruitmentMemberFromDB = (
   recruitmentTable: string | boolean,
   memberId: string | undefined,
-  setModalIsOpen: Function
+  setModalIsOpen: Function,
 ) => {
-  if (typeof recruitmentTable !== "string" || !recruitmentTable || !memberId)
-    return;
+  if (typeof recruitmentTable !== "string" || !recruitmentTable || !memberId) return;
   remove(ref(db, `public/recruitment/tables/${recruitmentTable}/${memberId}`))
     .then(() => {
       toastrMessage("Application deleted successfully", "success");
@@ -705,26 +647,26 @@ const deleteRecruitmentMemberFromDB = (
 export {
   buildColumns,
   buildTableRows,
-  onFirstDataRendered,
+  buildUserNames,
+  clipboardExport,
+  createNewSqlAndDbTable,
+  deleteRecruitmentMemberFromDB,
+  deleteTable,
   excelExport,
   filterTable,
-  pdfExport,
-  clipboardExport,
-  getRecruitmentData,
-  onRowRecruitmentUserClick,
   generateRecruitmentTable,
-  selectTableHandler,
-  getTableNames,
-  toggleRegistration,
-  selectDepartmentHandler,
-  switchBarChart,
   getDepartmentOptions,
   getOpenedDepartments,
+  getRecruitmentData,
+  getTableNames,
+  onFirstDataRendered,
+  onRowRecruitmentUserClick,
   openDepartmentsHandler,
-  createNewSqlAndDbTable,
-  buildUserNames,
-  deleteTable,
-  swalDeleteRecruitmentTable,
-  deleteRecruitmentMemberFromDB,
+  pdfExport,
+  selectDepartmentHandler,
+  selectTableHandler,
   swalDeleteApplication,
+  swalDeleteRecruitmentTable,
+  switchBarChart,
+  toggleRegistration,
 };

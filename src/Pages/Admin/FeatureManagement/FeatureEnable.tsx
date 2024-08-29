@@ -40,10 +40,10 @@ const FeatureEnable = ({ featurePermissions, featureName }: Props) => {
                 {featurePermissions.public
                   ? "All users can view this feature"
                   : featurePermissions.admin
-                  ? "Only Admin users can view this feature."
-                  : featurePermissions.god
-                  ? "Only God users can view this feature."
-                  : "Something went wrong"}
+                    ? "Only Admin users can view this feature."
+                    : featurePermissions.god
+                      ? "Only God users can view this feature."
+                      : "Something went wrong"}
               </span>
             </div>
           </div>

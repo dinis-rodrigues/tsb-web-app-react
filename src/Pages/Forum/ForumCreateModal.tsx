@@ -38,11 +38,11 @@ const ForumCreateModal = ({
 
   useEffect(() => {
     // build section options
-    let existingSections = Object.entries(forumMetadata).map(
+    const existingSections = Object.entries(forumMetadata).map(
       ([encodedSectionName, topicsFromSection]) => ({
         value: encodedSectionName,
         label: getDecodedString(encodedSectionName),
-      })
+      }),
     );
     setSectionOptions(existingSections);
 
@@ -50,19 +50,14 @@ const ForumCreateModal = ({
   }, [forumMetadata]);
   return (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       isOpen={isSectionModalOpen}
       onRequestClose={() => setIsSectionModalOpen(false)}
       style={{ overflow: "hidden" }}
       footer={
         <div className="row justify-content-sm-center">
           <div className="mr-1">
-            <Button
-              label="Cancel"
-              onClick={() => setIsSectionModalOpen(false)}
-            />
+            <Button label="Cancel" onClick={() => setIsSectionModalOpen(false)} />
           </div>
           <div className="mr-1">
             <Button
@@ -78,7 +73,7 @@ const ForumCreateModal = ({
                   forumSectionOrder,
                   user,
                   setTopicInputValue,
-                  setIsSectionModalOpen
+                  setIsSectionModalOpen,
                 )
               }
             />
@@ -102,9 +97,7 @@ const ForumCreateModal = ({
             <span className="pr-2 text-dark small text-uppercase">
               <strong>
                 {" "}
-                {radioOption === "AddTo"
-                  ? "Select Existing Section"
-                  : "Section to create"}
+                {radioOption === "AddTo" ? "Select Existing Section" : "Section to create"}
               </strong>
             </span>
           </label>

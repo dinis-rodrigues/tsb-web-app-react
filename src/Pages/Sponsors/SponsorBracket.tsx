@@ -1,25 +1,33 @@
-import { Fragment, useEffect, useState } from "react";
-import {
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledButtonDropdown,
-} from "reactstrap";
+import { useEffect, useState } from "react";
+import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
 
 import {
   DndContext,
-  closestCenter,
+  DragOverlay,
   PointerSensor,
   TouchSensor,
-  DragOverlay,
+  closestCenter,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 
+import { off, ref } from "firebase/database";
+import { db } from "../../config/firebase";
+import { useAuth } from "../../contexts/AuthContext";
+import {
+  Sponsor,
+  SponsorBracketListItem,
+  SponsorRetroactives,
+  SponsorsOrder,
+} from "../../interfaces";
+import { toastrMessage } from "../../utils/generalFunctions";
+import BracketModal from "./BracketModal";
+import { Grid } from "./Grid";
 import { SortableSponsor } from "./SortableSponsor";
 import { SponsorCard } from "./SponsorCard";
-import { Grid } from "./Grid";
+import SponsorModal from "./SponsorModal";
 import {
   addSponsorToBracket,
   getSponsorsListFromBrackets,
@@ -28,18 +36,6 @@ import {
   handleDragStart,
   updateSponsorDropdown,
 } from "./sponsorsUtils";
-import {
-  Sponsor,
-  SponsorBracketListItem,
-  SponsorRetroactives,
-  SponsorsOrder,
-} from "../../interfaces";
-import { db } from "../../config/firebase";
-import SponsorModal from "./SponsorModal";
-import BracketModal from "./BracketModal";
-import { useAuth } from "../../contexts/AuthContext";
-import { toastrMessage } from "../../utils/generalFunctions";
-import { off, ref } from "firebase/database";
 
 type Props = {
   bracket: SponsorBracketListItem;
@@ -47,12 +43,7 @@ type Props = {
   bracketId: string;
   sponsors: [string, Sponsor][];
 };
-const SponsorBracket = ({
-  bracketId,
-  bracket,
-  retroActives,
-  sponsors,
-}: Props) => {
+const SponsorBracket = ({ bracketId, bracket, retroActives, sponsors }: Props) => {
   const { isMarketingOrAdmin } = useAuth();
   const [sponsorsItems, setsSponsorsItems] = useState<string[]>([]);
   const [sponsorsObj, setSponsorsObj] = useState<SponsorsOrder>({});
@@ -64,27 +55,22 @@ const SponsorBracket = ({
 
   const [currBracketId, setCurrBracketId] = useState("");
 
-  const [bracketInfo, setBracketInfo] =
-    useState<SponsorBracketListItem>(bracket);
+  const [bracketInfo, setBracketInfo] = useState<SponsorBracketListItem>(bracket);
   const [filterSearch, setFilterSearch] = useState("");
 
-  const [dropdownResults, setDropdownResults] = useState<[string, Sponsor][]>(
-    []
-  );
+  const [dropdownResults, setDropdownResults] = useState<[string, Sponsor][]>([]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        delay: 150,
-        tolerance: 100,
+        delay: 10,
+        tolerance: 10,
       },
     }),
-    useSensor(TouchSensor)
+    useSensor(TouchSensor),
   );
 
-  const borderColor = bracketInfo.color
-    ? bracketInfo.color?.hex
-    : "rgba(26, 54, 126, 0.125)";
+  const borderColor = bracketInfo.color ? bracketInfo.color?.hex : "rgba(26, 54, 126, 0.125)";
 
   useEffect(() => {
     getSponsorsListFromBrackets(bracketId, setsSponsorsItems, setSponsorsObj);
@@ -94,26 +80,19 @@ const SponsorBracket = ({
     };
   }, [sponsors, bracketId]);
   return (
-    <Fragment>
+    <>
       <div className="main-card card mb-4">
-        <div
-          className="card-header"
-          style={{ borderBottom: `3px solid ${borderColor}` }}
-        >
+        <div className="card-header" style={{ borderBottom: `3px solid ${borderColor}` }}>
           {bracket.name}
           <div className="btn-actions-pane-right">
             <span className="badge badge-pill badge-secundary">
-              {bracket.topMargin
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, " ")}{" "}
-              {" / "}
-              {bracket.bottomMargin
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, " ")}
+              {bracket.topMargin.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} {" / "}
+              {bracket.bottomMargin.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")}
             </span>
             {isMarketingOrAdmin && (
               <>
                 <button
+                  type="button"
                   className="btn btn-outline-info"
                   onClick={() => {
                     setBracketModalopen(true);
@@ -125,22 +104,16 @@ const SponsorBracket = ({
 
                 <UncontrolledButtonDropdown>
                   <DropdownToggle color="btn" className="p-0 mr-2">
-                    <span className="btn-wide btn-outline-success btn dropdown-toggle">
-                      Add
-                    </span>
+                    <span className="btn-wide btn-outline-success btn dropdown-toggle">Add</span>
                   </DropdownToggle>
-                  <DropdownMenu right className="rm-pointers dropdown-menu">
+                  <DropdownMenu end className="rm-pointers dropdown-menu">
                     <input
                       type="text"
                       className="dropdown-search"
                       placeholder="Search..."
                       value={filterSearch}
                       onChange={(e) => {
-                        updateSponsorDropdown(
-                          e.target.value,
-                          sponsors,
-                          setDropdownResults
-                        );
+                        updateSponsorDropdown(e.target.value, sponsors, setDropdownResults);
                         setFilterSearch(e.target.value);
                       }}
                     />
@@ -155,16 +128,11 @@ const SponsorBracket = ({
                       {dropdownResults.map(([sponId, sponsorVal]) => {
                         return (
                           <button
-                            key={sponId}
                             type="button"
+                            key={sponId}
                             className="dropdown-item"
                             onClick={() =>
-                              addSponsorToBracket(
-                                sponId,
-                                sponsorVal,
-                                bracketId,
-                                bracket.name
-                              )
+                              addSponsorToBracket(sponId, sponsorVal, bracketId, bracket.name)
                             }
                           >
                             {sponsorVal.name}
@@ -178,7 +146,7 @@ const SponsorBracket = ({
             )}
           </div>
         </div>
-        {sponsorsItems && Object.entries(sponsorsObj).length > 0 && (
+        {sponsorsItems && (
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -186,17 +154,11 @@ const SponsorBracket = ({
             onDragEnd={(e) =>
               isMarketingOrAdmin
                 ? handleDragEnd(e, bracketId, setsSponsorsItems, setActiveId)
-                : toastrMessage(
-                    "You don't have permissions to do this",
-                    "error"
-                  )
+                : toastrMessage("You don't have permissions to do this", "error")
             }
             onDragCancel={(e) => handleDragCancel(setActiveId)}
           >
-            <SortableContext
-              items={sponsorsItems}
-              strategy={rectSortingStrategy}
-            >
+            <SortableContext items={sponsorsItems} strategy={rectSortingStrategy}>
               <Grid columns={bracket.numColumns}>
                 {sponsorsItems.map((sponsorId, index) => (
                   <SortableSponsor
@@ -250,7 +212,7 @@ const SponsorBracket = ({
         bracketId={bracketId}
         sponsorsItems={sponsorsItems}
       />
-    </Fragment>
+    </>
   );
 };
 

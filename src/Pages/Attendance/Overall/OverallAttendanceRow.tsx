@@ -1,15 +1,10 @@
-import { useEffect, useState } from "react";
-import { db } from "../../../config/firebase";
-import {
-  attendanceArrayRechart,
-  graphColor,
-  User,
-  UsersDB,
-} from "../../../interfaces";
-import { addOverallStatisticListener, graphGreen } from "../attendanceUtils";
-import AvatarOverlap from "../../../components/AppImage/AvatarOverlap";
-import AttendanceChart from "../AttendanceChart";
 import { off, ref } from "firebase/database";
+import { useEffect, useState } from "react";
+import AvatarOverlap from "../../../components/AppImage/AvatarOverlap";
+import { db } from "../../../config/firebase";
+import { User, UsersDB, attendanceArrayRechart, graphColor } from "../../../interfaces";
+import AttendanceChart from "../AttendanceChart";
+import { addOverallStatisticListener, graphGreen } from "../attendanceUtils";
 
 type Props = {
   userId: string;
@@ -31,14 +26,11 @@ const OverallAttendanceRow = ({ userId, user, usersMetadata }: Props) => {
     { x: 9, y: 1 },
   ];
   // Department default graph
-  const [departmentSeries, setDepartmentSeries] =
-    useState<attendanceArrayRechart[]>(defaultData);
-  const [departmentOptions, setDepartmentOptions] =
-    useState<graphColor>(graphGreen);
+  const [departmentSeries, setDepartmentSeries] = useState<attendanceArrayRechart[]>(defaultData);
+  const [departmentOptions, setDepartmentOptions] = useState<graphColor>(graphGreen);
 
   // Department default graph
-  const [generalSeries, setGeneralSeries] =
-    useState<attendanceArrayRechart[]>(defaultData);
+  const [generalSeries, setGeneralSeries] = useState<attendanceArrayRechart[]>(defaultData);
   const [generalOptions, setGeneralOptions] = useState<graphColor>(graphGreen);
 
   useEffect(() => {
@@ -47,26 +39,19 @@ const OverallAttendanceRow = ({ userId, user, usersMetadata }: Props) => {
       userId,
       departmentOptions,
       setDepartmentSeries,
-      setDepartmentOptions
+      setDepartmentOptions,
     );
     addOverallStatisticListener(
       "generalStats",
       userId,
       generalOptions,
       setGeneralSeries,
-      setGeneralOptions
+      setGeneralOptions,
     );
 
     return () => {
-      off(
-        ref(
-          db,
-          `private/usersStatistics/${userId}/departmentStats/currentSeason`
-        )
-      );
-      off(
-        ref(db, `private/usersStatistics/${userId}/generalStats/currentSeason`)
-      );
+      off(ref(db, `private/usersStatistics/${userId}/departmentStats/currentSeason`));
+      off(ref(db, `private/usersStatistics/${userId}/generalStats/currentSeason`));
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
@@ -88,9 +73,7 @@ const OverallAttendanceRow = ({ userId, user, usersMetadata }: Props) => {
             </div>
             <div className="widget-content-left flex2">
               <div className="widget-heading">{user.pinfo.name}</div>
-              <div className="widget-subheading opacity-7">
-                {user.pinfo.position}
-              </div>
+              <div className="widget-subheading opacity-7">{user.pinfo.position}</div>
             </div>
           </div>
         </div>
@@ -99,18 +82,12 @@ const OverallAttendanceRow = ({ userId, user, usersMetadata }: Props) => {
       <td>{user.pinfo.department}</td>
       {/* Department meeting graph statistics */}
       <td width={160} height={50}>
-        <AttendanceChart
-          chartOptions={departmentOptions}
-          chartSeries={departmentSeries}
-        />
+        <AttendanceChart chartOptions={departmentOptions} chartSeries={departmentSeries} />
       </td>
       {/* General Meeting graph statistics */}
 
       <td width={160} height={50}>
-        <AttendanceChart
-          chartOptions={generalOptions}
-          chartSeries={generalSeries}
-        />
+        <AttendanceChart chartOptions={generalOptions} chartSeries={generalSeries} />
       </td>
     </tr>
   );

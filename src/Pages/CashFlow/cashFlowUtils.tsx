@@ -1,5 +1,5 @@
 import {
-  ColumnApi,
+  FirstDataRenderedEvent,
   GridApi,
   GridReadyEvent,
   RowClickedEvent,
@@ -13,18 +13,15 @@ import printDoc from "../../utils/pdfExport/printDoc";
  * @param  {event} e on change event of the input text
  * @param  {GridApi} gridApi ag grid grid Api of the table
  */
-const filterTable = (
-  e: React.ChangeEvent<HTMLInputElement>,
-  gridApi: GridApi | null
-) => {
+const filterTable = (e: React.ChangeEvent<HTMLInputElement>, gridApi: GridApi | null) => {
   if (!gridApi) return;
-  gridApi.setQuickFilter(e.target.value);
+  gridApi.setGridOption("quickFilterText", e.target.value);
 };
 /** Creates a filename for the table
  * @param  {string} tableTitle title of the table
  */
 const exportedFilename = (tableTitle: string) => {
-  const base = "TSB_Flow_" + tableTitle;
+  const base = `TSB_Flow_${tableTitle}`;
   const year = new Date().getFullYear();
   return base + year;
 };
@@ -37,7 +34,7 @@ const exportedFilename = (tableTitle: string) => {
 const excelExport = (gridApi: GridApi | null, tableTitle: string) => {
   if (!gridApi) return;
   gridApi.exportDataAsExcel({
-    fileName: exportedFilename(tableTitle) + ".xlsx",
+    fileName: `${exportedFilename(tableTitle)}.xlsx`,
   });
 };
 
@@ -47,7 +44,7 @@ const excelExport = (gridApi: GridApi | null, tableTitle: string) => {
 const clipboardExport = (gridApi: GridApi | null) => {
   if (!gridApi) return;
   gridApi.selectAll();
-  gridApi.copySelectedRowsToClipboard(true);
+  gridApi.copySelectedRowsToClipboard();
   gridApi.deselectAll();
 };
 
@@ -56,11 +53,7 @@ const clipboardExport = (gridApi: GridApi | null) => {
  * @param  {GridApi} gridApi ag-grid grid Api
  * @param  {ColumnApi} columnApi ag-grid column Api
  */
-const pdfExport = (
-  tableTitle: string,
-  gridApi: GridApi | null,
-  columnApi: ColumnApi | null
-) => {
+const pdfExport = (tableTitle: string, gridApi: GridApi | null, columnApi: GridApi | null) => {
   printDoc(gridApi, columnApi, exportedFilename(tableTitle));
 };
 
@@ -74,9 +67,9 @@ const onRowClick = (
   event: RowClickedEvent,
   setFlowInfo: Function,
   setModalOpen: Function,
-  setShowDeleteButton: Function
+  setShowDeleteButton: Function,
 ) => {
-  let flowData: Flow = event.data;
+  const flowData: Flow = event.data;
   setFlowInfo(flowData);
   setModalOpen(true);
   setShowDeleteButton(true);
@@ -88,27 +81,24 @@ const onRowClick = (
  * @param  {Function} setColumnApi
  */
 const onFirstDataRendered = (
-  params: GridReadyEvent,
+  params: GridReadyEvent | FirstDataRenderedEvent,
   setGridApi: Function,
-  setColumnApi: Function
+  setColumnApi: Function,
 ) => {
   params.api.sizeColumnsToFit();
   // Initial sort by name
-  params.columnApi.applyColumnState({
+  params.api.applyColumnState({
     state: [{ colId: "name", sort: "asc" }],
   });
   setGridApi(params.api);
-  setColumnApi(params.columnApi);
+  setColumnApi(params.api);
 };
 
 /** Closes the modal and resets the flow info
  * @param  {Function} setModalOpen modal open state function
  * @param  {Function} setShowDeleteButton deletebutton state function
  */
-const closeFlowModal = (
-  setModalOpen: Function,
-  setShowDeleteButton: Function
-) => {
+const closeFlowModal = (setModalOpen: Function, setShowDeleteButton: Function) => {
   setModalOpen(false);
   setShowDeleteButton(false);
 };
@@ -118,14 +108,10 @@ const closeFlowModal = (
  * @param  {Function} setFlowInfo flow info state function
  * @param  {string} tableTitle title of the table
  */
-const openFlowModal = (
-  setModalOpen: Function,
-  setFlowInfo: Function,
-  tableTitle: string
-) => {
-  let today = new Date();
+const openFlowModal = (setModalOpen: Function, setFlowInfo: Function, tableTitle: string) => {
+  const today = new Date();
 
-  let todayDate = dateToString(today);
+  const todayDate = dateToString(today);
   setFlowInfo({
     description: "",
     date: todayDate,
@@ -145,8 +131,8 @@ const openFlowModal = (
  * @param  {number} step interval of values
  */
 const createDateIntervals = (start: number, end: number, step: number) => {
-  let len = Math.floor((end - start) / step) + 1;
-  let arr1 = Array(len)
+  const len = Math.floor((end - start) / step) + 1;
+  const arr1 = Array(len)
     .fill(0)
     .map((_, idx) => [start + idx * step, 0]);
   return arr1;
@@ -158,25 +144,18 @@ respective cumulative value
  * @param  {number} start start date timestamp
  * @param  {number} chartData start date timestamp
  */
-const createArrayBetweenDates = (
-  chartData: [number, number][],
-  start: number,
-  end: number
-) => {
+const createArrayBetweenDates = (chartData: [number, number][], start: number, end: number) => {
   // create a copy of the object
   // let newChartData = JSON.parse(JSON.stringify(chartData));
   //   create an array with intervals of one day in milliseconds
-  let dateArray = createDateIntervals(start, end, 86400000);
+  const dateArray = createDateIntervals(start, end, 86400000);
   //   last element of array
-  var arrLen = chartData.length - 1;
-  var x = arrLen;
+  const arrLen = chartData.length - 1;
+  let x = arrLen;
 
   for (let i = 0; i < dateArray.length; i++) {
     if (x > 0) {
-      if (
-        dateArray[i][0] >= chartData[x][0] &&
-        dateArray[i][0] < chartData[x - 1][0]
-      ) {
+      if (dateArray[i][0] >= chartData[x][0] && dateArray[i][0] < chartData[x - 1][0]) {
         //   if date is between existing values
         dateArray[i][1] = parseFloat(Number(chartData[x][1]).toFixed(2));
       } else if (dateArray[i][0] === chartData[x - 1][0]) {
@@ -224,10 +203,10 @@ const createArrayBetweenDates = (
  * @param  {[string, Flow, number][]} flowData [flowID, Flow, cumSum]
  */
 const getCumSumAndTime = (flowData: [string, Flow, number][]) => {
-  var data: [number, number][] = [];
+  const data: [number, number][] = [];
   for (let i = 0; i < flowData.length; i++) {
-    var val = flowData[i][2]; // respective cumulative sum
-    var d = inputToDate(flowData[i][1].date).getTime();
+    const val = flowData[i][2]; // respective cumulative sum
+    const d = inputToDate(flowData[i][1].date).getTime();
     data.push([d, val]);
   }
   return data;
@@ -237,14 +216,14 @@ const getCumSumAndTime = (flowData: [string, Flow, number][]) => {
  * @param  {[string, Flow, number][]} flowData [flowID, Flow, cumSum]
  */
 const cumulativeSum = (sortedFlowData: [string, Flow, number][]) => {
-  let multiplier = { Expense: -1, Income: 1 };
+  const multiplier = { Expense: -1, Income: 1 };
   // We need to make copies of the Object, fuck this shit.
   //   Otherwise it's just a reference to the original object
   // Calculate cumulative sum
-  let flowsLength = sortedFlowData.length - 1; // Last element remains the same
+  const flowsLength = sortedFlowData.length - 1; // Last element remains the same
   // start from last Element, last date
   for (let flowIdx = flowsLength; flowIdx >= 0; flowIdx--) {
-    let currFlow = sortedFlowData[flowIdx][1];
+    const currFlow = sortedFlowData[flowIdx][1];
     let currCumSum = sortedFlowData[flowIdx][2];
 
     // If first element, it's equal to its value
@@ -253,7 +232,7 @@ const cumulativeSum = (sortedFlowData: [string, Flow, number][]) => {
         multiplier[currFlow.type] *
         parseFloat(currFlow.value.replace(" €", "").replaceAll(",", ""));
     } else {
-      let prevCumSUm = sortedFlowData[flowIdx + 1][2];
+      const prevCumSUm = sortedFlowData[flowIdx + 1][2];
       currCumSum =
         prevCumSUm +
         multiplier[currFlow.type] *
@@ -269,11 +248,11 @@ const cumulativeSum = (sortedFlowData: [string, Flow, number][]) => {
  */
 const sortFlowsByDate = (flowData: [string, Flow, number][]) => {
   //   let toSort = JSON.parse(JSON.stringify(data));
-  flowData.sort(function (a, b) {
-    let flowA = a[1];
-    let flowB = b[1];
-    var dateA = inputToDate(flowA.date);
-    var dateB = inputToDate(flowB.date);
+  flowData.sort((a, b) => {
+    const flowA = a[1];
+    const flowB = b[1];
+    const dateA = inputToDate(flowA.date);
+    const dateB = inputToDate(flowB.date);
     if (dateA < dateB) return 1;
     if (dateA > dateB) return -1;
     return 0;
@@ -326,9 +305,7 @@ const apexChartOptions: ApexOptions = {
       format: "dd MMM yyyy",
     },
     y: {
-      formatter: function (value: number) {
-        return Number(value).toFixed(2) + " €";
-      },
+      formatter: (value: number) => `${Number(value).toFixed(2)} €`,
     },
   },
   fill: {
@@ -346,18 +323,18 @@ const apexChartOptions: ApexOptions = {
 };
 
 export {
-  filterTable,
-  excelExport,
-  clipboardExport,
-  pdfExport,
-  onRowClick,
-  onFirstDataRendered,
   apexChartOptions,
-  sortFlowsByDate,
-  createDateIntervals,
-  createArrayBetweenDates,
-  getCumSumAndTime,
-  cumulativeSum,
+  clipboardExport,
   closeFlowModal,
+  createArrayBetweenDates,
+  createDateIntervals,
+  cumulativeSum,
+  excelExport,
+  filterTable,
+  getCumSumAndTime,
+  onFirstDataRendered,
+  onRowClick,
   openFlowModal,
+  pdfExport,
+  sortFlowsByDate,
 };

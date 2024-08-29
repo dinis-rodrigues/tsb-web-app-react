@@ -1,15 +1,15 @@
-import { Button, Modal } from "react-rainbow-components";
-import Select from "react-select";
 import ReactQuill from "react-quill"; // Typescript
 import "react-quill/dist/quill.snow.css";
+import { Button, Modal } from "react-rainbow-components";
+import Select from "react-select";
+import { useAuth } from "../../contexts/AuthContext";
 import { ThreadCreation, ThreadMetadata, userContext } from "../../interfaces";
 import {
+  createNewThread,
   newThreadDescriptionHandler,
   newThreadLabelHandler,
   newThreadTitleHandler,
-  createNewThread,
 } from "./forumTopicUtils";
-import { useAuth } from "../../contexts/AuthContext";
 
 type Props = {
   isCreateThreadModalOpen: boolean;
@@ -54,9 +54,7 @@ const ForumCreateThreadModal = ({
   ];
   return (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       title="New Thread"
       size={"medium"}
       isOpen={isCreateThreadModalOpen}
@@ -64,10 +62,7 @@ const ForumCreateThreadModal = ({
       footer={
         <div className="row justify-content-sm-center">
           <div className="mr-1">
-            <Button
-              label="Cancel"
-              onClick={() => setIsCreateThreadModalOpen(false)}
-            />
+            <Button label="Cancel" onClick={() => setIsCreateThreadModalOpen(false)} />
           </div>
           <div className="mr-1">
             <Button
@@ -82,7 +77,7 @@ const ForumCreateThreadModal = ({
                   forumTopicMetadata,
                   usersMetadata,
                   setNewThreadInfo,
-                  setIsCreateThreadModalOpen
+                  setIsCreateThreadModalOpen,
                 )
               }
             />
@@ -101,9 +96,7 @@ const ForumCreateThreadModal = ({
           <input
             className="form-control bdc-grey-200"
             value={newThreadInfo.title}
-            onChange={(e) =>
-              newThreadTitleHandler(e, newThreadInfo, setNewThreadInfo)
-            }
+            onChange={(e) => newThreadTitleHandler(e, newThreadInfo, setNewThreadInfo)}
           />
         </div>
         <div className="col-md-5 text-center">
@@ -122,9 +115,7 @@ const ForumCreateThreadModal = ({
               // Fixes the overlapping problem of the component with the datepicker
               menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
             }}
-            onChange={(option) =>
-              newThreadLabelHandler(option, newThreadInfo, setNewThreadInfo)
-            }
+            onChange={(option) => newThreadLabelHandler(option, newThreadInfo, setNewThreadInfo)}
           />
         </div>
       </div>
@@ -136,9 +127,7 @@ const ForumCreateThreadModal = ({
           bounds={"#bound"}
           modules={quillModules}
           placeholder={"What's on your mind today?"}
-          onChange={(value) =>
-            newThreadDescriptionHandler(value, newThreadInfo, setNewThreadInfo)
-          }
+          onChange={(value) => newThreadDescriptionHandler(value, newThreadInfo, setNewThreadInfo)}
         />
       </div>
     </Modal>

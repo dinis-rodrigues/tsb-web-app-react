@@ -9,7 +9,7 @@ const resetPassword = (getValues: UseFormGetValues<FieldValues>) => {
 const sendResetLink = (
   getValues: UseFormGetValues<FieldValues>,
   setSentEmail: Function,
-  setErrorMsg: Function
+  setErrorMsg: Function,
 ) => {
   const { email } = getValues();
   sendPasswordResetEmail(auth, email)

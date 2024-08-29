@@ -1,20 +1,12 @@
-import { Route, Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { Fragment } from "react";
 import { isFeatureVisible } from "../../utils/generalFunctions";
 
 type Props = {
-  component: any;
-  path: string;
-  exact?: boolean;
   featureName?: string;
+  children: JSX.Element | JSX.Element[];
 };
-const PrivateRoute = ({
-  component: Component,
-  path,
-  exact = false,
-  featureName = undefined,
-}: Props) => {
+const PrivateRoute = ({ featureName = undefined, children }: Props) => {
   // This private route includes the header and the sidebar of the application
   // It's only rendered if a logged in user exists
   const {
@@ -27,46 +19,20 @@ const PrivateRoute = ({
     isGod,
   } = useAuth();
 
-  // const isVisible = (
-  //   applicationFeatures: ApplicationFeatures,
-  //   isAdminUser: boolean,
-  //   isGod: boolean,
-  //   featureName?: string
-  // ) => {
-  //   if (!featureName) return true;
-  //   if (applicationFeatures[featureName].public) return true;
-  //   else if ((applicationFeatures.admin && isAdminUser) || isGod) return true;
-  //   else if (isGod) return true;
-  //   return false;
-  // };
+  const elemToRender =
+    currentUser && displayContent ? (
+      !featureName || isFeatureVisible(featureName, applicationFeatures, isAdminUser, isGod) ? (
+        <>{children}</>
+      ) : (
+        <Navigate to="/dashboard" />
+      )
+    ) : displayLogin ? (
+      <Navigate to="/login" />
+    ) : (
+      displayMaintenance && <Navigate to="/maintenance" />
+    );
 
-  return (
-    <Route
-      exact={exact}
-      path={path}
-      render={(props) => {
-        return currentUser && displayContent ? (
-          !featureName ||
-          isFeatureVisible(
-            featureName,
-            applicationFeatures,
-            isAdminUser,
-            isGod
-          ) ? (
-            <Fragment>
-              <Component {...props} />
-            </Fragment>
-          ) : (
-            <Redirect to="/dashboard" />
-          )
-        ) : displayLogin ? (
-          <Redirect to="/login" />
-        ) : (
-          displayMaintenance && <Redirect to="/maintenance" />
-        );
-      }}
-    ></Route>
-  );
+  return elemToRender;
 };
 
 export default PrivateRoute;

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { Department, DepartmentModalText } from "../../../interfaces";
 import DepartmentBlock from "./DepartmentBlock";
-import { openModalToCreateDepartment } from "./departmentManagementUtils";
 import DepartmentModal from "./DepartmentModal";
+import { openModalToCreateDepartment } from "./departmentManagementUtils";
 
 const DepartmentManagement = () => {
   const { departments } = useAuth();
@@ -32,12 +32,13 @@ const DepartmentManagement = () => {
         <div className="row">
           <div className="col">
             <button
+              type="button"
               className="btn-icon btn-icon-only btn btn-outline-success w-100"
               onClick={() =>
                 openModalToCreateDepartment(
                   setDepartmentInfo,
                   setIsDepartmentModalOpen,
-                  setModalText
+                  setModalText,
                 )
               }
             >

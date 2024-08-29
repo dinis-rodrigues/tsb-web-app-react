@@ -1,16 +1,11 @@
-import { connect } from "react-redux";
-import { Fragment } from "react";
-import { setEnableLoginPage } from "../../reducers/ThemeOptions";
 import cx from "classnames";
-import ValidationError from "../Register/ValidationError";
 import { useForm } from "react-hook-form";
+import ValidationError from "../Register/ValidationError";
 
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { withRouter, Redirect } from "react-router-dom";
-type Props = {
-  setEnableLoginPage: Function;
-};
-const ResetPassword = ({ setEnableLoginPage }: Props) => {
+
+const ResetPassword = () => {
   //   Form Validation
   const {
     register,
@@ -21,7 +16,7 @@ const ResetPassword = ({ setEnableLoginPage }: Props) => {
   const { displayContent, displayMaintenance } = useAuth();
 
   return (
-    <Fragment>
+    <>
       <div className="h-100 tsb-background">
         <div className="d-flex h-100 justify-content-center align-items-center">
           <div className="mx-auto app-login-box col-md-8">
@@ -34,9 +29,7 @@ const ResetPassword = ({ setEnableLoginPage }: Props) => {
                       <div>Reset Password</div>
                     </h4>
                     {displayMaintenance && (
-                      <div className="badge badge-danger ml-2">
-                        Under Maintenance
-                      </div>
+                      <div className="badge badge-danger ml-2">Under Maintenance</div>
                     )}
                   </div>
                   <form
@@ -57,22 +50,20 @@ const ResetPassword = ({ setEnableLoginPage }: Props) => {
                             type="password"
                             className={cx("form-control-login glass-morph", {
                               "is-invalid": errors.password,
-                              "is-valid":
-                                !errors.password && getValues().password,
+                              "is-valid": !errors.password && getValues().password,
                             })}
                             {...register("password", {
                               required: "Please enter a password.",
                               validate: (value) => {
                                 const values = getValues();
                                 return (
-                                  values.password.length >= 6 ||
-                                  "Must have at least 6 characters."
+                                  values.password.length >= 6 || "Must have at least 6 characters."
                                 );
                               },
                             })}
                           />
-                          {errors.password && (
-                            <ValidationError msg={errors.password.message} />
+                          {errors.password?.message && (
+                            <ValidationError msg={errors.password.message?.toString()} />
                           )}
                           {/* {errors.password.type === "minLength" && (
                           <ValidationError msg={"Password must have at least 6 characters."} />
@@ -90,8 +81,7 @@ const ResetPassword = ({ setEnableLoginPage }: Props) => {
                             className={cx("form-control-login glass-morph", {
                               "is-invalid": errors.passwordConfirmation,
                               "is-valid":
-                                !errors.passwordConfirmation &&
-                                getValues().passwordConfirmation,
+                                !errors.passwordConfirmation && getValues().passwordConfirmation,
                             })}
                             onPaste={(e) => {
                               e.preventDefault();
@@ -108,9 +98,9 @@ const ResetPassword = ({ setEnableLoginPage }: Props) => {
                               },
                             })}
                           />
-                          {errors.passwordConfirmation && (
+                          {errors.passwordConfirmation?.message && (
                             <ValidationError
-                              msg={errors.passwordConfirmation.message}
+                              msg={errors.passwordConfirmation.message?.toString()}
                             />
                           )}
                         </div>
@@ -138,19 +128,9 @@ const ResetPassword = ({ setEnableLoginPage }: Props) => {
         </div>
       </div>
       {/* If the user is already logged in, send him to dashboard */}
-      {displayContent && <Redirect to={"/dashboard"} />}
-    </Fragment>
+      {displayContent && <Navigate to={"/dashboard"} />}
+    </>
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  enableLoginPage: state.ThemeOptions.enableLoginPage,
-});
-
-const mapDispatchToProps = (dispatch: Function) => ({
-  setEnableLoginPage: (enable: boolean) => dispatch(setEnableLoginPage(enable)),
-});
-
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(ResetPassword)
-);
+export default ResetPassword;

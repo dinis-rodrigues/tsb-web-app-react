@@ -1,11 +1,10 @@
-import { Fragment, useState } from "react";
-import { withRouter } from "react-router-dom";
+import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { isFeatureVisible } from "../../utils/generalFunctions";
 import NavItem from "./NavItem";
+import NavigationDropdown from "./NavigationDropdown";
 import NavigationSection from "./NavigationSection";
 import NavigationSubSection from "./NavigationSubSection";
-import NavigationDropdown from "./NavigationDropdown";
 
 interface NavTasks {
   tasks: boolean;
@@ -43,7 +42,7 @@ const NavigationBar = () => {
   const { applicationFeatures, isAdminUser, isGod } = useAuth();
 
   return (
-    <Fragment>
+    <>
       <h5 className="app-sidebar__heading">Menu</h5>
       <NavigationSection>
         <NavigationSubSection>
@@ -51,45 +50,25 @@ const NavigationBar = () => {
             pageName={"Dashboard"}
             to={"/dashboard"}
             icon={"pe-7s-world"}
-            isVisible={isFeatureVisible(
-              "dashboard",
-              applicationFeatures,
-              isAdminUser,
-              isGod
-            )}
+            isVisible={isFeatureVisible("dashboard", applicationFeatures, isAdminUser, isGod)}
           />
           <NavItem
             pageName={"Events"}
             to={"/events"}
             icon={"pe-7s-date"}
-            isVisible={isFeatureVisible(
-              "events",
-              applicationFeatures,
-              isAdminUser,
-              isGod
-            )}
+            isVisible={isFeatureVisible("events", applicationFeatures, isAdminUser, isGod)}
           />
           <NavItem
             pageName={"Gallery"}
             to={"/gallery"}
             icon={"pe-7s-photo"}
-            isVisible={isFeatureVisible(
-              "gallery",
-              applicationFeatures,
-              isAdminUser,
-              isGod
-            )}
+            isVisible={isFeatureVisible("gallery", applicationFeatures, isAdminUser, isGod)}
           />
           <NavItem
             pageName={"Forum"}
             to={"/forum"}
             icon={"pe-7s-chat"}
-            isVisible={isFeatureVisible(
-              "forum",
-              applicationFeatures,
-              isAdminUser,
-              isGod
-            )}
+            isVisible={isFeatureVisible("forum", applicationFeatures, isAdminUser, isGod)}
           />
         </NavigationSubSection>
       </NavigationSection>
@@ -106,14 +85,10 @@ const NavigationBar = () => {
               {Object.entries(departments).map(([acronym, department], idx) => (
                 <NavItem
                   key={idx}
+                  reloadDocument
                   pageName={department.description}
                   to={`/tasks${acronym.toUpperCase()}/b/General`}
-                  isVisible={isFeatureVisible(
-                    "tasks",
-                    applicationFeatures,
-                    isAdminUser,
-                    isGod
-                  )}
+                  isVisible={isFeatureVisible("tasks", applicationFeatures, isAdminUser, isGod)}
                 />
               ))}
             </NavigationSubSection>
@@ -129,22 +104,12 @@ const NavigationBar = () => {
               <NavItem
                 pageName={"Meetings"}
                 to={"/attendance/meetings"}
-                isVisible={isFeatureVisible(
-                  "attendance",
-                  applicationFeatures,
-                  isAdminUser,
-                  isGod
-                )}
+                isVisible={isFeatureVisible("attendance", applicationFeatures, isAdminUser, isGod)}
               />
               <NavItem
                 pageName={"Overall"}
                 to={"/attendance/overall"}
-                isVisible={isFeatureVisible(
-                  "attendance",
-                  applicationFeatures,
-                  isAdminUser,
-                  isGod
-                )}
+                isVisible={isFeatureVisible("attendance", applicationFeatures, isAdminUser, isGod)}
               />
             </NavigationSubSection>
           </NavigationDropdown>
@@ -152,23 +117,13 @@ const NavigationBar = () => {
             pageName={"Members"}
             to={"/team"}
             icon={"pe-7s-users"}
-            isVisible={isFeatureVisible(
-              "members",
-              applicationFeatures,
-              isAdminUser,
-              isGod
-            )}
+            isVisible={isFeatureVisible("members", applicationFeatures, isAdminUser, isGod)}
           />
           <NavItem
             pageName={"Recruitment"}
             to={"/recruitment"}
             icon={"pe-7s-add-user"}
-            isVisible={isFeatureVisible(
-              "recruitment",
-              applicationFeatures,
-              isAdminUser,
-              isGod
-            )}
+            isVisible={isFeatureVisible("recruitment", applicationFeatures, isAdminUser, isGod)}
           />
         </NavigationSubSection>
       </NavigationSection>
@@ -179,40 +134,25 @@ const NavigationBar = () => {
             pageName={"Budget"}
             to={"/budget"}
             icon={"pe-7s-piggy"}
-            isVisible={isFeatureVisible(
-              "budget",
-              applicationFeatures,
-              isAdminUser,
-              isGod
-            )}
+            isVisible={isFeatureVisible("budget", applicationFeatures, isAdminUser, isGod)}
           />
           <NavItem
             pageName={"Cash Flow"}
             to={"/cashflow"}
             icon={"pe-7s-graph2"}
-            isVisible={isFeatureVisible(
-              "cashflow",
-              applicationFeatures,
-              isAdminUser,
-              isGod
-            )}
+            isVisible={isFeatureVisible("cashflow", applicationFeatures, isAdminUser, isGod)}
           />
 
           <NavItem
             pageName={"Sponsors"}
             to={"/sponsors"}
             icon={"pe-7s-note2"}
-            isVisible={isFeatureVisible(
-              "sponsors",
-              applicationFeatures,
-              isAdminUser,
-              isGod
-            )}
+            isVisible={isFeatureVisible("sponsors", applicationFeatures, isAdminUser, isGod)}
           />
         </NavigationSubSection>
       </NavigationSection>
       {isAdminUser && (
-        <Fragment>
+        <>
           <h5 className="app-sidebar__heading">Admin</h5>
           <NavigationSection>
             <NavigationSubSection>
@@ -224,7 +164,7 @@ const NavigationBar = () => {
                   "userManagement",
                   applicationFeatures,
                   isAdminUser,
-                  isGod
+                  isGod,
                 )}
               />
               <NavItem
@@ -235,7 +175,7 @@ const NavigationBar = () => {
                   "departmentManagement",
                   applicationFeatures,
                   isAdminUser,
-                  isGod
+                  isGod,
                 )}
               />
               <NavItem
@@ -246,15 +186,15 @@ const NavigationBar = () => {
                   "featureManagement",
                   applicationFeatures,
                   isAdminUser,
-                  isGod
+                  isGod,
                 )}
               />
             </NavigationSubSection>
           </NavigationSection>
-        </Fragment>
+        </>
       )}
-    </Fragment>
+    </>
   );
 };
 
-export default withRouter(NavigationBar);
+export default NavigationBar;

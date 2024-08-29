@@ -1,33 +1,23 @@
-import {
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledButtonDropdown,
-} from "reactstrap";
+import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
 
-import cx from "classnames";
+import { ColDef, GridApi, ICellRendererParams, RowClickedEvent } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { Flow } from "../../interfaces";
+import cx from "classnames";
 import { useEffect, useState } from "react";
+import { Input } from "react-rainbow-components";
+import { useAuth } from "../../contexts/AuthContext";
+import { Flow } from "../../interfaces";
 import { dateComparator } from "../../utils/generalFunctions";
-import {
-  ColDef,
-  ColumnApi,
-  GridApi,
-  ICellRendererParams,
-  RowClickedEvent,
-} from "ag-grid-community";
 import BadgeRender from "./badgeRender";
 import {
-  filterTable,
   clipboardExport,
   excelExport,
+  filterTable,
+  onFirstDataRendered,
   onRowClick,
   openFlowModal,
   pdfExport,
-  onFirstDataRendered,
 } from "./cashFlowUtils";
-import { useAuth } from "../../contexts/AuthContext";
-import { Input } from "react-rainbow-components";
 
 type Props = {
   tableTitle: string;
@@ -44,21 +34,20 @@ type Props = {
 const buildTableRows = (
   tableFlow: [string, Flow, number][],
   setTableRows: Function,
-  gridApi: GridApi | null
+  gridApi: GridApi | null,
 ) => {
-  let rows = tableFlow.map(([flowId, flow, cumSum]) => ({
+  const rows = tableFlow.map(([flowId, flow, cumSum]) => ({
     ...flow,
     id: flowId,
     date: flow.date.replaceAll("-", "/"),
     type: `${flow.type}`,
-    total:
-      Number(cumSum)
-        .toFixed(2)
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " €", // add commas and euro sign
+    total: `${Number(cumSum)
+      .toFixed(2)
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} €`, // add commas and euro sign
   }));
   setTableRows(rows);
   if (gridApi && rows.length > 10) {
-    gridApi.setDomLayout("normal");
+    gridApi.setGridOption("domLayout", "normal");
   }
 };
 
@@ -83,16 +72,14 @@ const CashFlowTable = ({
     {
       field: "type",
       sortable: true,
-      cellRendererFramework: (props: ICellRendererParams) => (
-        <BadgeRender {...props} />
-      ),
+      cellRenderer: (props: ICellRendererParams) => <BadgeRender {...props} />,
     },
     { field: "value", sortable: true },
     { field: "total", sortable: true },
   ];
   const [tableRows, setTableRows] = useState([]);
   const [gridApi, setGridApi] = useState<GridApi | null>(null); // Table API
-  const [columnApi, setColumnApi] = useState<ColumnApi | null>(null); // Column API
+  const [columnApi, setColumnApi] = useState<GridApi | null>(null); // Column API
 
   useEffect(() => {
     buildTableRows(tableFlow, setTableRows, gridApi);
@@ -105,6 +92,7 @@ const CashFlowTable = ({
         Cash Flow - {tableTitle}
         <div className="btn-actions-pane-right text-capitalize">
           <button
+            type="button"
             onClick={() => openFlowModal(setModalOpen, setFlowInfo, tableTitle)}
             className="btn-wide btn-dark mr-md-2 btn btn-sm"
           >
@@ -115,11 +103,10 @@ const CashFlowTable = ({
           <UncontrolledButtonDropdown>
             <DropdownToggle color="btn" className="p-0 mr-2">
               <span className="btn-wide btn-dark mr-md-2 btn btn-sm dropdown-toggle">
-                <i className="fa fa-download text-white btn-icon-wrapper"></i>{" "}
-                Download
+                <i className="fa fa-download text-white btn-icon-wrapper"></i> Download
               </span>
             </DropdownToggle>
-            <DropdownMenu right className="rm-pointers dropdown-menu">
+            <DropdownMenu end className="rm-pointers dropdown-menu">
               <button
                 type="button"
                 className="dropdown-item"
@@ -172,9 +159,7 @@ const CashFlowTable = ({
               onFirstDataRendered={(params) =>
                 onFirstDataRendered(params, setGridApi, setColumnApi)
               }
-              onGridReady={(params) =>
-                onFirstDataRendered(params, setGridApi, setColumnApi)
-              }
+              onGridReady={(params) => onFirstDataRendered(params, setGridApi, setColumnApi)}
               overlayNoRowsTemplate={"<span >I love you <3</span>"}
             ></AgGridReact>
           }

@@ -1,7 +1,4 @@
-import React, { Fragment } from "react";
 import cx from "classnames";
-
-import { connect } from "react-redux";
 
 import AppLogo from "../AppLogo/AppLogo";
 
@@ -10,20 +7,14 @@ import UserBox from "./UserBox";
 
 type Props = {
   isMobileView?: boolean;
-  enableMobileMenuSmall: boolean;
   displayMobileSearch: boolean;
   setDisplayMobileSearch: Function;
 };
 
-const Header = ({
-  isMobileView = false,
-  enableMobileMenuSmall,
-  displayMobileSearch,
-  setDisplayMobileSearch,
-}: Props) => {
+const Header = ({ isMobileView = false, displayMobileSearch, setDisplayMobileSearch }: Props) => {
   return (
     <div className="app-header header-shadow">
-      <Fragment>
+      <>
         <AppLogo
           isMobileView={isMobileView}
           displayMobileSearch={displayMobileSearch}
@@ -45,13 +36,9 @@ const Header = ({
             <UserBox />
           </div>
         </div>
-      </Fragment>
+      </>
     </div>
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  enableMobileMenuSmall: state.ThemeOptions.enableMobileMenuSmall,
-});
-
-export default connect(mapStateToProps)(Header);
+export default Header;

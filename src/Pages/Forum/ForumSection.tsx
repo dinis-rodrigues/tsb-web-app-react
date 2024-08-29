@@ -1,9 +1,6 @@
 import { useAuth } from "../../contexts/AuthContext";
 import { TopicsMetadata } from "../../interfaces";
-import {
-  getDecodedString,
-  userHasPermission,
-} from "../../utils/generalFunctions";
+import { getDecodedString, userHasPermission } from "../../utils/generalFunctions";
 import ForumTopicRow from "./ForumTopicRow";
 import {
   deleteSection,
@@ -18,11 +15,7 @@ type Props = {
   sectionOrder: string[];
 };
 
-const ForumSection = ({
-  encodedSectionName,
-  topicsFromSection,
-  sectionOrder,
-}: Props) => {
+const ForumSection = ({ encodedSectionName, topicsFromSection, sectionOrder }: Props) => {
   const { USER } = useAuth();
   const userWithPermissions = userHasPermission(USER);
   const sectionIdx = sectionOrder.indexOf(encodedSectionName);
@@ -39,18 +32,14 @@ const ForumSection = ({
               <span className={"ml-2 section-arrow cursor-pointer"}>
                 <i
                   className="lnr-arrow-up text-muted fsize-1 section-move"
-                  onClick={() =>
-                    moveSectionUp(encodedSectionName, sectionOrder)
-                  }
+                  onClick={() => moveSectionUp(encodedSectionName, sectionOrder)}
                 ></i>
               </span>
             )}
             {!isLast && userWithPermissions && (
               <span
                 className={"section-arrow cursor-pointer ml-2"}
-                onClick={() =>
-                  moveSectionDown(encodedSectionName, sectionOrder)
-                }
+                onClick={() => moveSectionDown(encodedSectionName, sectionOrder)}
               >
                 <i className="lnr-arrow-down text-muted fsize-1 section-move"></i>
               </span>
@@ -64,14 +53,11 @@ const ForumSection = ({
               <div className="col-1">
                 {userWithPermissions && (
                   <button
+                    type="button"
                     id={"deleteSeason"}
                     onClick={() =>
                       swalDeleteSectionMessage(() =>
-                        deleteSection(
-                          encodedSectionName,
-                          sectionOrder,
-                          topicsFromSection
-                        )
+                        deleteSection(encodedSectionName, sectionOrder, topicsFromSection),
                       )
                     }
                     className="btn-icon btn-icon-only btn btn-shadow  btn-danger"
@@ -86,16 +72,14 @@ const ForumSection = ({
       </div>
       {/* Insert topics of section */}
       {topicsFromSection &&
-        Object.entries(topicsFromSection).map(
-          ([encodedTopicName, topicInformation], idx) => (
-            <ForumTopicRow
-              key={encodedTopicName}
-              encodedTopicName={encodedTopicName}
-              topicInformation={topicInformation}
-              encodedSectionName={encodedSectionName}
-            />
-          )
-        )}
+        Object.entries(topicsFromSection).map(([encodedTopicName, topicInformation], idx) => (
+          <ForumTopicRow
+            key={encodedTopicName}
+            encodedTopicName={encodedTopicName}
+            topicInformation={topicInformation}
+            encodedSectionName={encodedSectionName}
+          />
+        ))}
     </div>
   );
 };

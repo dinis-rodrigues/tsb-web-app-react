@@ -1,23 +1,23 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 
 import cx from "classnames";
-import { getUsersSearchList, sortSearchedUsers } from "./searchUtils";
-import { PersonalInformation } from "../../interfaces";
 import { useAuth } from "../../contexts/AuthContext";
+import { PersonalInformation } from "../../interfaces";
 import UsersDropdown from "./UsersDropdown";
+import { getUsersSearchList, sortSearchedUsers } from "./searchUtils";
 
 const SearchBox = () => {
   const { usersMetadata } = useAuth();
 
   const [activeSearch, setActiveSearch] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [searchedUsers, setSearchedUsers] = useState<
-    [string, { pinfo: PersonalInformation }][]
-  >(sortSearchedUsers(Object.entries(usersMetadata)));
+  const [searchedUsers, setSearchedUsers] = useState<[string, { pinfo: PersonalInformation }][]>(
+    sortSearchedUsers(Object.entries(usersMetadata)),
+  );
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
-    <Fragment>
+    <>
       <div
         className={cx("search-wrapper", {
           active: activeSearch,
@@ -36,16 +36,12 @@ const SearchBox = () => {
             onFocus={() => setDropdownOpen(true)}
             value={searchText}
             onChange={(e) =>
-              getUsersSearchList(
-                usersMetadata,
-                e.target.value,
-                setSearchText,
-                setSearchedUsers
-              )
+              getUsersSearchList(usersMetadata, e.target.value, setSearchText, setSearchedUsers)
             }
             placeholder="Search user..."
           />
           <button
+            type="button"
             onClick={() => {
               setActiveSearch(!activeSearch);
               setDropdownOpen(!activeSearch);
@@ -61,6 +57,7 @@ const SearchBox = () => {
           />
         </div>
         <button
+          type="button"
           onClick={() => {
             setActiveSearch(!activeSearch);
             setDropdownOpen(!activeSearch);
@@ -68,7 +65,7 @@ const SearchBox = () => {
           className="close"
         />
       </div>
-    </Fragment>
+    </>
   );
 };
 

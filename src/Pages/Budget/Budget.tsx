@@ -1,9 +1,16 @@
-import { useEffect, useState } from "react";
-import { Nav, NavItem, NavLink, UncontrolledTooltip } from "reactstrap";
-import Select from "react-select";
 import cx from "classnames";
+import { child, off, ref } from "firebase/database";
+import { useEffect, useState } from "react";
+import Select from "react-select";
+import { Nav, NavItem, NavLink, UncontrolledTooltip } from "reactstrap";
 import { v4 as uuid } from "uuid";
 import { db } from "../../config/firebase";
+import { useAuth } from "../../contexts/AuthContext";
+import { BomMaterial, BomMoney, selectOption } from "../../interfaces";
+import { setUserAssignmentOptions } from "../../utils/generalFunctions";
+import BudgetModal from "./BudgetModal";
+import BudgetTable from "./BudgetTable";
+import CreateSeasonModal from "./CreateSeasonModal";
 import {
   bomDefaultData,
   closeMaterialModal,
@@ -12,23 +19,12 @@ import {
   getSeasonBudgetData,
   swalBomDeleteMessage,
 } from "./budgetUtils";
-import { BomMaterial, BomMoney, selectOption } from "../../interfaces";
-import { setUserAssignmentOptions } from "../../utils/generalFunctions";
-import BudgetTable from "./BudgetTable";
-import BudgetModal from "./BudgetModal";
-import { useAuth } from "../../contexts/AuthContext";
-import CreateSeasonModal from "./CreateSeasonModal";
-import { child, off, ref } from "firebase/database";
 
 const toggle = (tab: string, activeTab: string, setActiveTab: Function) => {
   setActiveTab(tab);
 };
 
-const seasonSelectHandler = (
-  selected: any,
-  season: string,
-  setSeason: Function
-) => {
+const seasonSelectHandler = (selected: any, season: string, setSeason: Function) => {
   // remove all database reference listeners from current season
   off(child(ref(db, "private/bom"), season));
   setSeason(selected.value.replace("/", "-"));
@@ -45,10 +41,8 @@ const Budget = (props: any) => {
   const [userOptions, setUserOptions] = useState<selectOption[] | []>([]);
   const [season, setSeason] = useState("");
   const [seasonsOptions, setSeasonsOptions] = useState<selectOption[]>([]);
-  const [materialInfo, setMaterialInfo] =
-    useState<BomMaterial>(defaultMaterial);
-  const [materialInfoMask, setMaterialInfoMask] =
-    useState<BomMaterial>(defaultMaterial);
+  const [materialInfo, setMaterialInfo] = useState<BomMaterial>(defaultMaterial);
+  const [materialInfoMask, setMaterialInfoMask] = useState<BomMaterial>(defaultMaterial);
   const [money, setMoney] = useState<BomMoney>({
     acquired: 0,
     total: 0,
@@ -66,9 +60,9 @@ const Budget = (props: any) => {
 
   const [openedFromRedirect, setOpenedFromRedirect] = useState(true);
 
-  // if it was clicked from the To Do board in dashboard
-  const openMatId = props.location.elId;
-  const openSeasonId = props.location.colId;
+  // if it was clicked from the To Do board in dashboard, check if these elements exist
+  const openMatId = props.location?.elId;
+  const openSeasonId = props.location?.colId;
 
   useEffect(() => {
     setUserAssignmentOptions(setUserOptions, usersMetadata);
@@ -88,7 +82,7 @@ const Budget = (props: any) => {
       setMaterialInfoMask,
       setIsModalOpen,
       setShowDeleteButton,
-      setCommentListener
+      setCommentListener,
     );
 
     // Get users metadata and set the state of user options
@@ -125,6 +119,7 @@ const Budget = (props: any) => {
                     options={seasonsOptions}
                   />
                   <button
+                    type="button"
                     id={"createSeason"}
                     onClick={() => setIsSeasonModalOpen(true)}
                     className="ml-md-2 btn-icon btn-icon-only btn btn-outline-success"
@@ -132,37 +127,24 @@ const Budget = (props: any) => {
                     <i className="fas fa-plus btn-icon-wrapper"> </i>
                   </button>
                   <button
+                    type="button"
                     id={"deleteSeason"}
-                    onClick={() =>
-                      swalBomDeleteMessage(() =>
-                        deleteSeason(season, seasonsOptions)
-                      )
-                    }
+                    onClick={() => swalBomDeleteMessage(() => deleteSeason(season, seasonsOptions))}
                     className="ml-md-2 btn-icon btn-icon-only btn btn-outline-danger"
                   >
                     <i className="fas fa-trash btn-icon-wrapper"> </i>
                   </button>
-                  <UncontrolledTooltip
-                    placement={"top"}
-                    target={"createSeason"}
-                  >
+                  <UncontrolledTooltip placement={"top"} target={"createSeason"}>
                     Create new season
                   </UncontrolledTooltip>
-                  <UncontrolledTooltip
-                    placement={"top"}
-                    target={"deleteSeason"}
-                  >
+                  <UncontrolledTooltip placement={"top"} target={"deleteSeason"}>
                     Delete new season
                   </UncontrolledTooltip>
                 </div>
-                <div className="widget-subheading">
-                  Progress of Acquired Budget
-                </div>
+                <div className="widget-subheading">Progress of Acquired Budget</div>
                 <div className="widget-numbers">
                   <span id="BAcquiredBudget">{money.acquired} €</span> of{" "}
-                  <span id="BTotalBudget">
-                    {Number(money.total).toFixed(2)} €
-                  </span>
+                  <span id="BTotalBudget">{Number(money.total).toFixed(2)} €</span>
                 </div>
                 <div className="widget-description text-success">
                   <i className="fas fa-bullseye"></i>
@@ -186,11 +168,7 @@ const Budget = (props: any) => {
             </div>
           </div>
         </div>
-        <Nav
-          className={
-            "body-tabs  body-tabs-layout tabs-animated  body-tabs-animated"
-          }
-        >
+        <Nav className={"body-tabs  body-tabs-layout tabs-animated  body-tabs-animated"}>
           {Object.entries(allTabs).map(([acronym, department], idx) => (
             <NavItem key={uuid()}>
               <NavLink
@@ -233,7 +211,7 @@ const Budget = (props: any) => {
             setMaterialInfo,
             setMaterialInfoMask,
             commentListener,
-            setCommentListener
+            setCommentListener,
           )
         }
         usersMetadata={usersMetadata}

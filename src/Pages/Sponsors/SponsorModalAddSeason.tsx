@@ -1,8 +1,8 @@
-import React, { Fragment, useState } from "react";
-import { Sponsor } from "../../interfaces";
-import NumberFormat from "react-number-format";
+import { useState } from "react";
+import { NumericFormat, PatternFormat } from "react-number-format";
+import { Button, ButtonGroup } from "react-rainbow-components";
 import { useAuth } from "../../contexts/AuthContext";
-import { ButtonGroup, Button } from "react-rainbow-components";
+import { Sponsor } from "../../interfaces";
 import {
   addNewSeason,
   deleteSeason,
@@ -17,15 +17,11 @@ type Props = {
   setRefreshChart: Function;
 };
 
-const SponsorModalAddSeason = ({
-  sponsorInfo,
-  setSponsorInfo,
-  setRefreshChart,
-}: Props) => {
+const SponsorModalAddSeason = ({ sponsorInfo, setSponsorInfo, setRefreshChart }: Props) => {
   const { isMarketingOrAdmin } = useAuth();
   const [focusInput, setFocusInput] = useState("");
   return (
-    <Fragment>
+    <>
       <div className="row form-group text-center justify-content-center">
         <div className="col-3 text-dark small text-uppercase">Season</div>
         <div className="col-3 text-dark small text-uppercase">Value</div>
@@ -36,14 +32,11 @@ const SponsorModalAddSeason = ({
       {sponsorInfo?.history &&
         Object.entries(sponsorInfo?.history).map(([season, seasonValue]) => {
           return (
-            <div
-              className="row mt-2 justify-content-center text-center"
-              key={season}
-            >
+            <div className="row mt-2 justify-content-center text-center" key={season}>
               <div className="col-3">
-                <NumberFormat
+                <PatternFormat
                   value={season.replace("-", "/")}
-                  readOnly={isMarketingOrAdmin ? false : true}
+                  readOnly={!isMarketingOrAdmin}
                   className="form-control text-center"
                   format={"####/####"}
                   allowEmptyFormatting
@@ -55,27 +48,25 @@ const SponsorModalAddSeason = ({
                       season,
                       sponsorInfo,
                       setSponsorInfo,
-                      setFocusInput
+                      setFocusInput,
                     )
                   }
                 />
               </div>
               <div className="col-3">
-                <NumberFormat
+                <NumericFormat
                   value={
-                    seasonValue.value === 0 ||
-                    seasonValue.status === 0 ||
-                    seasonValue.status === 1
+                    seasonValue.value === 0 || seasonValue.status === 0 || seasonValue.status === 1
                       ? ""
                       : seasonValue.value
                   }
-                  readOnly={isMarketingOrAdmin ? false : true}
+                  readOnly={!isMarketingOrAdmin}
                   onValueChange={(value) =>
                     editSeasonValueHandler(
                       value.floatValue ? value.floatValue : 0,
                       season,
                       sponsorInfo,
-                      setSponsorInfo
+                      setSponsorInfo,
                     )
                   }
                   decimalScale={2}
@@ -90,41 +81,18 @@ const SponsorModalAddSeason = ({
                 <ButtonGroup>
                   <Button
                     label="Denied"
-                    variant={
-                      seasonValue.status === 0 ? "destructive" : "neutral"
-                    }
-                    onClick={() =>
-                      updateSponsorStatus(
-                        0,
-                        season,
-                        sponsorInfo,
-                        setSponsorInfo
-                      )
-                    }
+                    variant={seasonValue.status === 0 ? "destructive" : "neutral"}
+                    onClick={() => updateSponsorStatus(0, season, sponsorInfo, setSponsorInfo)}
                   />
                   <Button
                     label="Skip"
                     variant={seasonValue.status === 1 ? "brand" : "neutral"}
-                    onClick={() =>
-                      updateSponsorStatus(
-                        1,
-                        season,
-                        sponsorInfo,
-                        setSponsorInfo
-                      )
-                    }
+                    onClick={() => updateSponsorStatus(1, season, sponsorInfo, setSponsorInfo)}
                   />
                   <Button
                     label="Rounded"
                     variant={seasonValue.status === 2 ? "brand" : "neutral"}
-                    onClick={() =>
-                      updateSponsorStatus(
-                        2,
-                        season,
-                        sponsorInfo,
-                        setSponsorInfo
-                      )
-                    }
+                    onClick={() => updateSponsorStatus(2, season, sponsorInfo, setSponsorInfo)}
                   />
                 </ButtonGroup>
               </div>
@@ -151,6 +119,7 @@ const SponsorModalAddSeason = ({
           <div className="col-4"></div>
           <div className="col d-flex justify-content-center">
             <button
+              type="button"
               className="btn btn-outline-success"
               onClick={() => addNewSeason(sponsorInfo, setSponsorInfo)}
             >
@@ -160,7 +129,7 @@ const SponsorModalAddSeason = ({
           <div className="col-4"></div>
         </div>
       )}
-    </Fragment>
+    </>
   );
 };
 

@@ -46,9 +46,7 @@ const ForumThreadEditComment = ({
   };
   return (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       title="Edit Comment"
       size={"medium"}
       isOpen={isEditCommentModalOpen}
@@ -56,10 +54,7 @@ const ForumThreadEditComment = ({
       footer={
         <div className="row justify-content-sm-center">
           <div className="mr-1">
-            <Button
-              label="Cancel"
-              onClick={() => setIsEditCommentModalOpen(false)}
-            />
+            <Button label="Cancel" onClick={() => setIsEditCommentModalOpen(false)} />
           </div>
           <div className="mr-1">
             <Button
@@ -73,7 +68,7 @@ const ForumThreadEditComment = ({
                   encodedSectionName,
                   encodedTopicName,
                   encodedThreadName,
-                  setIsEditCommentModalOpen
+                  setIsEditCommentModalOpen,
                 )
               }
             />

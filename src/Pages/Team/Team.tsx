@@ -1,37 +1,29 @@
-import { Fragment, useState, useEffect } from "react";
-import Select from "react-select";
 import cx from "classnames";
-import {
-  PersonalInformation,
-  selectOption,
-  tableColumns,
-} from "../../interfaces";
+import { useEffect, useState } from "react";
+import Select from "react-select";
+import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
 import { useAuth } from "../../contexts/AuthContext";
+import { PersonalInformation, selectOption } from "../../interfaces";
 import { setColumnText } from "../../utils/generalFunctions";
-import {
-  DropdownToggle,
-  DropdownMenu,
-  UncontrolledButtonDropdown,
-} from "reactstrap";
 
 import {
   clipboardExport,
   defaultOptions,
   excelExport,
-  handleSelectOption,
-  pdfExport,
   filterTable,
-  onFirstDataRendered,
   getTeamDataForTable,
+  handleSelectOption,
+  onFirstDataRendered,
+  pdfExport,
 } from "./TeamUtils";
 
 // Table
-import { AgGridReact } from "ag-grid-react";
+import { ColDef, ColGroupDef, GridApi } from "ag-grid-community";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import "ag-grid-community/styles/ag-theme-alpine.min.css";
 import "ag-grid-enterprise";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine-dark.css";
-import { ColumnApi, GridApi } from "ag-grid-community";
+import { AgGridReact } from "ag-grid-react";
 import { Input } from "react-rainbow-components";
 
 // Layout
@@ -45,13 +37,12 @@ const Team = () => {
   };
 
   const [gridApi, setGridApi] = useState<GridApi>(); // Table API
-  const [columnApi, setColumnApi] = useState<ColumnApi>(); // Column API
+  const [columnApi, setColumnApi] = useState<GridApi>(); // Column API
   const [infoOptions, setInfoOptions] = useState<selectOption[]>([]); // ALl select input options
-  const [selectedOptions, setSelectedOptions] =
-    useState<selectOption[]>(defaultOptions); // selected options
+  const [selectedOptions, setSelectedOptions] = useState<selectOption[]>(defaultOptions); // selected options
   // const [usersInfo, setUsersInfo] = useState<UserMetadata>({}); // user metadata
   const [tableRowsData, setTableRowsData] = useState<PersonalInformation[]>([]); // row data
-  const [tableColumns, setTableColumns] = useState<tableColumns[]>([]); // column definitions
+  const [tableColumns, setTableColumns] = useState<(ColDef | ColGroupDef)[]>([]); // column definitions
 
   // Select Options
   useEffect(() => {
@@ -62,12 +53,12 @@ const Team = () => {
       setTableColumns,
       setTableRowsData,
       setInfoOptions,
-      setColumnText
+      setColumnText,
     );
   }, [USER, usersMetadata]);
 
   return (
-    <Fragment>
+    <>
       <div className="app-main__outer">
         <div className="app-main__inner">
           <div className="main-card mb-3 card">
@@ -78,11 +69,10 @@ const Team = () => {
                 <UncontrolledButtonDropdown>
                   <DropdownToggle color="btn" className="p-0 mr-2">
                     <span className="btn-wide btn-dark mr-md-2 btn btn-sm dropdown-toggle">
-                      <i className="fa fa-download text-white btn-icon-wrapper"></i>{" "}
-                      Download
+                      <i className="fa fa-download text-white btn-icon-wrapper"></i> Download
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu right className="rm-pointers dropdown-menu">
+                  <DropdownMenu end className="rm-pointers dropdown-menu">
                     <button
                       type="button"
                       className="dropdown-item"
@@ -109,9 +99,7 @@ const Team = () => {
               </div>
             </div>
             <div className="card-body">
-              <h5 className="card-title">
-                Select which information to display
-              </h5>
+              <h5 className="card-title">Select which information to display</h5>
               <div className="row" style={{ paddingBottom: "1rem" }}>
                 <div className="col-md-8">
                   <Select
@@ -125,7 +113,7 @@ const Team = () => {
                         usersMetadata,
                         setSelectedOptions,
                         setTableColumns,
-                        setTableRowsData
+                        setTableRowsData,
                       );
                     }}
                   />
@@ -140,7 +128,7 @@ const Team = () => {
                     }}
                   />
                 </div>
-                {/* <button onClick={excelExport}>export</button> */}
+                {/* <button type="button" onClick={excelExport}>export</button> */}
               </div>
               <div
                 className={cx({
@@ -156,16 +144,14 @@ const Team = () => {
                   onFirstDataRendered={(params) =>
                     onFirstDataRendered(params, setGridApi, setColumnApi)
                   }
-                  onGridReady={(params) =>
-                    onFirstDataRendered(params, setGridApi, setColumnApi)
-                  }
+                  onGridReady={(params) => onFirstDataRendered(params, setGridApi, setColumnApi)}
                 ></AgGridReact>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </Fragment>
+    </>
   );
 };
 

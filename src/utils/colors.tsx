@@ -1,6 +1,4 @@
-import { ThemeType } from "react-rainbow-components/components/Application";
-
-const rainbowDarkTheme: ThemeType = {
+const rainbowDarkTheme = {
   rainbow: {
     palette: {
       mainBackground: "#363636",
@@ -8,7 +6,7 @@ const rainbowDarkTheme: ThemeType = {
   },
 };
 
-const rainbowWhiteTheme: ThemeType = {
+const rainbowWhiteTheme = {
   rainbow: {
     palette: {
       mainBackground: "#fff",
@@ -62,10 +60,4 @@ const customInputs: { [key: string]: React.CSSProperties } = {
   },
 };
 
-export {
-  rainbowDarkTheme,
-  meetingIcons,
-  departmentColors,
-  customInputs,
-  rainbowWhiteTheme,
-};
+export { customInputs, departmentColors, meetingIcons, rainbowDarkTheme, rainbowWhiteTheme };

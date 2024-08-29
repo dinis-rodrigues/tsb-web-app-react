@@ -1,10 +1,10 @@
 import cx from "classnames";
 import {
-  DraggableProvidedDraggableProps,
   DraggableProvidedDragHandleProps,
+  DraggableProvidedDraggableProps,
 } from "react-beautiful-dnd";
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
-import { taskShape, UserMetadata } from "../../interfaces";
+import { UserMetadata, taskShape } from "../../interfaces";
 
 type Props = {
   draggableProps: DraggableProvidedDraggableProps;
@@ -68,16 +68,12 @@ const TaskCard = ({
       </div>
       <div className="row" style={{ padding: "0 10px" }}>
         <span className="pr-2 opacity-6">
-          <i className="fas fa-comment-alt"></i>{" "}
-          <span> {task.numComments}</span>
+          <i className="fas fa-comment-alt"></i> <span> {task.numComments}</span>
         </span>
         <div className="btn-actions-pane-right">
           <span className="pr-2 opacity-6">
             <i className="fas fa-tasks"></i>{" "}
-            <span>
-              {" "}
-              {!task.totalObj ? `0` : `${task.completedObj}/${task.totalObj}`}
-            </span>
+            <span> {!task.totalObj ? `0` : `${task.completedObj}/${task.totalObj}`}</span>
           </span>
         </div>
       </div>

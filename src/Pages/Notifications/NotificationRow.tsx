@@ -1,12 +1,12 @@
+import cx from "classnames";
+import { Link } from "react-router-dom";
 import { Notification } from "../../interfaces";
 import { dateToString, isDateInPastWeek } from "../../utils/generalFunctions";
-import cx from "classnames";
 import {
   getNotificationBorderColor,
   getNotificationIcon,
   getNotificationIconColor,
 } from "./notificationsUtils";
-import { Link } from "react-router-dom";
 
 type Props = {
   notification: Notification;
@@ -19,11 +19,11 @@ const NotificationRow = ({ notification }: Props) => {
   const notifDate = new Date(notification.timestamp);
   const dayOfTheNotif = isDateInPastWeek(notifDate);
   // Get the time
-  const hours = ("0" + notifDate.getHours()).slice(-2);
-  const minutes = ("0" + notifDate.getMinutes()).slice(-2);
+  const hours = `0${notifDate.getHours()}`.slice(-2);
+  const minutes = `0${notifDate.getMinutes()}`.slice(-2);
 
   let notifUrl = notification.urlPath;
-  if (notifUrl[0] !== "/") notifUrl = "/" + notifUrl;
+  if (notifUrl[0] !== "/") notifUrl = `/${notifUrl}`;
   return notification ? (
     <div className="vertical-timeline-item vertical-timeline-element notification-list">
       <div className="vertical-timeline-element-icon bounce-in">

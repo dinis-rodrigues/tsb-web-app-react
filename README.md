@@ -116,18 +116,50 @@ implemented to store the images in the server.
 
 This project follows the `create-react-app` file structure. If you would like to set up this project up and running locally for yourself, follow these steps.
 
-### Prerequisites
+### Initial Setup
 
-Clone the repository
+1. Setup `fnm` as NodeJS Manager -> [Install](https://github.com/Schniz/fnm)
+2. Install NodeJS v20
 
-```sh
-git clone https://github.com/dinis-rodrigues/tsb-web-app-react.git
+```bash
+fnm install 20 # Installs NodeJS version 20
 ```
 
-Install all project dependencies
+3. Setup `pnpm` as Package Manager -> [Install](https://pnpm.io/installation)
 
-```sh
-npm install
+```bash
+pnpm install # Installs all project dependencies
+```
+
+4. Setup Biome as Linter and formatter -> [Install](https://marketplace.visualstudio.com/items?itemName=biomejs.biome)
+
+5. Setup VS Code format on save
+
+`(Ctrl + Shift + P) / (Cmd + Shift + P)` Preferences: Open User Setting (JSON)
+
+```json
+"[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+"editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+```
+
+## Local Development
+
+1. To locally run the application
+
+```bash
+pnpm dev
+```
+
+1. To lint the code before creating a pull request
+
+```bash
+pnpm lint
 ```
 
 ### Firebase Setup

@@ -1,28 +1,29 @@
-import { Fragment, useEffect, useState } from "react";
-import "lightgallery/css/lightgallery.css";
-import "lightgallery/css/lg-zoom.css";
-import "lightgallery/css/lg-thumbnail.css";
 import "lightgallery/css/lg-autoplay.css";
 import "lightgallery/css/lg-fullscreen.css";
 import "lightgallery/css/lg-rotate.css";
+import "lightgallery/css/lg-thumbnail.css";
+import "lightgallery/css/lg-zoom.css";
+import "lightgallery/css/lightgallery.css";
+import { useEffect, useState } from "react";
 
 import LightGallery from "lightgallery/react";
 
-// import plugins if you need
-import lgThumbnail from "lightgallery/plugins/thumbnail";
-import lgZoom from "lightgallery/plugins/zoom";
 import lgAutoplay from "lightgallery/plugins/autoplay";
 import lgFullscreen from "lightgallery/plugins/fullscreen";
 import lgRotate from "lightgallery/plugins/rotate";
+// import plugins if you need
+import lgThumbnail from "lightgallery/plugins/thumbnail";
+import lgZoom from "lightgallery/plugins/zoom";
 
-import {
-  GalleryAlbum,
-  GalleryItem,
-  GalleryPhoto,
-  UploadingImages,
-} from "../../interfaces";
-import CreateGalleryModal from "./CreateGalleryModal";
+import cx from "classnames";
+import { off, ref } from "firebase/database";
 import { FileSelector, ProgressBar } from "react-rainbow-components";
+import { db } from "../../config/firebase";
+import { useAuth } from "../../contexts/AuthContext";
+import { GalleryAlbum, GalleryItem, GalleryPhoto, UploadingImages } from "../../interfaces";
+import { dateToString } from "../../utils/generalFunctions";
+import CreateGalleryModal from "./CreateGalleryModal";
+import EditPhotoModal from "./EditPhotoModal";
 import {
   deletePhoto,
   getGalleryList,
@@ -32,12 +33,6 @@ import {
   openEditPhotoModal,
   uploadPhotosToServer,
 } from "./galleryUtils";
-import cx from "classnames";
-import { db } from "../../config/firebase";
-import { dateToString } from "../../utils/generalFunctions";
-import EditPhotoModal from "./EditPhotoModal";
-import { useAuth } from "../../contexts/AuthContext";
-import { off, ref } from "firebase/database";
 
 const Gallery = () => {
   const { USER, isMarketingOrAdmin } = useAuth();
@@ -60,12 +55,7 @@ const Gallery = () => {
   });
 
   useEffect(() => {
-    getGalleryList(
-      setGalleryList,
-      setGalleryInfo,
-      setActiveGallery,
-      setActiveGalleryDbRef
-    );
+    getGalleryList(setGalleryList, setGalleryInfo, setActiveGallery, setActiveGalleryDbRef);
     return () => {
       if (activeGalleryDbRef) off(ref(db, activeGalleryDbRef));
     };
@@ -79,12 +69,12 @@ const Gallery = () => {
       setActiveGallery,
       setGalleryInfo,
       setGalleryPhotos,
-      setActiveGalleryDbRef
+      setActiveGalleryDbRef,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeGallery]);
   return (
-    <Fragment>
+    <>
       <div className="app-main__outer">
         <div className="app-main__inner">
           <div className="row">
@@ -112,6 +102,7 @@ const Gallery = () => {
                   </ul>
                   {isMarketingOrAdmin && (
                     <button
+                      type="button"
                       className="btn btn-outline-info w-100 my-2"
                       onClick={() => {
                         if (uploadingImgs.isUploading) return;
@@ -122,7 +113,7 @@ const Gallery = () => {
                     </button>
                   )}
                   {activeGallery && isMarketingOrAdmin && (
-                    <Fragment>
+                    <>
                       <div className="galleryDrop">
                         <FileSelector
                           accept=".png,.jpeg,.jpg"
@@ -138,30 +129,28 @@ const Gallery = () => {
                               galleryInfo,
                               USER?.id,
                               setFileValue,
-                              setUploadingImgs
+                              setUploadingImgs,
                             );
                           }}
                         />
                       </div>
 
                       {uploadingImgs.total > 0 && (
-                        <Fragment>
+                        <>
                           <div className="row my-2">
                             <div className="col" style={{ width: "80%" }}>
                               {`${uploadingImgs.current} out of ${uploadingImgs.total}`}
                               <ProgressBar
                                 value={Math.round(
-                                  (uploadingImgs.current /
-                                    uploadingImgs.total) *
-                                    100
+                                  (uploadingImgs.current / uploadingImgs.total) * 100,
                                 )}
                                 variant="success"
                               />
                             </div>
                           </div>
-                        </Fragment>
+                        </>
                       )}
-                    </Fragment>
+                    </>
                   )}
                 </div>
               </div>
@@ -174,6 +163,7 @@ const Gallery = () => {
                     {galleryInfo && `${dateToString(galleryInfo.timestamp)}`}
                     {isMarketingOrAdmin && (
                       <button
+                        type="button"
                         className="btn btn-outline-info ml-2"
                         onClick={() => {
                           if (uploadingImgs.isUploading) return;
@@ -189,13 +179,7 @@ const Gallery = () => {
                   <LightGallery
                     mode="lg-fade"
                     speed={500}
-                    plugins={[
-                      lgThumbnail,
-                      lgZoom,
-                      lgAutoplay,
-                      lgFullscreen,
-                      lgRotate,
-                    ]}
+                    plugins={[lgThumbnail, lgZoom, lgAutoplay, lgFullscreen, lgRotate]}
                     elementClassNames="row card-body"
                   >
                     {galleryPhotos &&
@@ -209,8 +193,9 @@ const Gallery = () => {
                             <div className="gallery-item">
                               <div className="gallery-image">
                                 {isMarketingOrAdmin && (
-                                  <Fragment>
+                                  <>
                                     <button
+                                      type="button"
                                       style={{
                                         position: "absolute",
                                         top: -2,
@@ -224,13 +209,14 @@ const Gallery = () => {
                                           imgId,
                                           setActivePhoto,
                                           setImgInfo,
-                                          setEditPhotoModalOpen
+                                          setEditPhotoModalOpen,
                                         );
                                       }}
                                     >
                                       <i className="fa fa-edit"></i>
                                     </button>
                                     <button
+                                      type="button"
                                       style={{
                                         position: "absolute",
                                         top: -2,
@@ -244,19 +230,16 @@ const Gallery = () => {
                                           img.imagePath,
                                           imgId,
                                           USER?.id,
-                                          setModalIsOpen
+                                          setModalIsOpen,
                                         );
                                       }}
                                     >
                                       <i className="fa fa-times "></i>
                                     </button>
-                                  </Fragment>
+                                  </>
                                 )}
 
-                                <img
-                                  src={img.rzImgPath}
-                                  alt={img.description}
-                                />
+                                <img src={img.rzImgPath} alt={img.description} />
                               </div>
                             </div>
                           </div>
@@ -285,7 +268,7 @@ const Gallery = () => {
         setIsModalOpen={setEditPhotoModalOpen}
         setImgInfo={setImgInfo}
       />
-    </Fragment>
+    </>
   );
 };
 

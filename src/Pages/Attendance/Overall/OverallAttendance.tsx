@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
-import { db } from "../../../config/firebase";
-import { User, UserMetadata, UsersDB } from "../../../interfaces";
 import cx from "classnames";
+import { off, ref } from "firebase/database";
+import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
+import { db } from "../../../config/firebase";
+import { useAuth } from "../../../contexts/AuthContext";
+import { User, UserMetadata, UsersDB } from "../../../interfaces";
 import {
   addLastStatisticUpdateListener,
   resetSeason,
@@ -10,17 +12,10 @@ import {
   swalResetSeason,
 } from "../attendanceUtils";
 import OverallAttendanceRow from "./OverallAttendanceRow";
-import { useAuth } from "../../../contexts/AuthContext";
-import { off, ref } from "firebase/database";
 
 const getRows = (sortedUsers: [string, User][], usersDb: UsersDB) => {
   return sortedUsers.map(([userId, user], idx) => (
-    <OverallAttendanceRow
-      key={uuid()}
-      userId={userId}
-      user={user}
-      usersMetadata={usersDb}
-    />
+    <OverallAttendanceRow key={uuid()} userId={userId} user={user} usersMetadata={usersDb} />
   ));
 };
 
@@ -41,7 +36,7 @@ const OverallAttendance = () => {
         usersToSort.push([userId, user]);
       }
     });
-    let usersSorted = sortUsersDb(usersToSort);
+    const usersSorted = sortUsersDb(usersToSort);
     setSortedUsers(usersSorted);
 
     return () => {
@@ -55,13 +50,7 @@ const OverallAttendance = () => {
         {sortedUsers.length > 0 && Object.keys(usersDb).length !== 0 && (
           <div className={"main-card mb-3 card"}>
             <div className="card-header">
-              <i
-                className={cx(
-                  "header-icon icon-gradient",
-                  "fa fa-globe",
-                  "bg-night-fade"
-                )}
-              ></i>
+              <i className={cx("header-icon icon-gradient", "fa fa-globe", "bg-night-fade")}></i>
               Overall Attendance Statistics
               {isAdminUser && (
                 <div className="btn-actions-pane-right text-capitalize">
@@ -69,13 +58,12 @@ const OverallAttendance = () => {
                     {lastUpdate && `Latest Season Reset: ${lastUpdate}`}
                   </span>
                   <button
+                    type="button"
                     className="btn-wide btn-info mr-md-2 btn btn-sm"
-                    onClick={() =>
-                      swalResetSeason(() => resetSeason(usersMetadata))
-                    }
+                    onClick={() => swalResetSeason(() => resetSeason(usersMetadata))}
                   >
-                    <i className="fa fa-exclamation-triangle text-white btn-icon-wrapper"></i>{" "}
-                    Reset Season
+                    <i className="fa fa-exclamation-triangle text-white btn-icon-wrapper"></i> Reset
+                    Season
                   </button>
                 </div>
               )}
@@ -85,7 +73,7 @@ const OverallAttendance = () => {
               <table
                 className={cx(
                   "table table-striped table-hover row-border align-middle text-truncate",
-                  { "table-dark": isDarkMode }
+                  { "table-dark": isDarkMode },
                 )}
               >
                 <thead>

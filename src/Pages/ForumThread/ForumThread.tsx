@@ -1,9 +1,12 @@
-import { Fragment, useEffect, useState } from "react";
-import { Link, Redirect } from "react-router-dom";
-import parse from "html-react-parser";
 import cx from "classnames";
+import { off, ref } from "firebase/database";
+import parse from "html-react-parser";
+import { useEffect, useState } from "react";
+import { Link, Navigate } from "react-router-dom";
+import { UncontrolledTooltip } from "reactstrap";
 import AvatarOverlap from "../../components/AppImage/AvatarOverlap";
 import { db } from "../../config/firebase";
+import { useAuth } from "../../contexts/AuthContext";
 import { Thread, ThreadEditComment, UserMetadata } from "../../interfaces";
 import {
   extendDate,
@@ -13,45 +16,39 @@ import {
   getUserProfileLink,
   userHasPermission,
 } from "../../utils/generalFunctions";
+import ForumEditThreadModal from "./ForumEditThreadModal";
+import ForumThreadEditComment from "./ForumThreadEditComment";
+import ForumThreadReplyModal from "./ForumThreadReplyModal";
+import ThreadReply from "./ThreadReply";
 import {
+  deleteThread,
+  getAndSetThreadInformation,
   getDecodedForumThreadPaths,
   getEncodedForumThreadPaths,
-  getAndSetThreadInformation,
-  toggleThreadLikedBy,
-  deleteThread,
-  swalDeleteThreadMessage,
   isThreadPinnedListener,
-  toggleWatchList,
+  swalDeleteThreadMessage,
   togglePinnedThread,
+  toggleThreadLikedBy,
+  toggleWatchList,
   userWatchesThread,
   usersWhoLikedOrWatchedTooltipList,
 } from "./forumThreadUtils";
-import { useAuth } from "../../contexts/AuthContext";
-import ForumThreadReplyModal from "./ForumThreadReplyModal";
-import ForumEditThreadModal from "./ForumEditThreadModal";
-import ThreadReply from "./ThreadReply";
-import { UncontrolledTooltip } from "reactstrap";
-import ForumThreadEditComment from "./ForumThreadEditComment";
-import { off, ref } from "firebase/database";
 
 const ForumThread = (props: any) => {
   const { USER, isMarketingOrAdmin } = useAuth();
   // dont trust url parameters from react router, it auto encodes/decodes stuff
   // get it directly from url path
-  let [encodedSectionName, encodedTopicName, encodedThreadName] =
-    getEncodedForumThreadPaths();
-  let [decodedSectionName, decodedTopicName, decodedThreadName] =
-    getDecodedForumThreadPaths(
-      encodedSectionName,
-      encodedTopicName,
-      encodedThreadName
-    );
+  const [encodedSectionName, encodedTopicName, encodedThreadName] = getEncodedForumThreadPaths();
+  const [decodedSectionName, decodedTopicName, decodedThreadName] = getDecodedForumThreadPaths(
+    encodedSectionName,
+    encodedTopicName,
+    encodedThreadName,
+  );
   const [usersMetadata, setUsersMetadata] = useState<UserMetadata>();
   const [threadInformation, setThreadInformation] = useState<Thread>();
   const [isPinned, setIsPinned] = useState(false);
   const [redirectTo, setRedirectTo] = useState("");
-  const [isForumThreadReplyModalOpen, setIsForumThreadReplyModalOpen] =
-    useState(false);
+  const [isForumThreadReplyModalOpen, setIsForumThreadReplyModalOpen] = useState(false);
   const [isEditThreadModalOpen, setIsEditThreadModalOpen] = useState(false);
   const [isEditCommentModalOpen, setIsEditCommentModalOpen] = useState(false);
   const [editComment, setEditComment] = useState<ThreadEditComment>({
@@ -73,26 +70,21 @@ const ForumThread = (props: any) => {
       encodedThreadName,
       USER,
       setThreadInformation,
-      setRedirectTo
+      setRedirectTo,
     );
-    isThreadPinnedListener(
-      setIsPinned,
-      encodedSectionName,
-      encodedTopicName,
-      encodedThreadName
-    );
+    isThreadPinnedListener(setIsPinned, encodedSectionName, encodedTopicName, encodedThreadName);
     return () => {
       off(
         ref(
           db,
-          `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-        )
+          `private/forumThreads/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`,
+        ),
       );
       off(
         ref(
           db,
-          `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`
-        )
+          `private/forumPinned/${encodedSectionName}/${encodedTopicName}/${encodedThreadName}`,
+        ),
       );
     };
   }, [encodedSectionName, encodedTopicName, encodedThreadName, USER]);
@@ -136,12 +128,8 @@ const ForumThread = (props: any) => {
               </li>
             </ol>
           </div>
-          <div
-            className="col-md-3 p-0"
-            style={{ marginBottom: "auto", marginTop: "auto" }}
-          >
-            {(userHasPermission(USER, threadInformation?.createdBy) ||
-              isMarketingOrAdmin) && (
+          <div className="col-md-3 p-0" style={{ marginBottom: "auto", marginTop: "auto" }}>
+            {(userHasPermission(USER, threadInformation?.createdBy) || isMarketingOrAdmin) && (
               <button
                 type="button"
                 className="float-right mr-1 btn btn-shadow  btn-danger"
@@ -153,8 +141,8 @@ const ForumThread = (props: any) => {
                       threadInformation,
                       encodedSectionName,
                       encodedTopicName,
-                      encodedThreadName
-                    )
+                      encodedThreadName,
+                    ),
                   )
                 }
               >
@@ -185,7 +173,7 @@ const ForumThread = (props: any) => {
                     threadInformation,
                     encodedSectionName,
                     encodedTopicName,
-                    encodedThreadName
+                    encodedThreadName,
                   )
                 }
               >
@@ -198,7 +186,7 @@ const ForumThread = (props: any) => {
               </UncontrolledTooltip>
               {/* Toggle pinned thread */}
               {userHasPermission(USER) && (
-                <Fragment>
+                <>
                   <span
                     id="togglePin"
                     className={cx("cursor-pointer ml-1", {
@@ -210,7 +198,7 @@ const ForumThread = (props: any) => {
                         threadInformation,
                         encodedSectionName,
                         encodedTopicName,
-                        encodedThreadName
+                        encodedThreadName,
                       )
                     }
                   >
@@ -219,14 +207,14 @@ const ForumThread = (props: any) => {
                   <UncontrolledTooltip placement="top" target={"togglePin"}>
                     {!isPinned ? "Pin Thread" : "Unpin Thread"}
                   </UncontrolledTooltip>
-                </Fragment>
+                </>
               )}
             </div>
           </h5>
         </div>
         {/* Thread original post */}
         {threadInformation && usersMetadata && USER && (
-          <Fragment>
+          <>
             <div className="card mb-4">
               <div className="card-header">
                 {/* Creator information */}
@@ -247,45 +235,24 @@ const ForumThread = (props: any) => {
                     <div className="text-muted small no-text-transform">
                       {/* Created at information */}
                       {extendDate(threadInformation.createdAt)} &nbsp;·&nbsp;
-                      {getHoursInStringFromTimestamp(
-                        threadInformation.createdAt
-                      )}
-                      :
-                      {getMinutesInStringFromTimestamp(
-                        threadInformation.createdAt
-                      )}
+                      {getHoursInStringFromTimestamp(threadInformation.createdAt)}:
+                      {getMinutesInStringFromTimestamp(threadInformation.createdAt)}
                       {/* Edited information, if edited */}
-                      {threadInformation.latestUpdateTimestamp !==
-                        threadInformation.createdAt &&
-                        " / Edited: " +
-                          extendDate(threadInformation.latestUpdateTimestamp) +
-                          " · " +
-                          getHoursInStringFromTimestamp(
-                            threadInformation.latestUpdateTimestamp
-                          ) +
-                          ":" +
-                          getMinutesInStringFromTimestamp(
-                            threadInformation.latestUpdateTimestamp
-                          )}
+                      {threadInformation.latestUpdateTimestamp !== threadInformation.createdAt &&
+                        ` / Edited: ${extendDate(threadInformation.latestUpdateTimestamp)} · ${getHoursInStringFromTimestamp(
+                          threadInformation.latestUpdateTimestamp,
+                        )}:${getMinutesInStringFromTimestamp(
+                          threadInformation.latestUpdateTimestamp,
+                        )}`}
                     </div>
                   </div>
                   <div className="text-muted small ml-3">
                     <div>
-                      <strong>
-                        {
-                          usersMetadata[threadInformation.createdBy].pinfo
-                            .department
-                        }
-                      </strong>
+                      <strong>{usersMetadata[threadInformation.createdBy].pinfo.department}</strong>
                     </div>
                     <div className="float-right">
                       Joined in{" "}
-                      <strong>
-                        {
-                          usersMetadata[threadInformation.createdBy].pinfo
-                            .joinedIn
-                        }
-                      </strong>
+                      <strong>{usersMetadata[threadInformation.createdBy].pinfo.joinedIn}</strong>
                     </div>
                   </div>
                 </div>
@@ -302,9 +269,7 @@ const ForumThread = (props: any) => {
                     <i
                       className={cx("fas fa-heart heart-thread fsize-2", {
                         "heart-liked":
-                          threadInformation.likedBy &&
-                          USER &&
-                          threadInformation.likedBy[USER.id],
+                          threadInformation.likedBy && USER && threadInformation.likedBy[USER.id],
                       })}
                       onClick={() =>
                         toggleThreadLikedBy(
@@ -312,7 +277,7 @@ const ForumThread = (props: any) => {
                           threadInformation,
                           encodedSectionName,
                           encodedTopicName,
-                          encodedThreadName
+                          encodedThreadName,
                         )
                       }
                     ></i>
@@ -328,26 +293,19 @@ const ForumThread = (props: any) => {
                     </span>
                   </span>
                   <UncontrolledTooltip target="numThreadLikes" placement="top">
-                    {usersWhoLikedOrWatchedTooltipList(
-                      threadInformation.likedBy
-                    )}
+                    {usersWhoLikedOrWatchedTooltipList(threadInformation.likedBy)}
                   </UncontrolledTooltip>
                   {/* Views */}
                   <span className="d-inline-flex  align-middle ml-4 cursor-pointer">
                     <i className="fas fa-eye fsize-2"></i>
-                    <span
-                      className="text-muted align-middle ml-2"
-                      id="numWatches"
-                    >
+                    <span className="text-muted align-middle ml-2" id="numWatches">
                       {threadInformation.viewedBy
                         ? Object.entries(threadInformation.viewedBy).length
                         : "0"}
                     </span>
                   </span>
                   <UncontrolledTooltip target="numWatches" placement="top">
-                    {usersWhoLikedOrWatchedTooltipList(
-                      threadInformation.viewedBy
-                    )}
+                    {usersWhoLikedOrWatchedTooltipList(threadInformation.viewedBy)}
                   </UncontrolledTooltip>
                 </div>
                 <div className="px-4 pt-3 d-inline-flex align-items-center align-middle">
@@ -377,25 +335,21 @@ const ForumThread = (props: any) => {
               </div>
             </div>
             {threadInformation.replies &&
-              Object.entries(threadInformation.replies).map(
-                ([replyId, threadReply], idx) => (
-                  <ThreadReply
-                    key={idx}
-                    usersMetadata={usersMetadata}
-                    replyId={replyId}
-                    threadReply={threadReply}
-                    encodedSectionName={encodedSectionName}
-                    encodedTopicName={encodedTopicName}
-                    encodedThreadName={encodedThreadName}
-                    user={USER}
-                    setEditComment={setEditComment}
-                    setIsEditCommentModalOpen={setIsEditCommentModalOpen}
-                    setIsForumThreadReplyModalOpen={
-                      setIsForumThreadReplyModalOpen
-                    }
-                  />
-                )
-              )}
+              Object.entries(threadInformation.replies).map(([replyId, threadReply], idx) => (
+                <ThreadReply
+                  key={idx}
+                  usersMetadata={usersMetadata}
+                  replyId={replyId}
+                  threadReply={threadReply}
+                  encodedSectionName={encodedSectionName}
+                  encodedTopicName={encodedTopicName}
+                  encodedThreadName={encodedThreadName}
+                  user={USER}
+                  setEditComment={setEditComment}
+                  setIsEditCommentModalOpen={setIsEditCommentModalOpen}
+                  setIsForumThreadReplyModalOpen={setIsForumThreadReplyModalOpen}
+                />
+              ))}
 
             <ForumThreadReplyModal
               user={USER}
@@ -425,10 +379,10 @@ const ForumThread = (props: any) => {
               encodedTopicName={encodedTopicName}
               encodedThreadName={encodedThreadName}
             />
-          </Fragment>
+          </>
         )}
       </div>
-      {redirectTo && <Redirect to={redirectTo} />}
+      {redirectTo && <Navigate to={redirectTo} />}
     </div>
   );
 };

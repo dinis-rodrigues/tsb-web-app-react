@@ -1,23 +1,23 @@
 import axios from "axios";
+import Compress from "compress.js";
 import Croppie from "croppie";
+import { get, ref, set, update } from "firebase/database";
+import * as fbStorage from "firebase/storage";
+import { NumberFormatValues } from "react-number-format";
 import { db, st } from "../../config/firebase";
 import {
   Departments,
   PersonalInformation,
   PublicUserInfo,
+  UserMetadata,
   selectOption,
   userContext,
-  UserMetadata,
 } from "../../interfaces";
 import { dateToString, userHasPermission } from "../../utils/generalFunctions";
-import Compress from "compress.js";
-import { NumberFormatValues } from "react-number-format";
 import { getNameFromFullName } from "../Register/registerUtils";
-import { get, ref, set, update } from "firebase/database";
-import * as fbStorage from "firebase/storage";
 
 // PHP SERVER VARIABLES
-var saveUserImgInDatabasePHPTarget =
+let saveUserImgInDatabasePHPTarget =
   "https://tsb.tecnico.ulisboa.pt/assets/php/save_image_on_server.php";
 
 if (process.env.NODE_ENV === "development") {
@@ -531,11 +531,8 @@ const departmentProfileAcronyms: { [key: string]: string } = {
 const fenixAuth = (userName: string, userId: string) => {
   const [firstN, lastN] = userName.split(" ");
   window.open(
-    "https://tsb-app-flask.herokuapp.com/?name=" +
-      `${firstN}+${lastN}` +
-      "&uid=" +
-      userId,
-    "_blank"
+    `https://tsb-app-flask.herokuapp.com/?name=${firstN}+${lastN}&uid=${userId}`,
+    "_blank",
   );
 };
 
@@ -546,26 +543,19 @@ const fenixAuth = (userName: string, userId: string) => {
  * @param userId
  * @returns
  */
-const getMatchedUsers = (
-  course: string,
-  users: any,
-  userId: string
-): string[] => {
-  let matchedUsers = [];
+const getMatchedUsers = (course: string, users: any, userId: string): string[] => {
+  const matchedUsers = [];
   try {
     // Retrieve the keys of each child of the parent node
-    var keys = Object.keys(users);
+    const keys = Object.keys(users);
 
-    for (let i in keys) {
-      var k = keys[i];
-      var userPairID = keys[i];
-      if (users[k].hasOwnProperty("courses")) {
-        if (users[k].courses.hasOwnProperty("enrolments")) {
+    for (const i in keys) {
+      const k = keys[i];
+      const userPairID = keys[i];
+      if (Object.hasOwn(users[k], "courses")) {
+        if (Object.hasOwn(users[k].courses, "enrolments")) {
           for (let j = 0; j < users[k].courses.enrolments.length; j++) {
-            if (
-              course === users[k].courses.enrolments[j].acronym &&
-              userId !== userPairID
-            ) {
+            if (course === users[k].courses.enrolments[j].acronym && userId !== userPairID) {
               matchedUsers.push(userPairID);
             }
           }
@@ -586,21 +576,21 @@ const getMatchedUsers = (
 const setDepartmentPositions = (
   option: string,
   user: userContext | null,
-  setSelectPositions: Function
+  setSelectPositions: Function,
 ) => {
   // Sets the optional positions based on the current department
   const acronym: string = departmentProfileAcronyms[option];
   get(ref(db, `private/departments/${acronym}/positions`)).then((snapshot) => {
     const positions = snapshot.val();
     const dataArr: selectOption[] = [];
-    for (var key in positions) {
-      if (positions.hasOwnProperty(key)) {
+    for (const key in positions) {
+      if (Object.hasOwn(positions, key)) {
         dataArr.push({ value: positions[key], label: positions[key] });
       }
     }
-    let morePositions: selectOption[] = getAdditionalAdminPositions(user);
-    let defaultPositions = getDefaultPositions();
-    let allPositions = [...defaultPositions, ...dataArr, ...morePositions];
+    const morePositions: selectOption[] = getAdditionalAdminPositions(user);
+    const defaultPositions = getDefaultPositions();
+    const allPositions = [...defaultPositions, ...dataArr, ...morePositions];
     setSelectPositions(allPositions);
   });
 };
@@ -618,12 +608,14 @@ const getAdditionalAdminPositions = (user: userContext | null) => {
       { value: "Head of Department", label: "Head of Department" },
       { value: "Technical Director", label: "Technical Director" },
     ];
-  } else if (user.position === "Head of Department") {
+  }
+  if (user.position === "Head of Department") {
     return [
       { value: "Head of Department", label: "Head of Department" },
       { value: "Technical Director", label: "Technical Director" },
     ];
-  } else if (user.position === "Technical Director") {
+  }
+  if (user.position === "Technical Director") {
     return [{ value: "Technical Director", label: "Technical Director" }];
   }
   return [];
@@ -648,7 +640,7 @@ const handleSelectDepartment = (
   key: string,
   user: userContext | null,
   setSelectPositions: Function,
-  setInfo: Function
+  setInfo: Function,
 ) => {
   setDepartmentPositions(option.value, user, setSelectPositions); // change positions based on department
   setInfo((info: PersonalInformation) => ({ ...info, [key]: option.value }));
@@ -680,10 +672,10 @@ const handleSelect = (option: any, key: string, setInfo: Function) => {
  * @param setInfo
  */
 const handleInTeamSelect = (option: any, setInfo: Function) => {
-  let inTeam = option.value === "true";
+  const inTeam = option.value === "true";
   setInfo((info: PersonalInformation) => ({
     ...info,
-    inTeam: inTeam ? true : false,
+    inTeam: !!inTeam,
   }));
 };
 
@@ -704,12 +696,8 @@ const handleDate = (date: Date, key: string, setInfo: Function) => {
  * @param key
  * @param setInfo
  */
-const handleInputMask = (
-  value: NumberFormatValues,
-  key: string,
-  setInfo: Function
-) => {
-  let str = value.formattedValue;
+const handleInputMask = (value: NumberFormatValues, key: string, setInfo: Function) => {
+  const str = value.formattedValue;
   setInfo((info: PersonalInformation) => ({ ...info, [key]: str }));
 };
 
@@ -790,7 +778,7 @@ const saveInformation = (
   setDisabledInput: Function,
   setPrevInfo: Function,
   setCroppie: Function,
-  setShowSaveImg: Function
+  setShowSaveImg: Function,
 ) => {
   // Updates the database and destroys croppie
   if (!user) {
@@ -819,7 +807,7 @@ const discardInformation = (
   setDisabledInput: Function,
   setInfo: Function,
   setCroppie: Function,
-  setShowSaveImg: Function
+  setShowSaveImg: Function,
 ) => {
   setDisabledInput((disabledInput: boolean) => !disabledInput);
   setInfo(prevInfo);
@@ -835,7 +823,7 @@ const discardInformation = (
 const killCroppie = (
   setCroppie: Function,
   croppie: Croppie | undefined,
-  setShowSaveImg: Function
+  setShowSaveImg: Function,
 ) => {
   if (croppie) croppie.destroy();
   setCroppie(croppie);
@@ -848,11 +836,7 @@ const killCroppie = (
  * @param croppie
  * @param setCroppie
  */
-const handleImage = (
-  img: string,
-  croppie: Croppie | undefined,
-  setCroppie: Function
-) => {
+const handleImage = (img: string, croppie: Croppie | undefined, setCroppie: Function) => {
   const el = document.getElementById("croppie-img");
   if (el) {
     if (!croppie) {
@@ -893,7 +877,7 @@ const handleUpload = (
   event: React.ChangeEvent<HTMLInputElement>,
   croppie: Croppie | undefined,
   setShowSaveImg: Function,
-  setCroppie: Function
+  setCroppie: Function,
 ) => {
   if (event.target.files && event.target.files[0]) {
     const img = URL.createObjectURL(event.target.files[0]);
@@ -919,7 +903,7 @@ const resizeImage = (
   croppie: Croppie | undefined,
   setCroppie: Function,
   setShowSaveImg: Function,
-  setUSER: Function
+  setUSER: Function,
 ) => {
   // Read the input image using FileReader.
   if (!user) {
@@ -955,10 +939,7 @@ const resizeImage = (
         .then((response) => {
           // If succesfful, save in firebase storage
           // Send image to firebase storage
-          fbStorage.uploadBytes(
-            fbStorage.ref(st, `users/${user.id}/${user.id}comp`),
-            fileBlob
-          );
+          fbStorage.uploadBytes(fbStorage.ref(st, `users/${user.id}/${user.id}comp`), fileBlob);
           // When all works out well, kill croppie and save button
           killCroppie(setCroppie, croppie, setShowSaveImg);
           // update/refresh the profile image
@@ -966,12 +947,8 @@ const resizeImage = (
           setUSER((USER: userContext) => {
             return {
               ...USER,
-              usrImgComp: `/db/users/${user.id}/img/${
-                user.id
-              }comp.png?${new Date().getTime()}`,
-              userImg: `/db/users/${user.id}/img/${
-                user.id
-              }.png?${new Date().getTime()}`,
+              usrImgComp: `/db/users/${user.id}/img/${user.id}comp.png?${new Date().getTime()}`,
+              userImg: `/db/users/${user.id}/img/${user.id}.png?${new Date().getTime()}`,
             };
           });
           // Refresh page to reload profile image
@@ -996,14 +973,14 @@ const sendImgToServer = async (
   croppie: Croppie,
   setCroppie: Function,
   setShowSaveImg: Function,
-  setUSER: Function
+  setUSER: Function,
 ) => {
   if (!user) {
     return;
   }
   // croppie to blob, this returns a promise, use await to get the blob file
   if (!blob) {
-    var imageSize = {
+    const imageSize = {
       width: 500,
       height: 500,
       type: "square",
@@ -1019,10 +996,10 @@ const sendImgToServer = async (
     filename = user.id;
   }
 
-  var blobUrl = URL.createObjectURL(blob);
+  const blobUrl = URL.createObjectURL(blob);
   window.open(blobUrl, "_blank");
 
-  var data = new FormData();
+  const data = new FormData();
   data.append("file", blob, user.id);
   data.set("uid", user.id);
   await axios
@@ -1037,10 +1014,7 @@ const sendImgToServer = async (
     })
     .catch((error) => {});
 
-  await fbStorage.uploadBytes(
-    fbStorage.ref(st, `users/${user.id}/${user.id}`),
-    blob
-  );
+  await fbStorage.uploadBytes(fbStorage.ref(st, `users/${user.id}/${user.id}`), blob);
   resizeImage(user, blob, croppie, setCroppie, setShowSaveImg, setUSER);
 };
 
@@ -1048,7 +1022,7 @@ const getUserIdFromUrl = () => {
   const pathName = window.location.pathname;
   // thread pathName
   // /forum/s/encodedSectionName/topic/encodedTopicName/thread/encodedThreadName
-  let splitted = pathName.split("/");
+  const splitted = pathName.split("/");
   return splitted[splitted.length - 1];
 };
 
@@ -1058,12 +1032,10 @@ const getUserIdFromUrl = () => {
  * @returns
  */
 const getDepartmentOptions = (departments: Departments) => {
-  let departmentOptions = Object.entries(departments).map(
-    ([acronym, department]) => ({
-      value: department.description,
-      label: department.description,
-    })
-  );
+  const departmentOptions = Object.entries(departments).map(([acronym, department]) => ({
+    value: department.description,
+    label: department.description,
+  }));
   return departmentOptions;
 };
 
@@ -1075,7 +1047,7 @@ const getDepartmentOptions = (departments: Departments) => {
  */
 const getCoverBgColor = (
   user: userContext | PersonalInformation | null,
-  departmentsWDesc: Departments
+  departmentsWDesc: Departments,
 ) => {
   if (!user) return;
   let bgColor = "bg-vicious-stance";
@@ -1095,7 +1067,7 @@ const getCoverBgColor = (
  */
 const getCoverBorderColor = (
   user: userContext | PersonalInformation | null,
-  departmentsWDesc: Departments
+  departmentsWDesc: Departments,
 ) => {
   if (!user) return;
   let bdColor = "#6c757d";
@@ -1108,37 +1080,37 @@ const getCoverBorderColor = (
 };
 
 export {
-  killCroppie,
-  handleImage,
-  handleUpload,
-  setDepartmentPositions,
-  saveInformation,
-  discardInformation,
-  handleSelectDepartment,
-  handleInput,
-  handleSelect,
-  handleInTeamSelect,
-  handleDate,
-  editInformation,
-  departmentOptions,
-  mbWayOptions,
-  coursesOptions,
-  groupStyles,
-  groupBadgeStyles,
-  selectStyles,
-  curricularYearOptions,
   countryOptions,
-  formatCoursesLabel,
+  coursesOptions,
+  curricularYearOptions,
   defaultInfo,
   departmentAcronyms,
+  departmentOptions,
+  discardInformation,
+  editInformation,
   fenixAuth,
-  getMatchedUsers,
-  sendImgToServer,
-  getUserIdFromUrl,
-  handleInputMask,
-  getDepartmentOptions,
+  formatCoursesLabel,
   getCoverBgColor,
   getCoverBorderColor,
-  sendTeamToPublic,
+  getDepartmentOptions,
+  getMatchedUsers,
+  getUserIdFromUrl,
+  groupBadgeStyles,
+  groupStyles,
+  handleDate,
+  handleImage,
+  handleInTeamSelect,
+  handleInput,
+  handleInputMask,
+  handleSelect,
+  handleSelectDepartment,
+  handleUpload,
+  killCroppie,
+  mbWayOptions,
+  saveInformation,
   savePublicUser,
+  selectStyles,
+  sendImgToServer,
+  sendTeamToPublic,
+  setDepartmentPositions,
 };

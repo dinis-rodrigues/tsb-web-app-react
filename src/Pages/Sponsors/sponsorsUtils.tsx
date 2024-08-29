@@ -1,7 +1,12 @@
 import { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { db } from "../../config/firebase";
+import { ApexOptions } from "apexcharts";
+import axios from "axios";
+import { get, onValue, push, ref, remove, set } from "firebase/database";
+import fileDownload from "js-file-download";
+import { ColorPickerValue } from "react-rainbow-components/components/ColorPicker";
 import { v4 as uuid } from "uuid";
+import { db } from "../../config/firebase";
 import {
   Sponsor,
   SponsorBracket,
@@ -15,16 +20,7 @@ import {
   SponsorsOrder,
   SponsorsOrderPublic,
 } from "../../interfaces";
-import { ApexOptions } from "apexcharts";
-import { ColorPickerValue } from "react-rainbow-components/components/ColorPicker";
-import fileDownload from "js-file-download";
-import axios from "axios";
-import {
-  dateToString,
-  normalizedString,
-  toastrMessage,
-} from "../../utils/generalFunctions";
-import { get, onValue, push, ref, remove, set } from "firebase/database";
+import { dateToString, normalizedString, toastrMessage } from "../../utils/generalFunctions";
 
 const sponsorSkeleton: Sponsor = {
   name: "New Sponsor Name",
@@ -62,7 +58,7 @@ const sponsorChartOptions: ApexOptions = {
   },
   dataLabels: {
     enabled: true,
-    formatter: function (val: number, opts) {
+    formatter: (val: number, opts) => {
       // let data: number[] = opts.w.config.series[0].data;
       // let sum = data.reduce((a, b) => a + b, 0);
       // const percent = (val / sum) * 100;
@@ -91,9 +87,7 @@ const sponsorChartOptions: ApexOptions = {
     },
     labels: {
       show: true,
-      formatter: function (val) {
-        return val.toString();
-      },
+      formatter: (val) => val.toString(),
     },
   },
 };
@@ -139,11 +133,11 @@ const retroChartOptions: ApexOptions = {
 const updateSponsorDropdown = (
   search: string,
   sponsors: [string, Sponsor][],
-  setDropdownResults: Function
+  setDropdownResults: Function,
 ) => {
   const res = sponsors.filter(([sponId, sponsorVal]) => {
-    let normSponsor = normalizedString(sponsorVal.name).toLowerCase();
-    let normSearch = normalizedString(search).toLowerCase();
+    const normSponsor = normalizedString(sponsorVal.name).toLowerCase();
+    const normSearch = normalizedString(search).toLowerCase();
     return (
       (normSponsor.indexOf(normSearch) > -1 && !sponsorVal.level) ||
       (!normSearch && !sponsorVal.level)
@@ -160,9 +154,7 @@ const updateSponsorDropdown = (
 const deleteSponsor = (sponsorId: string, bracketId: string | undefined) => {
   // retrieve board items from bracket to remove sponsor
   if (bracketId)
-    get(
-      ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`)
-    ).then((snapshot) => {
+    get(ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`)).then((snapshot) => {
       let sponsorsList: string[] = snapshot.val();
       if (!sponsorsList) sponsorsList = [];
       const newSponsorsList = sponsorsList.filter((sponsor) => {
@@ -170,18 +162,10 @@ const deleteSponsor = (sponsorId: string, bracketId: string | undefined) => {
       });
 
       // Update with new List
-      set(
-        ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`),
-        newSponsorsList
-      );
+      set(ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`), newSponsorsList);
 
       // Remove sponsor from bracket sponsors
-      remove(
-        ref(
-          db,
-          `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`
-        )
-      );
+      remove(ref(db, `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`));
       // remove sponsor from inventory
       remove(ref(db, `private/sponsors/inventory/${sponsorId}`));
     });
@@ -202,7 +186,7 @@ const addSponsorToBracket = (
   sponsorId: string,
   sponsor: Sponsor,
   bracketId: string,
-  bracketName: string
+  bracketName: string,
 ) => {
   // retrieve board items from bracket to add sponsor
   get(ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`))
@@ -212,24 +196,15 @@ const addSponsorToBracket = (
       sponsorsList.push(sponsorId);
 
       // Update with new List
-      set(
-        ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`),
-        sponsorsList
-      );
+      set(ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`), sponsorsList);
 
       // Add sponsor to bracket sponsors
-      set(
-        ref(
-          db,
-          `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`
-        ),
-        { ...sponsor, level: bracketName }
-      );
+      set(ref(db, `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`), {
+        ...sponsor,
+        level: bracketName,
+      });
       // update sponsor in inventory with new bracket
-      set(
-        ref(db, `private/sponsors/inventory/${sponsorId}/level`),
-        bracketName
-      );
+      set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), bracketName);
       toastrMessage(`${sponsor.name} added to ${bracketName}`, "error");
     })
     .catch((err) => {
@@ -244,31 +219,21 @@ const addSponsorToBracket = (
  */
 const removeSponsorFromBracket = (sponsorId: string, bracketId: string) => {
   // retrieve board items from bracket
-  get(ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`)).then(
-    (snapshot) => {
-      const sponsorsList: string[] = snapshot.val();
-      // remove from list
-      const newSponsorsList = sponsorsList.filter((sponsor) => {
-        return sponsor !== sponsorId;
-      });
+  get(ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`)).then((snapshot) => {
+    const sponsorsList: string[] = snapshot.val();
+    // remove from list
+    const newSponsorsList = sponsorsList.filter((sponsor) => {
+      return sponsor !== sponsorId;
+    });
 
-      // Update with new List
-      set(
-        ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`),
-        newSponsorsList
-      );
+    // Update with new List
+    set(ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`), newSponsorsList);
 
-      // Remove sponsor from bracket sponsors
-      remove(
-        ref(
-          db,
-          `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`
-        )
-      );
-      // update sponsor in inventory with blank bracket name
-      set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), "");
-    }
-  );
+    // Remove sponsor from bracket sponsors
+    remove(ref(db, `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}`));
+    // update sponsor in inventory with blank bracket name
+    set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), "");
+  });
 };
 
 /**
@@ -282,13 +247,7 @@ const deleteBracket = (bracketId: string, sponsorsItems: string[]) => {
     set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), "");
 
     // this one is unnecessary, but just in case... Review later
-    set(
-      ref(
-        db,
-        `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}/level`
-      ),
-      ""
-    );
+    set(ref(db, `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}/level`), "");
   });
 
   // delete from bracket list
@@ -310,7 +269,7 @@ const saveBracket = (
   bracketId: string,
   bracketInfo: SponsorBracketListItem | null,
   sponsorsItems: string[],
-  setBracketModalOpen: Function
+  setBracketModalOpen: Function,
 ) => {
   if (!bracketInfo) return;
   if (bracketId) {
@@ -318,17 +277,11 @@ const saveBracket = (
 
     // Update name information in each sponsor of bracket
     sponsorsItems.forEach((sponsorId) => {
-      set(
-        ref(db, `private/sponsors/inventory/${sponsorId}/level`),
-        bracketInfo.name
-      );
+      set(ref(db, `private/sponsors/inventory/${sponsorId}/level`), bracketInfo.name);
 
       set(
-        ref(
-          db,
-          `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}/level`
-        ),
-        bracketInfo.name
+        ref(db, `private/sponsors/brackets/${bracketId}/bracketSponsors/${sponsorId}/level`),
+        bracketInfo.name,
       );
     });
   } else push(ref(db, "private/sponsors/bracketsList"), bracketInfo); // create new
@@ -359,14 +312,7 @@ const bracketSliderHandler = (value: string, setBracketInfo: Function) => {
   if (!value) return;
   let numVal = parseInt(value);
   if (numVal === 5) numVal = 6;
-  if (
-    numVal === 7 ||
-    numVal === 8 ||
-    numVal === 9 ||
-    numVal === 10 ||
-    numVal === 11
-  )
-    numVal = 12;
+  if (numVal === 7 || numVal === 8 || numVal === 9 || numVal === 10 || numVal === 11) numVal = 12;
   setBracketInfo((state: SponsorBracketListItem) => ({
     ...state,
     numColumns: numVal,
@@ -379,11 +325,7 @@ const bracketSliderHandler = (value: string, setBracketInfo: Function) => {
  * @param key
  * @param setBracketInfo
  */
-const bracketMarginHandler = (
-  value: number,
-  key: string,
-  setBracketInfo: Function
-) => {
+const bracketMarginHandler = (value: number, key: string, setBracketInfo: Function) => {
   if (!value) value = 0;
   setBracketInfo((state: SponsorBracketsDB) => ({ ...state, [key]: value }));
 };
@@ -393,10 +335,7 @@ const bracketMarginHandler = (
  * @param value
  * @param setBracketInfo
  */
-const bracketColorHandler = (
-  value: ColorPickerValue,
-  setBracketInfo: Function
-) => {
+const bracketColorHandler = (value: ColorPickerValue, setBracketInfo: Function) => {
   setBracketInfo((state: SponsorBracketsDB) => ({ ...state, color: value }));
 };
 
@@ -406,11 +345,7 @@ const bracketColorHandler = (
  * @param sponsorInfo
  * @param setSponsorInfo
  */
-const deleteSeason = (
-  season: string,
-  sponsorInfo: Sponsor,
-  setSponsorInfo: Function
-) => {
+const deleteSeason = (season: string, sponsorInfo: Sponsor, setSponsorInfo: Function) => {
   const newSponsorInfo: Sponsor = {
     ...sponsorInfo,
   };
@@ -425,18 +360,12 @@ const deleteSeason = (
  * @param setSponsorInfo
  * @returns
  */
-const addNewSeason = (
-  sponsorInfo: Sponsor | null,
-  setSponsorInfo: Function
-) => {
+const addNewSeason = (sponsorInfo: Sponsor | null, setSponsorInfo: Function) => {
   if (!sponsorInfo) return;
   if (sponsorInfo.history && Object.keys(sponsorInfo.history)) {
-    const seasons = Object.entries(sponsorInfo.history).map(
-      ([season, _]) => season
-    );
-    let lastSeasonYear = seasons[seasons.length - 1].split("-")[1];
-    const newSeason =
-      lastSeasonYear + "-" + (parseInt(lastSeasonYear) + 1).toString();
+    const seasons = Object.entries(sponsorInfo.history).map(([season, _]) => season);
+    const lastSeasonYear = seasons[seasons.length - 1].split("-")[1];
+    const newSeason = `${lastSeasonYear}-${(parseInt(lastSeasonYear) + 1).toString()}`;
     const newSponsorInfo: Sponsor = {
       ...sponsorInfo,
       history: { ...sponsorInfo.history, [newSeason]: { value: 0 } },
@@ -470,7 +399,7 @@ const editSeasonValueHandler = (
   value: number,
   seasonToEdit: string,
   sponsorInfo: Sponsor,
-  setSponsorInfo: Function
+  setSponsorInfo: Function,
 ) => {
   if (!value) value = 0;
   const newSponsorInfo: Sponsor = {
@@ -496,7 +425,7 @@ const editSeasonHandler = (
   seasonToEdit: string,
   sponsorInfo: Sponsor,
   setSponsorInfo: Function,
-  setFocusInput: Function
+  setFocusInput: Function,
 ) => {
   season = season.replace("/", "-");
 
@@ -504,8 +433,7 @@ const editSeasonHandler = (
   let sponsorValue = 0;
   if (sponsorInfo.history && Object.keys(sponsorInfo.history)) {
     if (sponsorInfo.history[season]) season = "____/____";
-    if (sponsorInfo.history[seasonToEdit])
-      sponsorValue = sponsorInfo.history[seasonToEdit].value;
+    if (sponsorInfo.history[seasonToEdit]) sponsorValue = sponsorInfo.history[seasonToEdit].value;
   }
 
   const newSponsorInfo: Sponsor = {
@@ -529,11 +457,7 @@ const editSeasonHandler = (
  * @param key
  * @param setSponsorInfo
  */
-const sponsorInputHandler = (
-  value: number | string,
-  key: string,
-  setSponsorInfo: Function
-) => {
+const sponsorInputHandler = (value: number | string, key: string, setSponsorInfo: Function) => {
   setSponsorInfo((state: Sponsor) => ({ ...state, [key]: value }));
 };
 
@@ -549,17 +473,14 @@ const saveSponsor = (
   sponsorInfo: Sponsor | null,
   sponsorId: string,
   bracketid: string | undefined,
-  setModalIsOpen: Function | null
+  setModalIsOpen: Function | null,
 ) => {
   if (!sponsorInfo) return;
   // save in bracket
   if (bracketid)
     set(
-      ref(
-        db,
-        `private/sponsors/brackets/${bracketid}/bracketSponsors/${sponsorId}`
-      ),
-      sponsorInfo
+      ref(db, `private/sponsors/brackets/${bracketid}/bracketSponsors/${sponsorId}`),
+      sponsorInfo,
     );
   // save in inventory
   if (sponsorId !== "createNew") {
@@ -589,20 +510,17 @@ const handleDragEnd = (
   event: DragEndEvent,
   bracketId: string,
   setItems: Function,
-  setActiveId: Function
+  setActiveId: Function,
 ) => {
   const { active, over } = event;
 
   if (active.id !== over!.id) {
     setItems((items: string[]) => {
-      const oldIndex = items.indexOf(active.id);
-      const newIndex = items.indexOf(over!.id);
+      const oldIndex = items.indexOf(active.id.toString());
+      const newIndex = items.indexOf(over!.id.toString());
       const newOrder = arrayMove(items, oldIndex, newIndex);
-      set(
-        ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`),
-        newOrder
-      );
-      // return newOrder;
+      set(ref(db, `private/sponsors/brackets/${bracketId}/sponsorsBoardList`), newOrder);
+      return newOrder;
     });
   }
 
@@ -627,13 +545,13 @@ const getAllSponsorBrackets = (setBrackets: Function) => {
     if (!sponsorBrackets) return;
     setBrackets(
       Object.entries(sponsorBrackets).sort((a, b) => {
-        let bracketA = a[1];
-        let bracketB = b[1];
+        const bracketA = a[1];
+        const bracketB = b[1];
 
         if (bracketA.topMargin > bracketB.topMargin) return -1;
         if (bracketA.topMargin < bracketB.topMargin) return 1;
         return 0;
-      })
+      }),
     );
   });
 };
@@ -647,20 +565,19 @@ const getAllSponsorBrackets = (setBrackets: Function) => {
 const getSponsorsListFromBrackets = (
   bracketId: string,
   setSponsorsItems: Function,
-  setSponsorsObj: Function
+  setSponsorsObj: Function,
 ) => {
   onValue(ref(db, `private/sponsors/brackets/${bracketId}`), (snapshot) => {
     const sponsorBracket: SponsorBracketsDB = snapshot.val();
     if (!sponsorBracket) {
       setSponsorsItems([]);
       return;
-    } else {
-      if (!sponsorBracket.sponsorsBoardList) setSponsorsItems([]);
-      else setSponsorsItems(sponsorBracket.sponsorsBoardList);
-
-      if (!sponsorBracket.bracketSponsors) setSponsorsObj({});
-      else setSponsorsObj(sponsorBracket.bracketSponsors);
     }
+    if (!sponsorBracket.sponsorsBoardList) setSponsorsItems([]);
+    else setSponsorsItems(sponsorBracket.sponsorsBoardList);
+
+    if (!sponsorBracket.bracketSponsors) setSponsorsObj({});
+    else setSponsorsObj(sponsorBracket.bracketSponsors);
     // setSponsorsItems(sponsorsList);
   });
 };
@@ -676,31 +593,30 @@ const replaceSVGWidthAndHeight = (s: string, toReplace: string) => {
   s = s.substring(s.indexOf("<svg"));
 
   // Check if the <svg ... > has existing width/height attribute
-  let svgParentString = s.substring(s.indexOf("<svg"), s.indexOf(">"));
-  let toReplaceExists = svgParentString.indexOf(toReplace) > -1;
+  const svgParentString = s.substring(s.indexOf("<svg"), s.indexOf(">"));
+  const toReplaceExists = svgParentString.indexOf(toReplace) > -1;
 
   if (toReplaceExists) {
-    let wIdx = s.indexOf(toReplace) + toReplace.length;
+    const wIdx = s.indexOf(toReplace) + toReplace.length;
     // split the string into two substrings, to replace the width
     let wSubString = s.substring(0, wIdx);
-    let wRest = s.substring(wIdx);
+    const wRest = s.substring(wIdx);
     // find the closing " of the width="..."
-    let wClosingIdx = wRest.indexOf(`"`);
-    let finalWSub = wRest.substring(wClosingIdx);
+    const wClosingIdx = wRest.indexOf(`"`);
+    const finalWSub = wRest.substring(wClosingIdx);
     // add the width 100%
-    wSubString += `100%` + finalWSub;
+    wSubString += `100%${finalWSub}`;
     // find the next "
     return wSubString;
-  } else {
-    // Insert property into <svg toReplace >
-    // split the string into two substrings, to replace the width
-    let initString = s.substring(0, 4);
-    let restString = s.substring(4);
-    if (toReplace.indexOf("width") !== -1) {
-      return initString + ` width="100%" ` + restString;
-    }
-    return initString + ` height="100%" ` + restString;
   }
+  // Insert property into <svg toReplace >
+  // split the string into two substrings, to replace the width
+  const initString = s.substring(0, 4);
+  const restString = s.substring(4);
+  if (toReplace.indexOf("width") !== -1) {
+    return `${initString} width="100%" ${restString}`;
+  }
+  return `${initString} height="100%" ${restString}`;
 };
 
 /**
@@ -714,10 +630,14 @@ const getStringMatches = (s: string, expr: string) => {
   let regexp = /<linearGradient id=/g;
   if (expr === "image") regexp = /<image id=/g;
   if (expr === "pattern") regexp = /<pattern id=/g;
-  let match,
-    matches = [];
+  let match;
+  const matches = [];
 
-  while ((match = regexp.exec(s)) != null) {
+  while (true) {
+    match = regexp.exec(s);
+    if (match === null) {
+      break;
+    }
     matches.push(match.index);
   }
   return matches;
@@ -730,18 +650,18 @@ const getStringMatches = (s: string, expr: string) => {
  * @returns
  */
 const replaceLinearGradients = (s: string, toFind: string, expr = "linear") => {
-  let matches = getStringMatches(s, expr);
+  const matches = getStringMatches(s, expr);
   // For each linear gradient, replace the id with a unique identifier
   matches.forEach((_, idx) => {
     // We need to do this for every occurrence, because each time we change the id, the
     // next indexes change
-    let moreMatches = getStringMatches(s, expr);
-    let matchIdx = moreMatches[idx];
-    let subStr = s.substring(matchIdx + toFind.length);
+    const moreMatches = getStringMatches(s, expr);
+    const matchIdx = moreMatches[idx];
+    const subStr = s.substring(matchIdx + toFind.length);
 
     // Get the linear gradient Id
-    let closureIdx = subStr.indexOf(`"`);
-    let linearid = subStr.substring(0, closureIdx);
+    const closureIdx = subStr.indexOf(`"`);
+    const linearid = subStr.substring(0, closureIdx);
     // replace all linearId occurrences in svg, with a unique identifier
     s = s.replaceAll(linearid, uuid());
   });
@@ -761,16 +681,13 @@ const buildSponsorGraph = (
   retroActives: SponsorRetroactives,
   addRetroactives: boolean | undefined,
   setChartSeries: Function,
-  setChartLabels: Function
+  setChartLabels: Function,
 ) => {
   if (!data) return;
 
   const labels = Object.entries(data).map(([season, _]) => season);
 
-  const { simpleValues, retroValues } = calculateRetroActives(
-    data,
-    retroActives
-  );
+  const { simpleValues, retroValues } = calculateRetroActives(data, retroActives);
 
   if (addRetroactives || addRetroactives === undefined) {
     setChartSeries([
@@ -791,12 +708,10 @@ const buildSponsorGraph = (
  */
 const calculateRetroActives = (
   data: SponsorHistory | undefined,
-  retroActives: SponsorRetroactives
+  retroActives: SponsorRetroactives,
 ) => {
   if (!data) return { simpleValues: [], retroValues: [] };
-  const simpleValues = Object.entries(data).map(
-    ([_, seasonValue]) => seasonValue.value
-  );
+  const simpleValues = Object.entries(data).map(([_, seasonValue]) => seasonValue.value);
   // Build retro-actives array
   const retroValues: number[] = new Array(simpleValues.length).fill(0);
 
@@ -833,10 +748,7 @@ const getRetroActives = (setRetroValues: Function) => {
  * @param setSponsors
  * @param setExistingBrackets
  */
-const getInventorySponsors = (
-  setSponsors: Function,
-  setExistingBrackets: Function
-) => {
+const getInventorySponsors = (setSponsors: Function, setExistingBrackets: Function) => {
   onValue(ref(db, "private/sponsors/inventory"), (snapshot) => {
     const allSponsors: SponsorsOrder = snapshot.val();
 
@@ -844,8 +756,8 @@ const getInventorySponsors = (
 
     // order by name
     const sortedSponsors = Object.entries(allSponsors).sort((a, b) => {
-      let sponsorNameA = normalizedString(a[1].name).toLowerCase();
-      let sponsorNameB = normalizedString(b[1].name).toLowerCase();
+      const sponsorNameA = normalizedString(a[1].name).toLowerCase();
+      const sponsorNameB = normalizedString(b[1].name).toLowerCase();
 
       if (sponsorNameA > sponsorNameB) return 1;
       if (sponsorNameA < sponsorNameB) return -1;
@@ -868,7 +780,7 @@ const getInventorySponsors = (
 const getMatchingBracketId = (
   sponsorInfo: Sponsor,
   existingBrackets: SponsorBracketsListDB | undefined,
-  setCurrBracketId: Function
+  setCurrBracketId: Function,
 ) => {
   let bracketidToUpdate = undefined;
   if (existingBrackets)
@@ -887,16 +799,13 @@ const getMatchingBracketId = (
  * @param setSvgString
  * @returns
  */
-const getSvgStringFromPath = async (
-  svgPath: string | undefined,
-  setSvgString: Function
-) => {
+const getSvgStringFromPath = async (svgPath: string | undefined, setSvgString: Function) => {
   if (!svgPath) return "";
 
-  var myHeaders = new Headers();
+  const myHeaders = new Headers();
   myHeaders.append("Cookie", "BACKENDID=backend_38pIL_omega04|YWtMs|YWtMs");
 
-  var requestOptions = {
+  const requestOptions = {
     method: "GET",
     headers: myHeaders,
   };
@@ -949,32 +858,27 @@ const uploadSponsorSvgToServer = (
   logoType: "svgPath" | "logoWhite" | "logoBlack",
   userId: string | undefined,
   setFileValue: Function,
-  setSponsorInfo: Function
+  setSponsorInfo: Function,
 ) => {
   if (!filesList.length || !sponsorId || !sponsorInfo || !userId) return;
   // let headers = new Headers();
   // headers.append("Origin", "http://localhost:3005");
 
-  var data = new FormData();
+  const data = new FormData();
   data.append("sponsorId", sponsorId);
   data.append("fileToUpload", filesList[0]);
   data.append("fileToDelete", fileToDelete ? fileToDelete : "");
   data.append("allowedLogoType", logoType);
   data.append("userId", userId);
 
-  fetch(
-    "https://tecnicosolarboat.tecnico.ulisboa.pt/api/receiveAndSaveFile.php",
-    {
-      method: "POST",
-      body: data,
-    }
-  )
-    .then(function (res) {
-      return res.json();
-    })
+  fetch("https://tecnicosolarboat.tecnico.ulisboa.pt/api/receiveAndSaveFile.php", {
+    method: "POST",
+    body: data,
+  })
+    .then((res) => res.json())
     .then((r: UploadResponse) => {
       if (!r.error) {
-        let urlPath = r.msg;
+        const urlPath = r.msg;
         const newSponsorInfo = { ...sponsorInfo, [logoType]: urlPath };
         setSponsorInfo(newSponsorInfo);
         saveSponsor(newSponsorInfo, sponsorId, bracketId, null);
@@ -994,7 +898,7 @@ const uploadSponsorSvgToServer = (
  */
 const downloadSponsorFile = (url: string | undefined, name: string) => {
   if (!url) return;
-  let filename = url.split("/").pop();
+  const filename = url.split("/").pop();
   if (!filename) return;
   axios
     .get(url, {
@@ -1015,12 +919,12 @@ const downloadSponsorFile = (url: string | undefined, name: string) => {
 const publishBracketToWebsite = (
   bracketId: string,
   bracketInfo: SponsorBracketListItem,
-  bracket: SponsorBracket
+  bracket: SponsorBracket,
 ) => {
   const newSponsorObject: SponsorsOrderPublic = {};
   Object.entries(bracket.bracketSponsors).forEach(([sponsorId, sponsor]) => {
     // Build a sponsor with public information (remove values and history)
-    let newSponsorInfo: SponsorPublic = {
+    const newSponsorInfo: SponsorPublic = {
       name: sponsor.name,
       svgPath: sponsor.svgPath,
       url: sponsor.url,
@@ -1035,16 +939,11 @@ const publishBracketToWebsite = (
   };
 
   // Publish public bracket to public database
-  set(
-    ref(db, `public/officialWebsite/sponsors/brackets/${bracketId}`),
-    publicBracket
-  ).catch((err) => {
-    if (err)
-      toastrMessage(
-        `An error occurred while publishing ${bracketInfo.name}`,
-        "error"
-      );
-  });
+  set(ref(db, `public/officialWebsite/sponsors/brackets/${bracketId}`), publicBracket).catch(
+    (err) => {
+      if (err) toastrMessage(`An error occurred while publishing ${bracketInfo.name}`, "error");
+    },
+  );
 };
 
 /**
@@ -1065,10 +964,7 @@ const getLastEditionDate = (setLastChangeDate: Function) => {
  */
 const publishLastChangeDate = () => {
   const lastChangeTimeStamp = new Date().getTime();
-  set(
-    ref(db, "public/officialWebsite/sponsors/lastChange"),
-    lastChangeTimeStamp
-  );
+  set(ref(db, "public/officialWebsite/sponsors/lastChange"), lastChangeTimeStamp);
 };
 
 /**
@@ -1076,14 +972,11 @@ const publishLastChangeDate = () => {
  * @param existingBrackets
  * @returns
  */
-const publishSponsorsToWebsite = async (
-  existingBrackets: SponsorBracketsListDB | undefined
-) => {
+const publishSponsorsToWebsite = async (existingBrackets: SponsorBracketsListDB | undefined) => {
   if (!existingBrackets) return;
   // remove existing from website
   await remove(ref(db, "public/officialWebsite/sponsors")).catch((err) => {
-    if (err)
-      toastrMessage(`An error occurred while replacing sponsors`, "error");
+    if (err) toastrMessage(`An error occurred while replacing sponsors`, "error");
   });
 
   // Get all existing brackets with sponsors
@@ -1113,15 +1006,10 @@ const filterSponsors = (
   filterNoLogo: boolean,
   filterLowQualityLogo: boolean,
   sponsors: [string, Sponsor][],
-  setInventorySponsors: Function
+  setInventorySponsors: Function,
 ) => {
   const currSeason = getCurrentSeasonYear();
-  if (
-    !searchTerm &&
-    !filterOutdatedValues &&
-    !filterNoLogo &&
-    !filterLowQualityLogo
-  ) {
+  if (!searchTerm && !filterOutdatedValues && !filterNoLogo && !filterLowQualityLogo) {
     setInventorySponsors(sponsors);
     return;
   }
@@ -1133,10 +1021,8 @@ const filterSponsors = (
             .includes(normalizedString(searchTerm).toLowerCase())
         : true) &&
       (filterLowQualityLogo ? sponsor.isBadQualityLogo : true) &&
-      (filterOutdatedValues
-        ? !sponsor.history || !sponsor.history[currSeason]
-        : true) &&
-      (filterNoLogo ? !!!sponsor.svgPath : true)
+      (filterOutdatedValues ? !sponsor.history || !sponsor.history[currSeason] : true) &&
+      (filterNoLogo ? !sponsor.svgPath : true)
     );
   });
   setInventorySponsors(filteredSponsors);
@@ -1153,7 +1039,7 @@ const editRetroValueHandler = (
   value: number,
   yearToEdit: number,
   retroActives: SponsorRetroactives,
-  setRetroActives: Function
+  setRetroActives: Function,
 ) => {
   const newRetroActives = [...retroActives.values];
   newRetroActives[yearToEdit] = value;
@@ -1169,9 +1055,9 @@ const editRetroValueHandler = (
 const retroSelectHandler = (
   value: string,
   retroActives: SponsorRetroactives,
-  setRetroActives: Function
+  setRetroActives: Function,
 ) => {
-  const isActiveValue = value === "Yes" ? true : false;
+  const isActiveValue = value === "Yes";
   setRetroActives({ ...retroActives, isActive: isActiveValue });
 };
 
@@ -1184,7 +1070,7 @@ const retroSelectHandler = (
 const retroThresholdHandler = (
   number: number,
   retroActives: SponsorRetroactives,
-  setRetroActives: Function
+  setRetroActives: Function,
 ) => {
   setRetroActives({ ...retroActives, threshold: number });
 };
@@ -1194,10 +1080,7 @@ const retroThresholdHandler = (
  * @param retroActives
  * @param setRetroActives
  */
-const addRetroYear = (
-  retroActives: SponsorRetroactives,
-  setRetroActives: Function
-) => {
+const addRetroYear = (retroActives: SponsorRetroactives, setRetroActives: Function) => {
   const newRetroActives = [...retroActives.values, 0];
   setRetroActives({ ...retroActives, values: newRetroActives });
 };
@@ -1211,7 +1094,7 @@ const addRetroYear = (
 const deleteRetroYear = (
   idx: number,
   retroActives: SponsorRetroactives,
-  setRetroActives: Function
+  setRetroActives: Function,
 ) => {
   const newRetroActives = retroActives.values.filter((_, i) => i !== idx);
   setRetroActives({ ...retroActives, values: newRetroActives });
@@ -1238,8 +1121,7 @@ const saveRetroActives = (retroActives: SponsorRetroactives) => {
 const sponsorRetroHandler = (setSponsorInfo: Function) => {
   setSponsorInfo((sponsor: Sponsor) => ({
     ...sponsor,
-    isRetroActive:
-      sponsor.isRetroActive === undefined ? false : !sponsor.isRetroActive,
+    isRetroActive: sponsor.isRetroActive === undefined ? false : !sponsor.isRetroActive,
   }));
 };
 
@@ -1250,8 +1132,7 @@ const sponsorRetroHandler = (setSponsorInfo: Function) => {
 const sponsorLogoQualityHandler = (setSponsorInfo: Function) => {
   setSponsorInfo((sponsor: Sponsor) => ({
     ...sponsor,
-    isBadQualityLogo:
-      sponsor.isBadQualityLogo === undefined ? true : !sponsor.isBadQualityLogo,
+    isBadQualityLogo: sponsor.isBadQualityLogo === undefined ? true : !sponsor.isBadQualityLogo,
   }));
 };
 
@@ -1266,12 +1147,10 @@ const updateSponsorStatus = (
   status: number,
   season: string,
   sponsorInfo: Sponsor,
-  setSponsorInfo: Function
+  setSponsorInfo: Function,
 ) => {
   let newStatus: number | undefined = status;
-  sponsorInfo.history![season].status === status
-    ? (newStatus = undefined)
-    : (newStatus = status);
+  newStatus = sponsorInfo.history![season].status === status ? undefined : status;
   const newSponsorInfo: Sponsor = {
     ...sponsorInfo,
     history: {
@@ -1302,8 +1181,7 @@ const updateSponsorsHistory = () => {
               value: seasonValue ? seasonValue : 0,
             };
           });
-          allBrackets[bracketId].bracketSponsors[sponsorId].history =
-            newHistory;
+          allBrackets[bracketId].bracketSponsors[sponsorId].history = newHistory;
         }
       });
     });
@@ -1329,55 +1207,55 @@ const updateSponsorsHistory = () => {
   });
 };
 export {
+  addNewSeason,
+  addRetroYear,
+  addSponsorToBracket,
+  bracketColorHandler,
+  bracketInputHandler,
+  bracketMarginHandler,
+  bracketSkeleton,
+  bracketSliderHandler,
+  buildSponsorGraph,
+  calculateRetroActives,
+  deleteBracket,
+  deleteRetroYear,
+  deleteSeason,
+  deleteSponsor,
+  downloadSponsorFile,
+  editRetroValueHandler,
+  editSeasonHandler,
+  editSeasonValueHandler,
+  filterSponsors,
+  getAllSponsorBrackets,
+  getCurrentSeasonYear,
+  getInventorySponsors,
+  getLastEditionDate,
+  getMatchingBracketId,
+  getRetroActives,
+  getSponsorsListFromBrackets,
+  getStringMatches,
+  getSvgStringFromPath,
   handleDragCancel,
   handleDragEnd,
   handleDragStart,
-  getAllSponsorBrackets,
-  getSponsorsListFromBrackets,
+  publishSponsorsToWebsite,
+  removeSponsorFromBracket,
   replaceLinearGradients,
-  getStringMatches,
   replaceSVGWidthAndHeight,
-  sponsorInputHandler,
+  retroActivesSkeleton,
+  retroChartOptions,
+  retroSelectHandler,
+  retroThresholdHandler,
+  saveBracket,
+  saveRetroActives,
   saveSponsor,
   sponsorChartOptions,
-  buildSponsorGraph,
-  editSeasonHandler,
-  editSeasonValueHandler,
-  addNewSeason,
-  deleteSeason,
-  calculateRetroActives,
-  getRetroActives,
-  bracketInputHandler,
-  bracketSliderHandler,
-  bracketMarginHandler,
-  bracketColorHandler,
-  saveBracket,
+  sponsorInputHandler,
+  sponsorLogoQualityHandler,
+  sponsorRetroHandler,
   sponsorSkeleton,
-  getInventorySponsors,
-  getSvgStringFromPath,
-  uploadSponsorSvgToServer,
-  downloadSponsorFile,
-  getMatchingBracketId,
-  bracketSkeleton,
-  deleteBracket,
-  removeSponsorFromBracket,
-  addSponsorToBracket,
   updateSponsorDropdown,
-  deleteSponsor,
-  publishSponsorsToWebsite,
-  getLastEditionDate,
-  retroChartOptions,
-  editRetroValueHandler,
-  addRetroYear,
-  deleteRetroYear,
-  retroActivesSkeleton,
-  saveRetroActives,
-  retroThresholdHandler,
-  retroSelectHandler,
-  filterSponsors,
   updateSponsorsHistory,
   updateSponsorStatus,
-  getCurrentSeasonYear,
-  sponsorRetroHandler,
-  sponsorLogoQualityHandler,
+  uploadSponsorSvgToServer,
 };

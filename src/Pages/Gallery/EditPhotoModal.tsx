@@ -1,11 +1,7 @@
-import { GalleryPhoto } from "../../interfaces";
-import { Modal, Button } from "react-rainbow-components";
-import {
-  deletePhoto,
-  photoInputHandler,
-  saveEditedPhoto,
-} from "./galleryUtils";
+import { Button, Modal } from "react-rainbow-components";
 import { useAuth } from "../../contexts/AuthContext";
+import { GalleryPhoto } from "../../interfaces";
+import { deletePhoto, photoInputHandler, saveEditedPhoto } from "./galleryUtils";
 
 type Props = {
   imgInfo: GalleryPhoto | undefined;
@@ -27,9 +23,7 @@ const EditPhotoModal = ({
   const { USER, isMarketingOrAdmin, isDarkMode } = useAuth();
   return (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       isOpen={isModalOpen}
       size="medium"
       title={"Edit Photo"}
@@ -44,13 +38,7 @@ const EditPhotoModal = ({
                 variant="destructive"
                 label="Delete from Database"
                 onClick={() => {
-                  deletePhoto(
-                    activeGallery,
-                    imgInfo?.imagePath,
-                    imgId,
-                    USER?.id,
-                    setIsModalOpen
-                  );
+                  deletePhoto(activeGallery, imgInfo?.imagePath, imgId, USER?.id, setIsModalOpen);
                 }}
               />
             )}
@@ -62,9 +50,7 @@ const EditPhotoModal = ({
               <Button
                 variant="brand"
                 label={"Save"}
-                onClick={() =>
-                  saveEditedPhoto(imgInfo, activeGallery, imgId, setIsModalOpen)
-                }
+                onClick={() => saveEditedPhoto(imgInfo, activeGallery, imgId, setIsModalOpen)}
               />
             </div>
           </div>

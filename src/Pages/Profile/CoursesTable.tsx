@@ -1,11 +1,10 @@
-import { fenixAuth, getMatchedUsers } from "./profileUtils";
-import { db } from "../../config/firebase";
-import { useState, useEffect } from "react";
-import { Course } from "../../interfaces";
-import CourseRow from "./CourseRow";
-import { getAndSetAllUsersMetadata } from "../../utils/generalFunctions";
-import { UserMetadata } from "../../interfaces";
 import { off, onValue, ref } from "firebase/database";
+import { useEffect, useState } from "react";
+import { db } from "../../config/firebase";
+import { Course, UserMetadata } from "../../interfaces";
+import { getAndSetAllUsersMetadata } from "../../utils/generalFunctions";
+import CourseRow from "./CourseRow";
+import { fenixAuth, getMatchedUsers } from "./profileUtils";
 
 type Props = {
   userName: string | null;
@@ -19,22 +18,23 @@ const CoursesTable = ({ userName, userId }: Props) => {
     const getCourses = () => {
       onValue(ref(db, "private/usersAcademia"), (snapshot) => {
         // Collection of users Academics
-        var users = snapshot.val();
+        const users = snapshot.val();
+        let courses;
         if (!users) return false;
-        let allCoursesArray: Course[] = [];
+        const allCoursesArray: Course[] = [];
         try {
-          var courses = users[userId].courses.enrolments;
+          courses = users[userId].courses.enrolments;
         } catch (error) {
           return false;
         }
         // Retrieve the keys of each child of the parent node
-        var keys = Object.keys(courses);
+        const keys = Object.keys(courses);
         // initialize full rows of table body
         for (const i in keys) {
-          var k = keys[i];
-          let courseAcro: string = courses[k].acronym;
-          let courseName: string = courses[k].name;
-          let matches: string[] = getMatchedUsers(courseAcro, users, userId);
+          const k = keys[i];
+          const courseAcro: string = courses[k].acronym;
+          const courseName: string = courses[k].name;
+          const matches: string[] = getMatchedUsers(courseAcro, users, userId);
           allCoursesArray.push({
             acronym: courseAcro.replace(/[0-9]/g, ""),
             name: courseName,
@@ -72,10 +72,7 @@ const CoursesTable = ({ userName, userId }: Props) => {
               </thead>
 
               {allCourses && usersMetadata && (
-                <CourseRow
-                  allCourses={allCourses}
-                  usersMetadata={usersMetadata}
-                />
+                <CourseRow allCourses={allCourses} usersMetadata={usersMetadata} />
               )}
             </table>
           </div>

@@ -1,12 +1,24 @@
+import {
+  get,
+  off,
+  onValue,
+  push,
+  ref,
+  remove,
+  runTransaction,
+  set,
+  update,
+} from "firebase/database";
 // Swal Notifications
 import { DropResult } from "react-beautiful-dnd";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { v4 as uuid } from "uuid";
 import { db } from "../../config/firebase";
 import {
-  columnsShape,
   Departments,
   EventInformation,
+  columnsShape,
   selectOption,
   taskShape,
   userContext,
@@ -19,18 +31,6 @@ import {
   toastrMessage,
 } from "../../utils/generalFunctions";
 import { departmentFilter, departmentFilterList } from "../Events/eventsUtils";
-import { v4 as uuid } from "uuid";
-import {
-  get,
-  off,
-  onValue,
-  push,
-  ref,
-  remove,
-  runTransaction,
-  set,
-  update,
-} from "firebase/database";
 
 /** SHow a confirmation message to delete the task board
  * @param  {Function} deleteBoard function to delete the board
@@ -55,7 +55,8 @@ const swalDeleteMessage = (deleteBoard: Function) => {
     .then((result) => {
       if (result.isConfirmed) {
         return;
-      } else if (result.isDenied) {
+      }
+      if (result.isDenied) {
         deleteBoard();
       }
     });
@@ -73,7 +74,7 @@ const addTaskToUsers = (
   modalTask: taskShape,
   departmentBoard: string,
   currBoard: string,
-  user: userContext
+  user: userContext,
 ) => {
   let usersToRemove: selectOption[] = [];
   let usersToAdd: selectOption[] = [];
@@ -84,7 +85,7 @@ const addTaskToUsers = (
   if (taskInfo.assignedTo) currAssignedUsers = taskInfo.assignedTo;
 
   // check if assigned users is a single user, turn it to a list if needed
-  if (assignedUsers && typeof assignedUsers == "string") {
+  if (assignedUsers && typeof assignedUsers === "string") {
     assignedUsers = [assignedUsers];
   }
 
@@ -105,15 +106,15 @@ const addTaskToUsers = (
     usersToAdd = assignedUsers;
   }
   // Remove task from users
-  for (let userOption of usersToRemove) {
-    let userKey = userOption.value;
+  for (const userOption of usersToRemove) {
+    const userKey = userOption.value;
     // remove users
     remove(ref(db, `private/usersTasks/${userKey}/${taskInfo.id}`));
   }
 
   // Make a copy of the task to add to users
   // modalTask contains the most updated version except for the comments
-  let taskToAdd = {
+  const taskToAdd = {
     ...modalTask,
     comments: taskInfo.comments ? taskInfo.comments : {},
     assignedBy: user.id,
@@ -121,8 +122,8 @@ const addTaskToUsers = (
   };
 
   // Add task to new users
-  for (let userOption of usersToAdd) {
-    let userKey = userOption.value;
+  for (const userOption of usersToAdd) {
+    const userKey = userOption.value;
     // add users
     set(ref(db, `private/usersTasks/${userKey}/${taskInfo.id}`), taskToAdd);
     if (userKey !== user.id) {
@@ -134,24 +135,21 @@ const addTaskToUsers = (
         `/${departmentBoard}/b/${currBoard}`,
         null,
         "task",
-        "info"
+        "info",
       );
     }
   }
   // dont update the "assignedBy" user
-  let taskToUpdate = {
+  const taskToUpdate = {
     ...modalTask,
     comments: taskInfo.comments ? taskInfo.comments : {},
   };
   // Update users who were already there
   usersToUpdate = assignedUsers.filter((x) => currAssignedUsers.includes(x));
-  for (let userOption of usersToUpdate) {
-    let userKey = userOption.value;
+  for (const userOption of usersToUpdate) {
+    const userKey = userOption.value;
     // add users
-    update(
-      ref(db, `private/usersTasks/${userKey}/${taskInfo.id}`),
-      taskToUpdate
-    );
+    update(ref(db, `private/usersTasks/${userKey}/${taskInfo.id}`), taskToUpdate);
   }
 };
 
@@ -171,12 +169,12 @@ const deleteTask = (
   currBoard: string,
   currTaskNum: number,
   currTaskColumn: string,
-  drawerOpenHandler: Function
+  drawerOpenHandler: Function,
 ) => {
   // remove from the users first
   if (taskInfo.assignedTo) {
-    for (let userOption of taskInfo.assignedTo) {
-      let userKey = userOption.value;
+    for (const userOption of taskInfo.assignedTo) {
+      const userKey = userOption.value;
       // remove users
       remove(ref(db, `private/usersTasks/${userKey}/${taskInfo.id}`));
     }
@@ -205,9 +203,9 @@ const countCompletedObjectives = (description: string) => {
   let todo = 0;
   let completed = 0;
 
-  let notChecked = description.match(/ul data-checked="false"/g);
+  const notChecked = description.match(/ul data-checked="false"/g);
   if (notChecked) todo = notChecked.length;
-  let checked = description.match(/ul data-checked="true"/g);
+  const checked = description.match(/ul data-checked="true"/g);
   if (checked) completed = checked.length;
 
   return [completed, todo + completed];
@@ -231,21 +229,18 @@ const saveTask = (
   departmentBoard: string,
   currBoard: string,
   drawerOpenHandler: Function,
-  USER: userContext | null
+  USER: userContext | null,
 ) => {
   if (!USER) return;
   // Count number of completed tasks, if any
   if (modalTask.description) {
-    let [completed, total] = countCompletedObjectives(modalTask.description);
+    const [completed, total] = countCompletedObjectives(modalTask.description);
     modalTask = { ...modalTask, totalObj: total, completedObj: completed };
   }
 
   update(
-    ref(
-      db,
-      `private/${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}`
-    ),
-    modalTask
+    ref(db, `private/${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}`),
+    modalTask,
   );
   drawerOpenHandler();
   addTaskToUsers(taskInfo, modalTask, departmentBoard, currBoard, USER);
@@ -261,7 +256,7 @@ const saveTaskAsEvent = (
   taskInfo: taskShape,
   eventInfo: EventInformation,
   saveEvent: Function,
-  drawerOpenHandler: Function
+  drawerOpenHandler: Function,
 ) => {
   if (!user) return;
   if (!taskInfo.date) {
@@ -273,7 +268,7 @@ const saveTaskAsEvent = (
   eventInfo.description = taskInfo.description ? taskInfo.description : "";
   eventInfo.weeks = 0;
   eventInfo.allDay = true;
-  let department = taskInfo.departmentBoard.split("tasks")[1];
+  const department = taskInfo.departmentBoard.split("tasks")[1];
   if (departmentFilterList.indexOf(department)) {
     eventInfo.type = departmentFilter[department][0];
   }
@@ -283,7 +278,7 @@ const saveTaskAsEvent = (
     eventInfo,
     () => {},
     () => {},
-    () => {}
+    () => {},
   );
   drawerOpenHandler();
 };
@@ -296,7 +291,7 @@ const saveTaskAsEvent = (
 const titleHandler = (
   e: React.ChangeEvent<HTMLInputElement>,
   modalTask: taskShape,
-  setModalTask: Function
+  setModalTask: Function,
 ) => {
   const value = e.target.value;
   setModalTask({ ...modalTask, title: value });
@@ -307,11 +302,7 @@ const titleHandler = (
  * @param  {taskShape} modalTask modal task information
  * @param  {Function} setModalTask modal task information update state funciton
  */
-const descriptionHandler = (
-  value: string,
-  modalTask: taskShape,
-  setModalTask: Function
-) => {
+const descriptionHandler = (value: string, modalTask: taskShape, setModalTask: Function) => {
   setModalTask({ ...modalTask, description: value });
 };
 
@@ -320,11 +311,7 @@ const descriptionHandler = (
  * @param  {taskShape} modalTask modal task information
  * @param  {Function} setModalTask modal task information update state funciton
  */
-const assignToHandler = (
-  selected: any,
-  modalTask: taskShape,
-  setModalTask: Function
-) => {
+const assignToHandler = (selected: any, modalTask: taskShape, setModalTask: Function) => {
   setModalTask({ ...modalTask, assignedTo: selected });
 };
 
@@ -333,11 +320,7 @@ const assignToHandler = (
  * @param  {taskShape} modalTask modal task information
  * @param  {Function} setModalTask modal task information update state funciton
  */
-const dateHandler = (
-  date: Date,
-  modalTask: taskShape,
-  setModalTask: Function
-) => {
+const dateHandler = (date: Date, modalTask: taskShape, setModalTask: Function) => {
   // saves the date as a portuguese format string
   const newDate = dateToString(date);
   setModalTask({ ...modalTask, date: newDate });
@@ -348,11 +331,7 @@ const dateHandler = (
  * @param  {taskShape} modalTask modal task information
  * @param  {Function} setModalTask modal task information update state funciton
  */
-const priorityHandler = (
-  selected: any,
-  modalTask: taskShape,
-  setModalTask: Function
-) => {
+const priorityHandler = (selected: any, modalTask: taskShape, setModalTask: Function) => {
   setModalTask({ ...modalTask, priority: selected.value });
 };
 
@@ -378,12 +357,12 @@ const submitComment = (
   departmentBoard: string,
   currBoard: string,
   user: userContext | null,
-  setCommentText: Function
+  setCommentText: Function,
 ) => {
   if (!user) {
     return;
   }
-  let comment = {
+  const comment = {
     comment: commentText,
     timestamp: new Date().getTime(),
     createdBy: user.id,
@@ -391,10 +370,10 @@ const submitComment = (
   };
 
   // Push the comment to DB
-  let commentRef = `private/${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}/comments`;
+  const commentRef = `private/${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}/comments`;
   push(ref(db, commentRef), comment);
   // Increment comment count on task db, and in state
-  let commentNumRef = `private/${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}/numComments`;
+  const commentNumRef = `private/${departmentBoard}/b/${currBoard}/${currTaskColumn}/items/${currTaskNum}/numComments`;
   runTransaction(ref(db, commentNumRef), (num) => {
     return (num || 0) + 1;
   });
@@ -403,9 +382,9 @@ const submitComment = (
   // Update number of comments on assigned users db (this is cheating because we
   // are not updating the comments themselves, no need)
   if (taskInfo.assignedTo) {
-    for (let userOption of taskInfo.assignedTo) {
-      let userKey = userOption.value;
-      let userCommentRef = `usersTasks/${userKey}/${taskInfo.id}/numComments`;
+    for (const userOption of taskInfo.assignedTo) {
+      const userKey = userOption.value;
+      const userCommentRef = `usersTasks/${userKey}/${taskInfo.id}/numComments`;
       // increment count users
       runTransaction(ref(db, userCommentRef), (num) => {
         return (num || 0) + 1;
@@ -419,7 +398,7 @@ const submitComment = (
           `/${departmentBoard}/b/${currBoard}`,
           null,
           "task",
-          "info"
+          "info",
         );
       }
     }
@@ -459,7 +438,7 @@ const onDragEnd = (
   result: DropResult,
   columns: columnsShape,
   departmentBoard: string,
-  currBoard: string
+  currBoard: string,
 ) => {
   if (!result.destination) return;
   const { source, destination } = result;
@@ -486,13 +465,10 @@ const onDragEnd = (
     });
     // update new status to all assigned users
     if (movedTask.assignedTo) {
-      for (let userOption of movedTask.assignedTo) {
-        let userKey = userOption.value;
+      for (const userOption of movedTask.assignedTo) {
+        const userKey = userOption.value;
         // remove users
-        update(
-          ref(db, `private/usersTasks/${userKey}/${movedTask.id}`),
-          movedTask
-        );
+        update(ref(db, `private/usersTasks/${userKey}/${movedTask.id}`), movedTask);
       }
     }
   } else if (source && source.droppableId) {
@@ -534,7 +510,7 @@ const addTask = (
   setCurrTaskColumn: Function,
   setCurrTaskNum: Function,
   setCommentListener: Function,
-  setDrawerOpen: Function
+  setDrawerOpen: Function,
 ) => {
   if (!user) return;
   const colId = "0Todo";
@@ -556,7 +532,7 @@ const addTask = (
     date: dateToString(new Date()),
   };
   copiedItems.push(newTask);
-  let taskNum = copiedItems.length - 1;
+  const taskNum = copiedItems.length - 1;
   update(ref(db, `private/${departmentBoard}/b/${currBoard}`), {
     ...columns,
     "0Todo": { ...column, items: copiedItems },
@@ -566,19 +542,14 @@ const addTask = (
   setModalTask(newTask);
   // Add a listener for the comments
   onValue(
-    ref(
-      db,
-      `private/${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`
-    ),
+    ref(db, `private/${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`),
     (snapshot) => {
       setCurrTaskInfo(snapshot.val());
-    }
+    },
   );
   // Save the database reference we are listening to of the comments, to remove
   // on drawer close
-  setCommentListener(
-    `${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`
-  );
+  setCommentListener(`${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`);
   setDrawerOpen(true);
 };
 /** Handler when the task is clicked, opens and fills the modal with the task information
@@ -605,28 +576,23 @@ const taskOnClick = (
   setCurrTaskNum: Function,
   setCommentListener: Function,
   departmentBoard: string,
-  currBoard: string
+  currBoard: string,
 ) => {
   setDrawerOpen(true); // open drawer modal
   setCurrTaskColumn(colId); // save the task column
   setCurrTaskNum(taskNum); // save the index of the task of the column items
   // Add a listener for the comments
   onValue(
-    ref(
-      db,
-      `private/${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`
-    ),
+    ref(db, `private/${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`),
     (snapshot) => {
       setCurrTaskInfo(snapshot.val());
-    }
+    },
   );
   // An auxiliary task info for the drawer modal, on value changes
   setModalTask(currTask);
   // Save the database reference we are listening to of the comments, to remove
   // on drawer close
-  setCommentListener(
-    `${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`
-  );
+  setCommentListener(`${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`);
 };
 
 /**
@@ -649,24 +615,21 @@ const openMatchingTaskId = (
   setModalTask: Function,
   setCurrTaskColumn: Function,
   setCurrTaskNum: Function,
-  setDrawerOpen: Function
+  setDrawerOpen: Function,
 ) => {
   // To do, in progress or completed
-  let selectedCol = columns[colId];
+  const selectedCol = columns[colId];
   // loop tasks in items
   if (selectedCol.items) {
     Object.entries(selectedCol.items).forEach(([taskNum, task]) => {
       if (task.id === taskId) {
         // Add a listener for the comments
         onValue(
-          ref(
-            db,
-            `private/${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`
-          ),
+          ref(db, `private/${departmentBoard}/b/${currBoard}/${colId}/items/${taskNum}`),
           (snapshot) => {
             setCurrTaskInfo(snapshot.val());
             setModalTask(snapshot.val());
-          }
+          },
         );
         setDrawerOpen(true);
         // An auxiliary task info for the drawer modal, on value changes
@@ -686,7 +649,7 @@ const openMatchingTaskId = (
 const drawerOpenHandler = (
   setDrawerOpen: Function,
   commentListener: string | null,
-  setCommentListener: Function
+  setCommentListener: Function,
 ) => {
   setDrawerOpen(false);
   if (commentListener) off(ref(db, commentListener));
@@ -697,19 +660,16 @@ const drawerOpenHandler = (
  * @param  {string} departmentBoard current board in the department
  * @param  {Function} setExistingBoards updates the boards select input state
  */
-const updateExistingBoards = (
-  departmentBoard: string,
-  setExistingBoards: Function
-) => {
+const updateExistingBoards = (departmentBoard: string, setExistingBoards: Function) => {
   onValue(ref(db, `private/${departmentBoard}/list`), (snapshot) => {
-    let boards: string[] = snapshot.val();
+    const boards: string[] = snapshot.val();
     setExistingBoards(
       boards.map((board, idx) => {
         return {
           value: getDecodedString(board),
           label: getDecodedString(board),
         };
-      })
+      }),
     );
   });
 };
@@ -725,18 +685,15 @@ const createNewBoard = (
   boardString: string,
   departmentBoard: string,
   boardSkeleton: columnsShape,
-  setRedirectToBoard: Function
+  setRedirectToBoard: Function,
 ) => {
-  let encodedBoardString = getEncodedString(boardString.trim());
+  const encodedBoardString = getEncodedString(boardString.trim());
   // Build the new board skeleton
-  set(
-    ref(db, `private/${departmentBoard}/b/${encodedBoardString}`),
-    boardSkeleton
-  );
+  set(ref(db, `private/${departmentBoard}/b/${encodedBoardString}`), boardSkeleton);
   // Update the boards list
   get(ref(db, `private/${departmentBoard}/list`)).then((snapshot) => {
-    let boards: string[] = snapshot.val();
-    let newBoardsList = [...boards, encodedBoardString];
+    const boards: string[] = snapshot.val();
+    const newBoardsList = [...boards, encodedBoardString];
     set(ref(db, `private/${departmentBoard}/list`), newBoardsList);
   });
   // Redirect to the newly created board
@@ -756,10 +713,10 @@ const goToBoard = (
   setRedirectToBoard: Function,
   departmentBoard: string,
   currBoard: string,
-  setColumns: Function
+  setColumns: Function,
 ) => {
   if (!option || typeof option !== "string") return;
-  let encodedBoardString = getEncodedString(option); // this is the decoded string
+  const encodedBoardString = getEncodedString(option); // this is the decoded string
   if (currBoard === encodedBoardString) return;
   // Remove current board listener
   off(ref(db, `private/${departmentBoard}/b/${currBoard}`));
@@ -777,19 +734,19 @@ const deleteBoard = (
   columns: columnsShape,
   departmentBoard: string,
   currBoard: string,
-  setRedirectToBoard: Function
+  setRedirectToBoard: Function,
 ) => {
   // For each task in board, remove task from assigned users
   Object.keys(columns).forEach((colId, idx) => {
-    let column = columns[colId];
+    const column = columns[colId];
     if (column.items) {
       // Loop columns
       column.items.forEach((task, idx) => {
-        let taskId = task.id;
+        const taskId = task.id;
         if (task.assignedTo) {
           // Loop tasks
           task.assignedTo.forEach((option, idx) => {
-            let userId = option.value;
+            const userId = option.value;
             // remove task from user
             remove(ref(db, `private/usersTasks/${userId}/${taskId}`));
           });
@@ -801,7 +758,7 @@ const deleteBoard = (
   remove(ref(db, `private/${departmentBoard}/b/${currBoard}`));
   // Remove board name from department boards list
   get(ref(db, `private/${departmentBoard}/list`)).then((snapshot) => {
-    let boards: string[] = snapshot.val();
+    const boards: string[] = snapshot.val();
     const index = boards.indexOf(currBoard);
     if (index > -1) {
       boards.splice(index, 1);
@@ -818,13 +775,7 @@ const deleteBoard = (
  * @return {boolean} allowed or not
  */
 const isDepartmentBoardAllowed = (departmentBoard: string) => {
-  const allowedDepBoard = [
-    "tasksES",
-    "tasksMM",
-    "tasksMS",
-    "tasksDC",
-    "tasksHP",
-  ];
+  const allowedDepBoard = ["tasksES", "tasksMM", "tasksMS", "tasksDC", "tasksHP"];
   return allowedDepBoard.includes(departmentBoard);
 };
 
@@ -946,12 +897,12 @@ const selectStyles = (theme: any, isDisabled: boolean) => {
 const getTaskBoardTitleAndColor = (
   departmentBoard: string,
   departments: Departments,
-  setDepartment: Function
+  setDepartment: Function,
 ) => {
   // Get the acronym
-  let acronym = departmentBoard.replace("tasks", "").toLowerCase();
+  const acronym = departmentBoard.replace("tasks", "").toLowerCase();
   // Get department
-  let department = departments[acronym];
+  const department = departments[acronym];
   setDepartment(department);
 };
 
@@ -963,48 +914,46 @@ const getEncodedBoardNames = () => {
   const pathName = window.location.pathname;
   // thread pathName
   // /forum/s/encodedSectionName/topic/encodedTopicName/thread/encodedThreadName
-  let splitted = pathName.split("/");
+  const splitted = pathName.split("/");
   let encodedDepartmentBoard = splitted[1];
   let encodedCurrBoard = splitted[3];
   // decode everything and encode everything (our encoding is different from
   // browsers url)
-  encodedDepartmentBoard = getEncodedString(
-    getDecodedString(encodedDepartmentBoard)
-  );
+  encodedDepartmentBoard = getEncodedString(getDecodedString(encodedDepartmentBoard));
   encodedCurrBoard = getEncodedString(getDecodedString(encodedCurrBoard));
-
+  console.log(encodedDepartmentBoard, encodedCurrBoard);
   return [encodedDepartmentBoard, encodedCurrBoard];
 };
 // }
 export {
-  taskTitleIconColor,
-  selectStyles,
-  initialColumns,
-  taskPriorityOptions,
-  taskSkeleton,
+  addTask,
+  addTaskToUsers,
+  assignToHandler,
   boardSkeleton,
-  swalDeleteMessage,
+  countCompletedObjectives,
+  createNewBoard,
+  dateHandler,
+  deleteBoard,
+  deleteTask,
+  descriptionHandler,
+  drawerOpenHandler,
+  getEncodedBoardNames,
+  getTaskBoardTitleAndColor,
+  goToBoard,
+  initialColumns,
   isDepartmentBoardAllowed,
   onDragEnd,
-  deleteBoard,
-  goToBoard,
-  createNewBoard,
-  drawerOpenHandler,
-  updateExistingBoards,
-  taskOnClick,
-  addTask,
-  submitComment,
+  openMatchingTaskId,
   priorityHandler,
-  dateHandler,
-  assignToHandler,
-  titleHandler,
-  descriptionHandler,
   saveTask,
   saveTaskAsEvent,
-  countCompletedObjectives,
-  addTaskToUsers,
-  deleteTask,
-  openMatchingTaskId,
-  getTaskBoardTitleAndColor,
-  getEncodedBoardNames,
+  selectStyles,
+  submitComment,
+  swalDeleteMessage,
+  taskOnClick,
+  taskPriorityOptions,
+  taskSkeleton,
+  taskTitleIconColor,
+  titleHandler,
+  updateExistingBoards,
 };

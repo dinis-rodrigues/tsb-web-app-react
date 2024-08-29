@@ -6,6 +6,7 @@ type Props = {
   activeClassName?: string;
   icon?: string;
   isVisible?: boolean;
+  reloadDocument?: boolean;
 };
 
 const NavItem = ({
@@ -14,13 +15,14 @@ const NavItem = ({
   activeClassName = "active",
   icon = "",
   isVisible = true,
+  reloadDocument = false,
 }: Props) => {
   return isVisible ? (
     <li className="metismenu-item">
       <NavLink
-        className="metismenu-link"
+        reloadDocument={reloadDocument}
+        className={({ isActive }) => `metismenu-link ${isActive ? activeClassName : ""}`}
         to={to}
-        activeClassName={activeClassName}
       >
         <i className={`metismenu-icon ${icon}`}></i>
         {pageName}

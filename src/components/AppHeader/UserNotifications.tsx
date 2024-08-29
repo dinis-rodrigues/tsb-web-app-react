@@ -1,21 +1,17 @@
-import { useEffect, useState } from "react";
-import {
-  DropdownToggle,
-  DropdownMenu,
-  UncontrolledButtonDropdown,
-} from "reactstrap";
 import cx from "classnames";
-import { db } from "../../config/firebase";
-import { useAuth } from "../../contexts/AuthContext";
-import { Notifications } from "../../interfaces";
-import { objectExists } from "../../utils/generalFunctions";
+import { off, ref } from "firebase/database";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
+import NotificationRow from "../../Pages/Notifications/NotificationRow";
 import {
   newNotificationsListener,
   removeNewNotifications,
 } from "../../Pages/Notifications/notificationsUtils";
-import NotificationRow from "../../Pages/Notifications/NotificationRow";
-import { Link } from "react-router-dom";
-import { off, ref } from "firebase/database";
+import { db } from "../../config/firebase";
+import { useAuth } from "../../contexts/AuthContext";
+import { Notifications } from "../../interfaces";
+import { objectExists } from "../../utils/generalFunctions";
 
 const UserNotifications = () => {
   const { USER } = useAuth();
@@ -24,12 +20,7 @@ const UserNotifications = () => {
   // const unreadNotifications = objectExists(newNotifications);
   const [unreadNotifications, setUnreadNotifications] = useState(false);
   useEffect(() => {
-    newNotificationsListener(
-      USER,
-      notificationsMask,
-      setNotificationsMask,
-      setUnreadNotifications
-    );
+    newNotificationsListener(USER, notificationsMask, setNotificationsMask, setUnreadNotifications);
     return () => {
       off(ref(db, `private/usersNotifications/${USER?.id}/new`));
       removeNewNotifications(USER, unreadNotifications);
@@ -64,7 +55,7 @@ const UserNotifications = () => {
           ></i>
         </span>
       </DropdownToggle>
-      <DropdownMenu right className="rm-pointers dropdown-menu-xl">
+      <DropdownMenu end className="rm-pointers dropdown-menu-xl">
         <div className="tab-content">
           <div
             id="newNotificationPanel"
@@ -83,10 +74,7 @@ const UserNotifications = () => {
                       Object.entries(notificationsMask)
                         .reverse()
                         .map(([notifId, notification]) => (
-                          <NotificationRow
-                            key={notifId}
-                            notification={notification}
-                          />
+                          <NotificationRow key={notifId} notification={notification} />
                         ))}
                   </div>
                 </div>
@@ -110,19 +98,14 @@ const UserNotifications = () => {
                     <span className="swal2-success-line-tip"></span>
                     <span className="swal2-success-line-long"></span>
                     <div className="swal2-success-ring"></div>
-                    <div
-                      className="swal2-success-fix"
-                      style={{ backgroundColor: "white" }}
-                    ></div>
+                    <div className="swal2-success-fix" style={{ backgroundColor: "white" }}></div>
                     <div
                       className="swal2-success-circular-line-right"
                       style={{ backgroundColor: "white" }}
                     ></div>
                   </div>
                   <div className="results-subtitle">All caught up!</div>
-                  <div className="results-title">
-                    You have no new notifications!
-                  </div>
+                  <div className="results-title">You have no new notifications!</div>
                 </div>
               </div>
             </div>
@@ -132,7 +115,7 @@ const UserNotifications = () => {
           <li className="nav-item-divider nav-item"></li>
           <li className="nav-item-btn text-center nav-item">
             <Link to="/notifications">
-              <button className="btn-shadow btn-wide btn-pill btn btn-focus btn-sm">
+              <button type="button" className="btn-shadow btn-wide btn-pill btn btn-focus btn-sm">
                 View Notification History
               </button>
             </Link>

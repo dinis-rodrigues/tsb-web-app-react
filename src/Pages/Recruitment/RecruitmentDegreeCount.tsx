@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
-import { RecruitmentTable } from "../../interfaces";
 import Chart from "react-apexcharts";
-import {
-  apexPolarOptions,
-  buildRecruitmentPolarSeries,
-} from "../Statistics/statisticsUtils";
 import { useAuth } from "../../contexts/AuthContext";
+import { RecruitmentTable } from "../../interfaces";
+import { apexPolarOptions, buildRecruitmentPolarSeries } from "../Statistics/statisticsUtils";
 
 type Props = {
   tableData: RecruitmentTable;
@@ -32,9 +29,7 @@ const RecruitmentDegreeCount = ({ tableData }: Props) => {
           <div className="card-header">
             Degree Spread
             <div className="btn-actions-pane-right">
-              <span className="badge badge-pill badge-dark">
-                Applied: {teamCount}
-              </span>
+              <span className="badge badge-pill badge-dark">Applied: {teamCount}</span>
             </div>
           </div>
           {degreeLabels.length > 0 && (

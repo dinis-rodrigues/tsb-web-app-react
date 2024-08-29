@@ -1,24 +1,20 @@
-import { useEffect, useState } from "react";
 import cx from "classnames";
+import { useEffect, useState } from "react";
 import AvatarOverlap from "../../../components/AppImage/AvatarOverlap";
 
+import { off, ref } from "firebase/database";
 import { db } from "../../../config/firebase";
+import { useAuth } from "../../../contexts/AuthContext";
 import {
-  attendanceArrayRechart,
   EventInformation,
-  graphColor,
   User,
   UsersDB,
+  attendanceArrayRechart,
+  graphColor,
   userStatus,
 } from "../../../interfaces";
-import {
-  graphGreen,
-  addStatisticListener,
-  updateUserAttendance,
-} from "../attendanceUtils";
 import AttendanceChart from "../AttendanceChart";
-import { useAuth } from "../../../contexts/AuthContext";
-import { off, ref } from "firebase/database";
+import { addStatisticListener, graphGreen, updateUserAttendance } from "../attendanceUtils";
 
 type Props = {
   userId: string;
@@ -28,13 +24,7 @@ type Props = {
   eventId: string;
 };
 
-const AttendanceRow = ({
-  userId,
-  user,
-  usersMetadata,
-  event,
-  eventId,
-}: Props) => {
+const AttendanceRow = ({ userId, user, usersMetadata, event, eventId }: Props) => {
   const { USER } = useAuth();
   const defaultData = [
     { x: 0, y: 0.1 },
@@ -49,14 +39,11 @@ const AttendanceRow = ({
     { x: 9, y: 1 },
   ];
   // Department default graph
-  const [departmentSeries, setDepartmentSeries] =
-    useState<attendanceArrayRechart[]>(defaultData);
-  const [departmentOptions, setDepartmentOptions] =
-    useState<graphColor>(graphGreen);
+  const [departmentSeries, setDepartmentSeries] = useState<attendanceArrayRechart[]>(defaultData);
+  const [departmentOptions, setDepartmentOptions] = useState<graphColor>(graphGreen);
 
   // Department default graph
-  const [generalSeries, setGeneralSeries] =
-    useState<attendanceArrayRechart[]>(defaultData);
+  const [generalSeries, setGeneralSeries] = useState<attendanceArrayRechart[]>(defaultData);
   const [generalOptions, setGeneralOptions] = useState<graphColor>(graphGreen);
 
   // Status state
@@ -75,7 +62,7 @@ const AttendanceRow = ({
       departmentOptions,
       setDepartmentSeries,
       setDepartmentOptions,
-      setCurrStatus
+      setCurrStatus,
     );
     addStatisticListener(
       "generalStats",
@@ -85,19 +72,12 @@ const AttendanceRow = ({
       generalOptions,
       setGeneralSeries,
       setGeneralOptions,
-      setCurrStatus
+      setCurrStatus,
     );
 
     return () => {
-      off(
-        ref(
-          db,
-          `private/usersStatistics/${userId}/departmentStats/currentSeason`
-        )
-      );
-      off(
-        ref(db, `private/usersStatistics/${userId}/generalStats/currentSeason`)
-      );
+      off(ref(db, `private/usersStatistics/${userId}/departmentStats/currentSeason`));
+      off(ref(db, `private/usersStatistics/${userId}/generalStats/currentSeason`));
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
@@ -119,9 +99,7 @@ const AttendanceRow = ({
             </div>
             <div className="widget-content-left flex2">
               <div className="widget-heading">{user.pinfo.name}</div>
-              <div className="widget-subheading opacity-7">
-                {user.pinfo.position}
-              </div>
+              <div className="widget-subheading opacity-7">{user.pinfo.position}</div>
             </div>
           </div>
         </div>
@@ -130,59 +108,39 @@ const AttendanceRow = ({
       <td>{user.pinfo.department}</td>
       {/* Department meeting graph statistics */}
       <td width={160} height={50}>
-        <AttendanceChart
-          chartOptions={departmentOptions}
-          chartSeries={departmentSeries}
-        />
+        <AttendanceChart chartOptions={departmentOptions} chartSeries={departmentSeries} />
       </td>
       {/* General Meeting graph statistics */}
       <td width={160} height={50}>
-        <AttendanceChart
-          chartOptions={generalOptions}
-          chartSeries={generalSeries}
-        />
+        <AttendanceChart chartOptions={generalOptions} chartSeries={generalSeries} />
       </td>
       {/* Status */}
       <td>
-        <div className={cx("badge badge-pill", currStatus.badge)}>
-          {currStatus.title}
-        </div>
+        <div className={cx("badge badge-pill", currStatus.badge)}>{currStatus.title}</div>
       </td>
       {/* Buttons */}
       <td>
         <div role="group" className="btn-group-sm btn-group">
           <button
+            type="button"
             className={cx("btn-shadow btn", {
               "btn-primary": !currStatus.missed,
               "btn-danger": currStatus.missed,
             })}
             onClick={() => {
-              updateUserAttendance(
-                false,
-                userId,
-                eventId,
-                event,
-                currStatus,
-                USER
-              );
+              updateUserAttendance(false, userId, eventId, event, currStatus, USER);
             }}
           >
             Miss
           </button>
           <button
+            type="button"
             className={cx("btn-shadow btn", {
               "btn-primary": !currStatus.attended,
               "btn-success": currStatus.attended,
             })}
             onClick={() => {
-              updateUserAttendance(
-                true,
-                userId,
-                eventId,
-                event,
-                currStatus,
-                USER
-              );
+              updateUserAttendance(true, userId, eventId, event, currStatus, USER);
             }}
           >
             Here

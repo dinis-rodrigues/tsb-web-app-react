@@ -1,25 +1,25 @@
-import Select from "react-select";
+import { PatternFormat } from "react-number-format";
 import { Button, DatePicker, Modal } from "react-rainbow-components";
+import Select from "react-select";
+import { useAuth } from "../../../contexts/AuthContext";
 import { PersonalInformation } from "../../../interfaces";
+import { inputToDate } from "../../../utils/generalFunctions";
 import {
-  handleSelectDepartment,
-  handleInput,
-  handleDate,
-  selectStyles,
-  handleSelect,
-  mbWayOptions,
-  formatCoursesLabel,
+  countryOptions,
   coursesOptions,
   curricularYearOptions,
-  countryOptions,
-  handleInputMask,
-  handleInTeamSelect,
+  formatCoursesLabel,
   getDepartmentOptions,
+  handleDate,
+  handleInTeamSelect,
+  handleInput,
+  handleInputMask,
+  handleSelect,
+  handleSelectDepartment,
+  mbWayOptions,
+  selectStyles,
 } from "../../Profile/profileUtils";
-import { inputToDate } from "../../../utils/generalFunctions";
-import NumberFormat from "react-number-format";
 import { saveUserInfo } from "./userManagementUtils";
-import { useAuth } from "../../../contexts/AuthContext";
 
 type Props = {
   modalIsOpen: boolean;
@@ -44,9 +44,7 @@ const UserManagementModal = ({
   const departmentOptions = getDepartmentOptions(departments);
   return (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       size="large"
       isOpen={modalIsOpen}
       title={modalTitle}
@@ -115,13 +113,7 @@ const UserManagementModal = ({
             <Select
               classNamePrefix="react-select-container"
               onChange={(e) =>
-                handleSelectDepartment(
-                  e,
-                  "department",
-                  USER,
-                  setSelectPositions,
-                  setInfo
-                )
+                handleSelectDepartment(e, "department", USER, setSelectPositions, setInfo)
               }
               value={{
                 value: info && info.department,
@@ -186,7 +178,7 @@ const UserManagementModal = ({
             <span className="text-dark small text-uppercase">
               <strong>Phone Number</strong>
             </span>
-            <NumberFormat
+            <PatternFormat
               value={info.phone || ""}
               onValueChange={(e) => handleInputMask(e, "phone", setInfo)}
               className="form-control text-center"
@@ -380,7 +372,7 @@ const UserManagementModal = ({
           <strong>IBAN</strong>
         </span>
         <div className="form-group">
-          <NumberFormat
+          <PatternFormat
             value={info.iban || ""}
             onValueChange={(e) => handleInputMask(e, "iban", setInfo)}
             className="form-control text-center"

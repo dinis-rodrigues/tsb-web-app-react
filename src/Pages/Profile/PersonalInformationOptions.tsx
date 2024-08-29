@@ -1,24 +1,24 @@
 import cx from "classnames";
-import NumberFormat from "react-number-format";
-import Select from "react-select";
-import { inputToDate } from "../../utils/generalFunctions";
+import { PatternFormat } from "react-number-format";
 import { DatePicker } from "react-rainbow-components";
-import {
-  mbWayOptions,
-  coursesOptions,
-  selectStyles,
-  curricularYearOptions,
-  countryOptions,
-  formatCoursesLabel,
-  handleSelectDepartment,
-  handleInput,
-  handleSelect,
-  handleDate,
-  handleInputMask,
-  getDepartmentOptions,
-} from "./profileUtils";
-import { PersonalInformation, userContext } from "../../interfaces";
+import Select from "react-select";
 import { useAuth } from "../../contexts/AuthContext";
+import { PersonalInformation, userContext } from "../../interfaces";
+import { inputToDate } from "../../utils/generalFunctions";
+import {
+  countryOptions,
+  coursesOptions,
+  curricularYearOptions,
+  formatCoursesLabel,
+  getDepartmentOptions,
+  handleDate,
+  handleInput,
+  handleInputMask,
+  handleSelect,
+  handleSelectDepartment,
+  mbWayOptions,
+  selectStyles,
+} from "./profileUtils";
 
 type Props = {
   info: PersonalInformation;
@@ -81,13 +81,7 @@ const PersonalInformationOptions = ({
             <Select
               classNamePrefix="react-select-container"
               onChange={(e) =>
-                handleSelectDepartment(
-                  e,
-                  "department",
-                  user,
-                  setSelectPositions,
-                  setInfo
-                )
+                handleSelectDepartment(e, "department", user, setSelectPositions, setInfo)
               }
               value={{
                 value: info && info.department,
@@ -154,7 +148,7 @@ const PersonalInformationOptions = ({
             <span className="text-dark small text-uppercase">
               <strong>Phone Number</strong>
             </span>
-            <NumberFormat
+            <PatternFormat
               value={info.phone || ""}
               disabled={disabledInput}
               onValueChange={(e) => handleInputMask(e, "phone", setInfo)}
@@ -361,7 +355,7 @@ const PersonalInformationOptions = ({
           <strong>IBAN</strong>
         </span>
         <div className="form-group">
-          <NumberFormat
+          <PatternFormat
             value={info.iban || ""}
             onValueChange={(e) => handleInputMask(e, "iban", setInfo)}
             disabled={disabledInput}
@@ -402,10 +396,10 @@ const PersonalInformationOptions = ({
         <div className="layers">
           <div className="layer w-100">
             <button
+              type="button"
               className={cx("btn btn-primary btn-user btn-block", {
                 "invisible-none": !disabledInput,
               })}
-              type="button"
               onClick={() => editInformation(setDisabledInput)}
             >
               <i className="fa fa-edit fa-fw"></i>
@@ -414,10 +408,10 @@ const PersonalInformationOptions = ({
           </div>
           <div className="layer w-100">
             <button
+              type="button"
               className={cx("btn btn-success btn-user btn-block", {
                 "invisible-none": disabledInput,
               })}
-              type="button"
               onClick={() =>
                 saveInformation(
                   user,
@@ -426,7 +420,7 @@ const PersonalInformationOptions = ({
                   setDisabledInput,
                   setPrevInfo,
                   setCroppie,
-                  setShowSaveImg
+                  setShowSaveImg,
                 )
               }
             >
@@ -434,10 +428,10 @@ const PersonalInformationOptions = ({
               Save Changes
             </button>
             <button
+              type="button"
               className={cx("btn btn-danger btn-user btn-block", {
                 "invisible-none": disabledInput,
               })}
-              type="button"
               onClick={() =>
                 discardInformation(
                   prevInfo,
@@ -445,7 +439,7 @@ const PersonalInformationOptions = ({
                   setDisabledInput,
                   setInfo,
                   setCroppie,
-                  setShowSaveImg
+                  setShowSaveImg,
                 )
               }
             >

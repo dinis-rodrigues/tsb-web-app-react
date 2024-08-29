@@ -1,11 +1,8 @@
 import { Button, Modal } from "react-rainbow-components";
-import { RecruitmentUser } from "../../interfaces";
 import TextareaAutosize from "react-textarea-autosize";
-import {
-  deleteRecruitmentMemberFromDB,
-  swalDeleteApplication,
-} from "./recruitmentUtils";
 import { useAuth } from "../../contexts/AuthContext";
+import { RecruitmentUser } from "../../interfaces";
+import { deleteRecruitmentMemberFromDB, swalDeleteApplication } from "./recruitmentUtils";
 
 type Props = {
   tableName: string | boolean;
@@ -13,18 +10,11 @@ type Props = {
   info: RecruitmentUser;
   setModalIsOpen: Function;
 };
-const RecruitmentUserModal = ({
-  tableName,
-  setModalIsOpen,
-  modalIsOpen,
-  info,
-}: Props) => {
+const RecruitmentUserModal = ({ tableName, setModalIsOpen, modalIsOpen, info }: Props) => {
   const { isMarketingOrAdmin, isDarkMode } = useAuth();
   return (
     <Modal
-      className={
-        isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"
-      }
+      className={isDarkMode ? "app-theme-dark app-modal-dark" : "app-theme-white"}
       size="large"
       isOpen={modalIsOpen}
       title={"Individual Information"}
@@ -40,11 +30,7 @@ const RecruitmentUserModal = ({
                 label="Delete"
                 onClick={() =>
                   swalDeleteApplication(() =>
-                    deleteRecruitmentMemberFromDB(
-                      tableName,
-                      info.applicationId,
-                      setModalIsOpen
-                    )
+                    deleteRecruitmentMemberFromDB(tableName, info.applicationId, setModalIsOpen),
                   )
                 }
               />

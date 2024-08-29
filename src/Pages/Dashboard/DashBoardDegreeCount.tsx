@@ -18,9 +18,7 @@ const DashBoardDegreeCount = () => {
         <div className="card-header">
           Degree Spread
           <div className="btn-actions-pane-right">
-            <span className="badge badge-pill badge-dark">
-              Members: {teamCount}
-            </span>
+            <span className="badge badge-pill badge-dark">Members: {teamCount}</span>
           </div>
         </div>
         <DegreeCount usersMetadata={usersMetadata} />
